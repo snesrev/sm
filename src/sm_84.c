@@ -1,0 +1,3473 @@
+// PLMs
+#include "ida_types.h"
+#include "variables.h"
+#include "sm_rtl.h"
+#include "funcs.h"
+
+void CallPlmPreInstr(uint32 ea, uint16 k);
+uint16 CallPlmInstr(uint32 ea, uint16 j, uint16 k);
+
+#define kGoldenTorizoPalette1 ((uint16*)RomPtr(0x848032))
+#define kGoldenTorizoPalette2 ((uint16*)RomPtr(0x848132))
+#define kXrayBlockDrawingInstrs ((uint16*)RomPtr(0x84839d))
+#define kGrayDoorPreInstrs ((uint16*)RomPtr(0x84be4b))
+#define kDowardGatePlmListPtrs ((uint16*)RomPtr(0x84c70a))
+#define kDowardGateLeftBlockBts ((uint16*)RomPtr(0x84c71a))
+#define kDowardGateRightBlockBts ((uint16*)RomPtr(0x84c72a))
+#define kUpwardGatePlmListPtrs ((uint16*)RomPtr(0x84c764))
+#define kUpwardGateLeftBlockBts ((uint16*)RomPtr(0x84c774))
+#define kUpwardGateRightBlockBts ((uint16*)RomPtr(0x84c784))
+#define off_84DB28 ((uint16*)RomPtr(0x84db28))
+#define off_84E05F ((uint16*)RomPtr(0x84e05f))
+#define off_84E077 ((uint16*)RomPtr(0x84e077))
+
+void SetGoldenTorizoPalette(uint16 a) {  // 0x848000
+  int16 v1;
+
+  v1 = HIBYTE(a) & 0x78;
+  if ((v1 & 0x40) != 0)
+    v1 = 56;
+  uint16 v2 = (4 * v1) | 0x1E;
+  for (int i = 30; i >= 0; i -= 2) {
+    int v4 = v2 >> 1;
+    int v5 = i >> 1;
+    palette_buffer[v5 + 160] = kGoldenTorizoPalette2[v4];
+    palette_buffer[v5 + 144] = kGoldenTorizoPalette1[v4];
+    v2 -= 2;
+  }
+}
+
+void LoadRoomPlmGfx(void) {  // 0x848232
+  plm_item_gfx_index = 0;
+  uint16 v0 = 0, v1;
+  do {
+    v1 = v0;
+    if (plm_item_gfx_ptrs[v0 >> 1]) // bugfix
+      PlmInstr_LoadItemPlmGfx(plm_item_gfx_ptrs[v0 >> 1], v0);
+    v0 += 2;
+  } while (v1 != 6);
+}
+
+void ClearSoundsWhenGoingThroughDoor(void) {  // 0x848250
+  CallSomeSamusCode(0x1Du);
+}
+
+void UNUSED_sub_848258(void) {  // 0x848258
+  if (samus_movement_type << 8 == 768 || samus_movement_type << 8 == 5120)
+    QueueSfx1_Max15(0x32u);
+}
+
+void PlaySpinJumpSoundIfSpinJumping(void) {  // 0x848270
+  CallSomeSamusCode(0x1Cu);
+}
+
+void UNUSED_sub_848278(void) {  // 0x848278
+  if (samus_movement_type << 8 == 768 || samus_movement_type << 8 == 5120)
+    QueueSfx1_Max15(0x30u);
+}
+
+void CalculatePlmBlockCoords(uint16 k) {  // 0x848290
+  uint16 t = plm_block_indices[k >> 1] >> 1;
+  plm_y_block = SnesDivide(t, room_width_in_blocks);
+  plm_x_block = SnesModulus(t, room_width_in_blocks);
+}
+
+void WriteLevelDataBlockTypeAndBts(uint16 k, uint16 a) {  // 0x8482B4
+  R18_ = a;
+  uint8 *v2 = RomPtr_7F(k);
+  v2[3] = HIBYTE(a) | v2[3] & 0xF;
+  BTS[k >> 1] = R18_;
+}
+
+void WriteRowOfLevelDataBlockAndBTS(uint16 k, uint16 arg0, uint16 arg1, uint16 arg2) {  // 0x8482D6
+  uint16 v1 = k;
+
+  R18_ = arg0;
+  R20_ = arg1;
+  R22_ = arg2;
+  uint16 v2 = plm_block_indices[v1 >> 1];
+  uint16 v8 = v2 >> 1;
+  uint16 v3 = R18_;
+  uint16 v4 = R22_;
+  do {
+    level_data[v2 >> 1] = v3;
+    v2 += 2;
+    --v4;
+  } while (v4);
+  uint16 v5 = v8;
+  uint8 v6 = R20_;
+  uint16 v7 = R22_;
+  do {
+    BTS[v5++] = v6;
+    --v7;
+  } while (v7);
+}
+
+void LoadXrayBlocks(void) {  // 0x84831A
+  RoomDefRoomstate *RoomDefRoomstate;
+  uint16 j;
+  int16 v7;
+
+  for (int i = 78; i >= 0; i -= 2) {
+    int v1 = i >> 1;
+    if (plm_header_ptr[v1] >= (uint16)FUNC16(PlmPreInstr_GotoLinkIfTriggered)) {
+      uint16 k = i;
+      uint16 v2 = item_bit_array[PrepareBitAccess(plm_room_arguments[v1])];
+      i = k;
+      if ((bitmask & v2) == 0) {
+        CalculatePlmBlockCoords(k);
+        uint8 *v3 = RomPtr_84(kXrayBlockDrawingInstrs[plm_variables[k >> 1] >> 1]);
+        LoadBlockToXrayTilemap(*((uint16 *)v3 + 1) & 0xFFF, plm_x_block, plm_y_block);
+        i = k;
+      }
+    }
+  }
+  RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
+  if (RoomDefRoomstate->xray_special_casing_ptr) {
+    for (j = RoomDefRoomstate->xray_special_casing_ptr; ; j += 4) {
+      uint8 *v6 = RomPtr_8F(j);
+      v7 = *(uint16 *)v6;
+      if (!*(uint16 *)v6)
+        break;
+      R18_ = (uint8)v7;
+      R20_ = v6[1];
+      LoadBlockToXrayTilemap(*((uint16 *)v6 + 1), (uint8)v7, R20_);
+    }
+  }
+}
+
+void EnablePLMs(void) {  // 0x8483AD
+  plm_flag |= 0x8000u;
+}
+
+void DisablePLMs(void) {  // 0x8483B8
+  plm_flag &= ~0x8000u;
+}
+
+void ClearPLMs(void) {  // 0x8483C3
+  for (int i = 78; i >= 0; i -= 2)
+    plm_header_ptr[i >> 1] = 0;
+  plm_item_gfx_index = 0;
+}
+
+uint8 CallPlmHeaderFunc(uint32 ea, uint16 j) {
+  switch (ea) {
+  case fnnullsub_67:
+  case fnnullsub_290:
+  case fnnullsub_68:
+  case fnnullsub_84BAFA:
+  case fnnullsub_71:
+  case fnnullsub_72:
+  case fnnullsub_69: return 0;
+  case fnPlmSetup_CrumbleBotwoonWall: return PlmSetup_CrumbleBotwoonWall(j);
+  case fnPlmSetup_SetrupWreckedShipEntrance: return PlmSetup_SetrupWreckedShipEntrance(j);
+  case fnPlmSetup_BTS_Brinstar_0x80_Floorplant: return PlmSetup_BTS_Brinstar_0x80_Floorplant(j);
+  case fnPlmSetup_BTS_Brinstar_0x81_Ceilingplant: return PlmSetup_BTS_Brinstar_0x81_Ceilingplant(j);
+  case fnPlmSetup_B6D3_MapStation: return PlmSetup_B6D3_MapStation(j);
+  case fnPlmSetup_Bts47_MapStationRightAccess: return PlmSetup_Bts47_MapStationRightAccess(j);
+  case fnPlmSetup_Bts4_MapStationLeftAccess: return PlmSetup_Bts4_MapStationLeftAccess(j);
+  case fnPlmSetup_PlmB6DF_EnergyStation: return PlmSetup_PlmB6DF_EnergyStation(j);
+  case fnPlmSetup_PlmB6EB_EnergyStation: return PlmSetup_PlmB6EB_EnergyStation(j);
+  case fnPlmSetup_B6E3_EnergyStationRightAccess: return PlmSetup_B6E3_EnergyStationRightAccess(j);
+  case fnPlmSetup_B6E7_EnergyStationLeftAccess: return PlmSetup_B6E7_EnergyStationLeftAccess(j);
+  case fnPlmSetup_B6EF_MissileStationRightAccess: return PlmSetup_B6EF_MissileStationRightAccess(j);
+  case fnPlmSetup_B6F3_MissileStationLeftAccess: return PlmSetup_B6F3_MissileStationLeftAccess(j);
+  case fnPlmSetup_B638_Rightwards_Extension: return PlmSetup_B638_Rightwards_Extension(j);
+  case fnPlmSetup_B63F_Leftwards_Extension: return PlmSetup_B63F_Leftwards_Extension(j);
+  case fnPlmSetup_B643_Downwards_Extension: return PlmSetup_B643_Downwards_Extension(j);
+  case fnPlmSetup_B647_Upwards_Extension: return PlmSetup_B647_Upwards_Extension(j);
+  case fnPlmSetup_B703_ScrollPLM: return PlmSetup_B703_ScrollPLM(j);
+  case fnPlmSetup_B707_SolidScrollPLM: return PlmSetup_B707_SolidScrollPLM(j);
+  case fnPlmSetup_B6FF_ScrollBlockTouch: return PlmSetup_B6FF_ScrollBlockTouch(j);
+  case fnPlmSetup_DeactivatePlm: return PlmSetup_DeactivatePlm(j);
+  case fnPlmSetup_ReturnCarryClear: return PlmSetup_ReturnCarryClear(j);
+  case fnPlmSetup_ReturnCarrySet: return PlmSetup_ReturnCarrySet(j);
+  case fnPlmSetup_D094_EnemyBreakableBlock: return PlmSetup_D094_EnemyBreakableBlock(j);
+  case fnUNUSED_sub_84B3E3: return UNUSED_sub_84B3E3(j);
+  case fnPlmSetup_B70F_IcePhysics: return PlmSetup_B70F_IcePhysics(j);
+  case fnPlmSetup_QuicksandSurface: return PlmSetup_QuicksandSurface(j);
+  case fnPlmSetup_B71F_SubmergingQuicksand: return PlmSetup_B71F_SubmergingQuicksand(j);
+  case fnPlmSetup_B723_SandfallsSlow: return PlmSetup_B723_SandfallsSlow(j);
+  case fnPlmSetup_B727_SandFallsFast: return PlmSetup_B727_SandFallsFast(j);
+  case fnPlmSetup_QuicksandSurfaceB: return PlmSetup_QuicksandSurfaceB(j);
+  case fnPlmSetup_B737_SubmergingQuicksand: return PlmSetup_B737_SubmergingQuicksand(j);
+  case fnPlmSetup_B73B_B73F_SandFalls: return PlmSetup_B73B_B73F_SandFalls(j);
+  case fnPlmSetup_ClearShitroidInvisibleWall: return PlmSetup_ClearShitroidInvisibleWall(j);
+  case fnPlmSetup_B767_ClearShitroidInvisibleWall: return PlmSetup_B767_ClearShitroidInvisibleWall(j);
+  case fnPlmSetup_B76B_SaveStationTrigger: return PlmSetup_B76B_SaveStationTrigger(j);
+  case fnPlmSetup_B76F_SaveStation: return PlmSetup_B76F_SaveStation(j);
+  case fnPlmSetup_MotherBrainRoomEscapeDoor: return PlmSetup_MotherBrainRoomEscapeDoor(j);
+  case fnPlmSetup_B7EB_EnableSoundsIn32Frames: return PlmSetup_B7EB_EnableSoundsIn32Frames(j);
+  case fnPlmSetup_SpeedBoosterEscape: return PlmSetup_SpeedBoosterEscape(j);
+  case fnPlmSetup_ShaktoolsRoom: return PlmSetup_ShaktoolsRoom(j);
+  case fnPlmSetup_B974: return PlmSetup_B974(j);
+  case fnPlmSetup_B9C1_CrittersEscapeBlock: return PlmSetup_B9C1_CrittersEscapeBlock(j);
+  case fnPlmSetup_B9ED_CrittersEscapeBlock: return PlmSetup_B9ED_CrittersEscapeBlock(j);
+  case fnsub_84B9F1: return sub_84B9F1(j);
+  case fnPlmSetup_BB30_CrateriaMainstreetEscape: return PlmSetup_BB30_CrateriaMainstreetEscape(j);
+  case fnPlmSetup_C806_LeftGreenGateTrigger: return PlmSetup_C806_LeftGreenGateTrigger(j);
+  case fnPlmSetup_C80A_RightGreenGateTrigger: return PlmSetup_C80A_RightGreenGateTrigger(j);
+  case fnPlmSetup_C80E_LeftRedGateTrigger: return PlmSetup_C80E_LeftRedGateTrigger(j);
+  case fnPlmSetup_C812_RightRedGateTrigger: return PlmSetup_C812_RightRedGateTrigger(j);
+  case fnPlmSetup_C81E_LeftYellowGateTrigger: return PlmSetup_C81E_LeftYellowGateTrigger(j);
+  case fnPlmSetup_C822_RightYellowGateTrigger: return PlmSetup_C822_RightYellowGateTrigger(j);
+  case fnPlmSetup_C816_LeftBlueGateTrigger: return PlmSetup_C816_LeftBlueGateTrigger(j);
+  case fnPlmSetup_C81A_RightBlueGateTrigger: return PlmSetup_C81A_RightBlueGateTrigger(j);
+  case fnPlmSetup_C82A_DownwardsClosedGate: return PlmSetup_C82A_DownwardsClosedGate(j);
+  case fnPlmSetup_C832_UpwardsClosedGate: return PlmSetup_C832_UpwardsClosedGate(j);
+  case fnPlmSetup_C826_DownwardsOpenGate: return PlmSetup_C826_DownwardsOpenGate(j);
+  case fnPlmSetup_C82E_UpwardsOpenGate: return PlmSetup_C82E_UpwardsOpenGate(j);
+  case fnPlmSetup_C836_DownwardsGateShootblock: return PlmSetup_C836_DownwardsGateShootblock(j);
+  case fnPlmSetup_C73A_UpwardsGateShootblock: return PlmSetup_C73A_UpwardsGateShootblock(j);
+  case fnPlmSetup_C794_GreyDoor: return PlmSetup_C794_GreyDoor(j);
+  case fnPlmSetup_Door_Colored: return PlmSetup_Door_Colored(j);
+  case fnPlmSetup_Door_Blue: return PlmSetup_Door_Blue(j);
+  case fnPlmSetup_Door_Strange: return PlmSetup_Door_Strange(j);
+  case fnPlmSetup_D028_D02C_Unused: return PlmSetup_D028_D02C_Unused(j);
+  case fnPlmSetup_RespawningSpeedBoostBlock: return PlmSetup_RespawningSpeedBoostBlock(j);
+  case fnPlmSetup_RespawningCrumbleBlock: return PlmSetup_RespawningCrumbleBlock(j);
+  case fnPlmSetup_RespawningShotBlock: return PlmSetup_RespawningShotBlock(j);
+  case fnPlmSetup_RespawningBombBlock: return PlmSetup_RespawningBombBlock(j);
+  case fnPlmSetup_RespawningBombBlock2: return PlmSetup_RespawningBombBlock2(j);
+  case fnPlmSetup_RespawningPowerBombBlock: return PlmSetup_RespawningPowerBombBlock(j);
+  case fnPlmSetup_D08C_SuperMissileBlockRespawning: return PlmSetup_D08C_SuperMissileBlockRespawning(j);
+  case fnPlmSetup_D08C_CrumbleBlock: return PlmSetup_D08C_CrumbleBlock(j);
+  case fnPlmSetup_D0DC_BreakableGrappleBlock: return PlmSetup_D0DC_BreakableGrappleBlock(j);
+  case fnPlmSetup_D0D8_SetVFlag: return PlmSetup_D0D8_SetVFlag(j);
+  case fnPlmSetup_D0D8_ClearVflag: return PlmSetup_D0D8_ClearVflag(j);
+  case fnPlmSetup_D0E8_GiveSamusDamage: return PlmSetup_D0E8_GiveSamusDamage(j);
+  case fnPlmSetup_D113_LowerNorfairChozoRoomPlug: return PlmSetup_D113_LowerNorfairChozoRoomPlug(j);
+  case fnPlmSetup_D127: return PlmSetup_D127(j);
+  case fnPlmSetup_D138: return PlmSetup_D138(j);
+  case fnPlmSetup_D6DA_LowerNorfairChozoHandTrigger: return PlmSetup_D6DA_LowerNorfairChozoHandTrigger(j);
+  case fnPlmSetup_MotherBrainGlass: return PlmSetup_MotherBrainGlass(j);
+  case fnPlmSetup_DeletePlmIfAreaTorizoDead: return PlmSetup_DeletePlmIfAreaTorizoDead(j);
+  case fnPlmSetup_MakeBllockChozoHandTrigger: return PlmSetup_MakeBllockChozoHandTrigger(j);
+  case fnPlmSetup_D6F2_WreckedShipChozoHandTrigger: return PlmSetup_D6F2_WreckedShipChozoHandTrigger(j);
+  case fnPlmSetup_D700_MakePlmAirBlock_Unused: return PlmSetup_D700_MakePlmAirBlock_Unused(j);
+  case fnPlmSetup_D704_AlteranateLowerNorfairChozoHand_Unused: return PlmSetup_D704_AlteranateLowerNorfairChozoHand_Unused(j);
+  case fnPlmSetup_D708_LowerNorfairChozoBlockUnused: return PlmSetup_D708_LowerNorfairChozoBlockUnused(j);
+  case fnPlmSetup_D70C_NoobTube: return PlmSetup_D70C_NoobTube(j);
+  case fnPlmSetup_EyeDoorEye: return PlmSetup_EyeDoorEye(j);
+  case fnPlmSetup_EyeDoor: return PlmSetup_EyeDoor(j);
+  case fnPlmSetup_SetMetroidRequiredClearState: return PlmSetup_SetMetroidRequiredClearState(j);
+  case fnPlmSetup_DraygonCannonFacingRight: return PlmSetup_DraygonCannonFacingRight(j);
+  case fnPlmSetup_DraygonCannonFacingDiagonalRight: return PlmSetup_DraygonCannonFacingDiagonalRight(j);
+  case fnPlmSetup_DraygonCannonFacingLeft: return PlmSetup_DraygonCannonFacingLeft(j);
+  case fnPlmSetup_DraygonCannonFacingDiagonalLeft: return PlmSetup_DraygonCannonFacingDiagonalLeft(j);
+  case fnPlmSetup_DraygonCannon: return PlmSetup_DraygonCannon(j);
+  case fnsub_84EE4D: return sub_84EE4D(j);
+  case fnsub_84EE52: return sub_84EE52(j);
+  case fnsub_84EE57: return sub_84EE57(j);
+  case fnsub_84EE5C: return sub_84EE5C(j);
+  case fnsub_84EE64: return sub_84EE64(j);
+  case fnsub_84EE77: return sub_84EE77(j);
+  case fnsub_84EE7C: return sub_84EE7C(j);
+  case fnsub_84EE81: return sub_84EE81(j);
+  case fnsub_84EE86: return sub_84EE86(j);
+  case fnsub_84EE8E: return sub_84EE8E(j);
+  case fnsub_84EEAB: return sub_84EEAB(j);
+  default: return Unreachable();
+  }
+}
+
+void SpawnHardcodedPlm(const void *p) {  // 0x8483D7
+  SpawnHardcodedPlmArgs *pp = (SpawnHardcodedPlmArgs *)p;
+  int16 v2;
+  PlmHeader_Size4 *PlmHeader_Size4;
+
+  uint16 v1 = 78;
+  while (plm_header_ptr[v1 >> 1]) {
+    v1 -= 2;
+    if ((v1 & 0x8000u) != 0) {
+      return;
+    }
+  }
+  uint16 prod = Mult8x8(pp->field_1, room_width_in_blocks);
+  v2 = pp->field_0;
+  plm_block_indices[v1 >> 1] = 2 * (prod + v2);
+  uint16 v3 = pp->field_2;
+  plm_header_ptr[v1 >> 1] = v3;
+  int v4 = v1 >> 1;
+  plm_room_arguments[v4] = 0;
+  plm_variables[v4] = 0;
+  plm_pre_instrs[v4] = 0x8469;
+  plm_instr_list_ptrs[v4] = get_PlmHeader_Size4(v3)->instr_list_ptr;
+  plm_instruction_timer[v4] = 1;
+  plm_instruction_draw_ptr[v4] = addr_kDefaultPlmDrawInstruction;
+  plm_timers[v4] = 0;
+  plm_id = v1;
+  PlmHeader_Size4 = get_PlmHeader_Size4(v3);
+  CallPlmHeaderFunc(PlmHeader_Size4->func_ptr | 0x840000, v1);
+}
+
+void SpawnRoomPLM(uint16 k) {  // 0x84846A
+  RoomPlmEntry *rpe;
+  int16 x_block;
+  PlmHeader_Size4 *PlmHeader_Size4;
+
+  uint16 v1 = 78;
+  while (plm_header_ptr[v1 >> 1]) {
+    v1 -= 2;
+    if ((v1 & 0x8000u) != 0)
+      return;
+  }
+  rpe = get_RoomPlmEntry(k);
+  uint16 prod = Mult8x8(rpe->y_block, room_width_in_blocks);
+  x_block = rpe->x_block;
+  int v4 = v1 >> 1;
+  plm_block_indices[v4] = 2 * (prod + x_block);
+  plm_room_arguments[v4] = rpe->plm_room_argument;
+  uint16 pp = rpe->plm_header_ptr_;
+  plm_header_ptr[v4] = rpe->plm_header_ptr_;
+  plm_variables[v4] = 0;
+  plm_pre_instrs[v4] = FUNC16(PlmPreInstr_Empty2);
+  plm_instr_list_ptrs[v4] = get_PlmHeader_Size4(pp)->instr_list_ptr;
+  plm_instruction_timer[v4] = 1;
+  plm_instruction_draw_ptr[v4] = addr_kDefaultPlmDrawInstruction;
+  plm_timers[v4] = 0;
+  plm_id = v1;
+  PlmHeader_Size4 = get_PlmHeader_Size4(pp);
+  CallPlmHeaderFunc(PlmHeader_Size4->func_ptr | 0x840000, v1);
+}
+
+void PlmPreInstr_Empty2(void) {  // 0x8484E6
+  ;
+}
+
+// returns bit 0 set if carry, 0x40 if ovf
+uint8 SpawnPLM(uint16 a) {  // 0x8484E7
+  PlmHeader_Size4 *PlmHeader_Size4;
+
+  uint16 v1 = 78;
+  while (plm_header_ptr[v1 >> 1]) {
+    v1 -= 2;
+    if ((v1 & 0x8000u) != 0)
+      return 0;
+  }
+  int v3 = v1 >> 1;
+  plm_block_indices[v3] = 2 * cur_block_index;
+  plm_header_ptr[v3] = a;
+  plm_pre_instrs[v3] = FUNC16(PlmPreInstr_Empty3);
+  plm_instr_list_ptrs[v3] = get_PlmHeader_Size4(a)->instr_list_ptr;
+  plm_instruction_timer[v3] = 1;
+  plm_instruction_draw_ptr[v3] = addr_kDefaultPlmDrawInstruction;
+  plm_timers[v3] = 0;
+  plm_room_arguments[v3] = 0;
+  plm_variables[v3] = 0;
+  plm_id = v1;
+  PlmHeader_Size4 = get_PlmHeader_Size4(a);
+  return CallPlmHeaderFunc(PlmHeader_Size4->func_ptr | 0x840000, v1);
+}
+
+CoroutineRet PlmHandler_Async(void) {  // 0x8485B4
+  COROUTINE_BEGIN(coroutine_state_2, 0);
+  if ((plm_flag & 0x8000) == 0)
+    return kCoroutineNone;
+  plm_draw_tilemap_index = 0;
+  for (plm_id = 78; (plm_id & 0x8000) == 0; plm_id -= 2) {
+    if (!plm_header_ptr[plm_id >> 1])
+      continue;
+    CallPlmPreInstr(plm_pre_instrs[plm_id >> 1] | 0x840000, plm_id);
+    if (--plm_instruction_timer[plm_id >> 1])
+      continue;
+    uint16 v4, *v5;
+    v4 = plm_instr_list_ptrs[plm_id >> 1];
+    while (1) {
+      v5 = (uint16 *)RomPtr_84(v4);
+      if ((*v5 & 0x8000u) == 0)
+        break;
+      R18_ = *v5;
+      v4 = CallPlmInstr(*v5 | 0x840000, v4 + 2, plm_id);
+      if (!v4)
+        goto NEXT_PLM;
+      // If the plm handler wanted to display a message, then display it.
+      if (queued_message_box_index != 0) {
+        plm_instr_list_ptrs[plm_id >> 1] = v4;
+        COROUTINE_AWAIT(1, DisplayMessageBox_Async(queued_message_box_index));
+        queued_message_box_index = 0;
+        v4 = plm_instr_list_ptrs[plm_id >> 1];
+      }
+    }
+    int v7;
+    v7 = plm_id >> 1;
+    plm_instruction_timer[v7] = v5[0];
+    plm_instruction_draw_ptr[v7] = v5[1];
+    plm_instr_list_ptrs[v7] = v4 + 4;
+    ProcessPlmDrawInstruction(plm_id);
+    CalculatePlmBlockCoords(plm_id);
+    DrawPlm(plm_id);
+NEXT_PLM:;
+  }
+  plm_id = 0;
+  COROUTINE_END(0);
+}
+
+#define fnPlmPreInstr_Empty4 0x848AA6
+void CallPlmPreInstr(uint32 ea, uint16 k) {
+  switch (ea) {
+  case fnPlmPreInstr_nullsub_60: return;
+  case fnPlmPreInstr_nullsub_301: return;
+  case fnPlmPreInstr_Empty: return;
+  case fnPlmPreInstr_Empty2: return;
+  case fnPlmPreInstr_Empty3: return;
+  case fnPlmPreInstr_Empty4: return;
+  case fnPlmPreInstr_Empty5: return;
+  case fnnullsub_351: return;
+  case fnnullsub_84BAFA: return;
+  case fnPlmSetup_BTS_Brinstar_0x80_Floorplant: PlmSetup_BTS_Brinstar_0x80_Floorplant(k); return;
+  case fnPlmSetup_BTS_Brinstar_0x81_Ceilingplant: PlmSetup_BTS_Brinstar_0x81_Ceilingplant(k); return;
+  case fnPlmPreInstr_B7EB_DecTimerEnableSoundsDeletePlm: PlmPreInstr_B7EB_DecTimerEnableSoundsDeletePlm(k); return;
+  case fnPlmPreInstr_WakeAndLavaIfBoosterCollected: PlmPreInstr_WakeAndLavaIfBoosterCollected(k); return;
+  case fnPlmPreInstr_WakePLMAndStartFxMotionSamusFarLeft: PlmPreInstr_WakePLMAndStartFxMotionSamusFarLeft(k); return;
+  case fnPlmPreInstr_AdvanceLavaSamusMovesLeft: PlmPreInstr_AdvanceLavaSamusMovesLeft(k); return;
+  case fnPlmPreInstr_ShaktoolsRoom: PlmPreInstr_ShaktoolsRoom(k); return;
+  case fnPlmPreInstr_OldTourianEscapeShaftEscape: PlmPreInstr_OldTourianEscapeShaftEscape(k); return;
+  case fnPlmPreInstr_EscapeRoomBeforeOldTourianEscapeShaft: PlmPreInstr_EscapeRoomBeforeOldTourianEscapeShaft(k); return;
+  case fnPlmPreInstr_WakePlmIfTriggered: PlmPreInstr_WakePlmIfTriggered(k); return;
+  case fnPlmPreInstr_WakePlmIfTriggeredOrSamusBelowPlm: PlmPreInstr_WakePlmIfTriggeredOrSamusBelowPlm(k); return;
+  case fnPlmPreInstr_WakePlmIfTriggeredOrSamusAbovePlm: PlmPreInstr_WakePlmIfTriggeredOrSamusAbovePlm(k); return;
+  case fnPlmPreInstr_DeletePlmAndSpawnTriggerIfBlockDestroyed: PlmPreInstr_DeletePlmAndSpawnTriggerIfBlockDestroyed(k); return;
+  case fnPlmPreInstr_IncrementRoomArgIfShotBySuperMissile: PlmPreInstr_IncrementRoomArgIfShotBySuperMissile(k); return;
+  case fnPlmPreInstr_WakePlmIfSamusHasBombs: PlmPreInstr_WakePlmIfSamusHasBombs(k); return;
+  case fnPlmPreInstr_WakePlmIfRoomArgumentDoorIsSet: PlmPreInstr_WakePlmIfRoomArgumentDoorIsSet(k); return;
+  case fnPlmPreInstr_GotoLinkIfShotWithSuperMissile: PlmPreInstr_GotoLinkIfShotWithSuperMissile(k); return;
+  case fnPlmPreInstr_GotoLinkIfTriggered: PlmPreInstr_GotoLinkIfTriggered(k); return;
+  case fnPlmPreInstr_WakeIfTriggered: PlmPreInstr_WakeIfTriggered(k); return;
+  case fnPlmPreInstr_GoToLinkInstrIfShot: PlmPreInstr_GoToLinkInstrIfShot(k); return;
+  case fnPlmPreInstr_GoToLinkInstrIfShotWithPowerBomb: PlmPreInstr_GoToLinkInstrIfShotWithPowerBomb(k); return;
+  case fnPlmPreInstr_GoToLinkInstrIfShotWithAnyMissile: PlmPreInstr_GoToLinkInstrIfShotWithAnyMissile(k); return;
+  case fnPlmPreInstr_GoToLinkInstrIfShotWithSuperMissile: PlmPreInstr_GoToLinkInstrIfShotWithSuperMissile(k); return;
+  case fnPlmPreInstr_GoToLinkInstruction: PlmPreInstr_GoToLinkInstruction(k); return;
+  case fnPlmPreInstr_PlayDudSound: PlmPreInstr_PlayDudSound(k); return;
+  case fnPlmPreInstr_GotoLinkIfBoss1Dead: PlmPreInstr_GotoLinkIfBoss1Dead(k); return;
+  case fnPlmPreInstr_GotoLinkIfMiniBossDead: PlmPreInstr_GotoLinkIfMiniBossDead(k); return;
+  case fnPlmPreInstr_GotoLinkIfTorizoDead: PlmPreInstr_GotoLinkIfTorizoDead(k); return;
+  case fnPlmPreInstr_GotoLinkIfEnemyDeathQuotaOk: PlmPreInstr_GotoLinkIfEnemyDeathQuotaOk(k); return;
+  case fnPlmPreInstr_GotoLinkIfTourianStatueFinishedProcessing: PlmPreInstr_GotoLinkIfTourianStatueFinishedProcessing(k); return;
+  case fnPlmPreInstr_GotoLinkIfCrittersEscaped: PlmPreInstr_GotoLinkIfCrittersEscaped(k); return;
+  case fnPlmPreInstr_PositionSamusAndInvincible: PlmPreInstr_PositionSamusAndInvincible(k); return;
+  case fnPlmPreInstr_WakeOnKeyPress: PlmPreInstr_WakeOnKeyPress(k); return;
+  case fnnullsub_359: return;
+  case fnnullsub_73:
+  case fnnullsub_74:
+  case fnnullsub_75:
+  case fnnullsub_76:
+  case fnnullsub_77:
+  case fnnullsub_78:
+  case fnnullsub_79:
+  case fnnullsub_80:
+  case fnnullsub_81: return;
+  case fnPlmPreInstr_SetMetroidsClearState_Ev0x10: PlmPreInstr_SetMetroidsClearState_Ev0x10(k); return;
+  case fnPlmPreInstr_SetMetroidsClearState_Ev0x11: PlmPreInstr_SetMetroidsClearState_Ev0x11(k); return;
+  case fnPlmPreInstr_SetMetroidsClearState_Ev0x12: PlmPreInstr_SetMetroidsClearState_Ev0x12(k); return;
+  case fnPlmPreInstr_SetMetroidsClearState_Ev0x13: PlmPreInstr_SetMetroidsClearState_Ev0x13(k); return;
+  default: Unreachable();
+  }
+}
+
+uint16 CallPlmInstr(uint32 ea, uint16 j, uint16 k) {
+  switch (ea) {
+  case fnPlmInstr_Sleep: return PlmInstr_Sleep(j, k);
+  case fnPlmInstr_Delete: return PlmInstr_Delete(j, k);
+  case fnPlmInstr_PreInstr: return PlmInstr_PreInstr(j, k);
+  case fnPlmInstr_ClearPreInstr: return PlmInstr_ClearPreInstr(j, k);
+  case fnPlmInstr_CallFunction: return PlmInstr_CallFunction(j, k);
+  case fnPlmInstr_Goto: return PlmInstr_Goto(j, k);
+  case fnPlmInstr_DecrementAndBranchNonzero: return PlmInstr_DecrementAndBranchNonzero(j, k);
+  case fnPlmInstr_SetTimer: return PlmInstr_SetTimer(j, k);
+  case fnPlmInstr_LoadItemPlmGfx: return PlmInstr_LoadItemPlmGfx(j, k);
+  case fnPlmInstr_CopyFromRamToVram: return PlmInstr_CopyFromRamToVram(j, k);
+  case fnPlmInstr_GotoIfBossBitSet: return PlmInstr_GotoIfBossBitSet(j, k);
+  case fnPlmInstr_GotoIfEventSet: return PlmInstr_GotoIfEventSet(j, k);
+  case fnPlmInstr_SetEvent: return PlmInstr_SetEvent(j, k);
+  case fnPlmInstr_GotoIfChozoSet: return PlmInstr_GotoIfChozoSet(j, k);
+  case fnPlmInstr_SetRoomChozoBit: return PlmInstr_SetRoomChozoBit(j, k);
+  case fnPlmInstr_GotoIfItemBitSet: return PlmInstr_GotoIfItemBitSet(j, k);
+  case fnPlmInstr_SetItemBit: return PlmInstr_SetItemBit(j, k);
+  case fnPlmInstr_PickupBeamAndShowMessage: return PlmInstr_PickupBeamAndShowMessage(j, k);
+  case fnPlmInstr_PickupEquipmentAndShowMessage: return PlmInstr_PickupEquipmentAndShowMessage(j, k);
+  case fnPlmInstr_PickupEquipmentAddGrappleShowMessage: return PlmInstr_PickupEquipmentAddGrappleShowMessage(j, k);
+  case fnPlmInstr_PickupEquipmentAddXrayShowMessage: return PlmInstr_PickupEquipmentAddXrayShowMessage(j, k);
+  case fnPlmInstr_CollectHealthEnergyTank: return PlmInstr_CollectHealthEnergyTank(j, k);
+  case fnPlmInstr_CollectHealthReserveTank: return PlmInstr_CollectHealthReserveTank(j, k);
+  case fnPlmInstr_CollectAmmoMissileTank: return PlmInstr_CollectAmmoMissileTank(j, k);
+  case fnPlmInstr_CollectAmmoSuperMissileTank: return PlmInstr_CollectAmmoSuperMissileTank(j, k);
+  case fnPlmInstr_CollectAmmoPowerBombTank: return PlmInstr_CollectAmmoPowerBombTank(j, k);
+  case fnPlmInstr_SetLinkReg: return PlmInstr_SetLinkReg(j, k);
+  case fnPlmInstr_Call: return PlmInstr_Call(j, k);
+  case fnPlmInstr_Return: return PlmInstr_Return(j, k);
+  case fnPlmInstr_GotoIfDoorBitSet: return PlmInstr_GotoIfDoorBitSet(j, k);
+  case fnPlmInstr_IncrementDoorHitCounterAndJGE: return PlmInstr_IncrementDoorHitCounterAndJGE(j, k);
+  case fnPlmInstr_IncrementArgumentAndJGE: return PlmInstr_IncrementArgumentAndJGE(j, k);
+  case fnPlmInstr_SetBTS: return PlmInstr_SetBTS(j, k);
+  case fnPlmInstr_DrawPlmBlock: return PlmInstr_DrawPlmBlock(j, k);
+  case fnPlmInstr_DrawPlmBlock_: return PlmInstr_DrawPlmBlock_(j, k);
+  case fnPlmInstr_ProcessAirScrollUpdate: return PlmInstr_ProcessAirScrollUpdate(j, k);
+  case fnPlmInstr_ProcessSolidScrollUpdate: return PlmInstr_ProcessSolidScrollUpdate(j, k);
+  case fnPlmInstr_QueueMusic: return PlmInstr_QueueMusic(j, k);
+  case fnPlmInstr_ClearMusicQueueAndQueueTrack: return PlmInstr_ClearMusicQueueAndQueueTrack(j, k);
+  case fnPlmInstr_QueueSfx1_Max6: return PlmInstr_QueueSfx1_Max6(j, k);
+  case fnPlmInstr_QueueSfx2_Max6: return PlmInstr_QueueSfx2_Max6(j, k);
+  case fnPlmInstr_QueueSfx3_Max6: return PlmInstr_QueueSfx3_Max6(j, k);
+  case fnPlmInstr_QueueSfx1_Max15: return PlmInstr_QueueSfx1_Max15(j, k);
+  case fnPlmInstr_QueueSfx2_Max15: return PlmInstr_QueueSfx2_Max15(j, k);
+  case fnPlmInstr_QueueSfx3_Max15: return PlmInstr_QueueSfx3_Max15(j, k);
+  case fnPlmInstr_QueueSfx1_Max3: return PlmInstr_QueueSfx1_Max3(j, k);
+  case fnPlmInstr_QueueSfx2_Max3: return PlmInstr_QueueSfx2_Max3(j, k);
+  case fnPlmInstr_QueueSfx_Max3: return PlmInstr_QueueSfx_Max3(j, k);
+  case fnPlmInstr_QueueSfx1_Max9: return PlmInstr_QueueSfx1_Max9(j, k);
+  case fnPlmInstr_QueueSfx2_Max9: return PlmInstr_QueueSfx2_Max9(j, k);
+  case fnPlmInstr_QueueSfx3_Max9: return PlmInstr_QueueSfx3_Max9(j, k);
+  case fnPlmInstr_QueueSfx1_Max1: return PlmInstr_QueueSfx1_Max1(j, k);
+  case fnPlmInstr_QueueSfx2_Max1: return PlmInstr_QueueSfx2_Max1(j, k);
+  case fnPlmInstr_QueueSfx3_Max1: return PlmInstr_QueueSfx3_Max1(j, k);
+  case fnPlmInstr_ActivateMapStation: return PlmInstr_ActivateMapStation(j, k);
+  case fnPlmInstr_ActivateEnergyStation: return PlmInstr_ActivateEnergyStation(j, k);
+  case fnPlmInstr_ActivateMissileStation: return PlmInstr_ActivateMissileStation(j, k);
+  case fnPlmInstr_ActivateSaveStationAndGotoIfNo: return PlmInstr_ActivateSaveStationAndGotoIfNo(j, k);
+  case fnPlmInstr_GotoIfSamusNear: return PlmInstr_GotoIfSamusNear(j, k);
+  case fnPlmInstr_MovePlmDownOneBlock: return PlmInstr_MovePlmDownOneBlock(j, k);
+  case fnPlmInstr_Scroll_0_1_Blue: return PlmInstr_Scroll_0_1_Blue(j, k);
+  case fnPlmInstr_MovePlmDownOneBlock_0: return PlmInstr_MovePlmDownOneBlock_0(j, k);
+  case fnPlmInstr_DealDamage_2: return PlmInstr_DealDamage_2(j, k);
+  case fnPlmInstr_GiveInvincibility: return PlmInstr_GiveInvincibility(j, k);
+  case fnPlmInstr_Draw0x38FramesOfRightTreadmill: return PlmInstr_Draw0x38FramesOfRightTreadmill(j, k);
+  case fnPlmInstr_Draw0x38FramesOfLeftTreadmill: return PlmInstr_Draw0x38FramesOfLeftTreadmill(j, k);
+  case fnPlmInstr_GotoIfSamusHealthFull: return PlmInstr_GotoIfSamusHealthFull(j, k);
+  case fnPlmInstr_GotoIfMissilesFull: return PlmInstr_GotoIfMissilesFull(j, k);
+  case fnPlmInstr_PlaceSamusOnSaveStation: return PlmInstr_PlaceSamusOnSaveStation(j, k);
+  case fnPlmInstr_DisplayGameSavedMessageBox: return PlmInstr_DisplayGameSavedMessageBox(j, k);
+  case fnPlmInstr_EnableMovementAndSetSaveStationUsed: return PlmInstr_EnableMovementAndSetSaveStationUsed(j, k);
+  case fnPlmInstr_JumpIfSamusHasNoBombs: return PlmInstr_JumpIfSamusHasNoBombs(j, k);
+  case fnPlmInstr_MovePlmRight4Blocks: return PlmInstr_MovePlmRight4Blocks(j, k);
+  case fnPlmInstr_ClearTrigger: return PlmInstr_ClearTrigger(j, k);
+  case fnPlmInstr_SpawnEnemyProjectile: return PlmInstr_SpawnEnemyProjectile(j, k);
+  case fnPlmInstr_WakeEnemyProjectileAtPlmPos: return PlmInstr_WakeEnemyProjectileAtPlmPos(j, k);
+  case fnPlmInstr_SetGreyDoorPreInstr: return PlmInstr_SetGreyDoorPreInstr(j, k);
+  case fnPlmInstr_FxBaseYPos_0x2D2: return PlmInstr_FxBaseYPos_0x2D2(j, k);
+  case fnPlmInstr_GotoIfRoomArgLess: return PlmInstr_GotoIfRoomArgLess(j, k);
+  case fnPlmInstr_SpawnFourMotherBrainGlass: return PlmInstr_SpawnFourMotherBrainGlass(j, k);
+  case fnPlmInstr_SpawnTorizoStatueBreaking: return PlmInstr_SpawnTorizoStatueBreaking(j, k);
+  case fnPlmInstr_QueueSong1MusicTrack: return PlmInstr_QueueSong1MusicTrack(j, k);
+  case fnPlmInstr_TransferWreckedShipChozoSpikesToSlopes: return PlmInstr_TransferWreckedShipChozoSpikesToSlopes(j, k);
+  case fnPlmInstr_TransferWreckedShipSlopesToChozoSpikes: return PlmInstr_TransferWreckedShipSlopesToChozoSpikes(j, k);
+  case fnPlmInstr_EnableWaterPhysics: return PlmInstr_EnableWaterPhysics(j, k);
+  case fnPlmInstr_SpawnN00bTubeCrackEnemyProjectile: return PlmInstr_SpawnN00bTubeCrackEnemyProjectile(j, k);
+  case fnPlmInstr_DiagonalEarthquake: return PlmInstr_DiagonalEarthquake(j, k);
+  case fnPlmInstr_Spawn10shardsAnd6n00bs: return PlmInstr_Spawn10shardsAnd6n00bs(j, k);
+  case fnPlmInstr_ShootEyeDoorProjectileWithProjectileArg: return PlmInstr_ShootEyeDoorProjectileWithProjectileArg(j, k);
+  case fnPlmInstr_SpawnEyeDoorSweatEnemyProjectile: return PlmInstr_SpawnEyeDoorSweatEnemyProjectile(j, k);
+  case fnPlmInstr_SpawnTwoEyeDoorSmoke: return PlmInstr_SpawnTwoEyeDoorSmoke(j, k);
+  case fnPlmInstr_SpawnEyeDoorSmokeProjectile: return PlmInstr_SpawnEyeDoorSmokeProjectile(j, k);
+  case fnPlmInstr_MoveUpAndMakeBlueDoorFacingRight: return PlmInstr_MoveUpAndMakeBlueDoorFacingRight(j, k);
+  case fnPlmInstr_MoveUpAndMakeBlueDoorFacingLeft: return PlmInstr_MoveUpAndMakeBlueDoorFacingLeft(j, k);
+  case fnPlmInstr_DamageDraygonTurret: return PlmInstr_DamageDraygonTurret(j, k);
+  case fnPlmInstr_DamageDraygonTurretFacingDownRight: return PlmInstr_DamageDraygonTurretFacingDownRight(j, k);
+  case fnPlmInstr_DamageDraygonTurretFacingUpRight: return PlmInstr_DamageDraygonTurretFacingUpRight(j, k);
+  case fnPlmInstr_DamageDraygonTurret2: return PlmInstr_DamageDraygonTurret2(j, k);
+  case fnPlmInstr_DamageDraygonTurretFacingDownLeft: return PlmInstr_DamageDraygonTurretFacingDownLeft(j, k);
+  case fnPlmInstr_DamageDraygonTurretFacingUpLeft: return PlmInstr_DamageDraygonTurretFacingUpLeft(j, k);
+  case fnPlmInstr_DrawItemFrame0: return PlmInstr_DrawItemFrame0(j, k);
+  case fnPlmInstr_DrawItemFrame1: return PlmInstr_DrawItemFrame1(j, k);
+  case fnPlmInstr_DrawItemFrame_Common: return PlmInstr_DrawItemFrame_Common(j, k);
+  case fnPlmInstr_ClearChargeBeamCounter: return PlmInstr_ClearChargeBeamCounter(j, k);
+  case fnPlmInstr_ABD6: return PlmInstr_ABD6(j, k);
+  case fnPlmInstr_E63B: return PlmInstr_E63B(j, k);
+  case fnPlmInstr_SetBtsTo1: return PlmInstr_SetBtsTo1(j, k);
+  case fnPlmInstr_DisableSamusControls: return PlmInstr_DisableSamusControls(j, k);
+  case fnPlmInstr_EnableSamusControls: return PlmInstr_EnableSamusControls(j, k);
+  default: return Unreachable();
+  }
+}
+
+static inline uint8_t *RomPtr_84orRAM(uint16_t addr) {
+  if (addr & 0x8000) {
+    return RomPtr(0x840000 | addr);
+  } else {
+    assert(addr < 0x2000);
+    return RomPtr_RAM(addr);
+  }
+}
+
+void ProcessPlmDrawInstruction(uint16 v0) {  // 0x84861E
+  int16 v4;
+  int16 v8;
+  int16 v9;
+  int16 v10;
+  uint16 v5;
+
+  int v1 = v0 >> 1;
+  uint16 v2 = plm_instruction_draw_ptr[v1];
+  R18_ = plm_block_indices[v1];
+  uint16 v3 = R18_;
+  while (1) {
+    v4 = *(uint16 *)RomPtr_84orRAM(v2);
+    if (v4 < 0) {
+      R22_ = (uint8)v4;
+      v5 = v2 + 2;
+      do {
+        level_data[v3 >> 1] = *(uint16 *)RomPtr_84orRAM(v5);
+        v5 += 2;
+        v3 += room_width_in_blocks + room_width_in_blocks;
+        --R22_;
+      } while (R22_);
+    } else {
+      R22_ = (uint8)v4;
+      v5 = v2 + 2;
+      do {
+        level_data[v3 >> 1] = *(uint16 *)RomPtr_84orRAM(v5);
+        v5 += 2;
+        v3 += 2;
+        --R22_;
+      } while (R22_);
+    }
+    if (!*(uint16 *)RomPtr_84orRAM(v5))
+      break;
+    uint16 v6 = v5 - 1;
+    uint8 *v7 = RomPtr_84orRAM(v6);
+    v8 = (int8)HIBYTE(*(uint16 *)v7);
+    R20_ = R18_ + 2 * v8;
+    LOBYTE(v8) = HIBYTE(*(uint16 *)(v7 + 1));
+    if ((v8 & 0x80) == 0) {
+      v8 = (uint8)v8;
+      if ((uint8)v8) {
+        v10 = (uint8)v8;
+        v8 = 0;
+        do {
+          v8 += room_width_in_blocks;
+          --v10;
+        } while (v10);
+      }
+    } else {
+      v9 = -(v8 | 0xFF00);
+      v8 = 0;
+      do {
+        v8 -= room_width_in_blocks;
+        --v9;
+      } while (v9);
+    }
+    v3 = R20_ + 2 * v8;
+    v2 = v6 + 3;
+  }
+}
+
+uint16 PlmInstr_Sleep(uint16 j, uint16 k) {  // 0x8486B4
+  plm_instr_list_ptrs[k >> 1] = j - 2;
+  return 0;
+}
+
+uint16 PlmInstr_Delete(uint16 j, uint16 k) {  // 0x8486BC
+  plm_header_ptr[k >> 1] = 0;
+  return 0;
+}
+
+uint16 PlmInstr_PreInstr(uint16 j, uint16 k) {  // 0x8486C1
+  plm_pre_instrs[k >> 1] = *(uint16 *)RomPtr_84(j);
+  return j + 2;
+}
+
+uint16 PlmInstr_ClearPreInstr(uint16 j, uint16 k) {  // 0x8486CA
+  plm_pre_instrs[k >> 1] = FUNC16(PlmPreInstr_Empty);
+  return j;
+}
+
+void CallPlmInstrFunc(uint32 ea) {
+  switch (ea) {
+  case fnVariaSuitPickup: VariaSuitPickup(); return;
+  case fnGravitySuitPickup: GravitySuitPickup(); return;
+  default: Unreachable();
+  }
+}
+
+uint16 PlmInstr_CallFunction(uint16 j, uint16 k) {  // 0x84870B
+  uint8 *v2 = RomPtr_84(j);
+  copy24((LongPtr *)&R18_, (LongPtr *)v2);
+  CallPlmInstrFunc(Load24(&R18_));
+  return j + 3;
+}
+
+uint16 PlmInstr_Goto(uint16 j, uint16 k) {  // 0x848724
+  return *(uint16 *)RomPtr_84(j);
+}
+
+
+uint16 PlmInstr_DecrementAndBranchNonzero(uint16 j, uint16 k) {  // 0x84873F
+  int v2 = k >> 1;
+  if (plm_timers[v2]-- == 1)
+    return j + 2;
+  else
+    return PlmInstr_Goto(j, k);
+}
+
+uint16 PlmInstr_SetTimer(uint16 j, uint16 k) {  // 0x84874E
+  *((uint8 *)plm_timers + k) = *RomPtr_84(j);
+  return j + 1;
+}
+
+#define kPlmVramAddresses ((uint16*)RomPtr(0x8487cd))
+#define kPlmTileDataOffs ((uint16*)RomPtr(0x8487d5))
+#define kPlmStartingTileNumber ((uint16*)RomPtr(0x8487dd))
+
+uint16 PlmInstr_LoadItemPlmGfx(uint16 j, uint16 k) {  // 0x848764
+  VramWriteEntry *v5; // r10
+
+  uint16 v2 = plm_item_gfx_index;
+  plm_variables[k >> 1] = plm_item_gfx_index;
+  plm_item_gfx_index = ((uint8)v2 + 2) & 6;
+  int v3 = v2 >> 1;
+  R18_ = kPlmVramAddresses[v3];
+  R20_ = kPlmTileDataOffs[v3];
+  R22_ = kPlmStartingTileNumber[v3];
+  plm_item_gfx_ptrs[v3] = j;
+  uint16 v4 = vram_write_queue_tail;
+  v5 = gVramWriteEntry(vram_write_queue_tail);
+  v5->size = 256;
+  v5->src.addr = *(uint16 *)RomPtr_84(j);
+  *(uint16 *)&v5->src.bank = 137;
+  v5->vram_dst = R18_;
+  vram_write_queue_tail = v4 + 7;
+  uint16 result = j + 2;
+  uint16 v7 = R20_;
+  R24_ = R20_ + 16;
+  do {
+    *(uint16 *)((char *)&tile_table.tables[0].top_left + v7) = R22_ + (*RomPtr_84(result) << 10);
+    ++R22_;
+    ++result;
+    v7 += 2;
+  } while (v7 != R24_);
+  return result;
+}
+
+uint16 PlmInstr_CopyFromRamToVram(uint16 j, uint16 k) {  // 0x8487E5
+  VramWriteEntry *v4;
+
+  uint16 v2 = vram_write_queue_tail;
+  uint8 *v3 = RomPtr_84(j);
+  v4 = gVramWriteEntry(vram_write_queue_tail);
+  v4->size = *(uint16 *)v3;
+  v4->src.addr = *((uint16 *)v3 + 1);
+  *(VoidP *)((char *)&v4->src.addr + 1) = *(uint16 *)(v3 + 3);
+  v4->vram_dst = *(uint16 *)(v3 + 5);
+  vram_write_queue_tail = v2 + 7;
+  return j + 7;
+}
+
+uint16 PlmInstr_GotoIfBossBitSet(uint16 j, uint16 k) {  // 0x84880E
+  uint8 *v2 = RomPtr_84(j);
+  uint16 v3 = j + 1;
+  if (CheckBossBitForCurArea((uint8) * (uint16 *)v2))
+    return PlmInstr_Goto(v3, k);
+  else
+    return v3 + 2;
+}
+
+uint16 PlmInstr_GotoIfEventSet(uint16 j, uint16 k) {  // 0x84882D
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  uint16 v3 = j + 2;
+  if (CheckEventHappened(*v2))
+    return PlmInstr_Goto(v3, k);
+  else
+    return v3 + 2;
+}
+
+uint16 PlmInstr_SetEvent(uint16 j, uint16 k) {  // 0x84883E
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  SetEventHappened(*v2);
+  return j + 2;
+}
+
+uint16 PlmInstr_GotoIfChozoSet(uint16 j, uint16 k) {  // 0x848848
+  int16 v3;
+
+  int v2 = k >> 1;
+  v3 = plm_room_arguments[v2];
+  int idx = PrepareBitAccess(v3);
+  if (v3 >= 0 && ((bitmask & room_chozo_bits[idx]) != 0))
+    return PlmInstr_Goto(j, k);
+  else
+    return j + 2;
+}
+
+uint16 PlmInstr_SetRoomChozoBit(uint16 j, uint16 k) {  // 0x848865
+  int16 v3;
+
+  int v2 = k >> 1;
+  v3 = plm_room_arguments[v2];
+  if (v3 >= 0) {
+    int idx = PrepareBitAccess(v3);
+    room_chozo_bits[idx] |= bitmask;
+  }
+  return j;
+}
+
+uint16 PlmInstr_GotoIfItemBitSet(uint16 j, uint16 k) {  // 0x84887C
+  int16 v2;
+
+  v2 = plm_room_arguments[k >> 1];
+  int idx = PrepareBitAccess(v2);
+  if (v2 >= 0 && (bitmask & item_bit_array[idx]) != 0)
+    return PlmInstr_Goto(j, k);
+  else
+    return j + 2;
+}
+
+uint16 PlmInstr_SetItemBit(uint16 j, uint16 k) {  // 0x848899
+  int16 v2;
+
+  v2 = plm_room_arguments[k >> 1];
+  if (v2 >= 0) {
+    uint16 v3 = PrepareBitAccess(v2);
+    item_bit_array[v3] |= bitmask;
+  }
+  return j;
+}
+
+uint16 PlmInstr_PickupBeamAndShowMessage(uint16 j, uint16 k) {  // 0x8488B0
+  uint8 *v2 = RomPtr_84(j);
+  collected_beams |= *(uint16 *)v2;
+  equipped_beams |= *(uint16 *)v2;
+  equipped_beams &= ~((2 * (uint8) * (uint16 *)v2) & 8);
+  equipped_beams &= ~((*(uint16 *)v2 >> 1) & 4);
+  UpdateBeamTilesAndPalette();
+  PlayRoomMusicTrackAfterAFrames(0x168u);
+  uint8 *v3 = RomPtr_84(j);
+  DisplayMessageBox(v3[2]);
+  return j + 3;
+}
+
+uint16 PlmInstr_PickupEquipmentAndShowMessage(uint16 j, uint16 k) {  // 0x8488F3
+  uint8 *v2 = RomPtr_84(j);
+  equipped_items |= *(uint16 *)v2;
+  collected_items |= *(uint16 *)v2;
+  PlayRoomMusicTrackAfterAFrames(0x168u);
+  DisplayMessageBox(v2[2]);
+  return j + 3;
+}
+
+uint16 PlmInstr_PickupEquipmentAddGrappleShowMessage(uint16 j, uint16 k) {  // 0x84891A
+  uint8 *v2 = RomPtr_84(j);
+  equipped_items |= *(uint16 *)v2;
+  collected_items |= *(uint16 *)v2;
+  AddGrappleToHudTilemap();
+  PlayRoomMusicTrackAfterAFrames(0x168u);
+  DisplayMessageBox(5u);
+  return j + 2;
+}
+
+uint16 PlmInstr_PickupEquipmentAddXrayShowMessage(uint16 j, uint16 k) {  // 0x848941
+  uint8 *v2 = RomPtr_84(j);
+  equipped_items |= *(uint16 *)v2;
+  collected_items |= *(uint16 *)v2;
+  AddXrayToHudTilemap();
+  PlayRoomMusicTrackAfterAFrames(0x168u);
+  DisplayMessageBox(6u);
+  return j + 2;
+}
+
+uint16 PlmInstr_CollectHealthEnergyTank(uint16 j, uint16 k) {  // 0x848968
+  samus_max_health += *(uint16 *)RomPtr_84(j);
+  samus_health = samus_max_health;
+  PlayRoomMusicTrackAfterAFrames(0x168u);
+  DisplayMessageBox(1u);
+  return j + 2;
+}
+
+uint16 PlmInstr_CollectHealthReserveTank(uint16 j, uint16 k) {  // 0x848986
+  samus_max_reserve_health += *(uint16 *)RomPtr_84(j);
+  if (!reserve_health_mode)
+    ++reserve_health_mode;
+  PlayRoomMusicTrackAfterAFrames(0x168u);
+  DisplayMessageBox(0x19u);
+  return j + 2;
+}
+
+uint16 PlmInstr_CollectAmmoMissileTank(uint16 j, uint16 k) {  // 0x8489A9
+  uint8 *v2 = RomPtr_84(j);
+  samus_max_missiles += *(uint16 *)v2;
+  samus_missiles += *(uint16 *)v2;
+  AddMissilesToHudTilemap();
+  PlayRoomMusicTrackAfterAFrames(0x168u);
+  DisplayMessageBox(2u);
+  return j + 2;
+}
+
+uint16 PlmInstr_CollectAmmoSuperMissileTank(uint16 j, uint16 k) {  // 0x8489D2
+  uint8 *v2 = RomPtr_84(j);
+  samus_max_super_missiles += *(uint16 *)v2;
+  samus_super_missiles += *(uint16 *)v2;
+  AddSuperMissilesToHudTilemap();
+  PlayRoomMusicTrackAfterAFrames(0x168u);
+  DisplayMessageBox(3u);
+  return j + 2;
+}
+
+uint16 PlmInstr_CollectAmmoPowerBombTank(uint16 j, uint16 k) {  // 0x8489FB
+  uint8 *v2 = RomPtr_84(j);
+  samus_max_power_bombs += *(uint16 *)v2;
+  samus_power_bombs += *(uint16 *)v2;
+  AddPowerBombsToHudTilemap();
+  PlayRoomMusicTrackAfterAFrames(0x168u);
+  DisplayMessageBox(4u);
+  return j + 2;
+}
+
+uint16 PlmInstr_SetLinkReg(uint16 j, uint16 k) {  // 0x848A24
+  plm_instruction_list_link_reg[k >> 1] = *(uint16 *)RomPtr_84(j);
+  return j + 2;
+}
+
+uint16 PlmInstr_Call(uint16 j, uint16 k) {  // 0x848A2E
+  plm_instruction_list_link_reg[k >> 1] = j + 2;
+  return *(uint16 *)RomPtr_84(j);
+}
+
+uint16 PlmInstr_Return(uint16 j, uint16 k) {  // 0x848A3A
+  return plm_instruction_list_link_reg[k >> 1];
+}
+
+uint16 PlmInstr_GotoIfDoorBitSet(uint16 j, uint16 k) {  // 0x848A72
+  int16 v2;
+
+  v2 = plm_room_arguments[k >> 1];
+  if (sign16(v2))
+    return j + 2;
+  int idx = PrepareBitAccess(v2);
+  if (v2 >= 0 && (bitmask & opened_door_bit_array[idx]) != 0)
+    return *(uint16 *)RomPtr_84(j);
+  else
+    return j + 2;
+}
+
+uint16 PlmInstr_IncrementDoorHitCounterAndJGE(uint16 j, uint16 k) {  // 0x848A91
+  int16 v5;
+
+  int v2 = k >> 1;
+  uint16 v3 = plm_variables[v2] + 1;
+  plm_variables[v2] = v3;
+  if ((uint8)v3 < *RomPtr_84(j))
+    return j + 3;
+  v5 = plm_room_arguments[v2];
+  if (v5 >= 0) {
+    int idx = PrepareBitAccess(v5);
+    v5 = bitmask | opened_door_bit_array[idx];
+    opened_door_bit_array[idx] = v5;
+    v5 = WORD(opened_door_bit_array[idx]);
+  }
+  int v6 = k >> 1;
+  plm_room_arguments[v6] = v5 | 0x8000;
+  plm_pre_instrs[v6] = addr_PlmPreInstr_Empty4;
+  return PlmInstr_Goto(j + 1, k);
+}
+
+uint16 PlmInstr_IncrementArgumentAndJGE(uint16 j, uint16 k) {  // 0x848ACD
+  uint8 v2 = *((uint8 *)plm_room_arguments + k) + 1;
+  if (v2 >= *RomPtr_84(j)) {
+    int v4 = k >> 1;
+    plm_room_arguments[v4] = -1;
+    plm_pre_instrs[v4] = addr_locret_848AE0;
+    return PlmInstr_Goto(j + 1, k);
+  } else {
+    plm_room_arguments[k >> 1] = v2;
+    return j + 3;
+  }
+}
+
+uint16 PlmInstr_SetBTS(uint16 j, uint16 k) {  // 0x848AF1
+  BTS[plm_block_indices[k >> 1] >> 1] = *RomPtr_84(j);
+  return j + 1;
+}
+
+uint16 PlmInstr_DrawPlmBlock(uint16 j, uint16 k) {  // 0x848B05
+  return PlmInstr_DrawPlmBlock_(j, k);
+}
+
+uint16 PlmInstr_DrawPlmBlock_(uint16 j, uint16 k) {  // 0x848B17
+  int v2 = k >> 1;
+  uint16 v3 = plm_variable[v2];
+  level_data[plm_block_indices[v2] >> 1] = v3;
+  custom_draw_instr_plm_block = v3;
+  custom_draw_instr_num_blocks = 1;
+  custom_draw_instr_zero_terminator = 0;
+  plm_instruction_timer[v2] = 1;
+  plm_instruction_draw_ptr[v2] = ADDR16_OF_RAM(custom_draw_instr_num_blocks);
+  plm_instr_list_ptrs[v2] = j;
+  ProcessPlmDrawInstruction(k);
+  uint16 v4 = plm_id;
+  CalculatePlmBlockCoords(plm_id);
+  DrawPlm(v4);
+  return 0;
+}
+
+uint16 PlmInstr_ProcessAirScrollUpdate(uint16 j, uint16 k) {  // 0x848B55
+  uint16 v4;
+  char *v5;
+
+  int v2 = k >> 1;
+  plm_variable[v2] = 0;
+  uint16 v3 = plm_room_arguments[v2];
+  HIBYTE(v4) = 0;
+  while (1) {
+    v5 = (char *)RomPtr_8F(v3);
+    if (*v5 < 0)
+      break;
+    LOBYTE(v4) = *v5;
+    scrolls[v4] = v5[1];
+    v3 += 2;
+  }
+  uint16 result = j;
+  int v7 = plm_block_indices[k >> 1] >> 1;
+  level_data[v7] = level_data[v7] & 0xFFF | 0x3000;
+  return result;
+}
+
+uint16 PlmInstr_ProcessSolidScrollUpdate(uint16 j, uint16 k) {  // 0x848B93
+  uint16 v4;
+  char *v5;
+
+  int v2 = k >> 1;
+  plm_variable[v2] = 0;
+  uint16 v3 = plm_room_arguments[v2];
+  HIBYTE(v4) = 0;
+  while (1) {
+    v5 = (char *)RomPtr_8F(v3);
+    if (*v5 < 0)
+      break;
+    LOBYTE(v4) = *v5;
+    scrolls[v4] = v5[1];
+    v3 += 2;
+  }
+  uint16 result = j;
+  int v7 = plm_block_indices[k >> 1] >> 1;
+  level_data[v7] = level_data[v7] & 0xFFF | 0xB000;
+  return result;
+}
+
+uint16 PlmInstr_QueueMusic(uint16 j, uint16 k) {  // 0x848BD1
+  uint8 *v2 = RomPtr_84(j);
+  QueueMusic_Delayed8(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_ClearMusicQueueAndQueueTrack(uint16 j, uint16 k) {  // 0x848BDD
+  for (int i = 14; i >= 0; i -= 2) {
+    int v3 = i >> 1;
+    music_queue_track[v3] = 0;
+    music_queue_delay[v3] = 0;
+  }
+  music_queue_read_pos = music_queue_write_pos;
+  music_timer = 0;
+  music_entry = 0;
+  uint8 *v4 = RomPtr_84(j);
+  QueueMusic_Delayed8(*v4);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx1_Max6(uint16 j, uint16 k) {  // 0x848C07
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx1_Max6(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx2_Max6(uint16 j, uint16 k) {  // 0x848C10
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx2_Max6(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx3_Max6(uint16 j, uint16 k) {  // 0x848C19
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx3_Max6(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx1_Max15(uint16 j, uint16 k) {  // 0x848C22
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx1_Max15(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx2_Max15(uint16 j, uint16 k) {  // 0x848C2B
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx2_Max15(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx3_Max15(uint16 j, uint16 k) {  // 0x848C34
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx3_Max15(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx1_Max3(uint16 j, uint16 k) {  // 0x848C3D
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx1_Max3(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx2_Max3(uint16 j, uint16 k) {  // 0x848C46
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx2_Max3(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx_Max3(uint16 j, uint16 k) {  // 0x848C4F
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx3_Max3(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx1_Max9(uint16 j, uint16 k) {  // 0x848C58
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx1_Max9(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx2_Max9(uint16 j, uint16 k) {  // 0x848C61
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx2_Max9(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx3_Max9(uint16 j, uint16 k) {  // 0x848C6A
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx3_Max9(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx1_Max1(uint16 j, uint16 k) {  // 0x848C73
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx1_Max1(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx2_Max1(uint16 j, uint16 k) {  // 0x848C7C
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx2_Max1(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_QueueSfx3_Max1(uint16 j, uint16 k) {  // 0x848C85
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  QueueSfx3_Max1(*v2);
+  return j + 1;
+}
+
+uint16 PlmInstr_ActivateMapStation(uint16 j, uint16 k) {  // 0x848C8F
+  *(uint16 *)&map_station_byte_array[area_index] |= 0xFFu;
+  DisplayMessageBox(0x14u);
+  has_area_map = 1;
+  return j;
+}
+
+uint16 PlmInstr_ActivateEnergyStation(uint16 j, uint16 k) {  // 0x848CAF
+  if (samus_max_health != samus_health) {
+    DisplayMessageBox(0x15u);
+    samus_health = samus_max_health;
+  }
+  CallSomeSamusCode(1u);
+  return j;
+}
+
+uint16 PlmInstr_ActivateMissileStation(uint16 j, uint16 k) {  // 0x848CD0
+  if (samus_max_missiles != samus_missiles) {
+    DisplayMessageBox(0x16u);
+    samus_missiles = samus_max_missiles;
+  }
+  CallSomeSamusCode(1u);
+  return j;
+}
+
+uint16 PlmInstr_ActivateSaveStationAndGotoIfNo(uint16 j, uint16 k) {  // 0x848CF1
+  int r = DisplayMessageBox_Poll(23);
+  if (r < 0)
+    return j - 2; // restart plm instr
+
+  if (r == 2)
+    return *(uint16 *)RomPtr_84(j);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_SaveStationElectricity, 0);
+  load_station_index = plm_room_arguments[plm_id >> 1] & 7;
+  PrepareBitAccess(load_station_index);
+  used_save_stations_and_elevators[(uint16)(2 * area_index)] |= bitmask;
+  SaveToSram(selected_save_slot);
+  return j + 2;
+}
+
+uint16 PlmInstr_GotoIfSamusNear(uint16 j, uint16 k) {  // 0x848D41
+  uint8 v4;
+
+  CalculatePlmBlockCoords(k);
+  uint8 v2 = abs16((samus_x_pos >> 4) - plm_x_block);
+  uint8 *v3 = RomPtr_84(j);
+  if ((v2 < *v3 || v2 == *v3) && (v4 = abs16((samus_y_pos >> 4) - plm_y_block), v4 < v3[1] || v4 == v3[1]))
+    return *((uint16 *)v3 + 1);
+  else
+    return j + 4;
+}
+
+void DrawPlm(uint16 k) {  // 0x848DAA
+  int16 v2;
+  int16 v5;
+  int16 v8;
+  VramWriteEntry *v10;
+  VoidP v12;
+  VoidP v13;
+  VramWriteEntry *v15;
+  int16 v18;
+  int16 v20;
+  bool v23; // sf
+  VramWriteEntry *v25;
+  int16 v28;
+  int16 v31;
+  int16 v33;
+  uint16 v35;
+  uint16 a;
+
+  *(uint16 *)((char *)&R8_ + 1) = addr_unk_605000;
+  R12_ = addr_unk_6053E0;
+  uint16 v1 = plm_instruction_draw_ptr[k >> 1];
+  g_word_7E001E = plm_x_block;
+  R32 = plm_y_block;
+LABEL_2:
+  R26_ = layer1_y_pos >> 4;
+  if (!sign16((layer1_y_pos >> 4) + 15 - R32)) {
+    v2 = *(uint16 *)RomPtr_84orRAM(v1);
+    if (v2 < 0) {
+      R20_ = v2 & 0x7FFF;
+      if (layer1_x_pos >> 4 == g_word_7E001E || (int16)((layer1_x_pos >> 4) - g_word_7E001E) < 0) {
+        v20 = (layer1_x_pos >> 4) + 17;
+        if (v20 != g_word_7E001E && (int16)(v20 - g_word_7E001E) >= 0) {
+          R24_ = g_word_7E001E;
+          R18_ = 0;
+          R22_ = R26_ + 16;
+          if ((int16)(R26_ - R32) < 0) {
+            R26_ = R32;
+          } else {
+            R18_ = R26_ - R32;
+            if (sign16(R32 + R20_ - R26_))
+              return;
+            bool v21 = R20_ == R18_;
+            bool v22 = (int16)(R20_ - R18_) < 0;
+            R20_ -= R18_;
+            while (v22)
+              ;
+            if (v21)
+              return;
+          }
+          R22_ = R20_ + R26_ - R22_;
+          if ((R22_ & 0x8000u) != 0 || (v23 = (int16)(R20_ - R22_) < 0, (R20_ -= R22_) != 0) && !v23) {
+            v35 = k;
+            uint16 v24;
+            v24 = vram_write_queue_tail;
+            if ((int16)(vram_write_queue_tail - 240) < 0
+                && !sign16(((uint16)(512 - plm_draw_tilemap_index) >> 3) - R20_)) {
+              R28_ = 0x8000;
+              CalculatePlmDrawTilemapVramDst(vram_write_queue_tail);
+              v25 = gVramWriteEntry(v24);
+              v25[1].vram_dst = v25->vram_dst + 1;
+              vram_write_queue_tail = v24 + 14;
+              R18_ *= 2;
+              R3_.addr = R18_ + v1 + 2;
+              uint16 v26;
+              v26 = 0;
+              while (1) {
+                g_word_7E001E = *(uint16 *)RomPtr_84orRAM(R3_.addr);
+                uint16 v27, v29;
+                v27 = g_word_7E001E & 0x3FF;
+                v28 = g_word_7E001E & 0xC00;
+                if ((g_word_7E001E & 0xC00) != 0) {
+                  if (v28 == 1024) {
+                    IndirWriteWord(&R0_, v26, tile_table.tables[v27].top_right ^ 0x4000);
+                    IndirWriteWord(&R6_, v26, tile_table.tables[v27].top_left ^ 0x4000);
+                    v29 = v26 + 2;
+                    IndirWriteWord(&R0_, v29, tile_table.tables[v27].bottom_right ^ 0x4000);
+                    IndirWriteWord(&R6_, v29, tile_table.tables[v27].bottom_left ^ 0x4000);
+                  } else if (v28 == 2048) {
+                    IndirWriteWord(&R0_, v26, tile_table.tables[v27].bottom_left ^ 0x8000);
+                    IndirWriteWord(&R6_, v26, tile_table.tables[v27].bottom_right ^ 0x8000);
+                    v29 = v26 + 2;
+                    IndirWriteWord(&R0_, v29, tile_table.tables[v27].top_left ^ 0x8000);
+                    IndirWriteWord(&R6_, v29, tile_table.tables[v27].top_right ^ 0x8000);
+                  } else {
+                    IndirWriteWord(&R0_, v26, tile_table.tables[v27].bottom_right ^ 0xC000);
+                    IndirWriteWord(&R6_, v26, tile_table.tables[v27].bottom_left ^ 0xC000);
+                    v29 = v26 + 2;
+                    IndirWriteWord(&R0_, v29, tile_table.tables[v27].top_right ^ 0xC000);
+                    IndirWriteWord(&R6_, v29, tile_table.tables[v27].top_left ^ 0xC000);
+                  }
+                } else {
+                  IndirWriteWord(&R0_, v26, tile_table.tables[v27].top_left);
+                  IndirWriteWord(&R6_, v26, tile_table.tables[v27].top_right);
+                  v29 = v26 + 2;
+                  IndirWriteWord(&R0_, v29, tile_table.tables[v27].bottom_left);
+                  IndirWriteWord(&R6_, v29, tile_table.tables[v27].bottom_right);
+                }
+                v26 = v29 + 2;
+                ++R3_.addr;
+                ++R3_.addr;
+                plm_draw_tilemap_index += 8;
+                if (!sign16(plm_draw_tilemap_index - 512))
+                  break;
+                if (!--R20_) {
+LABEL_70:
+                  k = v35;
+                  uint16 addr = R3_.addr;
+                  if ((R22_ & 0x8000u) == 0)
+                    addr = R3_.addr + 2 * R22_;
+                  v31 = *(uint16 *)RomPtr_84orRAM(addr);
+                  if (v31) {
+                    v31 = (uint8)v31;
+                    if ((v31 & 0x80) != 0)
+                      v31 |= 0xFF00u;
+                    g_word_7E001E = plm_x_block + v31;
+                    uint16 v32 = addr + 1;
+                    v33 = *RomPtr_84orRAM(v32);
+                    if ((v33 & 0x80) != 0)
+                      v33 |= 0xFF00u;
+                    R32 = plm_y_block + v33;
+                    v1 = v32 + 1;
+                    goto LABEL_2;
+                  }
+                  return;
+                }
+              }
+            }
+          }
+        }
+      }
+    } else {
+      R20_ = v2 & 0x7FFF;
+      R28_ = 0;
+      if (sign16(R32 - R26_))
+        return;
+      R26_ = R32;
+      R18_ = 0;
+      R24_ = g_word_7E001E;
+      R22_ = ((uint16)(layer1_x_pos + 15) >> 4) - 1;
+      if ((int16)(R22_ - g_word_7E001E) >= 0 && R22_ != g_word_7E001E) {
+        R18_ = R22_ - g_word_7E001E;
+        if (g_word_7E001E + R20_ == R22_ || (int16)(g_word_7E001E + R20_ - R22_) < 0)
+          return;
+        R20_ -= R18_;
+        R24_ = R22_;
+      }
+      R22_ += 17;
+      if (!sign16(R22_ - g_word_7E001E)) {
+        R22_ = R20_ + R24_ - 1 - R22_;
+        if ((R22_ & 0x8000u) != 0 || (R20_ -= R22_) != 0) {
+          v35 = k;
+          uint16 v3 = vram_write_queue_tail;
+          if ((int16)(vram_write_queue_tail - 480) < 0
+              && !sign16(((uint16)(512 - plm_draw_tilemap_index) >> 3) - R20_)) {
+            uint16 prod = (R26_ & 0xF) * 0x40;
+            uint16 v4 = R24_ & 0x1F;
+            if (v4 >= 0x10u) {
+              v8 = R12_ + 2 * v4;
+              a = prod + v8;
+              if ((bg1_x_offset & 0x100) != 0)
+                a -= 1024;
+            } else {
+              v5 = *(uint16 *)((char *)&R8_ + 1) + 2 * v4;
+              uint16 RegWord = prod;
+              a = RegWord + v5;
+              if ((bg1_x_offset & 0x100) != 0)
+                a += 1024;
+            }
+            g_word_7E001E = 2 * R20_;
+            R34 = a & 0x1F;
+            if (((2 * R20_ + (a & 0x1F) - 1) & 0xFFE0) != 0) {
+              if ((int16)(v3 - 228) >= 0 || (int16)(32 - R34) < 0)
+                return;
+              uint16 v9 = 2 * (32 - R34);
+              v10 = gVramWriteEntry(v3);
+              v10->size = v9;
+              v10[2].size = v9;
+              v10->vram_dst = a;
+              v10[1].vram_dst = a & 0xFFE0 ^ 0x400;
+              v10[3].vram_dst = v10[1].vram_dst + 32;
+              v10[2].vram_dst = v10->vram_dst + 32;
+              g_word_7E001E = 4 * R20_;
+              uint16 v11 = 4 * R20_ - v10->size;
+              v10[1].size = v11;
+              v10[3].size = v11;
+              v12 = plm_draw_tilemap_index - 14648;
+              v10->src.addr = plm_draw_tilemap_index - 14648;
+              R0_.addr = v12;
+              v13 = v10->size + v12;
+              v10[1].src.addr = v13;
+              uint16 v14 = v10[1].size + v13;
+              v10[2].src.addr = v14;
+              R6_ = v14;
+              v10[3].src.addr = v10[2].size + v14;
+              v10->src.bank = 126;
+              R0_.bank = 126;
+              v10[1].src.bank = 126;
+              LOBYTE(R8_) = 126;
+              v10[2].src.bank = 126;
+              v10[3].src.bank = 126;
+              vram_write_queue_tail = v3 + 28;
+            } else {
+              PartiallyQueueVramForSingleScreenPlm(a, v3);
+              v15 = gVramWriteEntry(v3);
+              v15[1].vram_dst = v15->vram_dst + 32;
+              vram_write_queue_tail = v3 + 14;
+            }
+            R18_ *= 2;
+            R3_.addr = R18_ + v1 + 2;
+            uint16 v16 = 0;
+            while (1) {
+              g_word_7E001E = *(uint16 *)RomPtr_84orRAM(R3_.addr);
+              uint16 v17 = g_word_7E001E & 0x3FF, v19;
+              v18 = g_word_7E001E & 0xC00;
+              if ((g_word_7E001E & 0xC00) != 0) {
+                if (v18 == 1024) {
+                  IndirWriteWord(&R0_, v16, tile_table.tables[v17].top_right ^ 0x4000);
+                  IndirWriteWord(&R6_, v16, tile_table.tables[v17].bottom_right ^ 0x4000);
+                  v19 = v16 + 2;
+                  IndirWriteWord(&R0_, v19, tile_table.tables[v17].top_left ^ 0x4000);
+                  IndirWriteWord(&R6_, v19, tile_table.tables[v17].bottom_left ^ 0x4000);
+                } else if (v18 == 2048) {
+                  IndirWriteWord(&R0_, v16, tile_table.tables[v17].bottom_left ^ 0x8000);
+                  IndirWriteWord(&R6_, v16, tile_table.tables[v17].top_left ^ 0x8000);
+                  v19 = v16 + 2;
+                  IndirWriteWord(&R0_, v19, tile_table.tables[v17].bottom_right ^ 0x8000);
+                  IndirWriteWord(&R6_, v19, tile_table.tables[v17].top_right ^ 0x8000);
+                } else {
+                  IndirWriteWord(&R0_, v16, tile_table.tables[v17].bottom_right ^ 0xC000);
+                  IndirWriteWord(&R6_, v16, tile_table.tables[v17].top_right ^ 0xC000);
+                  v19 = v16 + 2;
+                  IndirWriteWord(&R0_, v19, tile_table.tables[v17].bottom_left ^ 0xC000);
+                  IndirWriteWord(&R6_, v19, tile_table.tables[v17].top_left ^ 0xC000);
+                }
+              } else {
+                IndirWriteWord(&R0_, v16, tile_table.tables[v17].top_left);
+                IndirWriteWord(&R6_, v16, tile_table.tables[v17].bottom_left);
+                v19 = v16 + 2;
+                IndirWriteWord(&R0_, v19, tile_table.tables[v17].top_right);
+                IndirWriteWord(&R6_, v19, tile_table.tables[v17].bottom_right);
+              }
+              v16 = v19 + 2;
+              ++R3_.addr;
+              ++R3_.addr;
+              plm_draw_tilemap_index += 8;
+              if (!sign16(plm_draw_tilemap_index - 512))
+                break;
+              if (!--R20_)
+                goto LABEL_70;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+void CalculatePlmDrawTilemapVramDst(uint16 k) {  // 0x8491DC
+  int16 v2;
+  int16 v5;
+  uint16 a;
+
+  uint16 prod = (R26_ & 0xF) * 0x40;
+  uint16 v1 = R24_ & 0x1F;
+  if (v1 >= 0x10u) {
+    v5 = R12_ + 2 * v1;
+    uint16 RegWord = prod;
+    a = RegWord + v5;
+    if ((bg1_x_offset & 0x100) != 0)
+      a -= 1024;
+  } else {
+    v2 = *(uint16 *)((char *)&R8_ + 1) + 2 * v1;
+    uint16 v3 = prod;
+    a = v3 + v2;
+    if ((bg1_x_offset & 0x100) != 0)
+      a += 1024;
+  }
+  PartiallyQueueVramForSingleScreenPlm(a, k);
+}
+
+void PartiallyQueueVramForSingleScreenPlm(uint16 a, uint16 k) {  // 0x849220
+  VramWriteEntry *v2;
+  VoidP v4;
+
+  v2 = gVramWriteEntry(k);
+  v2->vram_dst = R28_ | a;
+  uint16 v3 = 4 * R20_;
+  v2->size = 4 * R20_;
+  v2[1].size = v3;
+  v4 = plm_draw_tilemap_index - 14648;
+  v2->src.addr = plm_draw_tilemap_index - 14648;
+  R0_.addr = v4;
+  uint16 v5 = v2->size + v4;
+  v2[1].src.addr = v5;
+  R6_ = v5;
+  v2->src.bank = 126;
+  v2[1].src.bank = 126;
+  R0_.bank = 126;
+  LOBYTE(R8_) = 126;
+}
+
+uint16 PlmInstr_MovePlmDownOneBlock(uint16 j, uint16 k) {  // 0x84AB00
+  plm_block_indices[k >> 1] += 2 * room_width_in_blocks;
+  return j;
+}
+
+uint8 PlmSetup_CrumbleBotwoonWall(uint16 j) {  // 0x84AB28
+  plm_instruction_timer[j >> 1] = 64;
+  return 0;
+}
+
+uint16 PlmInstr_Scroll_0_1_Blue(uint16 j, uint16 k) {  // 0x84AB51
+  *(uint16 *)scrolls = 257;
+  return j;
+}
+
+uint16 PlmInstr_MovePlmDownOneBlock_0(uint16 j, uint16 k) {  // 0x84AB59
+  plm_block_indices[k >> 1] += room_width_in_blocks
+    + room_width_in_blocks;
+  return j;
+}
+
+uint16 PlmInstr_ABD6(uint16 j, uint16 k) {  // 0x84ABD6
+  int v1 = k >> 1;
+  ++plm_block_indices[v1];
+  ++plm_block_indices[v1];
+  return j;
+}
+
+void PlmPreInstr_PositionSamusAndInvincible(uint16 k) {  // 0x84AC89
+  int v1 = k >> 1;
+  samus_x_pos = plm_variable[v1];
+  samus_y_pos = plm_variables[v1];
+  samus_invincibility_timer |= 0x10u;
+}
+
+uint16 PlmInstr_DealDamage_2(uint16 j, uint16 k) {  // 0x84AC9D
+  samus_periodic_damage += 2;
+  return j;
+}
+
+uint16 PlmInstr_GiveInvincibility(uint16 j, uint16 k) {  // 0x84ACB1
+  samus_invincibility_timer = 48;
+  return j;
+}
+
+uint16 PlmInstr_Draw0x38FramesOfRightTreadmill(uint16 j, uint16 k) {  // 0x84AD43
+  WriteRowOfLevelDataBlockAndBTS(k, 0x30ff, 0x8, 0x38);
+  return j;
+}
+
+uint16 PlmInstr_Draw0x38FramesOfLeftTreadmill(uint16 j, uint16 k) {  // 0x84AD58
+  WriteRowOfLevelDataBlockAndBTS(k, 0x30ff, 0x9, 0x38);
+  return j;
+}
+
+uint16 PlmInstr_GotoIfSamusHealthFull(uint16 j, uint16 k) {  // 0x84AE35
+  if (samus_max_health != samus_health)
+    return j + 2;
+  CallSomeSamusCode(1u);
+  return *(uint16 *)RomPtr_84(j);
+}
+
+uint16 PlmInstr_GotoIfMissilesFull(uint16 j, uint16 k) {  // 0x84AEBF
+  if (samus_max_missiles != samus_missiles)
+    return j + 2;
+  CallSomeSamusCode(1u);
+  return *(uint16 *)RomPtr_84(j);
+}
+
+uint16 PlmInstr_PlaceSamusOnSaveStation(uint16 j, uint16 k) {  // 0x84B00E
+  samus_x_pos = (samus_x_pos + 8) & 0xFFF0;
+  MakeSamusFaceForward();
+  return j;
+}
+
+uint16 PlmInstr_DisplayGameSavedMessageBox(uint16 j, uint16 k) {  // 0x84B024
+  DisplayMessageBox(0x18u);
+  return j;
+}
+
+uint16 PlmInstr_EnableMovementAndSetSaveStationUsed(uint16 j, uint16 k) {  // 0x84B030
+  CallSomeSamusCode(1u);
+  save_station_lockout_flag = 1;
+  return j;
+}
+
+uint8 PlmSetup_SetrupWreckedShipEntrance(uint16 j) {  // 0x84B04A
+  int16 v2;
+
+  uint16 v1 = plm_block_indices[j >> 1];
+  v2 = 56;
+  do {
+    level_data[v1 >> 1] = 255;
+    v1 += 2;
+    --v2;
+  } while (v2);
+  return 0;
+}
+
+uint8 PlmSetup_BTS_Brinstar_0x80_Floorplant(uint16 j) {  // 0x84B0DC
+  if ((((uint8)samus_y_radius + (uint8)samus_y_pos - 1) & 0xF) == 15) {
+    int v1 = plm_block_indices[j >> 1] >> 1;
+    level_data[v1] &= 0x8FFFu;
+    int v2 = j >> 1;
+    plm_variable[v2] = samus_x_pos;
+    plm_variables[v2] = samus_y_pos - 1;
+  } else {
+    plm_header_ptr[j >> 1] = 0;
+  }
+  return 0;
+}
+
+uint8 PlmSetup_BTS_Brinstar_0x81_Ceilingplant(uint16 j) {  // 0x84B113
+  if ((((uint8)samus_y_pos - (uint8)samus_y_radius) & 0xF) != 0) {
+    plm_header_ptr[j >> 1] = 0;
+  } else {
+    int v1 = plm_block_indices[j >> 1] >> 1;
+    level_data[v1] &= 0x8FFFu;
+    int v2 = j >> 1;
+    plm_variable[v2] = samus_x_pos;
+    plm_variables[v2] = samus_y_pos + 1;
+  }
+  return 0;
+}
+
+uint8 ActivateStationIfSamusCannonLinedUp(uint16 a, uint16 j) {  // 0x84B146
+  uint16 v2 = 78;
+  while (a != plm_block_indices[v2 >> 1]) {
+    v2 -= 2;
+    if ((v2 & 0x8000u) != 0)
+      goto LABEL_7;
+  }
+  CalculatePlmBlockCoords(plm_id);
+  if (((uint16)(16 * plm_y_block) | 0xB) == samus_y_pos) {
+    int v3 = v2 >> 1;
+    plm_instr_list_ptrs[v3] = plm_instruction_list_link_reg[v3];
+    plm_instruction_timer[v3] = 1;
+    CallSomeSamusCode(6u);
+    return 1;
+  }
+LABEL_7:
+  plm_header_ptr[j >> 1] = 0;
+  return 1;
+}
+
+uint8 PlmSetup_B6D3_MapStation(uint16 j) {  // 0x84B18B
+  int v1 = j >> 1;
+  int v2 = plm_block_indices[v1] >> 1;
+  level_data[v2] = level_data[v2] & 0xFFF | 0x8000;
+  if (map_station_byte_array[area_index]) {
+    plm_instr_list_ptrs[v1] = addr_word_84AD76;
+  } else {
+    WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, 0xB047u);
+    WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] - 4, 0xB048u);
+  }
+  return 0;
+}
+
+uint8 PlmSetup_Bts47_MapStationRightAccess(uint16 j) {  // 0x84B1C8
+  if ((samus_collision_direction & 0xF) == 0 && samus_pose == kPose_8A_FaceL_Ranintowall && (samus_pose_x_dir & 4) != 0)
+    return ActivateStationIfSamusCannonLinedUp(plm_block_indices[j >> 1] - 2, j);
+  plm_header_ptr[j >> 1] = 0;
+  return 1;
+}
+
+uint8 PlmSetup_Bts4_MapStationLeftAccess(uint16 j) {  // 0x84B1F0
+  if ((samus_collision_direction & 0xF) == 1 && samus_pose == kPose_89_FaceR_Ranintowall && (samus_pose_x_dir & 8) != 0)
+    return ActivateStationIfSamusCannonLinedUp(plm_block_indices[j >> 1] + 4, j);
+  plm_header_ptr[j >> 1] = 0;
+  return 1;
+}
+
+uint8 PlmSetup_PlmB6DF_EnergyStation(uint16 j) {  // 0x84B21D
+  int v1 = j >> 1;
+  int v2 = plm_block_indices[v1] >> 1;
+  level_data[v2] = level_data[v2] & 0xFFF | 0x8000;
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, 0xB049u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] - 2, FUNC16(PlmSetup_SetrupWreckedShipEntrance));
+  return 0;
+}
+
+uint8 PlmSetup_PlmB6EB_EnergyStation(uint16 j) {  // 0x84B245
+  int v1 = j >> 1;
+  int v2 = plm_block_indices[v1] >> 1;
+  level_data[v2] = level_data[v2] & 0xFFF | 0x8000;
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, 0xB04Bu);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] - 2, 0xB04Cu);
+  return 0;
+}
+
+uint8 PlmSetup_B6E3_EnergyStationRightAccess(uint16 j) {  // 0x84B26D
+  if ((samus_collision_direction & 0xF) != 0
+      || samus_pose != kPose_8A_FaceL_Ranintowall
+      || (samus_pose_x_dir & 4) == 0
+      || samus_health == samus_max_health) {
+    plm_header_ptr[j >> 1] = 0;
+    return 1;
+  } else {
+    return ActivateStationIfSamusCannonLinedUp(plm_block_indices[j >> 1] - 2, j);
+  }
+}
+
+uint8 PlmSetup_B6E7_EnergyStationLeftAccess(uint16 j) {  // 0x84B29D
+  if ((samus_collision_direction & 0xF) == 1
+      && samus_pose == kPose_89_FaceR_Ranintowall
+      && (samus_pose_x_dir & 8) != 0
+      && samus_health != samus_max_health) {
+    return ActivateStationIfSamusCannonLinedUp(plm_block_indices[j >> 1] + 2, j);
+  }
+  plm_header_ptr[j >> 1] = 0;
+  return 1;
+}
+
+uint8 PlmSetup_B6EF_MissileStationRightAccess(uint16 j) {  // 0x84B2D0
+  if ((samus_collision_direction & 0xF) != 0
+      || samus_pose != kPose_8A_FaceL_Ranintowall
+      || (samus_pose_x_dir & 4) == 0
+      || samus_missiles == samus_max_missiles) {
+    plm_header_ptr[j >> 1] = 0;
+    return 1;
+  }
+  return ActivateStationIfSamusCannonLinedUp(plm_block_indices[j >> 1] - 2, j);
+}
+
+uint8 PlmSetup_B6F3_MissileStationLeftAccess(uint16 j) {  // 0x84B300
+  if ((samus_collision_direction & 0xF) == 1
+      && samus_pose == kPose_89_FaceR_Ranintowall
+      && (samus_pose_x_dir & 8) != 0
+      && samus_missiles != samus_max_missiles) {
+    return ActivateStationIfSamusCannonLinedUp(plm_block_indices[j >> 1] + 2, j);
+  } else {
+    plm_header_ptr[j >> 1] = 0;
+    return 1;
+  }
+}
+
+void DeletePlm(uint16 j) {  // 0x84B333
+  plm_header_ptr[j >> 1] = 0;
+}
+
+uint8 PlmSetup_B638_Rightwards_Extension(uint16 j) {  // 0x84B33A
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x50FFu);
+  DeletePlm(j);
+  return 0;
+}
+
+uint8 PlmSetup_B63F_Leftwards_Extension(uint16 j) {  // 0x84B345
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x5001u);
+  DeletePlm(j);
+  return 0;
+}
+
+uint8 PlmSetup_B643_Downwards_Extension(uint16 j) {  // 0x84B350
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xD0FFu);
+  DeletePlm(j);
+  return 0;
+}
+
+uint8 PlmSetup_B647_Upwards_Extension(uint16 j) {  // 0x84B35B
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xD001u);
+  DeletePlm(j);
+  return 0;
+}
+
+void SkipDebugDrawInstructionsForScrollPlms(uint16 j) {  // 0x84B366
+  plm_instr_list_ptrs[j >> 1] += 4;
+}
+
+uint8 PlmSetup_B703_ScrollPLM(uint16 j) {  // 0x84B371
+  int v1 = j >> 1;
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0x3046u);
+  plm_variable[v1] = 0;
+  SkipDebugDrawInstructionsForScrollPlms(j);
+  return 0;
+}
+
+uint8 PlmSetup_B707_SolidScrollPLM(uint16 j) {  // 0x84B382
+  int v1 = j >> 1;
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xB046u);
+  plm_variable[v1] = 0;
+  SkipDebugDrawInstructionsForScrollPlms(j);
+  return 0;
+}
+
+uint8 PlmSetup_B6FF_ScrollBlockTouch(uint16 j) {  // 0x84B393
+  int v1 = j >> 1;
+  uint16 v2 = plm_block_indices[v1];
+  plm_block_indices[v1] = 0;
+  uint16 v3 = 78;
+  while (v2 != plm_block_indices[v3 >> 1]) {
+    v3 -= 2;
+    if ((v3 & 0x8000u) != 0) {
+      while (1)
+        ;
+    }
+  }
+  int v4 = v3 >> 1;
+  if ((plm_variable[v4] & 0x8000u) == 0) {
+    plm_variable[v4] = 0x8000;
+    ++plm_instr_list_ptrs[v4];
+    ++plm_instr_list_ptrs[v4];
+    plm_instruction_timer[v4] = 1;
+  }
+  return 0;
+}
+
+uint8 PlmSetup_DeactivatePlm(uint16 j) {  // 0x84B3C1
+  int v1 = plm_block_indices[j >> 1] >> 1;
+  level_data[v1] &= 0x8FFFu;
+  return 0;
+}
+
+uint8 PlmSetup_ReturnCarryClear(uint16 j) {  // 0x84B3D0
+  return 0;
+}
+
+uint8 PlmSetup_ReturnCarrySet(uint16 j) {  // 0x84B3D2
+  return 1;
+}
+
+uint8 PlmSetup_D094_EnemyBreakableBlock(uint16 j) {  // 0x84B3D4
+  int v1 = plm_block_indices[j >> 1] >> 1;
+  level_data[v1] &= 0xFFFu;
+  return 0;
+}
+
+uint8 UNUSED_sub_84B3E3(uint16 j) {  // 0x84B3E3
+  assert(0);
+  return 0;
+}
+
+uint8 PlmSetup_B70F_IcePhysics(uint16 j) {  // 0x84B3EB
+  if ((((uint8)samus_y_radius + (uint8)samus_y_pos - 1) & 0xF) == 7
+      || (((uint8)samus_y_radius + (uint8)samus_y_pos - 1) & 0xF) == 15) {
+    *(uint16 *)&samus_x_decel_mult = 16;
+  }
+  return 0;
+}
+
+static Func_Y_V *const kPlmSetup_QuicksandSurface[4] = {  // 0x84B408
+  PlmSetup_QuicksandSurface_0,
+  PlmSetup_QuicksandSurface_1,
+  PlmSetup_QuicksandSurface_2,
+  PlmSetup_QuicksandSurface_0,
+};
+
+static const uint16 g_word_84B48B[2] = { 0x200, 0x200 };
+static const uint16 g_word_84B48F[2] = { 0x120, 0x100 };
+static const uint16 g_word_84B493[2] = { 0x280, 0x380 };
+
+uint8 PlmSetup_QuicksandSurface(uint16 j) {
+
+  samus_has_momentum_flag = 0;
+  speed_boost_counter = 0;
+  samus_echoes_sound_flag = 0;
+  samus_x_extra_run_subspeed = 0;
+  samus_x_extra_run_speed = 0;
+  samus_x_base_subspeed &= ~0x8000u;
+  samus_x_base_speed = 0;
+  uint16 v1 = 0;
+  if ((equipped_items & 0x20) != 0)
+    v1 = 2;
+  if (!inside_block_reaction_samus_point)
+    kPlmSetup_QuicksandSurface[samus_y_dir & 3](v1);
+  return 0;
+}
+
+void PlmSetup_QuicksandSurface_0(uint16 j) {  // 0x84B447
+  samus_y_subspeed = 0;
+  samus_y_speed = 0;
+  extra_samus_y_subdisplacement = 0;
+  extra_samus_y_displacement = 0;
+  *(uint16 *)((char *)&extra_samus_y_subdisplacement + 1) = g_word_84B48F[j >> 1];
+}
+
+void PlmSetup_QuicksandSurface_1(uint16 j) {  // 0x84B45A
+  int v1 = j >> 1;
+  if (g_word_84B493[v1] < *(uint16 *)((char *)&samus_y_subspeed + 1)) {
+    samus_y_subspeed = 0;
+    samus_y_speed = 0;
+    *(uint16 *)((char *)&samus_y_subspeed + 1) = g_word_84B493[v1];
+  }
+  extra_samus_y_subdisplacement = 0;
+  extra_samus_y_displacement = 0;
+  *(uint16 *)((char *)&extra_samus_y_subdisplacement + 1) = g_word_84B48B[v1];
+}
+
+void PlmSetup_QuicksandSurface_2(uint16 j) {  // 0x84B47B
+  extra_samus_y_subdisplacement = 0;
+  extra_samus_y_displacement = 0;
+  *(uint16 *)((char *)&extra_samus_y_subdisplacement + 1) = g_word_84B48B[j >> 1];
+  autojump_timer = 0;
+}
+
+uint8 PlmSetup_B71F_SubmergingQuicksand(uint16 j) {  // 0x84B497
+  autojump_timer = 0;
+  extra_samus_y_subdisplacement = 0x2000;
+  extra_samus_y_displacement = 1;
+  return 0;
+}
+
+uint8 PlmSetup_B723_SandfallsSlow(uint16 j) {  // 0x84B4A8
+  extra_samus_y_subdisplacement = 0x4000;
+  extra_samus_y_displacement = 1;
+  return 0;
+}
+
+uint8 PlmSetup_B727_SandFallsFast(uint16 j) {  // 0x84B4B6
+  extra_samus_y_subdisplacement = -16384;
+  extra_samus_y_displacement = 1;
+  return 0;
+}
+
+static Func_Y_U8 *const kPlmSetup_QuicksandSurfaceB[4] = {  // 0x84B4C4
+  PlmSetup_QuicksandSurfaceB_0,
+  PlmSetup_QuicksandSurfaceB_1,
+  PlmSetup_QuicksandSurfaceB_2,
+  PlmSetup_QuicksandSurfaceB_0,
+};
+
+uint8 PlmSetup_QuicksandSurfaceB(uint16 j) {
+
+  if ((samus_collision_direction & 2) == 0)
+    return  0;
+
+  uint16 v1 = 0;
+  if ((equipped_items & 0x20) != 0)
+    v1 = 2;
+  uint16 v2 = R18_;
+  R18_ = R20_;
+  R20_ = v2;
+  uint8 rv = kPlmSetup_QuicksandSurfaceB[samus_y_dir & 3](v1);
+  uint16 v3 = R18_;
+  R18_ = R20_;
+  R20_ = v3;
+  return rv;
+}
+
+uint8 PlmSetup_QuicksandSurfaceB_0(uint16 j) {  // 0x84B500
+  static const uint16 word_84B53D[2] = {
+    0x30,
+    0x30,
+  };
+  if ((samus_collision_direction & 0xF) == 3) {
+    if (samus_contact_damage_index == 1) {
+      R18_ = 0;
+      R20_ = 0;
+      return 1;
+    } else {
+      if (word_84B53D[j >> 1] < *(uint16 *)((char *)&R18_ + 1))
+        *(uint16 *)((char *)&R18_ + 1) = word_84B53D[j >> 1];
+      ++flag_samus_in_quicksand;
+    }
+  }
+  return 0;
+}
+
+uint8 PlmSetup_QuicksandSurfaceB_1(uint16 j) {  // 0x84B528
+  return 0;
+}
+
+uint8 PlmSetup_QuicksandSurfaceB_2(uint16 j) {  // 0x84B52A
+  if (samus_contact_damage_index == 1) {
+    R18_ = 0;
+    R20_ = 0;
+    return 1;
+  } else {
+    flag_samus_in_quicksand++;
+    return 0;
+  }
+}
+
+
+uint8 PlmSetup_B737_SubmergingQuicksand(uint16 j) {  // 0x84B541
+  samus_y_subspeed = 0;
+  samus_y_speed = 0;
+  samus_y_subaccel = 0;
+  samus_y_accel = 0;
+  return 0;
+}
+
+uint8 PlmSetup_B73B_B73F_SandFalls(uint16 j) {  // 0x84B54F
+  return 0;
+}
+
+uint8 PlmSetup_ClearShitroidInvisibleWall(uint16 j) {  // 0x84B551
+  int16 v2;
+
+  uint16 v1 = plm_block_indices[j >> 1];
+  v2 = 10;
+  do {
+    level_data[v1 >> 1] &= 0xFFFu;
+    v1 += room_width_in_blocks + room_width_in_blocks;
+    --v2;
+  } while (v2);
+  return 0;
+}
+
+uint8 PlmSetup_B767_ClearShitroidInvisibleWall(uint16 j) {  // 0x84B56F
+  int16 v2;
+
+  uint16 v1 = plm_block_indices[j >> 1];
+  v2 = 10;
+  do {
+    level_data[v1 >> 1] = level_data[v1 >> 1] & 0xFFF | 0x8000;
+    v1 += room_width_in_blocks + room_width_in_blocks;
+    --v2;
+  } while (v2);
+  return 0;
+}
+
+uint8 PlmSetup_B76B_SaveStationTrigger(uint16 j) {  // 0x84B590
+  if (!power_bomb_explosion_status
+      && (samus_pose == kPose_01_FaceR_Normal || samus_pose == kPose_02_FaceL_Normal)
+      && !save_station_lockout_flag
+      && (samus_collision_direction & 0xF) == 3) {
+    CalculatePlmBlockCoords(j);
+    if ((uint16)(samus_x_pos - 8) >> 4 == plm_x_block) {
+      int v1 = j >> 1;
+      uint16 v2 = plm_block_indices[v1];
+      plm_block_indices[v1] = 0;
+      plm_header_ptr[v1] = 0;
+      uint16 v3 = 78;
+      while (v2 != plm_block_indices[v3 >> 1]) {
+        v3 -= 2;
+        if ((v3 & 0x8000u) != 0)
+          return 1;
+      }
+      int v4 = v3 >> 1;
+      ++plm_instr_list_ptrs[v4];
+      ++plm_instr_list_ptrs[v4];
+      plm_instruction_timer[v4] = 1;
+    }
+  }
+  return 1;
+}
+
+uint8 PlmSetup_B76F_SaveStation(uint16 j) {  // 0x84B5EE
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xB04Du);
+  return 0;
+}
+
+uint8 PlmSetup_MotherBrainRoomEscapeDoor(uint16 j) {  // 0x84B5F8
+  uint16 v1 = plm_block_indices[j >> 1];
+  WriteLevelDataBlockTypeAndBts(v1, 0x9001u);
+  uint16 v2 = room_width_in_blocks + room_width_in_blocks + v1;
+  WriteLevelDataBlockTypeAndBts(v2, 0xD0FFu);
+  uint16 v3 = room_width_in_blocks + room_width_in_blocks + v2;
+  WriteLevelDataBlockTypeAndBts(v3, 0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(
+    room_width_in_blocks + room_width_in_blocks + v3,
+    0xD0FFu);
+  return 0;
+}
+
+uint8 PlmSetup_B7EB_EnableSoundsIn32Frames(uint16 j) {  // 0x84B7C3
+  uint16 v1;
+  if (area_index == 6)
+    v1 = 32;
+  else
+    v1 = 240;
+  int v2 = j >> 1;
+  plm_timers[v2] = v1;
+  plm_pre_instrs[v2] = FUNC16(PlmPreInstr_B7EB_DecTimerEnableSoundsDeletePlm);
+  return 0;
+}
+
+void PlmPreInstr_B7EB_DecTimerEnableSoundsDeletePlm(uint16 k) {  // 0x84B7DD
+  int v2 = k >> 1;
+  if (plm_timers[v2]-- == 1) {
+    debug_disable_sounds = 0;
+    plm_header_ptr[v2] = 0;
+  }
+}
+
+void PlmPreInstr_WakeAndLavaIfBoosterCollected(uint16 k) {  // 0x84B7EF
+  if ((collected_items & 0x2000) != 0) {
+    if ((fx_target_y_pos & 0x8000u) != 0) {
+      plm_header_ptr[k >> 1] = 0;
+    } else {
+      fx_y_vel = -128;
+      int v1 = k >> 1;
+      plm_instruction_timer[v1] = 1;
+      ++plm_instr_list_ptrs[v1];
+      ++plm_instr_list_ptrs[v1];
+      plm_timers[v1] = 0;
+    }
+  } else {
+    fx_target_y_pos = -1;
+    fx_y_vel = 0;
+    fx_timer = 0;
+    earthquake_timer = 0;
+    plm_header_ptr[k >> 1] = 0;
+  }
+}
+
+void PlmPreInstr_WakePLMAndStartFxMotionSamusFarLeft(uint16 k) {  // 0x84B82A
+  if (samus_x_pos <= 0xAE0u) {
+    fx_timer = 1;
+    int v1 = k >> 1;
+    plm_instruction_timer[v1] = 1;
+    ++plm_instr_list_ptrs[v1];
+    ++plm_instr_list_ptrs[v1];
+    plm_timers[v1] = 0;
+  }
+}
+
+void PlmPreInstr_AdvanceLavaSamusMovesLeft(uint16 k) {  // 0x84B846
+  static const uint16 g_word_84B876[10] = {
+     0x72b,  0x1bf,
+    0xff50,  0x50a,
+     0x167, 0xff20,
+     0x244,  0x100,
+    0xff20, 0x8000,
+  };
+
+
+  int v1 = k >> 1;
+  uint16 v2 = plm_timers[v1];
+  int v3 = v2 >> 1;
+  uint16 v4 = g_word_84B876[v3];
+  if ((v4 & 0x8000u) != 0) {
+    SetEventHappened(0x15u);
+  } else if (v4 >= samus_x_pos) {
+    if (g_word_84B876[v3 + 1] < fx_base_y_pos)
+      fx_base_y_pos = g_word_84B876[v3 + 1];
+    fx_y_vel = g_word_84B876[v3 + 2];
+    plm_timers[v1] = v2 + 6;
+  }
+}
+
+uint8 PlmSetup_SpeedBoosterEscape(uint16 j) {  // 0x84B89C
+  if (CheckEventHappened(0x15u))
+    plm_header_ptr[j >> 1] = 0;
+  return 0;
+}
+
+void PlmPreInstr_ShaktoolsRoom(uint16 k) {  // 0x84B8B0
+  if (power_bomb_explosion_status) {
+    *(uint16 *)scrolls = 257;
+    *(uint16 *)&scrolls[2] = 257;
+  }
+  if (samus_x_pos > 0x348u) {
+    SetEventHappened(0xDu);
+    plm_header_ptr[k >> 1] = 0;
+  }
+}
+
+uint8 PlmSetup_ShaktoolsRoom(uint16 j) {  // 0x84B8DC
+  *(uint16 *)scrolls = 1;
+  *(uint16 *)&scrolls[2] = 0;
+  return 0;
+}
+
+uint8  WakePlmIfSamusIsBelowAndRightOfTarget(uint16 k) {  // 0x84B8FD
+  uint8 v1 = R18_ >= samus_x_pos;
+  if (R18_ < samus_x_pos) {
+    v1 = R20_ >= samus_y_pos;
+    if (R20_ < samus_y_pos) {
+      v1 = k & 1;
+      int v2 = k >> 1;
+      ++plm_instr_list_ptrs[v2];
+      ++plm_instr_list_ptrs[v2];
+      plm_instruction_timer[v2] = 1;
+    }
+  }
+  return v1;
+}
+
+void PlmPreInstr_OldTourianEscapeShaftEscape(uint16 k) {  // 0x84B927
+  R18_ = 240;
+  R20_ = 2080;
+  if (!WakePlmIfSamusIsBelowAndRightOfTarget(k))
+    SpawnEnemyProjectileWithRoomGfx(0xB4B1u, 0);
+}
+
+void PlmPreInstr_EscapeRoomBeforeOldTourianEscapeShaft(uint16 k) {  // 0x84B948
+  R18_ = 240;
+  R20_ = 1344;
+  if (!WakePlmIfSamusIsBelowAndRightOfTarget(k)) {
+    fx_y_vel = -104;
+    fx_timer = 16;
+  }
+}
+
+uint8 PlmSetup_B974(uint16 j) {  // 0x84B96C
+  R38 = 0;
+  R40 = -1;
+  return 0;
+}
+
+uint8 PlmSetup_B9C1_CrittersEscapeBlock(uint16 j) {  // 0x84B978
+  if (projectile_type[projectile_index >> 1]) {
+    int v1 = j >> 1;
+    int v2 = plm_block_indices[v1] >> 1;
+    uint16 v3 = level_data[v2] & 0xF000 | 0x9F;
+    plm_variable[v1] = v3;
+    level_data[v2] = v3 & 0x8FFF;
+  } else {
+    plm_header_ptr[j >> 1] = 0;
+  }
+  return 0;
+}
+
+uint16 PlmInstr_SetCrittersEscapedEvent(uint16 j, uint16 k) {  // 0x84B9B9
+  SetEventHappened(0xFu);
+  return j;
+}
+
+uint8 PlmSetup_B9ED_CrittersEscapeBlock(uint16 j) {  // 0x84B9C5
+  uint16 v1 = plm_block_indices[j >> 1];
+  WriteLevelDataBlockTypeAndBts(v1, 0xC04Fu);
+  uint16 v2 = room_width_in_blocks + room_width_in_blocks + v1;
+  WriteLevelDataBlockTypeAndBts(v2, 0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(
+    room_width_in_blocks + room_width_in_blocks + v2,
+    0xD0FFu);
+  return 0;
+}
+
+uint8  sub_84B9F1(uint16 j) {  // 0x84B9F1
+  uint16 v1 = plm_block_indices[j >> 1];
+  level_data[v1 >> 1] = level_data[v1 >> 1] & 0xFFF | 0x8000;
+  uint16 v2 = room_width_in_blocks + room_width_in_blocks + v1;
+  level_data[v2 >> 1] = level_data[v2 >> 1] & 0xFFF | 0x8000;
+  uint16 v3 = room_width_in_blocks +  room_width_in_blocks + v2;
+  level_data[v3 >> 1] = level_data[v3 >> 1] & 0xFFF | 0x8000;
+  int v4 = (uint16)(room_width_in_blocks + room_width_in_blocks + v3) >> 1;
+  level_data[v4] = level_data[v4] & 0xFFF | 0x8000;
+  return 0;
+}
+
+uint16 PlmInstr_JumpIfSamusHasNoBombs(uint16 j, uint16 k) {  // 0x84BA6F
+  if ((collected_items & 0x1000) != 0)
+    return j + 2;
+  else
+    return *(uint16 *)RomPtr_84(j);
+}
+
+void UNUSED_sub_84BAD1(uint16 j) {  // 0x84BAD1
+  int v1 = j >> 1;
+  plm_variable[v1] = 4;
+  plm_room_arguments[v1] = plm_room_arguments[v1] & 0x3FF | 0x8000;
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC044u);
+}
+
+uint8 PlmSetup_BB30_CrateriaMainstreetEscape(uint16 j) {  // 0x84BB09
+  if (!CheckEventHappened(0xFu))
+    plm_header_ptr[j >> 1] = 0;
+  return 0;
+}
+
+uint16 PlmInstr_MovePlmRight4Blocks(uint16 j, uint16 k) {  // 0x84BB25
+  plm_block_indices[k >> 1] += 8;
+  return j;
+}
+
+void PlmPreInstr_WakePlmIfTriggered(uint16 k) {  // 0x84BB52
+  int v1 = k >> 1;
+  if (plm_timers[v1]) {
+    ++plm_instr_list_ptrs[v1];
+    ++plm_instr_list_ptrs[v1];
+    plm_instruction_timer[v1] = 1;
+    plm_pre_instrs[v1] = addr_locret_84BB6A;
+  }
+}
+
+void PlmPreInstr_WakePlmIfTriggeredOrSamusBelowPlm(uint16 k) {  // 0x84BB6B
+  CalculatePlmBlockCoords(k);
+  if (samus_x_pos >> 4 == plm_x_block && (uint16)((samus_y_pos >> 4) - plm_y_block) < 5u
+      || plm_timers[k >> 1]) {
+    int v1 = k >> 1;
+    ++plm_instr_list_ptrs[v1];
+    ++plm_instr_list_ptrs[v1];
+    plm_instruction_timer[v1] = 1;
+    plm_pre_instrs[v1] = FUNC16(PlmPreInstr_Empty5);
+  }
+}
+
+void PlmPreInstr_WakePlmIfTriggeredOrSamusAbovePlm(uint16 k) {  // 0x84BBA4
+  CalculatePlmBlockCoords(k);
+  if (samus_x_pos >> 4 == plm_x_block && (uint16)((samus_y_pos >> 4) - plm_y_block) >= 0xFFFCu
+      || plm_timers[k >> 1]) {
+    int v1 = k >> 1;
+    ++plm_instr_list_ptrs[v1];
+    ++plm_instr_list_ptrs[v1];
+    plm_instruction_timer[v1] = 1;
+    plm_pre_instrs[v1] = addr_locret_84BBDC;
+  }
+}
+
+uint16 PlmInstr_ClearTrigger(uint16 j, uint16 k) {  // 0x84BBDD
+  plm_timers[k >> 1] = 0;
+  return j;
+}
+
+uint16 PlmInstr_SpawnEnemyProjectile(uint16 j, uint16 k) {  // 0x84BBE1
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  SpawnEnemyProjectileWithRoomGfx(*v2, *v2);
+  return j + 2;
+}
+
+uint16 PlmInstr_WakeEnemyProjectileAtPlmPos(uint16 j, uint16 k) {  // 0x84BBF0
+  int i;
+
+  uint16 v2 = plm_block_indices[k >> 1];
+  for (i = 34; i >= 0; i -= 2) {
+    if (v2 == enemy_projectile_E[i >> 1])
+      break;
+  }
+  int v4 = i >> 1;
+  enemy_projectile_instr_timers[v4] = 1;
+  ++enemy_projectile_instr_list_ptr[v4];
+  ++enemy_projectile_instr_list_ptr[v4];
+  return j + 2;
+}
+
+void PlmPreInstr_GoToLinkInstrIfShot(uint16 k) {  // 0x84BD0F
+  int v2 = k >> 1;
+  if (plm_timers[v2]) {
+    plm_timers[v2] = 0;
+    plm_instr_list_ptrs[v2] = plm_instruction_list_link_reg[v2];
+    plm_instruction_timer[v2] = 1;
+  }
+}
+
+void PlmPreInstr_GoToLinkInstrIfShotWithPowerBomb(uint16 k) {  // 0x84BD26
+  int v2 = k >> 1;
+  uint16 v3 = plm_timers[v2];
+  if (v3) {
+    if ((v3 & 0xF00) == 768) {
+      plm_timers[v2] = 0;
+      plm_instr_list_ptrs[v2] = plm_instruction_list_link_reg[v2];
+      plm_instruction_timer[v2] = 1;
+      return;
+    }
+    QueueSfx2_Max6(0x57u);
+  }
+  plm_timers[v2] = 0;
+}
+
+void PlmPreInstr_GoToLinkInstrIfShotWithAnyMissile(uint16 k) {  // 0x84BD50
+  int16 v3;
+
+  uint16 v2 = plm_timers[k >> 1];
+  if (v2) {
+    v3 = v2 & 0xF00;
+    if (v3 == 512) {
+      plm_variables[k >> 1] = 119;
+      goto LABEL_4;
+    }
+    if (v3 == 256) {
+LABEL_4:;
+      int v4 = k >> 1;
+      plm_timers[v4] = 0;
+      plm_instr_list_ptrs[v4] = plm_instruction_list_link_reg[v4];
+      plm_instruction_timer[v4] = 1;
+      return;
+    }
+    QueueSfx2_Max6(0x57u);
+  }
+  plm_timers[k >> 1] = 0;
+}
+
+void PlmPreInstr_GoToLinkInstrIfShotWithSuperMissile(uint16 k) {  // 0x84BD88
+  int v2 = k >> 1;
+  uint16 v3 = plm_timers[v2];
+  if (v3) {
+    if ((v3 & 0xF00) == 512) {
+      plm_timers[v2] = 0;
+      plm_instr_list_ptrs[v2] = plm_instruction_list_link_reg[v2];
+      plm_instruction_timer[v2] = 1;
+      return;
+    }
+    QueueSfx2_Max6(0x57u);
+  }
+  plm_timers[v2] = 0;
+}
+
+void PlmPreInstr_GoToLinkInstruction(uint16 k) {  // 0x84BDB2
+  int v2 = k >> 1;
+  plm_timers[v2] = 0;
+  plm_instr_list_ptrs[v2] = plm_instruction_list_link_reg[v2];
+  plm_instruction_timer[v2] = 1;
+}
+
+void PlmPreInstr_PlayDudSound(uint16 k) {  // 0x84BE1C
+  int v2 = k >> 1;
+  if (plm_timers[v2])
+    QueueSfx2_Max6(0x57u);
+  plm_timers[v2] = 0;
+}
+
+void PlmPreInstr_GotoLinkIfBoss1Dead(uint16 k) {  // 0x84BDD4
+  if (CheckBossBitForCurArea(1u) & 1)
+    PlmPreInstr_GoToLinkInstruction(k);
+  else
+    PlmPreInstr_PlayDudSound(k);
+}
+
+void PlmPreInstr_GotoLinkIfMiniBossDead(uint16 k) {  // 0x84BDE3
+  if (CheckBossBitForCurArea(2u) & 1)
+    PlmPreInstr_GoToLinkInstruction(k);
+  else
+    PlmPreInstr_PlayDudSound(k);
+}
+
+void PlmPreInstr_GotoLinkIfTorizoDead(uint16 k) {  // 0x84BDF2
+  if (CheckBossBitForCurArea(4u) & 1)
+    PlmPreInstr_GoToLinkInstruction(k);
+  else
+    PlmPreInstr_PlayDudSound(k);
+}
+
+void PlmPreInstr_GotoLinkIfEnemyDeathQuotaOk(uint16 k) {  // 0x84BE01
+  if (num_enemies_killed_in_room < num_enemy_deaths_left_to_clear) {
+    PlmPreInstr_PlayDudSound(k);
+  } else {
+    SetEventHappened(0);
+    PlmPreInstr_GoToLinkInstruction(k);
+  }
+}
+
+void PlmPreInstr_GotoLinkIfTourianStatueFinishedProcessing(uint16 k) {  // 0x84BE1F
+  if ((tourian_entrance_statue_finished & 0x8000u) == 0)
+    PlmPreInstr_PlayDudSound(k);
+  else
+    PlmPreInstr_GoToLinkInstruction(k);
+}
+
+void PlmPreInstr_GotoLinkIfCrittersEscaped(uint16 k) {  // 0x84BE30
+  if (CheckEventHappened(0xFu) & 1)
+    PlmPreInstr_GoToLinkInstruction(k);
+  else
+    PlmPreInstr_PlayDudSound(k);
+}
+
+uint16 PlmInstr_SetGreyDoorPreInstr(uint16 j, uint16 k) {  // 0x84BE3F
+  plm_pre_instrs[k >> 1] = kGrayDoorPreInstrs[plm_variable[k >> 1] >> 1];
+  return j;
+}
+
+uint8 PlmSetup_C806_LeftGreenGateTrigger(uint16 j) {  // 0x84C54D
+  if ((projectile_type[projectile_index >> 1] & 0xFFF) == 512)
+    return sub_84C63F(j);
+  QueueSfx2_Max6(0x57u);
+  plm_header_ptr[j >> 1] = 0;
+  return 0;
+}
+
+uint8 PlmSetup_C80A_RightGreenGateTrigger(uint16 j) {  // 0x84C56C
+  if ((projectile_type[projectile_index >> 1] & 0xFFF) == 512)
+    return sub_84C647(j);
+  QueueSfx2_Max6(0x57u);
+  plm_header_ptr[j >> 1] = 0;
+  return 0;
+}
+
+uint8 PlmSetup_C80E_LeftRedGateTrigger(uint16 j) {  // 0x84C58B
+  int16 v1;
+
+  v1 = projectile_type[projectile_index >> 1] & 0xFFF;
+  if (v1 == 256 || v1 == 512)
+    return sub_84C63F(j);
+  QueueSfx2_Max6(0x57u);
+  plm_header_ptr[j >> 1] = 0;
+  return 0;
+}
+
+uint8 PlmSetup_C812_RightRedGateTrigger(uint16 j) {  // 0x84C5AF
+  int16 v1;
+
+  v1 = projectile_type[projectile_index >> 1] & 0xFFF;
+  if (v1 == 256 || v1 == 512)
+    return sub_84C647(j);
+  QueueSfx2_Max6(0x57u);
+  plm_header_ptr[j >> 1] = 0;
+  return 0;
+}
+
+uint8 PlmSetup_C81E_LeftYellowGateTrigger(uint16 j) {  // 0x84C5D3
+  if ((projectile_type[projectile_index >> 1] & 0xFFF) == 768)
+    return sub_84C63F(j);
+  QueueSfx2_Max6(0x57u);
+  int v1 = j >> 1;
+  plm_header_ptr[v1] = 0;
+  PlmSetup_C822_RightYellowGateTrigger(j);
+  return 0;
+}
+
+uint8 PlmSetup_C822_RightYellowGateTrigger(uint16 j) {  // 0x84C5F1
+  if ((projectile_type[projectile_index >> 1] & 0xFFF) != 768)
+    return sub_84C647(j);
+  QueueSfx2_Max6(0x57u);
+  plm_header_ptr[j >> 1] = 0;
+  return 0;
+}
+
+uint8 PlmSetup_C816_LeftBlueGateTrigger(uint16 j) {  // 0x84C610
+  if ((projectile_type[projectile_index >> 1] & 0xFFF) != 768)
+    return sub_84C63F(j);
+  plm_header_ptr[j >> 1] = 0;
+  PlmSetup_C81A_RightBlueGateTrigger(j);
+  return 0;
+}
+
+uint8 PlmSetup_C81A_RightBlueGateTrigger(uint16 j) {  // 0x84C627
+  if ((projectile_type[projectile_index >> 1] & 0xFFF) != 768)
+    return sub_84C647(j);
+  plm_header_ptr[j >> 1] = 0;
+  return 0;
+}
+
+uint8 sub_84C63F(uint16 j) {  // 0x84C63F
+  return sub_84C64C(j, plm_block_indices[j >> 1] + 2);
+}
+
+uint8 sub_84C647(uint16 j) {  // 0x84C647
+  return sub_84C64C(j, plm_block_indices[j >> 1] - 2);
+}
+
+uint8  sub_84C64C(uint16 j, uint16 a) {  // 0x84C64C
+  uint16 v2 = 78;
+  while (a != plm_block_indices[v2 >> 1]) {
+    v2 -= 2;
+    if ((v2 & 0x8000u) != 0)
+      goto LABEL_7;
+  }
+  int v3;
+  v3 = v2 >> 1;
+  if (!plm_timers[v3])
+    ++plm_timers[v3];
+LABEL_7:
+  plm_header_ptr[j >> 1] = 0;
+  return 1;
+}
+
+void SetBts0x10FiveStepsDown(uint16 j) {  // 0x84C66A
+  uint16 v1 = SetBtsTo0x10AdvanceRow(plm_block_indices[j >> 1] >> 1);
+  uint16 v2 = SetBtsTo0x10AdvanceRow(v1);
+  uint16 v3 = SetBtsTo0x10AdvanceRow(v2);
+  uint16 v4 = SetBtsTo0x10AdvanceRow(v3);
+  SetBtsTo0x10AdvanceRow(v4);
+}
+
+uint16 SetBtsTo0x10AdvanceRow(uint16 k) {  // 0x84C67F
+  *(uint16 *)&BTS[k] = (BTS[k + 1] << 8) | 0x10;
+  return room_width_in_blocks + k;
+}
+
+void SetBts0x10FiveStepsUp(uint16 j) {  // 0x84C694
+  uint16 v1 = SetBtsTo0x10AdvanceRowUp(plm_block_indices[j >> 1] >> 1);
+  uint16 v2 = SetBtsTo0x10AdvanceRowUp(v1);
+  uint16 v3 = SetBtsTo0x10AdvanceRowUp(v2);
+  uint16 v4 = SetBtsTo0x10AdvanceRowUp(v3);
+  SetBtsTo0x10AdvanceRowUp(v4);
+}
+
+uint16 SetBtsTo0x10AdvanceRowUp(uint16 k) {  // 0x84C6A9
+  *(uint16 *)&BTS[k] = (BTS[k + 1] << 8) | 0x10;
+  return k - room_width_in_blocks;
+}
+
+uint8 PlmSetup_C82A_DownwardsClosedGate(uint16 j) {  // 0x84C6BE
+  SpawnEnemyProjectileWithRoomGfx(0xE659u, 0);
+  SetBts0x10FiveStepsDown(j);
+  return 0;
+}
+
+uint8 PlmSetup_C832_UpwardsClosedGate(uint16 j) {  // 0x84C6CB
+  SpawnEnemyProjectileWithRoomGfx(0xE675u, 0);
+  SetBts0x10FiveStepsUp(j);
+  return 0;
+}
+
+uint8 PlmSetup_C826_DownwardsOpenGate(uint16 j) {  // 0x84C6D8
+  SetBts0x10FiveStepsDown(j);
+  return 0;
+}
+
+uint8 PlmSetup_C82E_UpwardsOpenGate(uint16 j) {  // 0x84C6DC
+  SetBts0x10FiveStepsUp(j);
+  return 0;
+}
+
+uint8 PlmSetup_C836_DownwardsGateShootblock(uint16 j) {  // 0x84C6E0
+  int v1 = j >> 1;
+  plm_instr_list_ptrs[v1] = kDowardGatePlmListPtrs[plm_room_arguments[v1] >> 1];
+  uint16 v2 = kDowardGateLeftBlockBts[plm_room_arguments[v1] >> 1];
+  if (v2)
+    WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] - 2, v2);
+  uint16 v3 = kDowardGateRightBlockBts[plm_room_arguments[v1] >> 1];
+  if (v3)
+    WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, v3);
+  return 0;
+}
+
+uint8 PlmSetup_C73A_UpwardsGateShootblock(uint16 j) {  // 0x84C73A
+  int v1 = j >> 1;
+  plm_instr_list_ptrs[v1] = kUpwardGatePlmListPtrs[plm_room_arguments[v1] >> 1];
+  uint16 v2 = kUpwardGateLeftBlockBts[plm_room_arguments[v1] >> 1];
+  if (v2)
+    WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] - 2, v2);
+  uint16 v3 = kUpwardGateRightBlockBts[plm_room_arguments[v1] >> 1];
+  if (v3)
+    WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, v3);
+  return 0;
+}
+
+uint8 PlmSetup_C794_GreyDoor(uint16 j) {  // 0x84C794
+  int v1 = j >> 1;
+  plm_variable[v1] = (uint16)(HIBYTE(plm_room_arguments[v1]) & 0x7C) >> 1;
+  plm_room_arguments[v1] &= ~0x7C00;
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC044u);
+  return 0;
+}
+
+uint8 PlmSetup_Door_Colored(uint16 j) {  // 0x84C7B1
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xC044u);
+  return 0;
+}
+
+uint8 PlmSetup_Door_Blue(uint16 j) {  // 0x84C7BB
+  if (sign16(projectile_index))
+    printf("BUG: projectile_index invalid\n");
+  if (!sign16(projectile_index) && (projectile_type[projectile_index >> 1] & 0xF00) == 768) {
+    plm_header_ptr[j >> 1] = 0;
+  } else {
+    uint16 v1 = plm_block_indices[j >> 1];
+    level_data[v1 >> 1] = level_data[v1 >> 1] & 0xFFF | 0x8000;
+  }
+  return 0;
+}
+
+uint8 PlmSetup_Door_Strange(uint16 j) {  // 0x84C7E2
+  int v1 = j >> 1;
+  uint16 v2 = plm_block_indices[v1];
+  plm_block_indices[v1] = 0;
+  uint16 v3 = 78;
+  while (v2 != plm_block_indices[v3 >> 1]) {
+    v3 -= 2;
+    if ((v3 & 0x8000u) != 0)
+      return 0;
+  }
+  plm_timers[v3 >> 1] = projectile_type[(int16)projectile_index >> 1] & 0x1FFF | 0x8000;
+  return 0;
+}
+
+uint16 PlmInstr_SetBtsTo1(uint16 j, uint16 k) {  // 0x84CD93
+  *(uint16 *)&BTS[plm_block_indices[k >> 1] >> 1] = (BTS[(plm_block_indices[k >> 1] >> 1) + 1] << 8) | 1;
+  return j;
+}
+
+uint8 PlmSetup_D028_D02C_Unused(uint16 j) {  // 0x84CDC2
+  if (samus_pose == kPose_81_FaceR_Screwattack || samus_pose == kPose_82_FaceL_Screwattack) {
+    int v1 = j >> 1;
+    int v2 = plm_block_indices[v1] >> 1;
+    uint16 v3 = level_data[v2];
+    plm_variable[v1] = v3;
+    level_data[v2] = v3 & 0xFFF;
+    return 0;
+  } else {
+    plm_header_ptr[j >> 1] = 0;
+    return 1;
+  }
+}
+
+uint8 PlmSetup_RespawningSpeedBoostBlock(uint16 j) {  // 0x84CDEA
+  if ((speed_boost_counter & 0xF00) == 1024
+      || samus_pose == kPose_C9_FaceR_Shinespark_Horiz
+      || samus_pose == kPose_CA_FaceL_Shinespark_Horiz
+      || samus_pose == kPose_CB_FaceR_Shinespark_Vert
+      || samus_pose == kPose_CC_FaceL_Shinespark_Vert
+      || samus_pose == kPose_CD_FaceR_Shinespark_Diag
+      || samus_pose == kPose_CE_FaceL_Shinespark_Diag) {
+    int v1 = j >> 1;
+    int v2 = plm_block_indices[v1] >> 1;
+    uint16 v3 = level_data[v2] & 0xF000 | 0xB6;
+    plm_variable[v1] = v3;
+    level_data[v2] = v3 & 0xFFF;
+    return 0;
+  } else {
+    plm_header_ptr[j >> 1] = 0;
+    return 1;
+  }
+}
+
+uint8 PlmSetup_RespawningCrumbleBlock(uint16 j) {  // 0x84CE37
+  if ((samus_collision_direction & 0xF) == 3) {
+    int v1 = j >> 1;
+    int v2 = plm_block_indices[v1] >> 1;
+    uint16 v3 = level_data[v2] & 0xF000 | 0xBC;
+    plm_variable[v1] = v3;
+    level_data[v2] = v3 & 0x8FFF;
+    plm_instruction_timer[v1] = 4;
+  } else {
+    plm_header_ptr[j >> 1] = 0;
+  }
+  return 1;
+}
+
+uint8 PlmSetup_RespawningShotBlock(uint16 j) {  // 0x84CE6B
+  int v1 = j >> 1;
+  int v2 = plm_block_indices[v1] >> 1;
+  uint16 v3 = level_data[v2] & 0xF000 | 0x52;
+  plm_variable[v1] = v3;
+  level_data[v2] = v3 & 0x8FFF;
+  return 0;
+}
+
+uint8 PlmSetup_RespawningBombBlock(uint16 j) {  // 0x84CE83
+  if ((speed_boost_counter & 0xF00) == 1024
+      || samus_pose == kPose_81_FaceR_Screwattack
+      || samus_pose == kPose_82_FaceL_Screwattack
+      || samus_pose == kPose_C9_FaceR_Shinespark_Horiz
+      || samus_pose == kPose_CA_FaceL_Shinespark_Horiz
+      || samus_pose == kPose_CB_FaceR_Shinespark_Vert
+      || samus_pose == kPose_CC_FaceL_Shinespark_Vert
+      || samus_pose == kPose_CD_FaceR_Shinespark_Diag
+      || samus_pose == kPose_CE_FaceL_Shinespark_Diag) {
+    int v2 = j >> 1;
+    int v3 = plm_block_indices[v2] >> 1;
+    uint16 v4 = level_data[v3] & 0xF000 | 0x58;
+    plm_variable[v2] = v4;
+    level_data[v3] = v4 & 0xFFF;
+    return 0;
+  } else {
+    plm_header_ptr[j >> 1] = 0;
+    return 1;
+  }
+}
+
+uint8 PlmSetup_RespawningBombBlock2(uint16 j) {  // 0x84CEDA
+  int16 v1;
+
+  v1 = projectile_type[projectile_index >> 1] & 0xF00;
+  if (v1 == 1280) {
+    int v5 = j >> 1;
+    plm_instr_list_ptrs[v5] += 3;
+    int v6 = plm_block_indices[v5] >> 1;
+    uint16 v7 = level_data[v6] & 0xF000 | 0x58;
+    plm_variable[v5] = v7;
+    level_data[v6] = v7 & 0x8FFF;
+  } else if (v1 == 768) {
+    int v2 = j >> 1;
+    int v3 = plm_block_indices[v2] >> 1;
+    uint16 v4 = level_data[v3] & 0xF000 | 0x58;
+    plm_variable[v2] = v4;
+    level_data[v3] = v4 & 0x8FFF;
+  } else {
+    plm_header_ptr[j >> 1] = 0;
+  }
+  return 0;
+}
+
+uint8 PlmSetup_RespawningPowerBombBlock(uint16 j) {  // 0x84CF2E
+  int16 v1;
+
+  v1 = projectile_type[projectile_index >> 1] & 0xF00;
+  if (v1 == 1280) {
+    plm_instr_list_ptrs[j >> 1] = addr_kPlmInstrList_C91C;
+  } else if (v1 == 768) {
+    int v2 = j >> 1;
+    int v3 = plm_block_indices[v2] >> 1;
+    uint16 v4 = level_data[v3] & 0xF000 | 0x57;
+    plm_variable[v2] = v4;
+    level_data[v3] = v4 & 0x8FFF;
+  } else {
+    plm_header_ptr[j >> 1] = 0;
+  }
+  return 0;
+}
+
+uint8 PlmSetup_D08C_SuperMissileBlockRespawning(uint16 j) {  // 0x84CF67
+  int16 v1;
+
+  v1 = projectile_type[projectile_index >> 1] & 0xF00;
+  if (v1 == 1280) {
+    plm_instr_list_ptrs[j >> 1] = addr_kPlmInstrList_C922;
+  } else if (v1 == 512) {
+    int v2 = j >> 1;
+    int v3 = plm_block_indices[v2] >> 1;
+    uint16 v4 = level_data[v3] & 0xF000 | 0x9F;
+    plm_variable[v2] = v4;
+    level_data[v3] = v4 & 0x8FFF;
+  } else {
+    plm_header_ptr[j >> 1] = 0;
+  }
+  return 0;
+}
+
+uint8 PlmSetup_D08C_CrumbleBlock(uint16 j) {  // 0x84CFA0
+  if ((projectile_type[projectile_index >> 1] & 0xF00) != 1280)
+    plm_header_ptr[j >> 1] = 0;
+  return 0;
+}
+
+uint8  PlmSetup_D0DC_BreakableGrappleBlock(uint16 j) {  // 0x84CFB5
+  int v1 = j >> 1;
+  uint16 v2 = plm_block_indices[v1];
+  plm_variable[v1] = level_data[v2 >> 1];
+  *(uint16 *)&BTS[v2 >> 1] = BTS[(v2 >> 1) + 1] << 8;
+  return PlmSetup_D0D8_SetVFlag(j);
+}
+
+uint8 PlmSetup_D0D8_SetVFlag(uint16 j) {  // 0x84CFCD
+  return 0x41;
+}
+
+uint8 PlmSetup_D0D8_ClearVflag(uint16 j) {  // 0x84CFD1
+  return 1;
+}
+
+uint8  PlmSetup_D0E8_GiveSamusDamage(uint16 j) {  // 0x84CFD5
+  ++samus_periodic_damage;
+  return 0x41;
+}
+
+uint8 PlmSetup_D113_LowerNorfairChozoRoomPlug(uint16 j) {  // 0x84D108
+  uint16 a = 0; // a undefined
+  level_data[plm_block_indices[j >> 1] >> 1] = a & 0xFFF;
+  return 0;
+}
+
+uint8 PlmSetup_D127(uint16 j) {  // 0x84D117
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xC000u);
+  return 0;
+}
+
+uint8 PlmSetup_D138(uint16 j) {  // 0x84D12B
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xE000u);
+  return 0;
+}
+
+uint16 PlmInstr_FxBaseYPos_0x2D2(uint16 j, uint16 k) {  // 0x84D155
+  fx_base_y_pos = 722;
+  return j;
+}
+
+void PlmPreInstr_DeletePlmAndSpawnTriggerIfBlockDestroyed(uint16 k) {  // 0x84D15C
+  uint16 prod = 8 * (uint8)room_width_in_blocks;
+  uint16 v1 = 2 * (prod + 4);
+  if (level_data[v1 >> 1] == 255) {
+    WriteLevelDataBlockTypeAndBts(v1, 0xB083u);
+    plm_header_ptr[plm_id >> 1] = 0;
+  }
+}
+
+uint8 PlmSetup_D6DA_LowerNorfairChozoHandTrigger(uint16 j) {  // 0x84D18F
+  static const SpawnHardcodedPlmArgs unk_84D1DA = { 0x0c, 0x1d, 0xd113 };
+
+  if ((collected_items & 0x200) != 0
+      && (samus_collision_direction & 0xF) == 3
+      && (samus_pose == kPose_1D_FaceR_Morphball_Ground
+          || samus_pose == kPose_79_FaceR_Springball_Ground
+          || samus_pose == kPose_7A_FaceL_Springball_Ground)) {
+    SetEventHappened(0xCu);
+    enemy_data[0].parameter_1 = 1;
+    int v2 = plm_block_indices[j >> 1] >> 1;
+    level_data[v2] &= 0xFFFu;
+    CallSomeSamusCode(0);
+    SpawnHardcodedPlm(&unk_84D1DA);
+  }
+  plm_header_ptr[j >> 1] = 0;
+  return 1;
+}
+
+void PlmPreInstr_IncrementRoomArgIfShotBySuperMissile(uint16 k) {  // 0x84D1E6
+  int16 v3;
+
+  int v1 = k >> 1;
+  uint16 v2 = plm_timers[v1];
+  if (v2) {
+    v3 = v2 & 0xF00;
+    if (v3 == 512 || v3 == 256) {
+      plm_timers[v1] = 0;
+      ++plm_room_arguments[v1];
+    }
+  }
+  plm_timers[v1] = 0;
+}
+
+uint16 PlmInstr_GotoIfRoomArgLess(uint16 j, uint16 k) {  // 0x84D2F9
+  uint8 *v2 = RomPtr_84(j);
+  if (plm_room_arguments[k >> 1] >= *(uint16 *)v2)
+    return j + 4;
+  else
+    return *((uint16 *)v2 + 1);
+}
+
+uint16 PlmInstr_SpawnFourMotherBrainGlass(uint16 j, uint16 k) {  // 0x84D30B
+  QueueSfx3_Max15(0x2Eu);
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  SpawnMotherBrainGlassShatteringShard(*v2);
+  SpawnMotherBrainGlassShatteringShard(v2[1]);
+  SpawnMotherBrainGlassShatteringShard(v2[2]);
+  SpawnMotherBrainGlassShatteringShard(v2[3]);
+  return j + 8;
+}
+
+void SpawnMotherBrainGlassShatteringShard(uint16 a) {  // 0x84D331
+  SpawnEnemyProjectileWithRoomGfx(0xCEFCu, a);
+}
+
+void PlmPreInstr_WakePlmIfSamusHasBombs(uint16 k) {  // 0x84D33B
+  if ((collected_items & 0x1000) != 0) {
+    int v1 = k >> 1;
+    plm_instruction_timer[v1] = 1;
+    ++plm_instr_list_ptrs[v1];
+    ++plm_instr_list_ptrs[v1];
+    plm_pre_instrs[v1] = FUNC16(nullsub_351);
+  }
+}
+
+uint16 PlmInstr_SpawnTorizoStatueBreaking(uint16 j, uint16 k) {  // 0x84D357
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  SpawnEnemyProjectileWithRoomGfx(0xA993u, *v2);
+  return j + 2;
+}
+
+uint16 PlmInstr_QueueSong1MusicTrack(uint16 j, uint16 k) {  // 0x84D3C7
+  QueueMusic_Delayed8(6u);
+  return j;
+}
+
+uint16 PlmInstr_TransferWreckedShipChozoSpikesToSlopes(uint16 j, uint16 k) {  // 0x84D3D7
+  WriteLevelDataBlockTypeAndBts(0x1608u, 0x1012u);
+  WriteLevelDataBlockTypeAndBts(0x160Au, 0x1013u);
+  return j;
+}
+
+uint16 PlmInstr_TransferWreckedShipSlopesToChozoSpikes(uint16 j, uint16 k) {  // 0x84D3F4
+  WriteLevelDataBlockTypeAndBts(0x1608u, 0xA000u);
+  WriteLevelDataBlockTypeAndBts(0x160Au, 0xA000u);
+  return j;
+}
+
+void UNUSED_sub_84D409(uint16 k) {  // 0x84D409
+  int v1 = k >> 1;
+  if ((plm_timers[v1] & 0xF00) == 1280) {
+    plm_instr_list_ptrs[v1] = plm_instruction_list_link_reg[v1];
+    plm_instruction_timer[v1] = 1;
+  }
+  plm_timers[v1] = 0;
+}
+
+void UNUSED_sub_84D476(void) {  // 0x84D476
+  fx_target_y_pos = 722;
+  fx_y_vel = 112;
+  fx_timer = 32;
+}
+
+void UNUSED_sub_84D489(void) {  // 0x84D489
+  fx_base_y_pos = 722;
+}
+
+void PlmPreInstr_WakeOnKeyPress(uint16 k) {  // 0x84D4BF
+  if ((joypad1_newkeys & (uint16)(kButton_B | kButton_Y | kButton_Left | kButton_Right | kButton_A | kButton_X)) != 0) {
+    int v2 = k >> 1;
+    plm_instruction_timer[v2] = 1;
+    ++plm_instr_list_ptrs[v2];
+    ++plm_instr_list_ptrs[v2];
+  }
+}
+
+uint16 PlmInstr_EnableWaterPhysics(uint16 j, uint16 k) {  // 0x84D525
+  fx_liquid_options &= ~4u;
+  return j;
+}
+
+uint16 PlmInstr_SpawnN00bTubeCrackEnemyProjectile(uint16 j, uint16 k) {  // 0x84D52C
+  uint16 v2 = 0; // undefined
+  SpawnEnemyProjectileWithRoomGfx(0xD904u, v2);
+  return j;
+}
+
+uint16 PlmInstr_DiagonalEarthquake(uint16 j, uint16 k) {  // 0x84D536
+  earthquake_type = 11;
+  earthquake_timer = 64;
+  return j;
+}
+
+uint16 PlmInstr_Spawn10shardsAnd6n00bs(uint16 j, uint16 k) {  // 0x84D543
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 2u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 4u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 6u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 8u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xAu);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xCu);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xEu);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0x10u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0x12u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 0);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 2u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 4u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 6u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 8u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 0xAu);
+  return j;
+}
+
+uint16 PlmInstr_DisableSamusControls(uint16 j, uint16 k) {  // 0x84D5E6
+  CallSomeSamusCode(0);
+  return j;
+}
+
+uint16 PlmInstr_EnableSamusControls(uint16 j, uint16 k) {  // 0x84D5EE
+  CallSomeSamusCode(1);
+  return j;
+}
+
+uint8 PlmSetup_MotherBrainGlass(uint16 j) {  // 0x84D5F6
+  int v1 = j >> 1;
+  plm_room_arguments[v1] = 0;
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0x8044u);
+  return 0;
+}
+
+uint8 PlmSetup_DeletePlmIfAreaTorizoDead(uint16 j) {  // 0x84D606
+  if (CheckBossBitForCurArea(4u) & 1)
+    plm_header_ptr[j >> 1] = 0;
+  return 0;
+}
+
+uint8 PlmSetup_MakeBllockChozoHandTrigger(uint16 j) {  // 0x84D616
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xB080u);
+  return 0;
+}
+
+uint8 PlmSetup_D6F2_WreckedShipChozoHandTrigger(uint16 j) {  // 0x84D620
+  if (CheckBossBitForCurArea(1u) & 1
+      && (samus_collision_direction & 0xF) == 3
+      && (samus_pose == kPose_1D_FaceR_Morphball_Ground
+          || samus_pose == kPose_79_FaceR_Springball_Ground
+          || samus_pose == kPose_7A_FaceL_Springball_Ground)) {
+    enemy_data[0].parameter_1 = 1;
+    *(uint16 *)&scrolls[7] = 514;
+    *(uint16 *)&scrolls[13] = 257;
+    int v1 = plm_block_indices[j >> 1] >> 1;
+    level_data[v1] &= 0xFFFu;
+    CallSomeSamusCode(0);
+    static const SpawnHardcodedPlmArgs unk_84D673 = { 0x17, 0x1d, 0xd6f8 };
+    SpawnHardcodedPlm(&unk_84D673);
+    return 0;
+  }
+  plm_header_ptr[j >> 1] = 0;
+  return 1;
+}
+
+uint8 PlmSetup_D700_MakePlmAirBlock_Unused(uint16 j) {  // 0x84D67F
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x44u);
+  return 0;
+}
+
+uint8 PlmSetup_D704_AlteranateLowerNorfairChozoHand_Unused(uint16 j) {  // 0x84D689
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x8044u);
+  return 0;
+}
+
+uint8 PlmSetup_D708_LowerNorfairChozoBlockUnused(uint16 j) {  // 0x84D693
+  int v1 = j >> 1;
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0x8044u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, 0x50FFu);
+  WriteLevelDataBlockTypeAndBts(
+    room_width_in_blocks
+    + room_width_in_blocks
+    + plm_block_indices[v1],
+    0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(
+    room_width_in_blocks
+    + room_width_in_blocks
+    + plm_block_indices[v1]
+    + 2,
+    0xD0FFu);
+  return 0;
+}
+
+uint8 PlmSetup_D70C_NoobTube(uint16 j) {  // 0x84D6CC
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x8044u);
+  return 0;
+}
+
+void PlmPreInstr_WakePlmIfRoomArgumentDoorIsSet(uint16 k) {  // 0x84D753
+  int v2 = k >> 1;
+  int idx = PrepareBitAccess(plm_room_arguments[v2]);
+  if ((bitmask & opened_door_bit_array[idx]) != 0) {
+    int v3 = k >> 1;
+    plm_pre_instrs[v3] = addr_locret_84D779;
+    plm_instr_list_ptrs[v3] = plm_instruction_list_link_reg[v3];
+    plm_instruction_timer[v3] = 1;
+  }
+}
+
+uint16 PlmInstr_ShootEyeDoorProjectileWithProjectileArg(uint16 j, uint16 k) {  // 0x84D77A
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorProjectile, *v2);
+  QueueSfx2_Max6(0x4Cu);
+  return j + 2;
+}
+
+uint16 PlmInstr_SpawnEyeDoorSweatEnemyProjectile(uint16 j, uint16 k) {  // 0x84D790
+  uint16 *v2 = (uint16 *)RomPtr_84(j);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorSweat, *v2);
+  return j + 2;
+}
+
+uint16 PlmInstr_SpawnTwoEyeDoorSmoke(uint16 j, uint16 k) {  // 0x84D79F
+  SpawnEnemyProjectileWithRoomGfx(0xE517u, 0x30Au);
+  SpawnEnemyProjectileWithRoomGfx(0xE517u, 0x30Au);
+  return j;
+}
+
+uint16 PlmInstr_SpawnEyeDoorSmokeProjectile(uint16 j, uint16 k) {  // 0x84D7B6
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorSmoke, 0xBu);
+  return j;
+}
+
+uint16 PlmInstr_MoveUpAndMakeBlueDoorFacingRight(uint16 j, uint16 k) {  // 0x84D7C3
+  int v2 = k >> 1;
+  uint16 v3 = (__PAIR32__(plm_block_indices[v2] - room_width_in_blocks, plm_block_indices[v2])
+        - __PAIR32__(room_width_in_blocks, room_width_in_blocks)) >> 16;
+  plm_block_indices[v2] = v3;
+  uint16 v4 = v3;
+  WriteLevelDataBlockTypeAndBts(v3, 0xC041u);
+  sub_84D7EF(v4);
+  return j;
+}
+
+uint16 PlmInstr_MoveUpAndMakeBlueDoorFacingLeft(uint16 j, uint16 k) {  // 0x84D7DA
+  int v2 = k >> 1;
+  uint16 v3 = (__PAIR32__(plm_block_indices[v2] - room_width_in_blocks, plm_block_indices[v2])
+        - __PAIR32__(room_width_in_blocks, room_width_in_blocks)) >> 16;
+  plm_block_indices[v2] = v3;
+  uint16 v4 = v3;
+  WriteLevelDataBlockTypeAndBts(v3, 0xC040u);
+  sub_84D7EF(v4);
+  return j;
+}
+
+void sub_84D7EF(uint16 k) {  // 0x84D7EF
+  uint16 v1 = room_width_in_blocks + room_width_in_blocks + k;
+  WriteLevelDataBlockTypeAndBts(v1, 0xD0FFu);
+  uint16 v2 = room_width_in_blocks + room_width_in_blocks + v1;
+  WriteLevelDataBlockTypeAndBts(v2, 0xD0FEu);
+  WriteLevelDataBlockTypeAndBts(
+    room_width_in_blocks + room_width_in_blocks + v2,
+    0xD0FDu);
+}
+
+uint8 PlmSetup_EyeDoorEye(uint16 j) {  // 0x84DA8C
+  int idx = PrepareBitAccess(plm_room_arguments[j >> 1]);
+  if ((bitmask & opened_door_bit_array[idx]) == 0) {
+    int v1 = j >> 1;
+    WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC044u);
+    WriteLevelDataBlockTypeAndBts(
+      room_width_in_blocks
+      + room_width_in_blocks
+      + plm_block_indices[v1],
+      0xD0FFu);
+  }
+  return 0;
+}
+
+uint8 PlmSetup_EyeDoor(uint16 j) {  // 0x84DAB9
+  int idx = PrepareBitAccess(plm_room_arguments[j >> 1]);
+  if ((bitmask & opened_door_bit_array[idx]) == 0)
+    WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xA000u);
+  return 0;
+}
+
+void PlmPreInstr_SetMetroidsClearState_Ev0x10(uint16 k) {  // 0x84DADE
+  if (num_enemies_killed_in_room >= num_enemy_deaths_left_to_clear)
+    SetEventHappened(0x10u);
+}
+
+void PlmPreInstr_SetMetroidsClearState_Ev0x11(uint16 k) {  // 0x84DAEE
+  if (num_enemies_killed_in_room >= num_enemy_deaths_left_to_clear)
+    SetEventHappened(0x11u);
+}
+
+void PlmPreInstr_SetMetroidsClearState_Ev0x12(uint16 k) {  // 0x84DAFE
+  if (num_enemies_killed_in_room >= num_enemy_deaths_left_to_clear)
+    SetEventHappened(0x12u);
+}
+
+void PlmPreInstr_SetMetroidsClearState_Ev0x13(uint16 k) {  // 0x84DB0E
+  if (num_enemies_killed_in_room >= num_enemy_deaths_left_to_clear)
+    SetEventHappened(0x13u);
+}
+
+uint8 PlmSetup_SetMetroidRequiredClearState(uint16 j) {  // 0x84DB1E
+  plm_pre_instrs[j >> 1] = off_84DB28[plm_room_arguments[j >> 1] >> 1];
+  return 0;
+}
+
+void PlmPreInstr_GotoLinkIfShotWithSuperMissile(uint16 k) {  // 0x84DB64
+  int16 v1;
+
+  v1 = plm_timers[k >> 1] & 0xF00;
+  if (v1 == 512) {
+    plm_room_arguments[k >> 1] = 119;
+  } else if (v1 != 256) {
+    return;
+  }
+  int v2 = k >> 1;
+  plm_timers[v2] = 0;
+  plm_instr_list_ptrs[v2] = plm_instruction_list_link_reg[v2];
+  plm_instruction_timer[v2] = 1;
+}
+
+uint16 PlmInstr_DamageDraygonTurret(uint16 j, uint16 k) {  // 0x84DB8E
+  *(uint16 *)RomPtr_7E(plm_variable[k >> 1]) = 1;
+  uint16 v2 = plm_block_indices[k >> 1];
+  WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(
+    room_width_in_blocks + room_width_in_blocks + v2,
+    0xA003u);
+  return j;
+}
+
+uint16 PlmInstr_DamageDraygonTurretFacingDownRight(uint16 j, uint16 k) {  // 0x84DBB8
+  *(uint16 *)RomPtr_7E(plm_variable[k >> 1]) = 1;
+  uint16 v2 = plm_block_indices[k >> 1];
+  WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v2 + 2, 0xA003u);
+  uint16 v3 = plm_block_indices[plm_id >> 1];
+  uint16 v4 = room_width_in_blocks + room_width_in_blocks + v3;
+  WriteLevelDataBlockTypeAndBts(v4, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v4 + 2, 0);
+  return j;
+}
+
+uint16 PlmInstr_DamageDraygonTurretFacingUpRight(uint16 j, uint16 k) {  // 0x84DBF7
+  *(uint16 *)RomPtr_7E(plm_variable[k >> 1]) = 1;
+  uint16 v2 = plm_block_indices[k >> 1];
+  WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v2 + 2, 0);
+  uint16 v3 = plm_block_indices[plm_id >> 1];
+  uint16 v4 = room_width_in_blocks + room_width_in_blocks + v3;
+  WriteLevelDataBlockTypeAndBts(v4, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v4 + 2, 0xA003u);
+  return j;
+}
+
+uint16 PlmInstr_DamageDraygonTurret2(uint16 j, uint16 k) {  // 0x84DC36
+  *(uint16 *)RomPtr_7E(plm_variable[k >> 1]) = 1;
+  uint16 v2 = plm_block_indices[k >> 1];
+  WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(
+    room_width_in_blocks + room_width_in_blocks + v2,
+    0xA003u);
+  return j;
+}
+
+uint16 PlmInstr_DamageDraygonTurretFacingDownLeft(uint16 j, uint16 k) {  // 0x84DC60
+  *(uint16 *)RomPtr_7E(plm_variable[k >> 1]) = 1;
+  uint16 v2 = plm_block_indices[k >> 1];
+  WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v2 - 2, 0xA003u);
+  uint16 v3 = plm_block_indices[plm_id >> 1];
+  uint16 v4 = room_width_in_blocks + room_width_in_blocks + v3;
+  WriteLevelDataBlockTypeAndBts(v4, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v4 - 2, 0);
+  return j;
+}
+
+uint16 PlmInstr_DamageDraygonTurretFacingUpLeft(uint16 j, uint16 k) {  // 0x84DC9F
+  *(uint16 *)RomPtr_7E(plm_variable[k >> 1]) = 1;
+  uint16 v2 = plm_block_indices[k >> 1];
+  WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v2 - 2, 0);
+  uint16 v3 = plm_block_indices[plm_id >> 1];
+  uint16 v4 = room_width_in_blocks + room_width_in_blocks + v3;
+  WriteLevelDataBlockTypeAndBts(v4, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v4 - 2, 0xA003u);
+  return j;
+}
+
+uint8 PlmSetup_DraygonCannonFacingRight(uint16 j) {  // 0x84DE94
+  int v1 = j >> 1;
+  plm_variable[v1] = plm_room_arguments[v1];
+  plm_room_arguments[v1] = 0;
+  uint16 v2 = plm_block_indices[v1];
+  WriteLevelDataBlockTypeAndBts(v2, 0xC044u);
+  WriteLevelDataBlockTypeAndBts(
+    room_width_in_blocks + room_width_in_blocks + v2,
+    0xD0FFu);
+  return 0;
+}
+
+uint8 PlmSetup_DraygonCannonFacingDiagonalRight(uint16 j) {  // 0x84DEB9
+  int v1 = j >> 1;
+  plm_variable[v1] = plm_room_arguments[v1];
+  plm_room_arguments[v1] = 0;
+  uint16 v2 = plm_block_indices[v1];
+  WriteLevelDataBlockTypeAndBts(v2, 0xC044u);
+  WriteLevelDataBlockTypeAndBts(v2 + 2, 0x50FFu);
+  uint16 v3 = room_width_in_blocks
+    + room_width_in_blocks
+    + plm_block_indices[v1];
+  WriteLevelDataBlockTypeAndBts(v3, 0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(v3 + 2, 0xD0FFu);
+  return 0;
+}
+
+uint8 PlmSetup_DraygonCannonFacingLeft(uint16 j) {  // 0x84DEF0
+  int v1 = j >> 1;
+  plm_variable[v1] = plm_room_arguments[v1];
+  plm_room_arguments[v1] = 0;
+  uint16 v2 = plm_block_indices[v1];
+  WriteLevelDataBlockTypeAndBts(v2, 0xC044u);
+  WriteLevelDataBlockTypeAndBts(
+    room_width_in_blocks + room_width_in_blocks + v2,
+    0xD0FFu);
+  return 0;
+}
+
+uint8 PlmSetup_DraygonCannonFacingDiagonalLeft(uint16 j) {  // 0x84DF15
+  int v1 = j >> 1;
+  plm_variable[v1] = plm_room_arguments[v1];
+  plm_room_arguments[v1] = 0;
+  uint16 v2 = plm_block_indices[v1];
+  WriteLevelDataBlockTypeAndBts(v2, 0xC044u);
+  WriteLevelDataBlockTypeAndBts(v2 - 2, 0x5001u);
+  uint16 v3 = room_width_in_blocks
+    + room_width_in_blocks
+    + plm_block_indices[v1];
+  WriteLevelDataBlockTypeAndBts(v3, 0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(v3 - 2, 0xD0FFu);
+  return 0;
+}
+
+uint8 PlmSetup_DraygonCannon(uint16 j) {  // 0x84DF4C
+  int v1 = j >> 1;
+  plm_variable[v1] = plm_room_arguments[v1];
+  plm_room_arguments[v1] = 3;
+  return 0;
+}
+
+void PlmPreInstr_GotoLinkIfTriggered(uint16 k) {  // 0x84DF89
+  int v1 = k >> 1;
+  if (LOBYTE(plm_timers[v1]) == 255) {
+    plm_pre_instrs[v1] = FUNC16(PlmPreInstr_nullsub_301);
+    plm_instr_list_ptrs[v1] = plm_instruction_list_link_reg[v1];
+    plm_instruction_timer[v1] = 1;
+  }
+}
+
+void PlmPreInstr_WakeIfTriggered(uint16 k) {  // 0x84DFE6
+  int v1 = k >> 1;
+  uint16 v2 = plm_timers[v1];
+  if (v2 != 768 && (uint8)v2 == 255) {
+    plm_timers[v1] = 0;
+    ++plm_instr_list_ptrs[v1];
+    ++plm_instr_list_ptrs[v1];
+    plm_instruction_timer[v1] = 1;
+  }
+}
+
+uint16 PlmInstr_DrawItemFrame0(uint16 j, uint16 k) {  // 0x84E04F
+  plm_instruction_draw_ptr[k >> 1] = off_84E05F[plm_variables[k >> 1] >> 1];
+  return PlmInstr_DrawItemFrame_Common(j, k);
+}
+
+uint16 PlmInstr_DrawItemFrame1(uint16 j, uint16 k) {  // 0x84E067
+  plm_instruction_draw_ptr[k >> 1] = off_84E077[plm_variables[k >> 1] >> 1];
+  return PlmInstr_DrawItemFrame_Common(j, k);
+}
+
+uint16 PlmInstr_DrawItemFrame_Common(uint16 j, uint16 k) {  // 0x84E07F
+  int v2 = k >> 1;
+  plm_instruction_timer[v2] = 4;
+  plm_instr_list_ptrs[v2] = j;
+  ProcessPlmDrawInstruction(k);
+  uint16 v3 = plm_id;
+  CalculatePlmBlockCoords(plm_id);
+  DrawPlm(v3);
+  return 0;
+}
+
+uint16 PlmInstr_ClearChargeBeamCounter(uint16 j, uint16 k) {  // 0x84E29D
+  flare_counter = 0;
+  return j;
+}
+
+uint16 PlmInstr_E63B(uint16 j, uint16 k) {  // 0x84E63B
+  fx_y_vel = -32;
+  return j;
+}
+
+uint8 sub_84EE4D(uint16 j) {  // 0x84EE4D
+  return sub_84EE5F(j, 8u);
+}
+
+uint8 sub_84EE52(uint16 j) {  // 0x84EE52
+  return sub_84EE5F(j, 0xAu);
+}
+
+uint8 sub_84EE57(uint16 j) {  // 0x84EE57
+  return sub_84EE5F(j, 0xCu);
+}
+
+uint8 sub_84EE5C(uint16 j) {  // 0x84EE5C
+  return sub_84EE5F(j, 0xEu);
+}
+
+uint8 sub_84EE5F(uint16 j, uint16 a) {  // 0x84EE5F
+  plm_variables[j >> 1] = a;
+  return sub_84EE64(j);
+}
+
+uint8 sub_84EE64(uint16 j) {  // 0x84EE64
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x45u);
+  ++global_number_of_items_loaded_ctr;
+  return 0;
+}
+
+uint8 sub_84EE77(uint16 j) {  // 0x84EE77
+  return sub_84EE89(j, 8u);
+}
+
+uint8 sub_84EE7C(uint16 j) {  // 0x84EE7C
+  return sub_84EE89(j, 0xAu);
+}
+
+uint8 sub_84EE81(uint16 j) {  // 0x84EE81
+  return sub_84EE89(j, 0xCu);
+}
+
+uint8 sub_84EE86(uint16 j) {  // 0x84EE86
+  return sub_84EE89(j, 0xEu);
+}
+
+uint8 sub_84EE89(uint16 j, uint16 a) {  // 0x84EE89
+  plm_variables[j >> 1] = a;
+  return sub_84EE8E(j);
+}
+
+uint8 sub_84EE8E(uint16 j) {  // 0x84EE8E
+  int v1 = j >> 1;
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC045u);
+  plm_variable[v1] = level_data[plm_block_indices[v1] >> 1];
+  ++global_number_of_items_loaded_ctr;
+  return 0;
+}
+
+uint8 sub_84EEAB(uint16 v0) {  // 0x84EEAB
+  int i;
+
+  if (time_is_frozen_flag) {
+    plm_header_ptr[v0 >> 1] = 0;
+  } else {
+    int v1 = v0 >> 1;
+    uint16 v2 = plm_block_indices[v1];
+    plm_block_indices[v1] = 0;
+    for (i = 78; i >= 0; i -= 2) {
+      if (v2 == plm_block_indices[i >> 1])
+        break;
+    }
+    plm_timers[i >> 1] = 255;
+  }
+  return 0;
+}
