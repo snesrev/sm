@@ -1890,7 +1890,6 @@ void Xray_SetupStage3_ReadBg1_1stScreen(void) {  // 0x91CB57
 
 void Xray_SetupStage4(void) {  // 0x91CB8E
   unsigned int v3;
-  int16 v6;
   unsigned int v8;
 
   R24_ = 4 * (((uint8)layer1_y_pos + (uint8)bg1_y_offset) & 0xF0);
@@ -1931,9 +1930,7 @@ void Xray_SetupStage4(void) {  // 0x91CB8E
     --R20_;
   } while (R20_);
   assert((uint16)(layer1_y_pos >> 12) == 0);
-  uint16 prod = Mult8x8(layer1_y_pos >> 4, room_width_in_blocks);
-  v6 = layer1_x_pos >> 4;
-  R34 = prod + v6;
+  R34 = Mult8x8(layer1_y_pos >> 4, room_width_in_blocks) + (layer1_x_pos >> 4);
   R22_ = 0;
   R20_ = 16;
   do {
@@ -1988,44 +1985,23 @@ void Xray_SetupStage4_Func2(void) {  // 0x91CD42
   // bug: passing 0xffff to this function is invalid and will read invalid memory.
   if (R34 == 0)
     return;
-  unsigned int v2;
-  int16 v3;
-  unsigned int v7;
-  unsigned int v11;
-  int16 v17;
-
   PairU16 pay = Xray_HandleXrayedBlock(R34 - 1);
-  uint16 v1 = pay.k;
-  v2 = pay.j;
-  v3 = v2;
-  if (v1 != (uint16)FUNC16(Xray_Func9)) {
-    if (v1 != (uint16)FUNC16(Xray_Func11))
+  uint16 *dst = (uint16 *)((char *)ram4000.xray_tilemaps + R22_);
+
+  if (pay.k != FUNC16(Xray_Func9)) {
+    if (pay.k != FUNC16(Xray_Func11))
       return;
-    v17 = v2;
-    uint16 v4 = *(uint16 *)&RomPtr_91(R3_.addr)[(uint16)(v2 + 8)];
-    uint16 top_left = tile_table.tables[v4].top_left;
-    uint16 top_right = tile_table.tables[v4].top_right;
-    uint16 bottom_left = tile_table.tables[v4].bottom_left;
-    uint16 bottom_right = tile_table.tables[v4].bottom_right;
-    uint16 v6 = R22_;
-    v7 = R22_;
-    *(uint16 *)((char *)&ram4000.xray_tilemaps[97] + R22_) = bottom_right;
-    *(uint16 *)((char *)&ram4000.xray_tilemaps[96] + v7) = bottom_left;
-    *(uint16 *)((char *)&ram4000.xray_tilemaps[65] + v6) = top_right;
-    *(uint16 *)((char *)&ram4000.xray_tilemaps[64] + v6) = top_left;
-    v3 = v17;
+    TileTable *src = tile_table.tables + *(uint16 *)&RomPtr_91(R3_.addr)[pay.j + 8];
+    dst[64] = src->top_left;
+    dst[65] = src->top_right;
+    dst[96] = src->bottom_left;
+    dst[97] = src->bottom_right;
   }
-  uint16 v8 = *(uint16 *)&RomPtr_91(R3_.addr)[(uint16)(v3 + 4)];
-  uint16 v18 = tile_table.tables[v8].top_left;
-  uint16 v16 = tile_table.tables[v8].top_right;
-  uint16 v14 = tile_table.tables[v8].bottom_left;
-  uint16 v9 = tile_table.tables[v8].bottom_right;
-  uint16 v10 = R22_;
-  v11 = R22_;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[33] + R22_) = v9;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[32] + v11) = v14;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[1] + v10) = v16;
-  *(uint16 *)((char *)ram4000.xray_tilemaps + v10) = v18;
+  TileTable *src = tile_table.tables + *(uint16 *)&RomPtr_91(R3_.addr)[pay.j + 4];
+  dst[0] = src->top_left;
+  dst[1] = src->top_right;
+  dst[32] = src->bottom_left;
+  dst[33] = src->bottom_right;
 }
 
 void CallXrayFunc(uint32 ea, uint16 j) {
@@ -2040,13 +2016,11 @@ void CallXrayFunc(uint32 ea, uint16 j) {
   }
 }
 void Xray_SetupStage4_Func3(void) {  // 0x91CDBE
-  PairU16 v0;
-
-  v0 = Xray_HandleXrayedBlock(R36);
-  if (v0.k == 0xFFFF)
-    Xray_Func21(v0.j);
+  PairU16 pay = Xray_HandleXrayedBlock(R36);
+  if (pay.k == 0xFFFF)
+    Xray_Func21(0);
   else
-    CallXrayFunc(R0_.addr | 0x910000, v0.j);
+    CallXrayFunc(pay.k | 0x910000, pay.j);
 }
 
 uint16 Xray_Func21(uint16 j) {  // 0x91CDCB
@@ -2058,7 +2032,7 @@ uint16 Xray_Func21(uint16 j) {  // 0x91CDCB
 #define stru_91D2D6 ((XrayBlockData*)RomPtr(0x91d2d6))
 
 PairU16 Xray_HandleXrayedBlock(uint16 k) {  // 0x91CDD6
-  VoidP value;
+  uint16 value;
   uint16 j;
 
   R38 = BTS[k];
@@ -2074,11 +2048,10 @@ PairU16 Xray_HandleXrayedBlock(uint16 k) {  // 0x91CDD6
         if (value == 0xFFFF)
           break;
         if (value == 0xFF00 || value == R38) {
-          R3_.addr = *(uint16 *)&RomPtr_91(R0_.addr)[(uint16)(j + 2)];
-          j = 0;
+          R3_.addr = *(uint16 *)&RomPtr_91(R0_.addr)[j + 2];
           value = *(uint16 *)RomPtr_91(R3_.addr);
           R0_.addr = value;
-          return MakePairU16(value, j);
+          return MakePairU16(value, 0);
         }
       }
       return MakePairU16(value, j);
