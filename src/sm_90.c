@@ -837,13 +837,11 @@ PairU16 Samus_CalcSpritemapPos(uint16 k) {
 }
 
 PairU16 Samus_CalcSpritemapPos_Default(uint16 j) {  // 0x908C94
-  uint16 v1 = *(&kPoseParams[0].y_offset_to_gfx + (uint16)(4 * j));
-  if ((v1 & 0x80) != 0)
-    v1 |= 0xFF00u;
+  int v1 = (int8)*(&kPoseParams[0].y_offset_to_gfx + 4 * j);
   R18_ = v1;
   samus_spritemap_y_pos = samus_y_pos - v1 - layer1_y_pos;
   samus_spritemap_x_pos = samus_x_pos - layer1_x_pos;
-  return MakePairU16(samus_x_pos - layer1_x_pos, samus_y_pos - v1 - layer1_y_pos);
+  return MakePairU16(samus_spritemap_x_pos, samus_spritemap_y_pos);
 }
 
 PairU16 Samus_CalcSpritemapPos_Standing(uint16 j) {  // 0x908CC3
@@ -890,13 +888,11 @@ PairU16 Samus_CalcSpritemapPos_Crouch(uint16 j) {  // 0x908D3C
   if (sign16((j >> 1) - kPose_35_FaceR_CrouchTrans) || !sign16(v1 - kPose_41_FaceL_Morphball_Ground)) {
     return Samus_CalcSpritemapPos_Default(j);
   } else {
-    uint16 v4 = byte_908D80[(uint16)(samus_anim_frame + 2 * (v1 - 53))];
-    if ((v4 & 0x80) != 0)
-      v4 |= 0xFF00u;
+    int v4 = byte_908D80[(uint16)(samus_anim_frame + 2 * (v1 - 53))];
     R18_ = v4;
     samus_spritemap_y_pos = v4 + samus_y_pos - layer1_y_pos;
     samus_spritemap_x_pos = samus_x_pos - layer1_x_pos;
-    return MakePairU16(samus_x_pos - layer1_x_pos, v4 + samus_y_pos - layer1_y_pos);
+    return MakePairU16(samus_x_pos - layer1_x_pos, samus_spritemap_y_pos);
   }
 }
 
@@ -907,14 +903,11 @@ PairU16 Samus_CalcSpritemapPos_Special(uint16 j) {  // 0x908D98
   -5, 0,  0,  4, -3, -5, -3,  4,
    0, 0,  4,  0,  0,  4,  0,  0,
   };
-  int16 v1;
-  uint16 v2;
+  int v1, v2;
 
   v1 = j >> 1;
-  if (j >> 1 == kPose_E8_FaceR_Drained_CrouchFalling || v1 == kPose_E9_FaceL_Drained_CrouchFalling) {
+  if (v1 == kPose_E8_FaceR_Drained_CrouchFalling || v1 == kPose_E9_FaceL_Drained_CrouchFalling) {
     v2 = byte_908DEF[samus_anim_frame];
-    if ((v2 & 0x80) != 0)
-      v2 |= 0xFF00u;
   } else {
     if (v1 != kPose_EA_FaceR_Drained_Stand && v1 != kPose_EB_FaceL_Drained_Stand || (int16)(samus_anim_frame - 5) < 0) {
       return Samus_CalcSpritemapPos_Default(j);
@@ -4578,14 +4571,8 @@ void Samus_ArmCannon_Draw(void) {  // 0x90C663
     }
     R24_ = kDrawArmCannon_Char[v3 >> 1];
     uint8 *v4 = RomPtr_90(R22_ + 2 * samus_anim_frame);
-    uint16 v5 = *v4;
-    if ((v5 & 0x80) != 0)
-      v5 |= 0xFF00u;
-    R18_ = v5;
-    uint16 v6 = v4[1];
-    if ((v6 & 0x80) != 0)
-      v6 |= 0xFF00u;
-    R20_ = v6;
+    R18_ = (int8)v4[0];
+    R20_ = (int8)v4[1];
     R22_ = *(&kPoseParams[0].y_offset_to_gfx + (uint16)(8 * samus_pose));
     uint16 v7 = oam_next_ptr;
     v8 = R18_ + samus_x_pos - layer1_x_pos;
@@ -5510,14 +5497,9 @@ void ProjPreInstr_WaveSba(uint16 k) {  // 0x90DA08
   } else if (sign16(projectile_bomb_x_speed[v4] - 2048)) {
     projectile_bomb_x_speed[v4] += 64;
   }
-  uint16 v5;
-  LOBYTE(v5) = HIBYTE(projectile_bomb_x_speed[v4]);
-  HIBYTE(v5) = projectile_bomb_x_speed[v4];
+  uint16 v5 = swap16(projectile_bomb_x_speed[v4]);
   R20_ = v5 & 0xFF00;
-  v5 = (uint8)v5;
-  if ((v5 & 0x80) != 0)
-    v5 |= 0xFF00u;
-  R18_ = v5;
+  R18_ = (int8)v5;
   uint16 v6 = projectile_bomb_x_subpos[v4];
   bool v7 = __CFADD__uint16(R20_, v6);
   projectile_bomb_x_subpos[v4] = R20_ + v6;
@@ -5528,14 +5510,9 @@ void ProjPreInstr_WaveSba(uint16 k) {  // 0x90DA08
   } else if (sign16(projectile_variables[v4] - 2048)) {
     projectile_variables[v4] += 64;
   }
-  uint16 v8;
-  LOBYTE(v8) = HIBYTE(projectile_variables[v4]);
-  HIBYTE(v8) = projectile_variables[v4];
+  uint16 v8 = swap16(projectile_variables[v4]);
   R20_ = v8 & 0xFF00;
-  v8 = (uint8)v8;
-  if ((v8 & 0x80) != 0)
-    v8 |= 0xFF00u;
-  R18_ = v8;
+  R18_ = (int8)v8;
   uint16 v9 = projectile_bomb_y_subpos[v4];
   v7 = __CFADD__uint16(R20_, v9);
   projectile_bomb_y_subpos[v4] = R20_ + v9;

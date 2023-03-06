@@ -197,15 +197,8 @@ PairU16 PalInstr_Goto(uint16 k, uint16 j) {  // 0x8DC61E
 }
 
 PairU16 PalInstr_GotoRel(uint16 k, uint16 j) {  // 0x8DC623
-  int16 v2;
-
   R18_ = j;
-  LOBYTE(v2) = HIBYTE(*(uint16 *)RomPtr_8D(j - 1));
-  if ((v2 & 0x80) != 0)
-    v2 |= 0xFF00u;
-  else
-    v2 = (uint8)v2;
-  return MakePairU16(k, R18_ + v2);
+  return MakePairU16(k, j + (int8)*RomPtr_8D(j));
 }
 
 PairU16 PalInstr_DecTimerGoto(uint16 k, uint16 j) {  // 0x8DC639

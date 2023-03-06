@@ -1500,15 +1500,8 @@ uint16 CinematicSprInstr_ClearPreInstr(uint16 k, uint16 j) {  // 0x8B9457
 
 
 uint16 CinematicSprInstr_GotoRel(uint16 k, uint16 j) {  // 0x8B94A2
-  int16 v2;
-
   R18_ = j;
-  LOBYTE(v2) = HIBYTE(*(uint16 *)RomPtr_8B(j - 1));
-  if ((v2 & 0x80) != 0)
-    v2 |= 0xFF00u;
-  else
-    v2 = (uint8)v2;
-  return R18_ + v2;
+  return j + (int8)*RomPtr_8B(j);
 }
 
 uint16 CinematicSprInstr_Goto(uint16 k, uint16 j) {  // 0x8B94BC
@@ -4286,18 +4279,12 @@ void CinematicFunction_Intro_Func58(uint16 k) {  // 0x8BBEB5
   unsigned int v9; // kr0C_4
   uint16 v4;
 
-  if (cinematic_function == (uint16)FUNC16(CinematicFunction_Intro_Func56)) {
+  if (cinematic_function == FUNC16(CinematicFunction_Intro_Func56)) {
     int v1 = k >> 1;
     uint16 v2 = cinematicspr_goto_timer[v1] + 128;
     cinematicspr_goto_timer[v1] = v2;
-    v3 = v2;
-    LOBYTE(v4) = HIBYTE(v2);
-    HIBYTE(v4) = v3;
-    R20_ = v4 & 0xFF00;
-    v4 = (uint8)v4;
-    if ((v4 & 0x80) != 0)
-      v4 |= 0xFF00u;
-    R18_ = v4;
+    R20_ = (v2 & 0xff) << 8;
+    R18_ = (int8)(v2 >> 8);
     uint16 v5 = cinematicspr_arr7[v1];
     bool v6 = __CFADD__uint16(R20_, v5);
     cinematicspr_arr7[v1] = R20_ + v5;
@@ -6200,25 +6187,15 @@ void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
         }
         *((uint16 *)v3 + 7) = g_word_8BE9CF[v4 + 1] + v5;
         uint16 v23 = *((uint16 *)v3 + 6);
-        uint16 v6 = HIBYTE(v23);
-        if ((v23 & 0x8000u) != 0)
-          v6 |= 0xFF00u;
-        R18_ = v6;
-        LOBYTE(v7) = HIBYTE(v23);
-        HIBYTE(v7) = v23;
-        R20_ = v7 & 0xFF00;
+        R18_ = (int8)HIBYTE(v23);
+        R20_ = (v23 << 8) & 0xFF00;
         v8 = *((uint16 *)v3 + 2);
         bool v9 = __CFADD__uint16(R20_, v8);
         *((uint16 *)v3 + 2) = R20_ + v8;
         *((uint16 *)v3 + 1) += R18_ + v9;
         uint16 v24 = *((uint16 *)v3 + 7);
-        uint16 v10 = HIBYTE(v24);
-        if ((v24 & 0x8000u) != 0)
-          v10 |= 0xFF00u;
-        R18_ = v10;
-        LOBYTE(v11) = HIBYTE(v24);
-        HIBYTE(v11) = v24;
-        R20_ = v11 & 0xFF00;
+        R18_ = (int8)HIBYTE(v24);
+        R20_ = (v24 << 8) & 0xFF00;
         v12 = *((uint16 *)v3 + 4);
         v9 = __CFADD__uint16(R20_, v12);
         *((uint16 *)v3 + 4) = R20_ + v12;

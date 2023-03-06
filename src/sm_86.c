@@ -545,15 +545,8 @@ uint16 EprojInstr_Goto(uint16 k, uint16 j) {  // 0x8681AB
 }
 
 uint16 EprojInstr_GotoRel(uint16 k, uint16 j) {  // 0x8681B0
-  int16 v2;
-
   R18_ = j;
-  LOBYTE(v2) = HIBYTE(*(uint16 *)RomPtr_86(j - 1));
-  if ((v2 & 0x80) != 0)
-    v2 |= 0xFF00u;
-  else
-    v2 = (uint8)v2;
-  return R18_ + v2;
+  return R18_ + (int8)RomPtr_86(j);
 }
 
 uint16 EprojInstr_DecTimerAndGotoIfNonZero(uint16 k, uint16 j) {  // 0x8681C6
@@ -835,15 +828,9 @@ void GetValuesForScreenShaking(void) {  // 0x868427
 }
 
 uint8 EprojColl_8506(void) {  // 0x868506
-  int16 v1;
-
-  LOBYTE(v1) = BTS[cur_block_index];
-  if ((uint8)v1) {
-    if ((BTS[cur_block_index] & 0x80) != 0)
-      v1 |= 0xFF00u;
-    else
-      v1 = (uint8)v1;
-    cur_block_index += v1;
+  uint8 t = BTS[cur_block_index];
+  if (t) {
+    cur_block_index += (int8)t;
     return 0xff;
   }
   return 0;
@@ -1579,60 +1566,30 @@ void EprojPreInstr_CrocomireBridgeCrumbling(uint16 k) {  // 0x8692BA
 }
 
 uint16 MoveEprojWithVelocity(uint16 k) {  // 0x8692D6
-  int16 v3;
-  char v4; // t0
-
   int v1 = k >> 1;
   uint16 v2 = enemy_projectile_x_vel[v1];
-  int carry = *((uint8 *)enemy_projectile_1A27 + k + 1) + LOBYTE(v2);
-  LOBYTE(v2) = carry;
-  *((uint8 *)enemy_projectile_1A27 + k + 1) = v2;
-  v2 &= 0xFF00u;
-  v4 = v2;
-  LOBYTE(v3) = HIBYTE(v2);
-  HIBYTE(v3) = v4;
-  if ((v3 & 0x80) != 0)
-    v3 |= 0xFF00u;
-  enemy_projectile_x_pos[v1] += v3 + (carry >> 8);
+  int carry = *((uint8 *)enemy_projectile_1A27 + k + 1) + (v2 & 0xff);
+  *((uint8 *)enemy_projectile_1A27 + k + 1) = carry;
+  enemy_projectile_x_pos[v1] += (int8)(v2 >> 8) + (carry >> 8);
   return MoveEprojWithVelocityY(k);
 }
 
 uint16 MoveEprojWithVelocityY(uint16 k) {  // 0x8692F3
-  int16 v3;
-  char v4; // t0
-
   int v1 = k >> 1;
   uint16 v2 = enemy_projectile_y_vel[v1];
-  int carry = *((uint8 *)enemy_projectile_y_subpos + k + 1) + LOBYTE(v2);
-  LOBYTE(v2) = carry;
-  *((uint8 *)enemy_projectile_y_subpos + k + 1) = v2;
-  v2 &= 0xFF00u;
-  v4 = v2;
-  LOBYTE(v3) = HIBYTE(v2);
-  HIBYTE(v3) = v4;
-  if ((v3 & 0x80) != 0)
-    v3 |= 0xFF00u;
-  uint16 result = enemy_projectile_y_pos[v1] + v3 + (carry >> 8);
+  int carry = *((uint8 *)enemy_projectile_y_subpos + k + 1) + (v2 & 0xff);
+  *((uint8 *)enemy_projectile_y_subpos + k + 1) = carry;
+  uint16 result = enemy_projectile_y_pos[v1] + (int8)(v2 >> 8) + (carry >> 8);
   enemy_projectile_y_pos[v1] = result;
   return result;
 }
 
 uint16 MoveEprojWithVelocityX(uint16 k) {  // 0x869311
-  int16 v3;
-  char v4; // t0
-
   int v1 = k >> 1;
   uint16 v2 = enemy_projectile_x_vel[v1];
-  int carry = *((uint8 *)enemy_projectile_1A27 + k + 1) + LOBYTE(v2);
-  LOBYTE(v2) = carry;
-  *((uint8 *)enemy_projectile_1A27 + k + 1) = v2;
-  v2 &= 0xFF00u;
-  v4 = v2;
-  LOBYTE(v3) = HIBYTE(v2);
-  HIBYTE(v3) = v4;
-  if ((v3 & 0x80) != 0)
-    v3 |= 0xFF00u;
-  uint16 result = enemy_projectile_x_pos[v1] + v3 + (carry >> 8);
+  int carry = *((uint8 *)enemy_projectile_1A27 + k + 1) + (v2 & 0xff);
+  *((uint8 *)enemy_projectile_1A27 + k + 1) = carry;
+  uint16 result = enemy_projectile_x_pos[v1] + (int8)(v2 >> 8) + (carry >> 8);
   enemy_projectile_x_pos[v1] = result;
   return result;
 }

@@ -1221,7 +1221,6 @@ void DrawPlm(uint16 k) {  // 0x848DAA
   VramWriteEntry *v25;
   int16 v28;
   int16 v31;
-  int16 v33;
   uint16 v35;
   uint16 a;
 
@@ -1318,15 +1317,9 @@ LABEL_70:
                     addr = R3_.addr + 2 * R22_;
                   v31 = *(uint16 *)RomPtr_84orRAM(addr);
                   if (v31) {
-                    v31 = (uint8)v31;
-                    if ((v31 & 0x80) != 0)
-                      v31 |= 0xFF00u;
-                    g_word_7E001E = plm_x_block + v31;
+                    g_word_7E001E = plm_x_block + (int8)v31;
                     uint16 v32 = addr + 1;
-                    v33 = *RomPtr_84orRAM(v32);
-                    if ((v33 & 0x80) != 0)
-                      v33 |= 0xFF00u;
-                    R32 = plm_y_block + v33;
+                    R32 = plm_y_block + (int8)*RomPtr_84orRAM(v32);
                     v1 = v32 + 1;
                     goto LABEL_2;
                   }

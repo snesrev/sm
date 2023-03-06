@@ -90,33 +90,12 @@ void ProjectileTrail_Func5(uint16 k, uint16 j) {  // 0x9BA3CC
     v5 = g_off_9BA4B3[projectile_type[v3] & 0xF] + 2 * (projectile_dir[v3] & 0xF);
   }
   uint16 v6 = *(uint16 *)RomPtr_9B(v5) + 4 * R22_;
-  LOBYTE(v5) = HIBYTE(*(uint16 *)RomPtr_9B(v6));
-  if ((v5 & 0x80) != 0)
-    v5 |= 0xFF00u;
-  else
-    v5 = (uint8)v5;
+  uint8 *p = RomPtr_9B(v6);
   int v7 = j >> 1;
-  projectiletrail_left_y_pos[v7] = R20_ + v5 - 4;
-  uint16 v8 = v6 - 1;
-  LOBYTE(v5) = HIBYTE(*(uint16 *)RomPtr_9B(v8));
-  if ((v5 & 0x80) != 0)
-    v5 |= 0xFF00u;
-  else
-    v5 = (uint8)v5;
-  projectiletrail_left_x_pos[v7] = R18_ + v5 - 4;
-  uint8 *v9 = RomPtr_9B(v8 + 1);
-  LOBYTE(v5) = HIBYTE(*((uint16 *)v9 + 1));
-  if ((v5 & 0x80) != 0)
-    v5 |= 0xFF00u;
-  else
-    v5 = (uint8)v5;
-  projectiletrail_right_y_pos[v7] = R20_ + v5 - 4;
-  LOBYTE(v5) = HIBYTE(*(uint16 *)(v9 + 1));
-  if ((v5 & 0x80) != 0)
-    v5 |= 0xFF00u;
-  else
-    v5 = (uint8)v5;
-  projectiletrail_right_x_pos[v7] = R18_ + v5 - 4;
+  projectiletrail_left_y_pos[v7] = R20_ + (int8)p[1] - 4;
+  projectiletrail_left_x_pos[v7] = R18_ + (int8)p[0] - 4;
+  projectiletrail_right_y_pos[v7] = R20_ + (int8)p[3] - 4;
+  projectiletrail_right_x_pos[v7] = R18_ + (int8)p[2] - 4;
 }
 
 void StartSamusDeathAnimation(void) {  // 0x9BB3A7
@@ -686,23 +665,12 @@ LABEL_8:;
     samus_anim_frame = v3 + 32;
   }
   if (samus_pose_x_dir == 4) {
-    v6 = kGrappleBeam_SwingingData2[v2];
-    if ((v6 & 0x80) != 0)
-      v6 |= 0xFF00u;
-    samus_x_pos = x_pos_of_start_of_grapple_beam + v6;
-    v5 = kGrappleBeam_SwingingData2[v2 + 1];
-    if ((v5 & 0x80) != 0)
-      v5 |= 0xFF00u;
+    samus_x_pos = x_pos_of_start_of_grapple_beam + (int8)kGrappleBeam_SwingingData2[v2];
+    samus_y_pos = y_pos_of_start_of_grapple_beam + (int8)kGrappleBeam_SwingingData2[v2 + 1];
   } else {
-    v4 = kGrappleBeam_SwingingData3[v2];
-    if ((v4 & 0x80) != 0)
-      v4 |= 0xFF00u;
-    samus_x_pos = x_pos_of_start_of_grapple_beam + v4;
-    v5 = kGrappleBeam_SwingingData3[v2 + 1];
-    if ((v5 & 0x80) != 0)
-      v5 |= 0xFF00u;
+    samus_x_pos = x_pos_of_start_of_grapple_beam + (int8)kGrappleBeam_SwingingData3[v2];
+    samus_y_pos = y_pos_of_start_of_grapple_beam + (int8)kGrappleBeam_SwingingData3[v2 + 1];
   }
-  samus_y_pos = y_pos_of_start_of_grapple_beam + v5;
   x_pos_of_start_of_grapple_beam_prevframe = x_pos_of_start_of_grapple_beam;
   y_pos_of_start_of_grapple_beam_prevframe = y_pos_of_start_of_grapple_beam;
   GrappleBeamFunc_BE98();

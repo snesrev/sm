@@ -101,15 +101,7 @@ uint16 EnemyInstr_Goto(uint16 k, uint16 j) {  // 0xA080ED
 }
 
 uint16 EnemyInstr_GotoRel(uint16 k, uint16 j) {  // 0xA080F2
-  int16 v2;
-
-  R18_ = j;
-  LOBYTE(v2) = HIBYTE(*(uint16 *)RomPtr_A0(j - 1));
-  if ((v2 & 0x80) != 0)
-    v2 |= 0xFF00u;
-  else
-    v2 = (uint8)v2;
-  return R18_ + v2;
+  return j + (int8)*RomPtr_A0(j);
 }
 
 uint16 EnemyInstr_DecTimerAndGoto(uint16 k, uint16 j) {  // 0xA08108
@@ -4465,15 +4457,9 @@ uint8 EnemyBlockCollVertReact_Slope_NonSquare(void) {  // 0xA0C51F
 }
 
 uint8 EnemyBlockCollReact_HorizExt(void) {  // 0xA0C619
-  int16 v0;
-
-  LOBYTE(v0) = BTS[cur_block_index];
-  if ((uint8)v0) {
-    if ((BTS[cur_block_index] & 0x80) != 0)
-      v0 |= 0xFF00u;
-    else
-      v0 = (uint8)v0;
-    cur_block_index += v0;
+  uint8 t = BTS[cur_block_index];
+  if (t) {
+    cur_block_index += (int8)t;
     return 0xff;
   }
   return 0;

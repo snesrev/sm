@@ -1499,15 +1499,13 @@ void GunshipTop_1(uint16 k) {  // 0xA2A784
   if (v3 || v4) {
     uint16 v5 = 2 * E0->gtp_var_C;
     E0->gtp_var_D = g_byte_A2A7CF[v5];
-    uint16 v6 = g_byte_A2A7CF[v5 + 1];
-    if ((v6 & 0x80) != 0)
-      v6 |= 0xFF00u;
+    uint16 v6 = (int8)g_byte_A2A7CF[v5 + 1];
     R18_ = v6;
     E0->base.y_pos += v6;
     Enemy_GunshipTop *E1 = Get_GunshipTop(k + 64);
-    E1->base.y_pos += R18_;
+    E1->base.y_pos += v6;
     Enemy_GunshipTop *E2 = Get_GunshipTop(k + 128);
-    E2->base.y_pos += R18_;
+    E2->base.y_pos += v6;
     E0->gtp_var_C = ((uint8)E0->gtp_var_C + 1) & 3;
   }
 }

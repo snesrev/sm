@@ -110,15 +110,8 @@ uint16 AnimtilesInstr_Goto(uint16 k, uint16 j) {  // 0x8780B7
 }
 
 uint16 AnimtilesInstr_GotoRel(uint16 k, uint16 j) {  // 0x8780BC
-  int16 v2;
-
   animtiles_instruction = j;
-  LOBYTE(v2) = HIBYTE(*(uint16 *)RomPtr_87(j - 1));
-  if ((v2 & 0x80) != 0)
-    v2 |= 0xFF00u;
-  else
-    v2 = (uint8)v2;
-  return animtiles_instruction + v2;
+  return j + (int8)*RomPtr_87(j);
 }
 
 uint16 AnimtilesInstr_DecrementTimerAndGoto(uint16 k, uint16 j) {  // 0x8780D4

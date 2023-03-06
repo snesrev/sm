@@ -2486,14 +2486,10 @@ void Phantoon_MoveInFigure8_LeftSideClockwise(uint16 j) {  // 0xA7D215
   for (R22_ = E->phant_var_C; R22_; --R22_) {
     R18_ = 2 * E->phant_var_A;
     uint8 *v2 = RomPtr_A7(R18_ + j);
-    uint16 v3 = *v2;
-    if ((v3 & 0x80) != 0)
-      v3 |= 0xFF00u;
+    uint16 v3 = (int8)v2[0];
     R18_ = v3;
     E->base.x_pos += v3;
-    uint16 v4 = v2[1];
-    if ((v4 & 0x80) != 0)
-      v4 |= 0xFF00u;
+    uint16 v4 = (int8)v2[1];
     R18_ = v4;
     E->base.y_pos += v4;
     uint16 v5 = E->phant_var_A + 1;
@@ -2513,14 +2509,10 @@ void Phantoon_MoveInFigure8_RightSideClockwise(uint16 j) {  // 0xA7D271
     do {
       R18_ = 2 * E->phant_var_A;
       uint8 *v4 = RomPtr_A7(R18_ + j);
-      uint16 v5 = *v4;
-      if ((v5 & 0x80) != 0)
-        v5 |= 0xFF00u;
+      uint16 v5 = (int8)*v4;
       R18_ = v5;
       E->base.x_pos -= v5;
-      uint16 v6 = v4[1];
-      if ((v6 & 0x80) != 0)
-        v6 |= 0xFF00u;
+      uint16 v6 = (int8)v4[1];
       R18_ = v6;
       E->base.y_pos -= v6;
       v7 = E->phant_var_A - 1;
@@ -2578,13 +2570,9 @@ void Phantoon_MoveInSwoopingPattern(uint16 k) {  // 0xA7D2D1
   } else if (sign16(v2->phant_var_C - 2048)) {
     v2->phant_var_C += 32;
   }
-  LOBYTE(v9) = HIBYTE(v2->phant_var_C);
-  HIBYTE(v9) = v2->phant_var_C;
+  v9 = swap16(v2->phant_var_C);
   R20_ = v9 & 0xFF00;
-  v9 = (uint8)v9;
-  if ((v9 & 0x80) != 0)
-    v9 |= 0xFF00u;
-  R18_ = v9;
+  R18_ = (int8)v9;
   x_subpos = v7->base.x_subpos;
   v11 = __CFADD__uint16(R20_, x_subpos);
   v7->base.x_subpos = R20_ + x_subpos;
@@ -2605,13 +2593,9 @@ void Phantoon_MoveInSwoopingPattern(uint16 k) {  // 0xA7D2D1
   } else if (sign16(v2->phant_var_D - 1536)) {
     v2->phant_var_D += 64;
   }
-  LOBYTE(v14) = HIBYTE(v2->phant_var_D);
-  HIBYTE(v14) = v2->phant_var_D;
+  v14 = swap16(v2->phant_var_D);
   R20_ = v14 & 0xFF00;
-  v14 = (uint8)v14;
-  if ((v14 & 0x80) != 0)
-    v14 |= 0xFF00u;
-  R18_ = v14;
+  R18_ = (int8)v14;
   y_subpos = v8->base.y_subpos;
   v11 = __CFADD__uint16(R20_, y_subpos);
   v8->base.y_subpos = R20_ + y_subpos;
@@ -3106,17 +3090,9 @@ void Phantoon_DyingPhantoonExplosions(uint16 k) {  // 0xA7D98B
   if (v2 || v3) {
     Enemy_Phantoon *E2 = Get_Phantoon(0x80);
     uint16 v5 = 4 * E2->phant_var_F;
-    uint16 v6 = g_byte_A7DA1D[v5];
-    if ((v6 & 0x80) != 0)
-      v6 |= 0xFF00u;
-    R18_ = v6;
     Enemy_Phantoon *E0 = Get_Phantoon(0);
-    R18_ = v6 + E0->base.x_pos;
-    uint16 v8 = g_byte_A7DA1D[v5 + 1];
-    if ((v8 & 0x80) != 0)
-      v8 |= 0xFF00u;
-    R20_ = v8;
-    R20_ = v8 + E0->base.y_pos;
+    R18_ = (int8)g_byte_A7DA1D[v5] + E0->base.x_pos;
+    R20_ = (int8)g_byte_A7DA1D[v5 + 1] + E0->base.y_pos;
     uint16 v11 = g_byte_A7DA1D[v5 + 2];
     SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, v11);
     if (v11 == 29)

@@ -976,15 +976,9 @@ uint8 BlockColl_Vert_Door(void) {  // 0x9493CE
 }
 
 uint8 BlockReact_HorizExt(void) {  // 0x949411
-  int16 v0;
-
-  LOBYTE(v0) = BTS[cur_block_index];
-  if ((uint8)v0) {
-    if ((BTS[cur_block_index] & 0x80) != 0)
-      v0 |= 0xFF00u;
-    else
-      v0 = (uint8)v0;
-    cur_block_index += v0;
+  uint8 t = BTS[cur_block_index];
+  if (t) {
+    cur_block_index += (int8)t;
     return 0xff; // special
   }
   return 0;

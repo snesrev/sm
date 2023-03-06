@@ -2770,54 +2770,30 @@ uint8 MotherBrain_MoveSamusForFallingAfterBeam(void) {  // 0xA9BBE1
 }
 
 uint8 MotherBrain_MoveSamusVerticallyTowardsCeilingFloor(uint16 a) {  // 0xA9BBFD
-  int16 v1;
-  int16 v2;
-  char v3; // t0
-
   int carry = HIBYTE(samus_y_subpos) + LOBYTE(a);
-  LOBYTE(a) = carry;
-  HIBYTE(samus_y_subpos) = a;
-  HIBYTE(samus_prev_y_subpos) = a;
-  v1 = a & 0xFF00;
-  v3 = v1;
-  LOBYTE(v2) = HIBYTE(v1);
-  HIBYTE(v2) = v3;
-  if ((v2 & 0x80) != 0)
-    v2 |= 0xFF00u;
-  uint16 v4 = samus_y_pos + v2 + (carry >> 8), v6;
+  HIBYTE(samus_y_subpos) = carry;
+  HIBYTE(samus_prev_y_subpos) = carry;
+  uint16 v4 = samus_y_pos + (int8)(a >> 8) + (carry >> 8), v6;
   if (sign16(v4 - 48)) {
     v6 = 48;
   } else {
     if (sign16(v4 - 192)) {
-      samus_y_pos = v4;
-      samus_prev_y_pos = v4;
+      samus_prev_y_pos = samus_y_pos = v4;
       return 0;
     }
     v6 = 192;
   }
-  samus_y_pos = v6;
-  samus_prev_y_pos = v6;
+  samus_prev_y_pos = samus_y_pos = v6;
   samus_y_subpos = 0;
   samus_prev_y_subpos = 0;
   return 1;
 }
 
 uint8 MotherBrain_MoveSamusHorizTowardsWall(uint16 a) {  // 0xA9BC3F
-  int16 v1;
-  int16 v2;
-  char v3; // t0
-
   int carry = HIBYTE(samus_x_subpos) + LOBYTE(a);
-  LOBYTE(a) = carry;
-  HIBYTE(samus_x_subpos) = a;
-  HIBYTE(samus_prev_x_subpos) = a;
-  v1 = a & 0xFF00;
-  v3 = v1;
-  LOBYTE(v2) = HIBYTE(v1);
-  HIBYTE(v2) = v3;
-  if ((v2 & 0x80) != 0)
-    v2 |= 0xFF00u;
-  uint16 v4 = samus_x_pos + v2 + (carry >> 8);
+  HIBYTE(samus_x_subpos) = carry;
+  HIBYTE(samus_prev_x_subpos) = carry;
+  uint16 v4 = samus_x_pos + (int8)(a >> 8) + (carry >> 8);
   if (sign16(v4 - 235)) {
     samus_x_pos = v4;
     samus_prev_x_pos = v4;
@@ -3427,34 +3403,16 @@ void MotherBrain_Phase3_Neck_HyperBeamRecoil(void) {  // 0xA9C3CD
 }
 
 void MoveEnemyWithVelocity(void) {  // 0xA9C3EF
-  int16 v2;
-  char v3; // t0
-  int16 v5;
-  char v6; // t1
-
   EnemyData *v0 = gEnemyData(cur_enemy_index);
   uint16 ai_var_B = v0->ai_var_B;
   int carry = HIBYTE(v0->x_subpos) + LOBYTE(ai_var_B);
-  LOBYTE(ai_var_B) = carry;
-  HIBYTE(v0->x_subpos) = ai_var_B;
-  ai_var_B &= 0xFF00u;
-  v3 = ai_var_B;
-  LOBYTE(v2) = HIBYTE(ai_var_B);
-  HIBYTE(v2) = v3;
-  if ((v2 & 0x80) != 0)
-    v2 |= 0xFF00u;
-  v0->x_pos += v2 + (carry >> 8);
+  HIBYTE(v0->x_subpos) = carry;
+  v0->x_pos += (int8)(ai_var_B >> 8) + (carry >> 8);
+
   uint16 ai_var_C = v0->ai_var_C;
   carry = HIBYTE(v0->y_subpos) + LOBYTE(ai_var_C);
-  LOBYTE(ai_var_C) = carry;
-  HIBYTE(v0->y_subpos) = ai_var_C;
-  ai_var_C &= 0xFF00u;
-  v6 = ai_var_C;
-  LOBYTE(v5) = HIBYTE(ai_var_C);
-  HIBYTE(v5) = v6;
-  if ((v5 & 0x80) != 0)
-    v5 |= 0xFF00u;
-  v0->y_pos += v5 + (carry >> 8);
+  HIBYTE(v0->y_subpos) = carry;
+  v0->y_pos += (int8)(ai_var_C >> 8) + (carry >> 8);
 }
 
 void MotherBrain_SetBodyInstrs(uint16 a) {  // 0xA9C42D
@@ -3501,21 +3459,10 @@ uint16 sub_A9C46C(uint16 a, uint16 j) {  // 0xA9C46C
 }
 
 void Enemy_IncreaseYpos(uint16 k, uint16 a) {  // 0xA9C4A9
-  int16 v3;
-  int16 v4;
-  char v5; // t0
-
   EnemyData *v2 = gEnemyData(k);
   int carry = HIBYTE(v2->y_subpos) + LOBYTE(a);
-  LOBYTE(a) = carry;
-  HIBYTE(v2->y_subpos) = a;
-  v3 = a & 0xFF00;
-  v5 = v3;
-  LOBYTE(v4) = HIBYTE(v3);
-  HIBYTE(v4) = v5;
-  if ((v4 & 0x80) != 0)
-    v4 |= 0xFF00u;
-  v2->y_pos += v4 + (carry >> 8);
+  HIBYTE(v2->y_subpos) = carry;
+  v2->y_pos += (int8)(a >> 8) + (carry >> 8);
 }
 
 void Samus_DecrementAmmoDueToRainbowBeam(void) {  // 0xA9C4C4
@@ -4867,84 +4814,37 @@ void DeadMonsters_Func_2(uint16 k) {  // 0xA9D91D
 }
 
 uint8 DeadMonsters_Func_3(uint16 k) {  // 0xA9D961
-  int16 v2;
-  int16 v5;
-  uint16 v6;
-  char v7; // t0
-  int16 v9;
-  int16 v10;
-  char v11; // t1
-
   Enemy_DeadMonsters *E = Get_DeadMonsters(k);
   DeadMonsters_Func_4(k, E->dms_var_0A);
-  v2 = 32;
+  uint16 v2 = 32;
   if ((E->dms_var_0B & 0x8000u) == 0)
     v2 = 128;
   uint16 v3 = E->dms_var_0B + v2;
   E->dms_var_0B = v3;
   R18_ = v3;
   if (sign16(E->base.x_pos - 544)) {
-    HIBYTE(v9) = HIBYTE(R18_);
-    int full = HIBYTE(E->base.y_subpos) + LOBYTE(R18_);
-    LOBYTE(v9) = full;
-    HIBYTE(E->base.y_subpos) = v9;
-    v9 &= 0xFF00u;
-    v11 = v9;
-    LOBYTE(v10) = HIBYTE(v9);
-    HIBYTE(v10) = v11;
-    if ((v10 & 0x80) != 0)
-      v10 |= 0xFF00u;
-    uint16 v12 = E->base.y_pos + v10 + (full >> 8);
+    int full = HIBYTE(E->base.y_subpos) + LOBYTE(v3);
+    HIBYTE(E->base.y_subpos) = full;
+    uint16 v12 = E->base.y_pos + (int8)(v3 >> 8) + (full >> 8);
     E->base.y_pos = v12;
     return sign16(v12 - 184) == 0;
   } else {
-    uint16 v4 = R18_;
-    HIBYTE(R18_) = R18_;
-    LOBYTE(R18_) = 0;
-    v5 = v4 & 0xFF00;
-    if (v5 < 0)
-      v5 |= 0xFFu;
-    v7 = v5;
-    LOBYTE(v6) = HIBYTE(v5);
-    HIBYTE(v6) = v7;
-    R20_ = v6;
+    R18_ = v3 << 8;
+    R20_ = (int8)(v3 >> 8);
     return Enemy_MoveDown(k);
   }
 }
 
 void DeadMonsters_Func_4(uint16 k, uint16 a) {  // 0xA9D9C7
-  int16 v4;
-  uint16 v5;
-  char v6; // t0
-  int16 v7;
-  int16 v8;
-  char v9; // t1
-
   R18_ = a;
   Enemy_DeadMonsters *E = Get_DeadMonsters(k);
   if (sign16(E->base.x_pos - 544)) {
-    HIBYTE(v7) = HIBYTE(R18_);
-    int full = HIBYTE(E->base.x_subpos) + LOBYTE(R18_);
-    LOBYTE(v7) = full;
-    HIBYTE(E->base.x_subpos) = v7;
-    v7 &= 0xFF00u;
-    v9 = v7;
-    LOBYTE(v8) = HIBYTE(v7);
-    HIBYTE(v8) = v9;
-    if ((v8 & 0x80) != 0)
-      v8 |= 0xFF00u;
-    E->base.x_pos += v8 + (full >> 8);
+    int full = HIBYTE(E->base.x_subpos) + LOBYTE(a);
+    HIBYTE(E->base.x_subpos) = full;
+    E->base.x_pos += (int8)(a >> 8) + (full >> 8);
   } else {
-    uint16 v3 = R18_;
-    HIBYTE(R18_) = R18_;
-    LOBYTE(R18_) = 0;
-    v4 = v3 & 0xFF00;
-    if (v4 < 0)
-      v4 |= 0xFFu;
-    v6 = v4;
-    LOBYTE(v5) = HIBYTE(v4);
-    HIBYTE(v5) = v6;
-    R20_ = v5;
+    R18_ = a << 8;
+    R20_ = (int8)(a >> 8);
     Enemy_MoveRight_IgnoreSlopes(k);
   }
 }
@@ -6779,96 +6679,50 @@ uint8 Shitroid_AccelerateTowardsPoint(uint16 k, uint16 a) {  // 0xA9F5A6
 }
 
 void Shitroid_AccelerateTowardsY(uint16 k) {  // 0xA9F5B5
-  int16 v2;
-  int16 v3;
-  int16 v4;
-  int16 v5;
-  char v6; // t0
-  int16 v7;
-  int16 v8;
-  int16 v9;
-  char v10; // t1
-  int16 v11;
-
   Enemy_Shitroid *E = Get_Shitroid(k);
-  v2 = E->base.y_pos - R20_;
-  if (!v2)
-    goto LABEL_9;
+  int16 v2 = E->base.y_pos - R20_;
+  if (!v2) {
+    ++R28_;
+    return;
+  }
   if (v2 >= 0) {
-    v7 = E->shitr_var_C - R22_;
+    uint16 v7 = E->shitr_var_C - R22_;
     if (sign16(v7 + 1280))
       v7 = -1280;
     E->shitr_var_C = v7;
-    v8 = v7 & 0xFF00;
-    v10 = v8;
-    LOBYTE(v9) = HIBYTE(v8);
-    HIBYTE(v9) = v10;
-    if ((v9 & 0x80) != 0)
-      v9 |= 0xFF00u;
-    v11 = E->base.y_pos + v9;
-    if (v11 == R20_ || (int16)(v11 - R20_) < 0) {
+    if ((int16)(E->base.y_pos + (int8)(v7 >> 8) - R20_) <= 0) {
       E->shitr_var_C = 0;
       ++R28_;
     }
   } else {
-    v3 = R22_ + E->shitr_var_C;
+    uint16 v3 = R22_ + E->shitr_var_C;
     if (!sign16(v3 - 1280))
       v3 = 1280;
     E->shitr_var_C = v3;
-    v4 = v3 & 0xFF00;
-    v6 = v4;
-    LOBYTE(v5) = HIBYTE(v4);
-    HIBYTE(v5) = v6;
-    if ((v5 & 0x80) != 0)
-      v5 |= 0xFF00u;
-    if (!sign16(E->base.y_pos + v5 - R20_)) {
+    if ((int16)(E->base.y_pos + (int8)(v3 >> 8) - R20_) >= 0) {
       E->shitr_var_C = 0;
-LABEL_9:
       ++R28_;
     }
   }
 }
 
 void Shitroid_AccelerateTowardsX(uint16 k) {  // 0xA9F615
-  int16 v2;
-  int16 v3;
-  int16 v4;
-  char v5; // t0
-  int16 v6;
-  int16 v7;
-  int16 v8;
-  char v9; // t1
-  int16 v10;
-
   Enemy_Shitroid *E = Get_Shitroid(k);
   if ((int16)(E->base.x_pos - R18_) >= 0) {
-    v6 = E->shitr_var_B - R22_;
+    uint16 v6 = E->shitr_var_B - R22_;
     if (sign16(v6 + 1280))
       v6 = -1280;
     E->shitr_var_B = v6;
-    v7 = v6 & 0xFF00;
-    v9 = v7;
-    LOBYTE(v8) = HIBYTE(v7);
-    HIBYTE(v8) = v9;
-    if ((v8 & 0x80) != 0)
-      v8 |= 0xFF00u;
-    v10 = E->base.x_pos + v8;
-    if (v10 == R18_ || (int16)(v10 - R18_) < 0) {
+    if ((int16)(E->base.x_pos + (int8)(v6 >> 8) - R18_) <= 0) {
       E->shitr_var_B = 0;
       ++R28_;
     }
   } else {
-    v2 = R22_ + E->shitr_var_B;
+    uint16 v2 = R22_ + E->shitr_var_B;
     if (!sign16(v2 - 1280))
       v2 = 1280;
     E->shitr_var_B = v2;
-    v3 = v2 & 0xFF00;
-    v5 = v3;
-    LOBYTE(v4) = HIBYTE(v3);
-    HIBYTE(v4) = v5;
-    if ((v4 & 0x80) != 0)
-      v4 |= 0xFF00u;
-    if (!sign16(E->base.x_pos + v4 - R18_)) {
+    if ((int16)(E->base.x_pos + (int8)(v2 >> 8) - R18_) >= 0) {
       E->shitr_var_B = 0;
       ++R28_;
     }

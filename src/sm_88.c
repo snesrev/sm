@@ -660,15 +660,8 @@ uint16 HdmaobjInstr_Goto(uint8 db, uint16 k, uint16 j) {  // 0x8885EC
 }
 
 uint16 HdmaobjInstr_GotoRel(uint8 db, uint16 k, uint16 j) {  // 0x8885F1
-  int16 v2;
-
   R18_ = j;
-  LOBYTE(v2) = HIBYTE(*(uint16 *)RomPtrWithBank(db, j - 1));
-  if ((v2 & 0x80) != 0)
-    v2 |= 0xFF00u;
-  else
-    v2 = (uint8)v2;
-  return R18_ + v2;
+  return j + (int8)*RomPtrWithBank(db, j);
 }
 
 uint16 HdmaobjInstr_DecrementAndGoto(uint8 db, uint16 k, uint16 j) {  // 0x888607
