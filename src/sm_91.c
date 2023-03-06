@@ -2339,7 +2339,7 @@ void Xray_Func16(uint16 a) {  // 0x91D0A6
 void Xray_SetupStage5(void) {  // 0x91D0D3
   unsigned int v1;
 
-  if ((CanXrayShowBlocks() & 2) == 0) {
+  if (CanXrayShowBlocks()) {
     if (earthquake_timer) {
       reg_BG1HOFS = layer1_x_pos + bg1_x_offset;
       reg_BG1VOFS = layer1_y_pos + bg1_y_offset;
@@ -2358,24 +2358,20 @@ void Xray_SetupStage5(void) {  // 0x91D0D3
   vram_read_queue_tail = v0 + 9;
 }
 
-void CanXrayShowBlocks_(void) {  // 0x91D141
-  CanXrayShowBlocks();
-}
-
-uint8 CanXrayShowBlocks(void) {  // 0x91D143
-  uint8 result = room_ptr;
-  if (room_ptr != (uint16)addr_kRoom_a66a && room_ptr != (uint16)addr_kRoom_cefb) {
-    result = fx_type;
-    if (fx_type != 36)
-      return boss_id;
-  }
-  return result;
+bool CanXrayShowBlocks(void) {  // 0x91D143
+  if (room_ptr == addr_kRoom_a66a || room_ptr == addr_kRoom_cefb)
+    return false;
+  if (fx_type == 0x24)
+    return false;
+  if (boss_id == 3 || boss_id == 6 || boss_id == 7 || boss_id == 8 || boss_id == 10)
+    return false;
+  return true;
 }
 
 void Xray_SetupStage6(void) {  // 0x91D173
   VramWriteEntry *v1;
 
-  if ((CanXrayShowBlocks() & 2) == 0) {
+  if (CanXrayShowBlocks()) {
     uint16 v0 = vram_write_queue_tail;
     v1 = gVramWriteEntry(vram_write_queue_tail);
     v1->size = 2048;
@@ -2389,7 +2385,7 @@ void Xray_SetupStage6(void) {  // 0x91D173
 void Xray_SetupStage7(void) {  // 0x91D1A0
   VramWriteEntry *v1;
 
-  if ((CanXrayShowBlocks() & 2) == 0) {
+  if (CanXrayShowBlocks()) {
     uint16 v0 = vram_write_queue_tail;
     v1 = gVramWriteEntry(vram_write_queue_tail);
     v1->size = 2048;
@@ -2423,7 +2419,7 @@ void HdmaobjPreInstr_XraySetup(uint16 k) {  // 0x91D27F
     goto LABEL_4;
   }
   v1 = 0x2000;
-  if ((CanXrayShowBlocks() & 2) == 0) {
+  if (CanXrayShowBlocks()) {
     v1 = 0x4000;
 LABEL_4:
     *(uint16 *)&reg_COLDATA[0] = 0x27;

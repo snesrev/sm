@@ -780,7 +780,7 @@ void HdmaobjPreInstr_Xray(uint16 k) {
   v1 = 4096;
   if (fx_type != 36) {
     v1 = 0x2000;
-    if ((CanXrayShowBlocks() & 2) == 0) {
+    if (CanXrayShowBlocks()) {
       v1 = 0x4000;
       *(uint16 *)&reg_COLDATA[0] = 0x27;
       *(uint16 *)&reg_COLDATA[1] = 0x47;
@@ -925,7 +925,7 @@ void HdmaobjPreInstr_XrayFunc3_DeactivateBeam(uint16 k) {  // 0x888934
   v1 = 4096;
   if (fx_type != 36) {
     v1 = 0x2000;
-    if ((CanXrayShowBlocks() & 2) == 0)
+    if (CanXrayShowBlocks())
       v1 = 0x4000;
   }
   fx_layer_blending_config_c |= v1;
@@ -953,7 +953,7 @@ void HdmaobjPreInstr_XrayFunc4_DeactivateBeam(uint16 k) {  // 0x8889BA
   v1 = 4096;
   if (fx_type != 36) {
     v1 = 0x2000;
-    if ((CanXrayShowBlocks() & 2) == 0)
+    if (CanXrayShowBlocks())
       v1 = 0x4000;
   }
   fx_layer_blending_config_c |= v1;
@@ -974,7 +974,7 @@ void HdmaobjPreInstr_XrayFunc5_DeactivateBeam(uint16 k) {  // 0x888A08
   v1 = 4096;
   if (fx_type != 36) {
     v1 = 0x2000;
-    if ((CanXrayShowBlocks() & 2) == 0)
+    if (CanXrayShowBlocks())
       v1 = 0x4000;
   }
   fx_layer_blending_config_c |= v1;
