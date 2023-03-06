@@ -2762,23 +2762,13 @@ void Ridley_Func_52(void) {  // 0xA6BECA
 }
 
 void Ridley_Func_53(void) {  // 0xA6BEDC
-  int16 v2;
-  char v3; // t0
-
   Enemy_Ridley *E = Get_Ridley(0);
   uint16 v1 = E->ridley_var_46 + 8;
   E->ridley_var_46 = v1;
-  LOBYTE(v1) = HIBYTE(E->ridley_var_43) + v1;
-  HIBYTE(E->ridley_var_43) = v1;
-  v1 &= 0xFF00u;
-  v3 = v1;
-  LOBYTE(v2) = HIBYTE(v1);
-  HIBYTE(v2) = v3;
-  if ((v2 & 0x80) != 0)
-    v2 |= 0xFF00u;
-  uint16 v4 = E->ridley_var_44 + v2;
-  E->ridley_var_44 = v4;
-  if (!sign16(v4 - 192)) {
+  int t = HIBYTE(E->ridley_var_43) + (v1&0xff);
+  HIBYTE(E->ridley_var_43) = t;
+  E->ridley_var_44 += (int8)(v1 >> 8) + (t >> 8);
+  if (!sign16(E->ridley_var_44 - 192)) {
     E->ridley_var_44 = 192;
     E->ridley_var_40 = addr_locret_A6BF19;
   }
