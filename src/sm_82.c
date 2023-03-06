@@ -1668,22 +1668,20 @@ void DrawRoomSelectMap(void) {  // 0x829517
     uint16 v2 = 0;
     LOBYTE(R18_) = 0;
     while (1) {
-      Unreachable();
-      if (Unreachable()) {
-        HIBYTE(v3) = HIBYTE(v1);
+      uint8 what = map_tiles_explored[v2];
+      map_tiles_explored[v2] <<= 1;
+      if (!(what & 0x80)) {
         IndirWriteWord(&R3_, v1, 0xFu);
       } else {
         ++map_tiles_explored[v2];
-        uint8 *v4 = IndirPtr(&R0_, v1);
-        HIBYTE(v3) = HIBYTE(v1);
-        IndirWriteWord(&R3_, v1, *(uint16 *)v4 & 0xFBFF);
+        IndirWriteWord(&R3_, v1, *(uint16 *)IndirPtr(&R0_, v1) & ~0x400);
       }
       v1 += 2;
       LOBYTE(R18_) = R18_ + 1;
       LOBYTE(v3) = R18_ - 8;
       if (!(uint8)sign8(v3)) {
         LOBYTE(R18_) = 0;
-        if ((++v2 & 0x8000u) == 0)
+        if ((__int16)(++v2 - 256) >= 0)
           break;
       }
     }
