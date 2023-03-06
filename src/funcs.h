@@ -1341,8 +1341,8 @@ void Eproj_Pickup_Missiles(void);
 void Eproj_Pickup_PowerBombs(void);
 void Eproj_Pickup_SmallHealth(void);
 void Eproj_Pickup_SuperMissiles(void);
-void Eproj_SetVelTowardsSamus1(uint16 k);
-void Eproj_SetVelTowardsSamus2(uint16 k);
+uint16 EprojInstr_SetVelTowardsSamus1(uint16 k, uint16 j);
+uint16 EprojInstr_SetVelTowardsSamus2(uint16 k, uint16 j);
 void Eproj_SetXvelRandom(uint16 k);
 void Eproj_SetYvelRandom(uint16 k);
 void GetValuesForScreenShaking(void);
@@ -6125,6 +6125,7 @@ void DecompressToMem_IpArg(const void* p);
 #define fnPlmInstr_GotoIfDoorBitSet 0x848A72
 #define fnPlmInstr_IncrementDoorHitCounterAndJGE 0x848A91
 #define fnPlmInstr_IncrementArgumentAndJGE 0x848ACD
+#define fnlocret_848AE0 0x848AE0
 #define fnPlmInstr_SetBTS 0x848AF1
 #define fnPlmInstr_DrawPlmBlock 0x848B05
 #define fnPlmInstr_DrawPlmBlock_ 0x848B17
@@ -6219,6 +6220,7 @@ void DecompressToMem_IpArg(const void* p);
 #define fnPlmPreInstr_EscapeRoomBeforeOldTourianEscapeShaft 0x84B948
 #define fnPlmSetup_B974 0x84B96C
 #define fnPlmSetup_B9C1_CrittersEscapeBlock 0x84B978
+#define fnPlmInstr_SetCrittersEscapedEvent 0x84B9B9
 #define fnPlmSetup_B9ED_CrittersEscapeBlock 0x84B9C5
 #define fnsub_84B9F1 0x84B9F1
 #define fnPlmInstr_JumpIfSamusHasNoBombs 0x84BA6F
@@ -6531,6 +6533,8 @@ void DecompressToMem_IpArg(const void* p);
 #define fnEprojInit_TourianStatueDustClouds 0x86AF43
 #define fnEprojInit_TourianLandingDustCloudsRightFoot 0x86AF50
 #define fnEprojInstr_MoveY_Minus4 0x86AF92
+#define fnEprojInstr_SetVelTowardsSamus1 0x86B269
+#define fnEprojInstr_SetVelTowardsSamus2 0x86B272
 #define fnEprojInit_TorizoLandingDustCloudLeftFoot 0x86AFCD
 #define fnEprojInit_GoldenTorizoEgg 0x86B001
 #define fnEprojPreInstr_GoldenTorizoEgg 0x86B043
@@ -9496,6 +9500,8 @@ void DecompressToMem_IpArg(const void* p);
 #define fnEscapeEtecoon_Instr_2 0xB3E610
 #define fnEscapeEtecoon_Main 0xB3E655
 #define fnEscapeEtecoon_E65C 0xB3E65C
+#define fnEscapeEtecoon_E670 0xB3E670
+#define fnEscapeEtecoon_E680 0xB3E680
 #define fnEscapeEtecoon_Init 0xB3E6CB
 #define fnEscapeDachora_Instr_2 0xB3EAA8
 #define fnEscapeDachora_Instr_3 0xB3EAB8

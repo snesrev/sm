@@ -1506,9 +1506,10 @@ void Shaktool_DD25(uint16 k) {  // 0xAADD25
     Shaktool_DB27(k, v8);
     for (int i = 12; i >= 0; i -= 2) {
       Shaktool_DC07(k);
-      E->shakt_var_F = FUNC16(nullsub_274);
-      E->base.current_instruction = g_off_AADF13[i >> 1];
-      E->base.instruction_timer = 1;
+      Enemy_Shaktool *EK = Get_Shaktool(k);
+      EK->shakt_var_F = FUNC16(nullsub_274);
+      EK->base.current_instruction = g_off_AADF13[i >> 1];
+      EK->base.instruction_timer = 1;
       k -= 64;
     }
   } else {

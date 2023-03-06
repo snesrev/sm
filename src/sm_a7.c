@@ -2213,9 +2213,7 @@ void Phantoon_Main(void) {  // 0xA7CEA6
   Phantoon_Func_2(cur_enemy_index);
   Enemy_Phantoon *EK = Get_Phantoon(cur_enemy_index);
   CallEnemyPreInstr(EK->phant_var_F | 0xA70000);
-  printf("What is X?\n");
-  uint16 tt = cur_enemy_index; // wtf bug
-  if (!tt) {
+  if (cur_enemy_index == 0) { // code bug: X is overwritten
     Enemy_Phantoon *E0 = Get_Phantoon(0);
     Enemy_Phantoon *E1 = Get_Phantoon(0x40u);
     Enemy_Phantoon *E2 = Get_Phantoon(0x80);

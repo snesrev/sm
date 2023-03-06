@@ -1438,6 +1438,7 @@ typedef struct Ram7800_FireFlea {
 /* 145 */
 typedef union ExtraEnemyRam7800 {
   Ram7800_Kraid kraid;
+  uint8 pad[64];
 }ExtraEnemyRam7800;
 
 /* 146 */

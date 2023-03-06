@@ -425,6 +425,8 @@ uint16 CallEprojInstr(uint32 ea, uint16 k, uint16 j) {
   case fnEprojInstr_GotoDependingOnXDirection: return EprojInstr_GotoDependingOnXDirection(k, j);
   case fnEprojInstr_ResetXYpos1: return EprojInstr_ResetXYpos1(k, j);
   case fnEprojInstr_MoveY_Minus4: return EprojInstr_MoveY_Minus4(k, j);
+  case fnEprojInstr_SetVelTowardsSamus1: return EprojInstr_SetVelTowardsSamus1(k, j);
+  case fnEprojInstr_SetVelTowardsSamus2: return EprojInstr_SetVelTowardsSamus2(k, j);
   case fnEprojInstr_GotoIfFunc1: return EprojInstr_GotoIfFunc1(k, j);
   case fnEprojInstr_ResetXYpos2: return EprojInstr_ResetXYpos2(k, j);
   case fnEprojInstr_SpawnTourianStatueUnlockingParticle: return EprojInstr_SpawnTourianStatueUnlockingParticle(k, j);
@@ -3062,16 +3064,14 @@ void EprojPreInstr_B237(uint16 k) {  // 0x86B237
   }
 }
 
-void Eproj_SetVelTowardsSamus1(uint16 k) {  // 0x86B269
-  char v1;
-
-  v1 = CalculateAngleOfSamusFromEproj(k);
-  sub_86B279(k, v1 & 0x7F);
+uint16 EprojInstr_SetVelTowardsSamus1(uint16 k, uint16 j) {  // 0x86B269
+  sub_86B279(k, CalculateAngleOfSamusFromEproj(k) & 0x7F);
+  return j;
 }
 
-void Eproj_SetVelTowardsSamus2(uint16 k) {  // 0x86B272
-  uint16 v1 = CalculateAngleOfSamusFromEproj(k);
-  sub_86B279(k, v1 | 0x80);
+uint16 EprojInstr_SetVelTowardsSamus2(uint16 k, uint16 j) {  // 0x86B272
+  sub_86B279(k, CalculateAngleOfSamusFromEproj(k) | 0x80);
+  return j;
 }
 
 void sub_86B279(uint16 k, uint16 a) {  // 0x86B279
@@ -5608,7 +5608,7 @@ uint16 EprojInstr_QueueSfx2_B(uint16 k, uint16 j) {  // 0x86EEA3
 
 uint16 EprojInstr_EEAF(uint16 k, uint16 j) {  // 0x86EEAF
   uint16 v2 = RandomDropRoutine(k);
-  if (sign16(v2 - 6)) {
+  if (k != 0 && sign16(v2 - 6)) {
     uint16 v3 = 2 * v2;
     int v4 = k >> 1;
     enemy_projectile_E[v4] = v3;

@@ -886,8 +886,8 @@ uint8 BlockColl_Vert_SpecialBlock(void) {  // 0x949102
   v0 = BTS[cur_block_index];
   if ((v0 & 0x80) != 0) {
     R34 = off_9492E9[area_index];
-    uint8 *v3 = RomPtr_94(R34);
-    uint8 v4 = SpawnPLM(*(uint16 *)&v3[(uint16)(2 * (v0 & 0x7F))]) & 1;
+    uint16 *v3 = (uint16*)RomPtr_94(R34);
+    uint8 v4 = SpawnPLM(v3[v0 & 0x7F]) & 1;
     if (v4)
       return BlockColl_Vert_SolidShootGrappleBlock();
     return v4;

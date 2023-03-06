@@ -1341,6 +1341,8 @@ void CallEnemyPreInstr(uint32 ea) {
   case fnShaktool_PreInstr_0: Shaktool_PreInstr_0(k); return;
   case fnnullsub_277: return;
   case fnEscapeEtecoon_E65C: EscapeEtecoon_E65C(k); return;
+  case fnEscapeEtecoon_E670: EscapeEtecoon_E670(k); return;
+  case fnEscapeEtecoon_E680: EscapeEtecoon_E680(k); return;
   case fnsub_A3E168: sub_A3E168(k); return;
   case fnMaridiaSnail_Func_7: MaridiaSnail_Func_7(k); return;
   case fnMaridiaSnail_Func_9: MaridiaSnail_Func_9(k); return;

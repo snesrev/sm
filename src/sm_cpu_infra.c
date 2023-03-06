@@ -276,6 +276,12 @@ void PatchBugs(uint32 mode, uint32 addr) {
   } else if (FixBugHook(0x829325)) {
     // forgot to change bank
     g_cpu->db = 0x82;
+  } else if (FixBugHook(0x848ACD)) {
+    // PlmInstr_IncrementArgumentAndJGE A is not zeroed
+    g_cpu->a = 0;
+  } else if (FixBugHook(0xA7CEB2)) {
+    // Phantoon_Main forgots to reload x
+    g_cpu->x = cur_enemy_index;
   }
 }
 

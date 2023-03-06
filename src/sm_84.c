@@ -457,7 +457,8 @@ void CallPlmPreInstr(uint32 ea, uint16 k) {
   case fnnullsub_78:
   case fnnullsub_79:
   case fnnullsub_80:
-  case fnnullsub_81: return;
+  case fnnullsub_81:
+  case fnlocret_848AE0: return;
   case fnPlmPreInstr_SetMetroidsClearState_Ev0x10: PlmPreInstr_SetMetroidsClearState_Ev0x10(k); return;
   case fnPlmPreInstr_SetMetroidsClearState_Ev0x11: PlmPreInstr_SetMetroidsClearState_Ev0x11(k); return;
   case fnPlmPreInstr_SetMetroidsClearState_Ev0x12: PlmPreInstr_SetMetroidsClearState_Ev0x12(k); return;
@@ -539,6 +540,7 @@ uint16 CallPlmInstr(uint32 ea, uint16 j, uint16 k) {
   case fnPlmInstr_PlaceSamusOnSaveStation: return PlmInstr_PlaceSamusOnSaveStation(j, k);
   case fnPlmInstr_DisplayGameSavedMessageBox: return PlmInstr_DisplayGameSavedMessageBox(j, k);
   case fnPlmInstr_EnableMovementAndSetSaveStationUsed: return PlmInstr_EnableMovementAndSetSaveStationUsed(j, k);
+  case fnPlmInstr_SetCrittersEscapedEvent: return PlmInstr_SetCrittersEscapedEvent(j, k);
   case fnPlmInstr_JumpIfSamusHasNoBombs: return PlmInstr_JumpIfSamusHasNoBombs(j, k);
   case fnPlmInstr_MovePlmRight4Blocks: return PlmInstr_MovePlmRight4Blocks(j, k);
   case fnPlmInstr_ClearTrigger: return PlmInstr_ClearTrigger(j, k);
@@ -3051,7 +3053,6 @@ uint8 PlmSetup_D6F2_WreckedShipChozoHandTrigger(uint16 j) {  // 0x84D620
     CallSomeSamusCode(0);
     static const SpawnHardcodedPlmArgs unk_84D673 = { 0x17, 0x1d, 0xd6f8 };
     SpawnHardcodedPlm(&unk_84D673);
-    return 0;
   }
   plm_header_ptr[j >> 1] = 0;
   return 1;

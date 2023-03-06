@@ -423,12 +423,24 @@ void RtlSaveSnapshot(const char *filename, bool saving_with_bug) {
   fclose(f);
 }
 
+static const char *const kBugSaves[] = {
+  "shaktool", "shinespark", "bombtorizo", "chozo", "draygon", "draygon2", "golden-torizo", "motherbomb", "phantoon"
+};
+
 void RtlSaveLoad(int cmd, int slot) {
   char name[128];
-  sprintf(name, "saves/save%d.sav", slot);
+  if (slot >= 256) {
+    int i = slot - 256;
+    if (cmd == kSaveLoad_Save || i >= sizeof(kBugSaves) / sizeof(kBugSaves[0]))
+      return;
+    sprintf(name, "saves/bug-%s.sav", kBugSaves[i]);
+  } else {
+    sprintf(name, "saves/save%d.sav", slot);
+  }
   printf("*** %s slot %d\n",
     cmd == kSaveLoad_Save ? "Saving" : cmd == kSaveLoad_Load ? "Loading" : "Replaying", slot);
   if (cmd != kSaveLoad_Save) {
+
     FILE *f = fopen(name, "rb");
     if (f == NULL) {
       printf("Failed fopen: %s\n", name);
