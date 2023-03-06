@@ -419,6 +419,10 @@ void RtlSaveLoad(int cmd, int slot) {
     cmd == kSaveLoad_Save ? "Saving" : cmd == kSaveLoad_Load ? "Loading" : "Replaying", slot);
   if (cmd != kSaveLoad_Save) {
     FILE *f = fopen(name, "rb");
+    if (f == NULL) {
+      printf("Failed fopen: %s\n", name);
+      return;
+    }
     RtlApuLock();
     StateRecorder_Load(&state_recorder, f, cmd == kSaveLoad_Replay);
     ppu_copy(g_snes->my_ppu, g_snes->ppu);

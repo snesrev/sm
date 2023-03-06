@@ -263,9 +263,6 @@
     <ClInclude Include="..\third_party\gl_core\gl_core_3_1.h">
       <Filter>Shader</Filter>
     </ClInclude>
-    <ClInclude Include="ida_defs.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
