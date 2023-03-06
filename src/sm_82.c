@@ -1681,7 +1681,7 @@ void DrawRoomSelectMap(void) {  // 0x829517
       LOBYTE(v3) = R18_ - 8;
       if (!(uint8)sign8(v3)) {
         LOBYTE(R18_) = 0;
-        if ((__int16)(++v2 - 256) >= 0)
+        if ((int16)(++v2 - 256) >= 0)
           break;
       }
     }
