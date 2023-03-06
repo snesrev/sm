@@ -151,13 +151,17 @@ void ReadFromFile(FILE *f, void *data, size_t n) {
 
 void RtlReset(bool preserve_sram) {
   snes_frame_counter = 0;
-  coroutine_state_0 = 1;
   snes_reset(g_snes, true);
   if (!preserve_sram)
     memset(g_sram, 0, 0x2000);
+  
+  coroutine_state_0 = 1;
+    
   RtlApuLock();
   RtlRestoreMusicAfterLoad_Locked(true);
   RtlApuUnlock();
+
+
 
   RtlSynchronizeWholeState();
 }
