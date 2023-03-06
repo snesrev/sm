@@ -724,14 +724,11 @@ int CpuOpcodeHook(uint32_t addr);
 
 uint32_t pc_hist[8], pc_hist_ctr;
 
-uint32_t pc_bp = 0x828A55;
+uint32_t pc_bp = 0;
 
 static void cpu_doOpcode(Cpu* cpu, uint8_t opcode) {
-  pc_hist[pc_hist_ctr] = cpu->k << 16 | cpu->pc;
-  pc_hist_ctr = (pc_hist_ctr + 1) & 7;
-  if (cpu->pc == 0x910b) {
-    opcode += 0;
-  }
+//  pc_hist[pc_hist_ctr] = cpu->k << 16 | cpu->pc;
+//  pc_hist_ctr = (pc_hist_ctr + 1) & 7;
   if (((cpu->k << 16) | cpu->pc - 1) == pc_bp) {
     opcode += 0;
   }

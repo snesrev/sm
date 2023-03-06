@@ -2596,8 +2596,8 @@ uint8 HandleVisorPalette(void) {  // 0x91D83F
     if ((uint8)v1)
       return 0;
     samus_visor_palette_timer_index = v1 | 5;
-    palette_buffer[196] = word_9BA3C0[(uint16)((uint16)(v1 | 5) >> 8) >> 1];
-    v2 = ((uint16)(v1 | 5) >> 8) + 2;
+    palette_buffer[196] = word_9BA3C0[HIBYTE(v1) >> 1];
+    v2 = HIBYTE(v1) + 2;
     if (sign16(v2 - 12)) {
       v4 = v2;
       LOBYTE(v3) = HIBYTE(v2);

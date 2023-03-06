@@ -2592,7 +2592,7 @@ void EquipmentScreenGlowingArrow(void) {
   if ((uint8)pausemenu_equipment_category_item)
     EquipmentScreenGlowingArrowSolidOff();
   else
-    kEquipmentScreenGlowingArrowFuncs[0]();
+    kEquipmentScreenGlowingArrowFuncs[HIBYTE(pausemenu_equipment_category_item)]();
 }
 
 static const uint16 kEquipmentScreenGlowingArrowPalettes0[32] = { 0x39e, 0x77d, 0xb5c, 0xf5b, 0x133a, 0x171a, 0x1f19, 0x22f8, 0x26d7, 0x2ad6, 0x2eb6, 0x3695, 0x3a94, 0x3e73, 0x4253, 0x4a52, 0x4a52, 0x4253, 0x3e73, 0x3a94, 0x3695, 0x2eb6, 0x2ad6, 0x26d7, 0x22f8, 0x1f19, 0x171a, 0x133a, 0xf5b, 0xb5c, 0x77d, 0x39e };
@@ -2624,44 +2624,19 @@ void EquipmentScreenGlowingArrowSolidOff(void) {  // 0x82ADEF
 }
 
 void EquipmentScreenEnergyArrowGlow_On(void) {  // 0x82AE01
-  int16 v0;
-  int16 v2;
-
-  v0 = 16;
-  uint16 v1 = 0;
-  do {
-    ram3800.cinematic_bg_tilemap[v1 + 129] = ram3800.cinematic_bg_tilemap[v1 + 129] & 0xE3FF | 0x1800;
-    v1 += 32;
-    v0 -= 2;
-  } while (v0);
-  v2 = 4;
-  uint16 v3 = 0;
-  do {
-    ram3800.cinematic_bg_tilemap[v3 + 385] = ram3800.cinematic_bg_tilemap[v3 + 385] & 0xE3FF | 0x1800;
-    ++v3;
-    v2 -= 2;
-  } while (v2);
+  for (int i = 0; i < 8; i++)
+    ram3800.equipment_screen_bg1_tilemap[129 + i * 32] = ram3800.equipment_screen_bg1_tilemap[129 + i * 32] & ~0x1C00 | 0x1800;
+  for(int i = 0; i < 2; i++)
+    ram3800.equipment_screen_bg1_tilemap[385 + i] = ram3800.equipment_screen_bg1_tilemap[385 + i] & ~0x1C00 | 0x1800;
 }
 
 void EquipmentScreenEnergyArrowGlow_Off(void) {  // 0x82AE46
-  int16 v0;
-  int16 v2;
-
-  v0 = 16;
-  uint16 v1 = 0;
-  do {
-    ram3800.cinematic_bg_tilemap[v1 + 129] = ram3800.cinematic_bg_tilemap[v1 + 129] & 0xE3FF | 0x1C00;
-    v1 += 32;
-    v0 -= 2;
-  } while (v0);
-  v2 = 4;
-  uint16 v3 = 0;
-  do {
-    ram3800.cinematic_bg_tilemap[v3 + 385] = ram3800.cinematic_bg_tilemap[v3 + 385] & 0xE3FF | 0x1C00;
-    ++v3;
-    v2 -= 2;
-  } while (v2);
+  for(int i = 0; i < 8; i++)
+    ram3800.equipment_screen_bg1_tilemap[129 + i * 32] = ram3800.equipment_screen_bg1_tilemap[129 + i * 32] & ~0x1C00 | 0x1C00;
+  for (int i = 0; i < 2; i++)
+    ram3800.equipment_screen_bg1_tilemap[385 + i] = ram3800.equipment_screen_bg1_tilemap[385 + i] & ~0x1C00 | 0x1C00;
 }
+
 static const uint16 kEquipmentScreenTilemap_MODE_MANUAL[7] = { 0x2519, 0x251a, 0x251b, 0x3d46, 0x3d47, 0x3d48, 0x3d49 };
 static const uint16 kEquipmentScreenTilemap_RESERVE_TANK[7] = { 0x3c80, 0x3c81, 0x3c82, 0x3c83, 0x3c84, 0x3c85, 0x3c86 };
 static const uint16 kEquipmentScreenTilemap_MANUAL[4] = { 0x3d46, 0x3d47, 0x3d48, 0x3d49 };
