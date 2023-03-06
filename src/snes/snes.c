@@ -130,9 +130,9 @@ void snes_handle_pos_stuff(Snes *snes) {
       ppu_handleVblank(snes->ppu);
       snes->inVblank = true;
       snes->inNmi = true;
-      if (snes->nmiEnabled) {
-        snes->cpu->nmiWanted = true; // request NMI on CPU
-      }
+//      if (snes->nmiEnabled) {
+      snes->cpu->nmiWanted = true; // request NMI on CPU
+//      }
       if (snes->autoJoyRead) {
         // TODO: this starts a little after start of vblank
         snes->autoJoyTimer = 0;
