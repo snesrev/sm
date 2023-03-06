@@ -2752,13 +2752,10 @@ void EquipmentScreenCategory_Tanks_1(void) {  // 0x82AF4F
     QueueSfx3_Max6(0x2Du);
   samus_health += kReserveTankEnergyTransferPerFrame;
   if ((int16)(samus_health - samus_max_health) < 0) {
-    bool v0 = (int16)(samus_reserve_health - kReserveTankEnergyTransferPerFrame) < 0;
     samus_reserve_health -= kReserveTankEnergyTransferPerFrame;
-    if (samus_reserve_health) {
-      if (!v0)
-        return;
-      samus_health += samus_reserve_health;
-    }
+    if ((int16)samus_reserve_health > 0)
+      return;
+    samus_health += samus_reserve_health;
   } else {
     samus_health = samus_max_health;
   }
