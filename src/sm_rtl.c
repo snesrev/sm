@@ -151,10 +151,10 @@ void ReadFromFile(FILE *f, void *data, size_t n) {
     Die("fread failed\n");
 }
 
-void RtlReset(bool preserve_sram) {
+void RtlReset(int mode) {
   snes_frame_counter = 0;
   snes_reset(g_snes, true);
-  if (!preserve_sram)
+  if (!(mode & 1))
     memset(g_sram, 0, 0x2000);
   
   coroutine_state_0 = 1;
@@ -165,7 +165,8 @@ void RtlReset(bool preserve_sram) {
 
   RtlSynchronizeWholeState();
 
-  StateRecorder_Init(&state_recorder);
+  if ((mode & 2) == 0)
+    StateRecorder_Init(&state_recorder);
 }
 
 int GetFileSize(FILE *f) {
@@ -216,7 +217,7 @@ void StateRecorder_Load(StateRecorder *sr, FILE *f, bool replay_mode) {
       LoadSnesState(&loadFunc, &state);
       assert(state.p == state.pend);
     } else {
-      RtlReset(false);
+      RtlReset(2);
       if (sr->base_snapshot.size == 8192)
         memcpy(g_sram, sr->base_snapshot.data, 8192);
       is_reset = true;
