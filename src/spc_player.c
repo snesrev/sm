@@ -853,7 +853,7 @@ static void Music_HandleCmdFromSnes(SpcPlayer *p) {
   if (a == 0xf0) {  // 0xf0 - pausemusic
     p->key_OFF |= ~p->is_chan_on;
   } else {
-    if (a != 0xf1 && a != 255) start_playing_sound: {
+    if (a != 0xf1 && a != 255 && a != p->port_to_snes[0]) start_playing_sound: {
       p->port_to_snes[0] = a;
       p->music_ptr_toplevel = WORD(p->ram[0x5820 + (a - 1) * 2]);
       p->counter_sf0c = 2;
