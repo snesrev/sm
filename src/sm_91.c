@@ -1985,6 +1985,9 @@ void Xray_SetupStage4_Func1(void) {  // 0x91CCF1
 }
 
 void Xray_SetupStage4_Func2(void) {  // 0x91CD42
+  // bug: passing 0xffff to this function is invalid and will read invalid memory.
+  if (R34 == 0)
+    return;
   unsigned int v2;
   int16 v3;
   unsigned int v7;

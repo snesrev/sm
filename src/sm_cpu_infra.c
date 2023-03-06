@@ -282,6 +282,10 @@ void PatchBugs(uint32 mode, uint32 addr) {
   } else if (FixBugHook(0xA7CEB2)) {
     // Phantoon_Main forgots to reload x
     g_cpu->x = cur_enemy_index;
+  } else if (FixBugHook(0x91CD44)) {
+    // Xray_SetupStage4_Func2 passes a bad value to Xray_HandleXrayedBlock
+    if (g_cpu->x == 0)
+      g_cpu->pc = 0xCD52;
   }
 }
 
