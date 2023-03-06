@@ -154,6 +154,7 @@ uint8 ReadReg(uint16 reg);
 typedef void RunFrameFunc(uint16 input, int run_what);
 typedef void SyncAllFunc();
 
+void RtlReset(bool preserve_sram);
 void RtlSetupEmuCallbacks(uint8 *emu_ram, RunFrameFunc *func, SyncAllFunc *sync_all);
 void RtlClearKeyLog();
 void RtlStopReplay();

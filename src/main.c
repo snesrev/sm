@@ -623,7 +623,7 @@ static void HandleCommand(uint32 j, bool pressed) {
       SDL_ShowCursor(g_cursor);
       break;
     case kKeys_Reset:
-      //RtlReset(true);
+      RtlReset(true);
       break;
     case kKeys_Pause: g_paused = !g_paused; break;
     case kKeys_PauseDimmed:

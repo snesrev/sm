@@ -96,6 +96,8 @@ typedef struct StateRecorder {
 static StateRecorder state_recorder;
 
 void StateRecorder_Init(StateRecorder *sr) {
+  ByteArray_Destroy(&sr->log);
+  ByteArray_Destroy(&sr->base_snapshot);
   memset(sr, 0, sizeof(*sr));
 }
 
@@ -161,9 +163,9 @@ void RtlReset(bool preserve_sram) {
   RtlRestoreMusicAfterLoad_Locked(true);
   RtlApuUnlock();
 
-
-
   RtlSynchronizeWholeState();
+
+  StateRecorder_Init(&state_recorder);
 }
 
 int GetFileSize(FILE *f) {
@@ -397,7 +399,6 @@ bool RtlRunFrame(int inputs) {
 
     StateRecorder_Record(&state_recorder, inputs);
   }
-
 
   g_rtl_runframe(inputs, 0);
 
