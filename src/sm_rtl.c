@@ -682,9 +682,9 @@ void RtlCheat(char c) {
   if (c == 'w') {
     samus_health = samus_max_health;
     StateRecorder_RecordPatchByte(&state_recorder, 0x9C2, (uint8 *)&samus_health, 2);
-  } else if (c == 'q' && 0) {
-    samus_y_pos -= 32;
-    samus_y_speed = 0;
+  } else if (c == 'q') {
+    samus_y_pos -= 4;
+    samus_y_speed = -8;
     StateRecorder_RecordPatchByte(&state_recorder, 0xafa, (uint8 *)&samus_y_pos, 2);
     StateRecorder_RecordPatchByte(&state_recorder, 0xb2e, (uint8 *)&samus_y_speed, 2);
     menu_index = 0;
