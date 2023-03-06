@@ -33,6 +33,8 @@ struct Apu {
   uint8_t outPorts[4];
   Timer timer[3];
   uint8_t cpuCyclesLeft;
+  uint8_t pad[6];
+
 
   union {
     struct DspRegWriteHistory hist;

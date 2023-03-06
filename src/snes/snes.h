@@ -24,16 +24,19 @@ struct Snes {
   Ppu* ppu, *snes_ppu, *my_ppu;
   Dma* dma;
   Cart* cart;
+  Input *input1;
+  Input *input2;
   // input
   bool debug_cycles;
   bool debug_apu_cycles;
   bool disableRender;
   uint8_t runningWhichVersion;
-  Input* input1;
-  Input* input2;
+
   // ram
-  uint8_t *ram;
   uint32_t ramAdr;
+  uint8_t *ram;
+  uint8_t padx[4];
+
   // frame timing
   uint16_t hPos;
   uint16_t vPos;
@@ -41,6 +44,7 @@ struct Snes {
   // cpu handling
   uint8_t cpuCyclesLeft;
   uint8_t cpuMemOps;
+  uint8_t padpad[2];
   double apuCatchupCycles;
   // nmi / irq
   bool hIrqEnabled;

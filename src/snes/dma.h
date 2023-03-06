@@ -40,6 +40,7 @@ struct Dma {
   uint16_t hdmaTimer;
   uint32_t dmaTimer;
   bool dmaBusy;
+  uint8_t pad[7];
 };
 
 Dma* dma_init(Snes* snes);

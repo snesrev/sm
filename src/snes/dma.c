@@ -65,7 +65,7 @@ void dma_reset(Dma* dma) {
 }
 
 void dma_saveload(Dma *dma, SaveLoadFunc *func, void *ctx) {
-  func(ctx, &dma->channel, sizeof(Dma) - offsetof(Dma, channel));
+  func(ctx, &dma->channel, offsetof(Dma, pad) + 7 - offsetof(Dma, channel));
 }
 
 uint8_t dma_read(Dma* dma, uint16_t adr) {

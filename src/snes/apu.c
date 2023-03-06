@@ -54,7 +54,7 @@ void apu_reset(Apu* apu) {
 }
 
 void apu_saveload(Apu *apu, SaveLoadFunc *func, void *ctx) {
-  func(ctx, apu->ram, offsetof(Apu, hist) - offsetof(Apu, ram));
+  func(ctx, apu->ram, offsetof(Apu, pad) + 6 - offsetof(Apu, ram));
   dsp_saveload(apu->dsp, func, ctx);
   spc_saveload(apu->spc, func, ctx);
 }
