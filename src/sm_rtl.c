@@ -227,6 +227,8 @@ void StateRecorder_Load(StateRecorder *sr, FILE *f, bool replay_mode) {
     sr->replay_frame_counter = hdr[8];
     sr->replay_mode = (sr->replay_frame_counter != 0);
 
+    assert(hdr[6] == 275493);
+
     ByteArray arr = { 0 };
     ByteArray_Resize(&arr, hdr[6]);
     ReadFromFile(f, arr.data, arr.size);
@@ -241,6 +243,10 @@ void StateRecorder_Load(StateRecorder *sr, FILE *f, bool replay_mode) {
 
   if (!is_reset)
     RtlRestoreMusicAfterLoad_Locked(false);
+
+  // For some reason couroutine_state is not 1...
+  if (g_snes->cpu->k == 0x00 && g_snes->cpu->pc == 0x841c)
+    coroutine_state_0 = 1;
 
   // Temporarily fix reset state
 //  if (g_snes->cpu->k == 0x82 && g_snes->cpu->pc == 0xf716)

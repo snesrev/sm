@@ -1192,7 +1192,7 @@ uint8 EnemyProjectileBlockCollisition_Vertical(uint16 k) {  // 0x86897B
   else
     v4 = g_word_7E001E + v3 - 1;
   R34 = v4;
-  uint prod = (v4 >> 4) * (uint8)room_width_in_blocks;
+  uint16 prod = Mult8x8(v4 >> 4, room_width_in_blocks);
   v5 = (uint16)(enemy_projectile_x_pos[v1] - R28_) >> 4;
   for (int i = 2 * (prod + v5); !(EnemyProjectileBlockCollisition_CheckVertical(i) & 1); i += 2) {
     if ((--R26_ & 0x8000u) != 0) {
@@ -4461,27 +4461,25 @@ void EprojPreInstr_KagosBugs(uint16 k) {  // 0x86D0CA
 
 static const uint16 word_86D082 = 0xe0;
 
-void EprojPreInstr_D0EC(uint16 v0) {  // 0x86D0EC
-  EprojPreInstr_KagosBugs_Func1(v0);
-  EprojPreInstr_KagosBugs_Func2(v0);
-  if (EnemyProjectileBlockCollisition_Horiz(v0) & 1) {
-    enemy_projectile_x_vel[v0 >> 1] = 0;
+void EprojPreInstr_D0EC(uint16 k) {  // 0x86D0EC
+  EprojPreInstr_KagosBugs_Func1(k);
+  EprojPreInstr_KagosBugs_Func2(k);
+  if (EnemyProjectileBlockCollisition_Horiz(k)) {
+    enemy_projectile_x_vel[k >> 1] = 0;
     goto LABEL_6;
   }
-  if (EnemyProjectileBlockCollisition_Vertical(v0) & 1) {
+  if (EnemyProjectileBlockCollisition_Vertical(k)) {
 LABEL_6:
-    enemy_projectile_y_vel[v0 >> 1] = 256;
+    enemy_projectile_y_vel[k >> 1] = 256;
 LABEL_7:;
-    int v4 = v0 >> 1;
-    enemy_projectile_pre_instr[v4] = FUNC16(EprojPreInstr_D128);
-    enemy_projectile_instr_list_ptr[v4] = addr_word_86D04A;
-    enemy_projectile_instr_timers[v4] = 1;
+    enemy_projectile_pre_instr[k >> 1] = FUNC16(EprojPreInstr_D128);
+    enemy_projectile_instr_list_ptr[k >> 1] = addr_word_86D04A;
+    enemy_projectile_instr_timers[k >> 1] = 1;
     return;
   }
-  int v1 = v0 >> 1;
-  uint16 v2 = enemy_projectile_y_vel[v1];
+  uint16 v2 = enemy_projectile_y_vel[k >> 1];
   bool v3 = (int16)(word_86D082 + v2) < 0;
-  enemy_projectile_y_vel[v1] = word_86D082 + v2;
+  enemy_projectile_y_vel[k >> 1] = word_86D082 + v2;
   if (!v3) {
     goto LABEL_7;
   }
