@@ -2130,12 +2130,15 @@ void Samus_Movement_02_NormalJumping(void) {  // 0x90A42E
   Samus_JumpingMovement();
 }
 
+// Warning: OOB
+#define kSamusFramesForUnderwaterSfx ((uint8*)RomPtr(0x90a514))
+
 void Samus_Movement_03_SpinJumping(void) {  // 0x90A436
   static const uint16 kSamusPhys_JumpMinYVelAir = 0x280;
   static const uint16 kSamusPhys_JumpMaxYVelAir = 0x500;
   static const uint16 kSamusPhys_JumpMinYVelWater = 0x80;
   static const uint16 kSamusPhys_JumpMaxYVelWater = 0x500;
-  static const uint8 kSamusFramesForUnderwaterSfx[13] = { 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 };
+
   if ((samus_suit_palette_index & 4) == 0) {
     Samus_GetTopBottomBoundary();
     if ((fx_y_pos & 0x8000u) != 0) {
