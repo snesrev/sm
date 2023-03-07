@@ -228,7 +228,7 @@ static const  uint32 kPatchedCarrys[] = {
 };
 static uint8 kPatchedCarrysOrg[arraysize(kPatchedCarrys)];
 
-void PatchBugs(uint32 mode, uint32 addr) {
+uint32 PatchBugs(uint32 mode, uint32 addr) {
   hookmode = mode, hookadr = addr, hookcnt = 0;
   if (FixBugHook(0x86EF35)) {
     g_cpu->x = g_cpu->y;
@@ -286,12 +286,36 @@ void PatchBugs(uint32 mode, uint32 addr) {
     // Xray_SetupStage4_Func2 passes a bad value to Xray_HandleXrayedBlock
     if (g_cpu->x == 0)
       g_cpu->pc = 0xCD52;
+
+  // Fix VAR BEAM etc.
+  // Prevent EquipmentScreenCategory_ButtonResponse from getting called when category changed
+  } else if (FixBugHook(0x82AFD3)) {
+    if ((uint8)pausemenu_equipment_category_item != 1)
+      return 0x82AFD9;
+  } else if (FixBugHook(0x82B0CD)) {
+    if ((uint8)pausemenu_equipment_category_item != 2)
+      return 0x82AFD9;
+  } else if (FixBugHook(0x82B15B)) {
+    if ((uint8)pausemenu_equipment_category_item != 3)
+      return 0x82AFD9;
   }
+
+  return 0;
 }
 
 int RunPatchBugHook(uint32 addr) {
-  PatchBugs(2, addr);
-  return hookmode == 3 ? hook_fixbug_orgbyte[hookcnt] : -1;
+  uint32 new_pc = PatchBugs(2, addr);
+  if (hookmode == 3) {
+    if (new_pc == 0) {
+      return hook_fixbug_orgbyte[hookcnt];
+    } else {
+      g_cpu->k = new_pc >> 16;
+      g_cpu->pc = (new_pc & 0xffff) + 1;
+      return *RomPtr(new_pc);
+    }
+  }
+
+  return -1;
 }
 
 int CpuOpcodeHook(uint32 addr) {

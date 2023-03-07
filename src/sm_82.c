@@ -2548,7 +2548,7 @@ static Func_V *const kEquipmentScreenCategories[4] = {  // 0x82AC4F
   EquipmentScreenCategory_Boots,
 };
 void EquipmentScreenMain(void) {
-  kEquipmentScreenCategories[(uint16)(2 * (uint8)pausemenu_equipment_category_item) >> 1]();
+  kEquipmentScreenCategories[(uint8)pausemenu_equipment_category_item]();
   EquipmentScreenDrawItemSelector();
   EquipmentScreenDisplayReserveTankAmount();
   WriteSamusWireframeTilemapAndQueue();
@@ -2558,7 +2558,7 @@ static Func_V *const kEquipmentScreenCategory_TanksFuncs[2] = {  // 0x82AC70
   EquipmentScreenCategory_Tanks_1,
 };
 void EquipmentScreenCategory_Tanks(void) {
-  kEquipmentScreenCategory_TanksFuncs[(uint16)(2 * HIBYTE(pausemenu_equipment_category_item)) >> 1]();
+  kEquipmentScreenCategory_TanksFuncs[HIBYTE(pausemenu_equipment_category_item)]();
   EquipmentScreenHandleDpad();
   EquipmentScreenGlowingArrow();
 }
@@ -2770,8 +2770,11 @@ void EquipmentScreenCategory_Weapons(void) {  // 0x82AFBE
   R36 = equipped_beams;
   if (collected_beams) {
     R24_ = 10;
-    EquipmentScreenCategory_ButtonResponse();
-    EquipmentScreenCategory_Weapons_PlazmaSpazerCheck();
+    // Fixed var bug
+    if ((uint8)pausemenu_equipment_category_item == 1) {
+      EquipmentScreenCategory_ButtonResponse();
+      EquipmentScreenCategory_Weapons_PlazmaSpazerCheck();
+    }
   }
 }
 
@@ -2805,16 +2808,16 @@ void EquipmentScreenCategory_Weapons_MoveButtons(void) {  // 0x82AFDB
 #define kEquipmentTilemaps_Weapons ((uint16*)RomPtr(0x82c08c))
 #define kEquipmentTilemaps_Suits ((uint16*)RomPtr(0x82c096))
 #define kEquipmentTilemaps_Boots ((uint16*)RomPtr(0x82c0a2))
+
 void EquipmentScreenCategory_Weapons_PlazmaSpazerCheck(void) {  // 0x82B068
-  if (((uint8)equipped_beams & (uint8)~(uint8)R36 & 4) != 0) {
+  int t = equipped_beams & ~R36;
+  if ((t & 4) != 0) {
     if ((R36 & 4) == 0 && (equipped_beams & 8) != 0) {
       equipped_beams &= ~8;
       R0_.addr = kEquipmentTilemapOffs_Weapons[4];
       goto LABEL_9;
     }
-  } else if (((uint8)equipped_beams & (uint8)~(uint8)R36 & 8) != 0
-             && (R36 & 8) == 0
-             && (equipped_beams & 4) != 0) {
+  } else if ((t & 8) != 0 && (R36 & 8) == 0 && (equipped_beams & 4) != 0) {
     equipped_beams &= ~4;
     R0_.addr = kEquipmentTilemapOffs_Weapons[3];
 LABEL_9:
@@ -2827,7 +2830,9 @@ LABEL_9:
 void EquipmentScreenCategory_Suit(void) {  // 0x82B0C2
   EquipmentScreenCategory_Suit_MoveResponse();
   R24_ = 18;
-  EquipmentScreenCategory_ButtonResponse();
+  // Fixed var bug
+  if ((uint8)pausemenu_equipment_category_item == 2)
+    EquipmentScreenCategory_ButtonResponse();
 }
 
 void EquipmentScreenCategory_Suit_MoveResponse(void) {  // 0x82B0D2
@@ -2856,7 +2861,9 @@ void EquipmentScreenCategory_Suit_MoveResponse(void) {  // 0x82B0D2
 void EquipmentScreenCategory_Boots(void) {  // 0x82B150
   EquipmentScreenCategory_Boots_MoveResponse();
   R24_ = 18;
-  EquipmentScreenCategory_ButtonResponse();
+  // Fixed var bug
+  if ((uint8)pausemenu_equipment_category_item == 3)
+    EquipmentScreenCategory_ButtonResponse();
 }
 
 void EquipmentScreenCategory_Boots_MoveResponse(void) {  // 0x82B160
@@ -3137,24 +3144,20 @@ void EquipmentScreenCategory_ButtonResponse(void) {  // 0x82B568
     QueueSfx1_Max6(0x38u);
     R26_ = 2 * (uint8)pausemenu_equipment_category_item;
     R18_ = 2 * HIBYTE(pausemenu_equipment_category_item);
-    int v0 = R26_ >> 1;
-    R0_.addr = *(uint16 *)RomPtr_82(R18_ + kEquipmentPtrsToRamTilemapOffsets[v0]);
-    uint16 v1 = kEquipmentPtrsToBitsets[v0];
-    uint16 v2 = R18_ + kEquipmentPtrsToBitmasks[v0];
-    uint8 *v3 = RomPtr_RAM(v1);
-    uint8 *v4 = RomPtr_82(v2);
-    if ((*(uint16 *)v4 & *(uint16 *)v3) != 0) {
-      R18_ = ~*(uint16 *)RomPtr_82(v2);
-      uint8 *v6 = RomPtr_RAM(v1);
-      *(uint16 *)v6 &= R18_;
-      R18_ = 3072;
+    int item = HIBYTE(pausemenu_equipment_category_item);
+    int category = (uint8)pausemenu_equipment_category_item;
+    R0_.addr = *(uint16 *)RomPtr_82(kEquipmentPtrsToRamTilemapOffsets[category] + item * 2);
+    uint16 *var = (uint16 *)RomPtr_RAM(kEquipmentPtrsToBitsets[category]);
+    uint16 mask = *(uint16 *)RomPtr_82(kEquipmentPtrsToBitmasks[category] + item * 2);
+    if ((*var & mask) != 0) {
+      *var &= ~mask;
+      R18_ = 0xC00;
       R22_ = R24_;
       SetPaletteOfR22TilemapBytesToR18();
     } else {
-      *(uint16 *)v3 |= *(uint16 *)v4;
+      *var |= mask;
       R22_ = R24_;
-      uint16 v5 = *(uint16 *)RomPtr_82(R18_ + kEquipmentPtrsToEquipmentTilemaps[R26_ >> 1]);
-      Copy_R22_Bytes(v5);
+      Copy_R22_Bytes(*(uint16 *)RomPtr_82(kEquipmentPtrsToEquipmentTilemaps[category] + item * 2));
     }
   }
 }

@@ -2718,7 +2718,7 @@ void WriteBeamPalette_A(uint16 a) {  // 0x90ACC2
 }
 
 void WriteBeamPalette_Y(uint16 j) {  // 0x90ACCD
-  *(VoidP *)((char *)&R0_.addr + 1) = -28672;
+  R0_.bank = 0x90;
   R0_.addr = kBeamPalettePtrs[j >> 1];
   uint16 v1 = 0;
   uint16 v2 = 0;
@@ -2729,12 +2729,8 @@ void WriteBeamPalette_Y(uint16 j) {  // 0x90ACCD
   } while ((int16)(v1 - 32) < 0);
 }
 
-void LoadProjectilePalette(uint16 a) {  // 0x90ACF0
-  LoadProjectilePalette_(a);
-}
-
-void LoadProjectilePalette_(uint16 a) {  // 0x90ACFC
-  *(VoidP *)((char *)&R0_.addr + 1) = -28672;
+void LoadProjectilePalette(uint16 a) {  // 0x90ACFC
+  R0_.bank = 0x90;
   R0_.addr = kBeamPalettePtrs[a & 0xFFF];
   uint16 v1 = 0;
   uint16 v2 = 0;
