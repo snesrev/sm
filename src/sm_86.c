@@ -546,7 +546,7 @@ uint16 EprojInstr_Goto(uint16 k, uint16 j) {  // 0x8681AB
 
 uint16 EprojInstr_GotoRel(uint16 k, uint16 j) {  // 0x8681B0
   R18_ = j;
-  return R18_ + (int8)RomPtr_86(j);
+  return R18_ + (int8)*RomPtr_86(j);
 }
 
 uint16 EprojInstr_DecTimerAndGotoIfNonZero(uint16 k, uint16 j) {  // 0x8681C6
