@@ -49,6 +49,14 @@ Dependencies and requirements:
 
 # Linux/MacOS
 
-Open the terminal and type:
-
+Cd to your SM root folder and open the terminal and type:
+```sh
 make
+```
+
+For more advanced usage:
+```sh
+make -j$(nproc) # run on all core
+make clean all  # clear gen+obj and rebuild
+CC=clang make   # specify compiler
+```
