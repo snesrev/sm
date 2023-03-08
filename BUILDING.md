@@ -27,7 +27,7 @@ Note: *Make sure you're using MINGW64, otherwise it won't work.*
 
 NOTE: *Make sure you're in the `sm` directory.*
 
-After you've done installing everything, open MSYS2 and cd to `sm` foler. Type `make`
+After you've done installing everything, cd to `sm` folder. Type `make`
 In order to speed up the compilation, type `make -j16`
 
 ## Building with Visual Studio
@@ -36,7 +36,7 @@ Dependencies and requirements:
  * The `libsdl2-dev` library, which is automatically installed with NuGet.
  * [Visual Studio Community 2022](https://visualstudio.microsoft.com)
 
-Downlaod VS Installer. On installer prompt, make sure you're on "Workloads" and check `Desktop Development with C++` this will install the necessary deps for compilation.
+Download VS installer. On installer prompt, make sure you're on "Workloads" and check `Desktop Development with C++` this will install the necessary deps for compilation.
 
 1. Open `sm.sln` solution.
 2. Change the build target from `Debug` to `Release`
