@@ -1,24 +1,42 @@
-# Windows 
+# Requirements 
+  * A Super Metroid rom (Make sure to rename it to 'sm.smc')
+  * libsdl2-dev
 
-## Building with Visual Stuio
+# Windows
+
+## Building with MSYS2
 
 Dependencies and requirements:
-  * The `libsdl2-dev` library which will be automatically installed to Visual Studio with NuGet.
-  * [Visual Studio 2022 Community Edition](https://visualstudio.microsoft.com)
-  * [Python](https://www.python.org) (*Make sure to add Python to %%PATH%% during the Installation*)
-  * A copy of A Link to the Past US ROM with the hash of `66871d66be19ad2c34c927d6b14cd8eb6fc3181965b6e517cb361f7316009cfb`
-  * `pillow` and the `pip` python dependencies which is used by the asset extractor
+  * The `libsdl2-dev` library
+  * [MSYS2](https://www.msys2.org)
 
-1. Install Visual Studio on your machine.
-2. Clone the zelda3 repository. `https://github.com/snesrev/zelda3.git`
-3. Rename the copy of your ROM to `zelda3` and place it inside the `tables` directory.
+1. Install MSYS2 on your machine.
+2. Clone the SM repository. `git clone https://github.com/snesrev/sm`
+3. Place the copy of your rom in the main directory.
+4. Install `libsdl2-dev` with `sdl2-config --cflags`
+5. After that it outputs `-IC:/msys64/mingw64/include/SDL2 -Dmain=SDL_main`, type `sdl2-config --libs`, it should output `-LC:/msys64/mingw64/lib -lmingw32 -mwindows -lSDL2main -lSDL2`
+6. Now install Make and GCC, type `pacman -S make && pacman -S mingw-w64-x86_64-gcc`
 
-NOTE: *Make sure you're in the `zelda3` directory.*
+NOTE: *Make sure you're in the `sm` directory.*
 
-Open CMD by searching in search bar of Windows and then type `python -m pip install -r requirements.txt` so the python deps will be fully installed.
+After you've done installing everything, open MSYS2 and cd to `sm` foler. Type `make`
+In order to speed up the compilation, type `make -j16`
 
-Go to the `tables` directory and run `extract_resources.py` then `compile_resources.py` to extract the asstes. (This won't be needed in the future since after this the assets will be inside `zelda3_assets.dat`.
+## Building with Visual Studio
 
-Open `Zelda3.sln` and build the solution. 
+Dependencies and requirements:
+ * The `libsdl2-dev` library, which is automatically installed with NuGet.
+ * [Visual Studio Community 2022](https://visualstudio.microsoft.com)
 
-Now you can run the `zelda3.exe` executabe.
+1. Open `sm.sln` solution.
+2. Change the build target from `Debug` to `Release`
+3. Build the solution.
+
+## Building with Tiny C Compiler
+
+ Dependencies and requirements:
+ * You'll need [TCC](https://github.com/FitzRoyX/tinycc/releases/download/tcc_20221020/tcc_20221020.zip) and [SDL2](https://github.com/libsdl-org/SDL/releases/download/release-2.24.1/SDL2-devel-2.24.1-VC.zip) in order to compile using TCC.
+
+1. Unzip both TCC and SDL and place them in `third_party` folder.
+2. Double click `run_with_tcc.bat`
+3. Wait for it to compile and the game will automatically boot-up.
