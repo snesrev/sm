@@ -1,6 +1,12 @@
-# Requirements 
+# Requirements
   * A Super Metroid rom (Make sure to rename it to 'sm.smc')
   * libsdl2-dev
+  
+ For Linux/MacOS you must install these for your desired OS:
+ * Ubuntu/Debian: `sudo apt install libsdl2-dev`
+ * Fedora Linux: `sudo dnf in sdl2-devel`
+ * Arch Linux: `sudo pacman -S sdl2`
+ * macOS: `brew install sdl2`
 
 # Windows
 
@@ -40,3 +46,9 @@ Dependencies and requirements:
 1. Unzip both TCC and SDL and place them in `third_party` folder.
 2. Double click `run_with_tcc.bat`
 3. Wait for it to compile and the game will automatically boot-up.
+
+# Linux/MacOS
+
+Open the terminal and type:
+
+make
