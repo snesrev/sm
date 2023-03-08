@@ -1,5 +1,5 @@
 # Requirements
-  * A Super Metroid rom (Make sure to rename it to 'sm.smc')
+  * A Super Metroid rom (Make sure to rename it to `sm.smc`)
   * libsdl2-dev
   
  For Linux/MacOS you must install these for your desired OS:
@@ -13,6 +13,8 @@
 ## Building with MSYS2
 
 Dependencies and requirements:
+
+Note: *Make sure you're using MINGW64, otherwise it won't work.*
   * The `libsdl2-dev` library
   * [MSYS2](https://www.msys2.org)
 
@@ -33,6 +35,8 @@ In order to speed up the compilation, type `make -j16`
 Dependencies and requirements:
  * The `libsdl2-dev` library, which is automatically installed with NuGet.
  * [Visual Studio Community 2022](https://visualstudio.microsoft.com)
+
+Downlaod VS Installer. On installer prompt, make sure you're on "Workloads" and check `Desktop Development with C++` this will install the necessary deps for compilation.
 
 1. Open `sm.sln` solution.
 2. Change the build target from `Debug` to `Release`
