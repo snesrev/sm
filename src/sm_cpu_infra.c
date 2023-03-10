@@ -304,6 +304,16 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
   } else if (FixBugHook(0xA2D38C)) {
     // MaridiaLargeSnail_Touch uses uninitialized X
     g_cpu->x = cur_enemy_index;
+  } else if (FixBugHook(0xA4970F)) {
+    // Crocomire_Func_67 does weird things
+    g_cpu->a &= 0xff;
+    g_cpu->y = g_cpu->x & 0x7;
+  } else if (FixBugHook(0xA496E0)) {
+    if (g_cpu->x > 48) {
+      croco_cur_vline_idx = g_cpu->x;
+      g_cpu->mf = 0;
+      return 0xA497CE;
+    }
   }
 
   return 0;
@@ -351,7 +361,7 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
   memcpy(&b->ram[0x1f5b], &a->ram[0x1f5b], 0x100 - 0x5b);  // stacck
   memcpy(&b->ram[0x44], &a->ram[0x44], 3);  // decompress_dst_tmp
   memcpy(&b->ram[0x19b3], &a->ram[0x19b3], 1);  // mode7_spawn_param
-  memcpy(&b->ram[0x12], &a->ram[0x12], 2);  // R18
+  memcpy(&b->ram[0x12], &a->ram[0x12], 6);  // R18, R20, R22
   memcpy(&b->ram[0x1993], &a->ram[0x1993], 2);  // enemy_projectile_init_param
   memcpy(&b->ram[0x49], &a->ram[0x49], 1);  // decompress_src.bank
   memcpy(&b->ram[0x1B9D], &a->ram[0x1B9D], 2);  // cinematic_spawn_param
@@ -539,6 +549,14 @@ void FixupCarry(uint32 addr) {
   *RomPtr(addr) = 0;
 }
 
+void RtlUpdateSnesPatchForBugfix() {
+  // Patch HandleMessageBoxInteraction logic
+  { uint8 t[] = { 0x20, 0x50, 0x96, 0x60 }; PatchBytes(0x8584A3, t, sizeof(t)); }
+  // while ((bug_fix_counter < 1 ? joypad1_newkeys : joypad1_lastkeys) == 0);
+  { uint8 t[] = { 0x20, 0x36, 0x81, 0x22, 0x59, 0x94, 0x80, 0xc2, 0x30, 0xa5, (bug_fix_counter < 1) ? 0x8f : 0x85, 0xf0, 0xf3, 0x60 }; PatchBytes(0x859650, t, sizeof(t)); }
+  { uint8 t[] = { 0x18, 0x18 }; PatchBytes(0x8584CC, t, sizeof(t)); }  // Don't wait 2 loops
+}
+
 Snes *SnesInit(const char *filename) {
   g_snes = snes_init(g_ram);
   
@@ -668,11 +686,6 @@ Snes *SnesInit(const char *filename) {
   { uint8 t[] = { 0x18, 0x18, 0x18 }; PatchBytes(0x8580DC, t, sizeof(t)); } // Remove MsgBoxDelayFrames_2
   { uint8 t[] = { 0x18, 0x18, 0x18 }; PatchBytes(0x8580F2, t, sizeof(t)); } // Remove MsgBoxDelayFrames_2
 
-  // Patch HandleMessageBoxInteraction logic
-  { uint8 t[] = { 0x20, 0x50, 0x96, 0x60 }; PatchBytes(0x8584A3, t, sizeof(t)); }
-  { uint8 t[] = { 0x20, 0x36, 0x81, 0x22, 0x59, 0x94, 0x80, 0xc2, 0x30, 0xa5, 0x8b, 0xf0, 0xf3, 0x60 }; PatchBytes(0x859650, t, sizeof(t)); }
-  { uint8 t[] = { 0x18, 0x18 }; PatchBytes(0x8584CC, t, sizeof(t)); }  // Don't wait 2 loops
-
   // Patch RestorePpuForMessageBox
   { uint8 t[] = { 0x18, 0x18, 0x18 }; PatchBytes(0x85861C, t, sizeof(t)); } // WaitForNMI_NoUpdate
   { uint8 t[] = { 0x18, 0x18, 0x18 }; PatchBytes(0x858651, t, sizeof(t)); } // WaitForNMI_NoUpdate
@@ -726,7 +739,9 @@ Snes *SnesInit(const char *filename) {
   { uint8 t[] = { 0x18, 0x18, 0x18 }; PatchBytes(0x828A72, t, sizeof(t)); } // SfxHandlers_2_ClearRequest
   { uint8 t[] = { 0x18, 0x18, 0x18, 0x80 }; PatchBytes(0x828A80, t, sizeof(t)); } // SfxHandlers_3_WaitForAck
   { uint8 t[] = { 0x06 }; PatchBytes(0x828A67, t, sizeof(t)); } // sfx_clear_delay
-  
+
+  RtlUpdateSnesPatchForBugfix();
+
   for (size_t i = 0; i != arraysize(kPatchedCarrys); i++) {
     uint8 t = *RomPtr(kPatchedCarrys[i]);
     if (t) {

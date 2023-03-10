@@ -27,7 +27,7 @@ static const uint16 g_word_A486A4 = 0x640;
 #define g_word_A49BC7 (*(uint16*)RomPtr(0xa49bc7))
 #define g_word_A49BC9 (*(uint16*)RomPtr(0xa49bc9))
 #define g_word_A49BCB (*(uint16*)RomPtr(0xa49bcb))
-#define g_byte_A49697 ((uint8*)RomPtr(0xa49697))
+#define kCrocoVlineRandomPos ((uint8*)RomPtr(0xa49697))
 #define g_word_A49BBD ((uint16*)RomPtr(0xa49bbd))
 #define g_word_A498CA ((uint16*)RomPtr(0xa498ca))
 #define g_word_A499CB ((uint16*)RomPtr(0xa499cb))
@@ -394,7 +394,7 @@ void Crocomire_Init(void) {  // 0xA48A5A
   if ((*(uint16 *)&boss_bits_for_area[area_index] & 2) != 0) {
     *(uint16 *)scrolls = 257;
     *(uint16 *)&scrolls[2] = 257;
-    *(uint16 *)&g_byte_7E0688 = 0;
+    croco_target_0688 = 0;
     Enemy_Crocomire *E = Get_Crocomire(0);
     E->base.properties = E->base.properties & 0x7BFF | 0x400;
     static const SpawnHardcodedPlmArgs unk_A48AFA = { 0x20, 0x03, 0xb753 };
@@ -419,7 +419,7 @@ void Crocomire_Init(void) {  // 0xA48A5A
     vram_write_queue_tail = v6 + 7;
   } else {
     DisableMinimapAndMarkBossRoomAsExplored();
-    g_word_7E069A = 0;
+    croco_word_7E069A = 0;
     Enemy_Crocomire *E = Get_Crocomire(cur_enemy_index);
     E->crocom_var_A = 0;
     E->crocom_var_E = 0;
@@ -815,7 +815,7 @@ void Crocomire_Func_49(void) {  // 0xA49099
     Get_Crocomire(0x40u)->base.properties |= 0x200u;
     SpawnHardcodedPlm(&unk_A490D4);
     camera_distance_index = 0;
-    *(uint16 *)&g_byte_7E0688 = 0;
+    croco_target_0688 = 0;
   }
 }
 
@@ -1018,8 +1018,8 @@ void Crocomire_92D8(void) {  // 0xA492D8
 void Crocomire_Func_57(void) {  // 0xA49341
   int i;
 
-  *(uint16 *)&g_byte_7E068C = 48;
-  *(uint16 *)&g_byte_7E0688 = 48;
+  croco_word_068C = 48;
+  croco_target_0688 = 48;
   Enemy_Crocomire *E = Get_Crocomire(cur_enemy_index);
   ++E->crocom_var_A;
   ++E->crocom_var_A;
@@ -1074,8 +1074,8 @@ void Crocomire_Func_59(void) {  // 0xA493ED
   ++E->crocom_var_A;
   ++E->crocom_var_A;
   E->base.instruction_timer = 1;
-  *(uint16 *)&g_byte_7E068C = 48;
-  *(uint16 *)&g_byte_7E0688 = 48;
+  croco_word_068C = 48;
+  croco_target_0688 = 48;
   E->base.current_instruction = addr_kCrocomire_Ilist_BF7E;
   uint16 v1 = 0;
   do {
@@ -1100,15 +1100,15 @@ void Crocomire_Func_60(void) {  // 0xA4943D
   ++E->crocom_var_A;
   ++E->crocom_var_A;
   g_word_7E0692 = 256;
-  g_word_7E0690 = 0;
-  g_word_7E0698 = *(uint16 *)((char *)&g_word_A49BC5 + g_word_7E069A);
+  croco_cur_vline_idx = 0;
+  g_word_7E0698 = *(uint16 *)((char *)&g_word_A49BC5 + croco_word_7E069A);
   g_word_7E0694 = g_word_7E0698;
-  g_word_7E0696 = *(uint16 *)((char *)&g_word_A49BC7 + g_word_7E069A);
-  g_word_7E068E = *(uint16 *)((char *)&g_word_A49BC9 + g_word_7E069A);
+  g_word_7E0696 = *(uint16 *)((char *)&g_word_A49BC7 + croco_word_7E069A);
+  g_word_7E068E = *(uint16 *)((char *)&g_word_A49BC9 + croco_word_7E069A);
   R0_.addr = 0;
-  *(uint16 *)&R0_.bank = *(uint16 *)((char *)&g_word_A49BCB + g_word_7E069A);
+  *(uint16 *)&R0_.bank = *(uint16 *)((char *)&g_word_A49BCB + croco_word_7E069A);
   uint16 v6;
-  for (i = g_word_7E069A + 8; ; i = v6 + 4) {
+  for (i = croco_word_7E069A + 8; ; i = v6 + 4) {
     uint16 v2 = *(uint16 *)((char *)&g_word_A49BC5 + i);
     if (v2 == 0xFFFF)
       break;
@@ -1123,10 +1123,10 @@ void Crocomire_Func_60(void) {  // 0xA4943D
       --R18_;
     } while ((R18_ & 0x8000u) == 0);
   }
-  g_word_7E069A = i + 2;
+  croco_word_7E069A = i + 2;
   g_word_7E068A = i + 2;
   for (j = 128; j >= 0; j -= 2)
-    *(uint16 *)&g_byte_7E069C[(uint16)j] = 0;
+    *(uint16 *)&croco_vline_height[(uint16)j] = 0;
 }
 
 void Crocomire_Func_61(void) {  // 0xA494B2
@@ -1215,11 +1215,10 @@ void Crocomire_Func_65(void) {  // 0xA49580
     if ((int16)(g_word_7E0692 - 20480) >= 0) {
 LABEL_4:;
       Enemy_Crocomire *EK = Get_Crocomire(cur_enemy_index);
-      ++EK->crocom_var_A;
-      ++EK->crocom_var_A;
-      for (i = g_word_7E069A; *(uint16 *)((char *)&g_word_A49BC5 + i) != 0xFFFF; i += 8)
+      EK->crocom_var_A += 2;
+      for (i = croco_word_7E069A; *(uint16 *)((char *)&g_word_A49BC5 + i) != 0xFFFF; i += 8)
         ;
-      g_word_7E069A = i + 2;
+      croco_word_7E069A = i + 2;
       hdma_object_channels_bitmask[E0->crocom_var_1F >> 1] = 0;
       return;
     }
@@ -1272,63 +1271,58 @@ void Crocomire_Func_66(void) {  // 0xA49653
 }
 
 
-static const uint8 g_byte_A49BBD[8] = { 0x7f, 0xbf, 0xdf, 0xef, 0xf7, 0xfb, 0xfd, 0xfe };
+static const uint8 kCrocoEraseLineMasks[8] = { 0x7f, 0xbf, 0xdf, 0xef, 0xf7, 0xfb, 0xfd, 0xfe };
 
+//  Used when dissolving the crocomire thing
 uint16 Crocomire_Func_67(void) {  // 0xA496C8
   VramWriteEntry *v9;
 
-  uint16 result = 0;
-  R18_ = g_byte_7E068C;
+  int n = croco_word_068C;
   R20_ = 0;
   R22_ = 0;
-  uint16 v2 = g_word_7E0690;
   while (1) {
-    LOBYTE(result) = g_byte_A49697[v2];
-    if ((int8)(g_byte_7E069C[result] - g_byte_7E0688) < 0)
+    if (croco_cur_vline_idx > 48) // bugfix
+      return 1;
+    int rr = kCrocoVlineRandomPos[croco_cur_vline_idx];
+    if ((int8)(croco_vline_height[rr] - croco_target_0688) < 0)
       break;
-    if ((int16)(++v2 - 128) >= 0) {
-      LOBYTE(g_word_7E0690) = 0;
+    if (++croco_cur_vline_idx >= 128) {
+      croco_cur_vline_idx = 0;
       return 0;
     }
   }
-  g_word_7E0690 = v2;
-  result = v2 & 7;
-  uint16 v3 = result;
+  assert(croco_cur_vline_idx <= 48);
+  int vline_idx = kCrocoVlineRandomPos[croco_cur_vline_idx];
+  uint8 mask = kCrocoEraseLineMasks[vline_idx & 7];
   do {
-    uint16 v4 = g_byte_A49697[g_word_7E0690];
-    R20_ = 4 * (v4 & 0xFFF8);
-    R20_ += 2 * (g_byte_7E069C[v4] & 7);
-    uint16 v5 = R20_ + ((*(uint16 *)&g_byte_7E069C[v4] & 0xFFF8) << 6);
-    ram4000.backups.field_0[v5] &= g_byte_A49BBD[v3];
-    ram4000.backups.field_0[v5 + 1] &= g_byte_A49BBD[v3];
-    ram4000.backups.field_0[v5 + 16] &= g_byte_A49BBD[v3];
-    ram4000.backups.field_0[v5 + 17] &= g_byte_A49BBD[v3];
-    uint8 v6 = g_byte_A49697[g_word_7E0690];
-    if (g_byte_7E069C[v6] == 48)
+    int q = croco_vline_height[vline_idx];
+    int j = 2 * (q & 7) + ((q & ~7) << 6) + 4 * (vline_idx & ~7);
+    ram4000.backups.field_0[j + 0] &= mask;
+    ram4000.backups.field_0[j + 1] &= mask;
+    ram4000.backups.field_0[j + 16] &= mask;
+    ram4000.backups.field_0[j + 17] &= mask;
+
+    if (croco_vline_height[vline_idx] == 48)
       break;
-    ++ *(uint16 *)&g_byte_7E069C[v6];
-    R22_ = g_byte_7E069C[v6];
+    croco_vline_height[vline_idx]++;
     --R18_;
-  } while (R18_);
+  } while (--n);
+
   uint16 v7, v8;
   while (1) {
-    v7 = g_word_7E068A + g_word_7E069A;
+    v7 = g_word_7E068A + croco_word_7E069A;
     v8 = vram_write_queue_tail;
-    if (*(uint16 *)((char *)&g_word_A49BC5 + (uint16)(g_word_7E068A + g_word_7E069A)) != 0xFFFF)
+    if (*(uint16 *)((char *)&g_word_A49BC5 + v7) != 0xFFFF)
       break;
     g_word_7E068A = 0;
   }
   v9 = gVramWriteEntry(vram_write_queue_tail);
-  v9->size = *(uint16 *)((char *)&g_word_A49BC5 + (uint16)(g_word_7E068A + g_word_7E069A));
+  v9->size = *(uint16 *)((char *)&g_word_A49BC5 + v7);
   v9->src.addr = *(uint16 *)((char *)&g_word_A49BCB + v7);
   *(uint16 *)&v9->src.bank = *(uint16 *)((char *)&g_word_A49BC9 + v7);
   v9->vram_dst = *(uint16 *)((char *)&g_word_A49BC7 + v7);
   vram_write_queue_tail = v8 + 7;
   g_word_7E068A += 8;
-  uint16 v10 = g_word_7E0690;
-  if (!sign16(g_word_7E0690 - 128))
-    g_word_7E0690 = 0;
-  g_word_7E0690 = v10;
   return 1;
 }
 
@@ -1419,8 +1413,8 @@ void Crocomire_Func_71(void) {  // 0xA4990A
   uint16 crocom_var_D = E->crocom_var_D;
   if (crocom_var_D) {
     E->crocom_var_D = crocom_var_D - 1;
-    v3 = *(uint16 *)&g_byte_7E0688;
-    int v4 = *(uint16 *)&g_byte_7E0688 >> 1;
+    v3 = croco_target_0688;
+    int v4 = croco_target_0688 >> 1;
     if (g_word_A499CB[v4] != 0xFFFF) {
       uint16 v5 = vram_write_queue_tail;
       v6 = gVramWriteEntry(vram_write_queue_tail);
@@ -1430,7 +1424,7 @@ void Crocomire_Func_71(void) {  // 0xA4990A
       R18_ = (reg_OBSEL & 7) << 13;
       v6->vram_dst = g_word_A499CB[v4] + R18_;
       vram_write_queue_tail = v5 + 7;
-      *(uint16 *)&g_byte_7E0688 = v3 + 2;
+      croco_target_0688 = v3 + 2;
     }
   } else {
     E->base.x_pos = 480;

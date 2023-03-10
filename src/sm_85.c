@@ -344,7 +344,7 @@ CoroutineRet HandleMessageBoxInteraction_Async(void) {  // 0x85846D
     do {
       COROUTINE_AWAIT(3, WaitForNMI_NoUpdate_Async());
       ReadJoypadInputs();
-    } while (!joypad1_lastkeys);
+    } while ((bug_fix_counter < 1 ? joypad1_newkeys : joypad1_lastkeys) == 0);
   }
 GETOUT:;
   COROUTINE_END(0);
