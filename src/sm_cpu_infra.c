@@ -164,6 +164,8 @@ static const  uint32 kPatchedCarrys[] = {
   0x80A7D6,
   0x80A99B,
   0x818AA7,
+  0x94B176,
+  0x94B156,
 
   // room_width_in_blocks etc
   0x80ab5d,
@@ -225,6 +227,7 @@ static const  uint32 kPatchedCarrys[] = {
   0xA9D500,
   0xA9D537,
   0xA9DCDB,
+
 };
 static uint8 kPatchedCarrysOrg[arraysize(kPatchedCarrys)];
 
@@ -298,6 +301,9 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
   } else if (FixBugHook(0x82B15B)) {
     if ((uint8)pausemenu_equipment_category_item != 3)
       return 0x82AFD9;
+  } else if (FixBugHook(0xA2D38C)) {
+    // MaridiaLargeSnail_Touch uses uninitialized X
+    g_cpu->x = cur_enemy_index;
   }
 
   return 0;
@@ -777,6 +783,17 @@ void DrawFrameToPpu(void) {
   g_snes->cpu->nmiWanted = false;
 }
 
+extern bool g_debug_flag;
+
+void SaveBugSnapshot() {
+  if (!g_debug_flag && g_got_mismatch_count == 0) {
+    char buffer[64];
+    snprintf(buffer, sizeof(buffer), "saves/bug-%d.sav", (int)time(NULL));
+    RtlSaveSnapshot(buffer, true);
+  }
+  g_got_mismatch_count = 5 * 60;
+}
+
 void RunOneFrameOfGame_Both(void) {
   g_snes->ppu = g_snes->snes_ppu;
   MakeSnapshot(&g_snapshot_before);
@@ -811,19 +828,12 @@ again_mine:
     g_snes->ppu = g_snes->snes_ppu;
     RestoreSnapshot(&g_snapshot_before);
 
-    if (g_got_mismatch_count == 0) {
-      char buffer[64];
-      snprintf(buffer, sizeof(buffer), "saves/bug-%d.sav", (int)time(NULL));
-      RtlSaveSnapshot(buffer, true);
-    }
-    g_got_mismatch_count = 5 * 60;
+    if (g_debug_flag)
+      goto again_theirs;
 
-#if defined(_DEBUG) && 0
-    goto again_theirs;
-#else
+    SaveBugSnapshot();
     RunOneFrameOfGame_Emulated();
     goto getout;
-#endif
   }
 
   g_snes->ppu = g_snes->snes_ppu;
@@ -839,6 +849,13 @@ getout:
     coroutine_state_0 = 3;
   }
 
+  if (menu_index & 0xff00) {
+    printf("MENU INDEX TOO BIG!\n");
+    SaveBugSnapshot();
+    menu_index &= 0xff;
+  }
+
+
   if (g_got_mismatch_count)
     g_got_mismatch_count--;
 }
@@ -847,14 +864,15 @@ void RtlRunFrameCompare(uint16 input, int run_what) {
   g_snes->input1->currentState = input;
 
   if (g_runmode == RM_THEIRS) {
-    assert(0);
+    RunOneFrameOfGame_Emulated();
+    DrawFrameToPpu();
+
   } else if (g_runmode == RM_MINE) {
     g_use_my_apu_code = true;
-    g_snes->hPos = 1364 - 2, g_snes->vPos = 262 - 1;
-    snes_handle_pos_stuff(g_snes);
 
     g_snes->runningWhichVersion = 0xff;
     RunOneFrameOfGame();
+    DrawFrameToPpu();
     g_snes->runningWhichVersion = 0;
   } else {
     g_use_my_apu_code = true;

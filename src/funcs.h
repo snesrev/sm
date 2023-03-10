@@ -3559,7 +3559,7 @@ void MaridiaLargeSnail_Func_9(void);
 void MaridiaLargeSnail_Init(void);
 void MaridiaLargeSnail_Main(void);
 void MaridiaLargeSnail_Shot(void);
-void MaridiaLargeSnail_Touch(uint16 k);
+void MaridiaLargeSnail_Touch(void);
 void MaridiaSpikeyShell_1(void);
 void MaridiaSpikeyShell_2(void);
 void MaridiaSpikeyShell_3(void);

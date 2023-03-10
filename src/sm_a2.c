@@ -3314,10 +3314,11 @@ void MaridiaLargeSnail_Func_11(void) {  // 0xA2CFFF
 
 void MaridiaLargeSnail_Func_12(void) {  // 0xA2D388
   Enemy_NormalTouchAI_A2();
-  MaridiaLargeSnail_Touch(cur_enemy_index);
+  MaridiaLargeSnail_Touch();
 }
 
-void MaridiaLargeSnail_Touch(uint16 k) {  // 0xA2D38C
+void MaridiaLargeSnail_Touch() {  // 0xA2D38C
+  uint16 k = cur_enemy_index;
   if (!CheckIfEnemyTouchesSamus(k)) {
     if ((int16)(samus_x_pos - Get_MaridiaLargeSnail(cur_enemy_index)->base.x_pos) < 0)
       extra_samus_x_displacement -= 4;
