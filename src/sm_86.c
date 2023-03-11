@@ -412,6 +412,7 @@ uint16 CallEprojInstr(uint32 ea, uint16 k, uint16 j) {
   case fnEprojInstr_QueueSfx1_Max1: return EprojInstr_QueueSfx1_Max1(k, j);
   case fnEprojInstr_QueueSfx2_Max1: return EprojInstr_QueueSfx2_Max1(k, j);
   case fnEprojInstr_QueueSfx3_Max1: return EprojInstr_QueueSfx3_Max1(k, j);
+  case fnEprojInstr_SpawnEnemyDropsWithDraygonsEyeDrops: return EprojInstr_SpawnEnemyDropsWithDraygonsEyeDrops(k, j);
   case fnEprojInstr_868D55: return EprojInstr_868D55(k, j);
   case fnEprojInstr_868D99: return EprojInstr_868D99(k, j);
   case fnEprojInstr_DisableCollisionsWithSamus: return EprojInstr_DisableCollisionsWithSamus(k, j);
@@ -458,7 +459,8 @@ uint16 CallEprojInstr(uint32 ea, uint16 k, uint16 j) {
   case fnEprojInstr_QueueSfx2_B: return EprojInstr_QueueSfx2_B(k, j);
   case fnEprojInstr_EEAF: return EprojInstr_EEAF(k, j);
   case fnEprojInstr_HandleRespawningEnemy: return EprojInstr_HandleRespawningEnemy(k, j);
-  case fnEnemyProjInstr_SetPreInstrA: return EnemyProjInstr_SetPreInstrA(k, j);
+  case fnEprojInstr_SetPreInstrA: return EprojInstr_SetPreInstrA(k, j);
+  case fnEprojInstr_SetPreInstrB: return EprojInstr_SetPreInstrB(k, j);
     // EXTRA!!!
   case fnEprojPreInstr_PirateMotherBrainLaser_MoveRight:
     EprojPreInstr_PirateMotherBrainLaser_MoveRight(k);
@@ -1286,20 +1288,22 @@ void EnemyProj_PreInstr_SkreeParticle(uint16 k) {  // 0x868B5D
     enemy_projectile_id[v1] = 0;
 }
 
-void EnemyProjInstr_SpawnEnemyDropsWithDraygonsEyeDrops(uint16 k) {  // 0x868C68
+uint16 EprojInstr_SpawnEnemyDropsWithDraygonsEyeDrops(uint16 k, uint16 j) {  // 0x868C68
   int v1 = k >> 1;
   R18_ = enemy_projectile_x_pos[v1];
   R20_ = enemy_projectile_y_pos[v1];
   SpawnEnemyDrops(addr_kEnemyDef_DE7F, k);
+  return j;
 }
 
-uint16 EnemyProjInstr_SetPreInstrA(uint16 k, uint16 j) {  // 0x868CF6
+uint16 EprojInstr_SetPreInstrA(uint16 k, uint16 j) {  // 0x868CF6
   enemy_projectile_pre_instr[k >> 1] = FUNC16(EprojPreInstr_DraygonsTurret_8DFF);
   return j;
 }
 
-void EnemyProjInstr_SetPreInstrB(uint16 k) {  // 0x868CFD
+uint16 EprojInstr_SetPreInstrB(uint16 k, uint16 j) {  // 0x868CFD
   enemy_projectile_pre_instr[k >> 1] = FUNC16(EprojPreInstr_8DCA);
+  return j;
 }
 
 void EprojInit_DraygonsGunk(uint16 j) {  // 0x868D04

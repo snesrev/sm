@@ -946,7 +946,7 @@ void WriteSmallMessageBoxTilemap(void);
 
 // Bank 86
 uint16 CheckIfEnemyProjectileIsOffScreen(uint16 k);
-uint16 EnemyProjInstr_SetPreInstrA(uint16 k, uint16 j);
+uint16 EprojInstr_SetPreInstrA(uint16 k, uint16 j);
 uint16 EprojInstr_868D55(uint16 k, uint16 j);
 uint16 EprojInstr_868D99(uint16 k, uint16 j);
 uint16 EprojInstr_9270(uint16 k, uint16 j);
@@ -1081,8 +1081,8 @@ void DrawEnemyProjectiles(uint16 k);
 void DrawHighPriorityEnemyProjectiles(void);
 void DrawLowPriorityEnemyProjectiles(void);
 void EnableEnemyProjectiles(void);
-void EnemyProjInstr_SetPreInstrB(uint16 k);
-void EnemyProjInstr_SpawnEnemyDropsWithDraygonsEyeDrops(uint16 k);
+uint16 EprojInstr_SetPreInstrB(uint16 k, uint16 j);
+uint16 EprojInstr_SpawnEnemyDropsWithDraygonsEyeDrops(uint16 k, uint16 j);
 void EnemyProj_Init_0x8aaf(uint16 j);
 void EnemyProj_Init_0x8bc2_SkreeDownRight(uint16 j);
 void EnemyProj_Init_0x8bd0_SkreeUpRight(uint16 j);
@@ -1090,7 +1090,6 @@ void EnemyProj_Init_0x8bde_SkreeDownLeft(uint16 j);
 void EnemyProj_Init_0x8bec_SkreeUpLeft(uint16 j);
 void EnemyProj_PreInit_0x8aaf(uint16 k);
 void EnemyProj_PreInstr_SkreeParticle(uint16 k);
-void EprojColl_8676_Fixed(void);
 void EprojIni_TourianStatueUnlockingParticleTail(uint16 j);
 void EprojInit_8E6C(uint16 j);
 void EprojInit_9634(uint16 j);
@@ -6423,7 +6422,9 @@ void DecompressToMem_IpArg(const void* p);
 #define fnEnemyProj_Init_0x8bde_SkreeDownLeft 0x868B15
 #define fnEnemyProj_Init_0x8bec_SkreeUpLeft 0x868B39
 #define fnEnemyProj_PreInstr_SkreeParticle 0x868B5D
-#define fnEnemyProjInstr_SetPreInstrA 0x868CF6
+#define fnEprojInstr_SpawnEnemyDropsWithDraygonsEyeDrops 0x868C68
+#define fnEprojInstr_SetPreInstrA 0x868CF6
+#define fnEprojInstr_SetPreInstrB 0x868CFD
 #define fnEprojInit_DraygonsGunk 0x868D04
 #define fnEprojInit_DraygonsWallTurretProjs 0x868D40
 #define fnnullsub_84 0x868D54
