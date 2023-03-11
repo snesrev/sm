@@ -5,7 +5,7 @@ body:
   - type: textarea
     id: description
     attributes:
-      label: "Describe your bug here. And how to reproduce it."
+      label: "Describe your bug here. And how to reproduce it. (If possible, please send the save that the bug occurs."
     validations:
       required: true
 
