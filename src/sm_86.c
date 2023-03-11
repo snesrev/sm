@@ -5596,7 +5596,6 @@ uint16 EprojInstr_HandleRespawningEnemy(uint16 k, uint16 j) {  // 0x86EF10
 }
 
 void EprojInit_F337(uint16 j) {  // 0x86EF29
-  printf("X is undefined\n");
   int v2 = j >> 1;
   enemy_projectile_x_pos[v2] = R18_;
   enemy_projectile_y_pos[v2] = R20_;

@@ -440,7 +440,6 @@ void Kraid_Main(void) {  // 0xA7AC21
   Kraid_Shot_Body();
   Kraid_Enemy_Touch();
   Enemy_Kraid *E = Get_Kraid(0);
-  printf("E Carry crap!\n");
   reg_BG2HOFS = E->base.x_width + reg_BG1HOFS - bg1_x_offset - E->base.x_pos;
   reg_BG2VOFS = layer1_y_pos - E->base.y_pos + 152;
   CallKraidFunc(E->kraid_var_A | 0xA70000);
