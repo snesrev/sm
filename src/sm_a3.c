@@ -223,8 +223,8 @@ void Metalee_Func_1(void) {  // 0xA38987
 
 void Metalee_Func_2(uint16 k) {  // 0xA389AC
   Enemy_Metalee *E = Get_Metalee(k);
-  uint16 div = SnesDivide(samus_y_pos - E->base.y_pos, 24);
-  E->metalee_var_F = div + 4;
+  uint16 div = (uint8)SnesDivide(samus_y_pos - E->base.y_pos, 24);
+  Get_Metalee(k)->metalee_var_F = div + 4;
 }
 
 void Metalee_Func_3(uint16 k) {  // 0xA389D4
