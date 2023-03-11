@@ -727,6 +727,12 @@ uint32_t pc_hist[8], pc_hist_ctr;
 
 uint32_t pc_bp = 0;
 
+void DumpCpuHistory() {
+  for (int i = 0; i < 8; i++) {
+    printf("PC history: 0x%x\n", pc_hist[(pc_hist_ctr + i) & 7]);
+  }
+}
+
 static void cpu_doOpcode(Cpu* cpu, uint8_t opcode) {
   uint32 cur_pc = ((cpu->k << 16) | cpu->pc - 1);
   pc_hist[pc_hist_ctr] = cur_pc;
@@ -1344,9 +1350,7 @@ restart:
       uint8_t new_k = cpu_readOpcode(cpu);
       if (new_k == 0x80 && value == 0x8573) {
         printf("Current PC = 0x%x\n", cpu->k << 16 | cpu->pc);
-        for (int i = 0; i < 8; i++) {
-          printf("PC history: 0x%x\n", pc_hist[(pc_hist_ctr + i) & 7]);
-        }
+        DumpCpuHistory();
         Die("The game has crashed!\n");
       }
       cpu->k = new_k;

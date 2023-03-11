@@ -70,6 +70,7 @@ static FORCEINLINE uint UintMax(uint a, uint b) { return a > b ? a : b; }
 static inline uint16 swap16(uint16 v) { return (v << 8) | (v >> 8); }
 
 void NORETURN Die(const char *error);
+void Warning(const char *error);
 
 // compile time assertion
 #define __CASSERT_N0__(l) COMPILE_TIME_ASSERT_ ## l

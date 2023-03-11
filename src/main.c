@@ -78,12 +78,16 @@ static uint16 g_gamepad_last_cmd[kGamepadBtn_Count];
 extern Snes *g_snes;
 
 void NORETURN Die(const char *error) {
-#if defined(NDEBUG) && defined(_WIN32)
   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, kWindowTitle, error, NULL);
-#endif
   fprintf(stderr, "Error: %s\n", error);
   exit(1);
 }
+
+void Warning(const char *error) {
+  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, kWindowTitle, error, NULL);
+  fprintf(stderr, "Warning: %s\n", error);
+}
+
 
 void ChangeWindowScale(int scale_step) {
   if ((SDL_GetWindowFlags(g_window) & (SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_FULLSCREEN | SDL_WINDOW_MINIMIZED | SDL_WINDOW_MAXIMIZED)) != 0)
