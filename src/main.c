@@ -373,6 +373,20 @@ int main(int argc, char** argv) {
     g_renderer_funcs = kSdlRendererFuncs;
   }
 
+  // init snes, load rom
+  const char* filename = argv[0] ? argv[0] : "sm.smc";
+  Snes *snes = SnesInit(filename);
+
+  if(snes == NULL) {
+  #ifdef __SWITCH__
+    ThrowMissingROM();
+  #else
+    char buf[256];
+    snprintf(buf, sizeof(buf), "unable to load rom: %s", filename);
+    Die(buf);
+  #endif
+    return 1;
+  }
 
   SDL_Window *window = SDL_CreateWindow(kWindowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_width, window_height, g_win_flags);
   if(window == NULL) {
@@ -408,9 +422,6 @@ int main(int argc, char** argv) {
     g_frames_per_block = (534 * have.freq) / 32000;
     g_audiobuffer = (uint8 *)malloc(g_frames_per_block * have.channels * sizeof(int16));
   }
-
-  // init snes, load rom
-  Snes *snes = SnesInit(argv[0] ? argv[0] : "sm.smc");
 
   PpuBeginDrawing(snes->snes_ppu, g_pixels, 256 * 4, 0);
   PpuBeginDrawing(snes->my_ppu, g_my_pixels, 256 * 4, 0);
