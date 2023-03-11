@@ -176,6 +176,7 @@ bool RtlRunFrame(int inputs);
 void RtlReadSram();
 void RtlWriteSram();
 void RtlSaveSnapshot(const char *filename, bool saving_with_bug);
+void RtlUpdateSnesPatchForBugfix();
 
 uint16 Mult8x8(uint8 a, uint8 b);
 uint16 SnesDivide(uint16 a, uint8 b);

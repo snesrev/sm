@@ -245,10 +245,6 @@ void StateRecorder_Load(StateRecorder *sr, FILE *f, bool replay_mode) {
   if (!is_reset)
     RtlRestoreMusicAfterLoad_Locked(false);
 
-  // For some reason couroutine_state is not 1...
-  if (g_snes->cpu->k == 0x00 && g_snes->cpu->pc == 0x841c)
-    coroutine_state_0 = 1;
-
   // Temporarily fix reset state
 //  if (g_snes->cpu->k == 0x82 && g_snes->cpu->pc == 0xf716)
 //    g_snes->cpu->pc = 0xf71c;
@@ -387,6 +383,11 @@ void RtlStopReplay(void) {
   StateRecorder_StopReplay(&state_recorder);
 }
 
+enum {
+  // Version was bumped to 1 after I fixed bug #1
+  kCurrentBugFixCounter = 1,
+};
+
 bool RtlRunFrame(int inputs) {
   // Avoid up/down and left/right from being pressed at the same time
   if ((inputs & 0x30) == 0x30) inputs ^= 0x30;
@@ -402,6 +403,15 @@ bool RtlRunFrame(int inputs) {
     if (state_recorder.snapshot_flags & 1) {
       state_recorder.snapshot_flags &= ~1;
       inputs = state_recorder.last_inputs;
+    } else {
+      if (bug_fix_counter != kCurrentBugFixCounter) {
+        printf("bug_fix_counter %d => %d\n", bug_fix_counter, kCurrentBugFixCounter);
+        if (bug_fix_counter < kCurrentBugFixCounter) {
+          bug_fix_counter = kCurrentBugFixCounter;
+          StateRecorder_RecordPatchByte(&state_recorder, (uint8 *)&bug_fix_counter - g_ram, (uint8 *)&bug_fix_counter, 2);
+          RtlUpdateSnesPatchForBugfix();
+        }
+      }
     }
 
     StateRecorder_Record(&state_recorder, inputs);

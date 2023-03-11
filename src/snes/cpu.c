@@ -727,8 +727,8 @@ uint32_t pc_hist[8], pc_hist_ctr;
 uint32_t pc_bp = 0;
 
 static void cpu_doOpcode(Cpu* cpu, uint8_t opcode) {
-//  pc_hist[pc_hist_ctr] = cpu->k << 16 | cpu->pc;
-//  pc_hist_ctr = (pc_hist_ctr + 1) & 7;
+  pc_hist[pc_hist_ctr] = cpu->k << 16 | cpu->pc;
+  pc_hist_ctr = (pc_hist_ctr + 1) & 7;
   if (((cpu->k << 16) | cpu->pc - 1) == pc_bp) {
     opcode += 0;
   }
@@ -747,6 +747,7 @@ restart:
         cpu->k = cpu_pullByte(cpu);
         break;
       case 0xe5:
+      case 0xe9:
       case 0xed: cpu->c = 1; goto restart;
       case 0x65:
       case 0x6d: 
@@ -1336,7 +1337,15 @@ restart:
     }
     case 0x5c: { // jml abl
       uint16_t value = cpu_readOpcodeWord(cpu);
-      cpu->k = cpu_readOpcode(cpu);
+      uint8_t new_k = cpu_readOpcode(cpu);
+      if (new_k == 0x80 && value == 0x8573) {
+        printf("Current PC = 0x%x\n", cpu->k << 16 | cpu->pc);
+        for (int i = 0; i < 8; i++) {
+          printf("PC history: 0x%x\n", pc_hist[(pc_hist_ctr + i) & 7]);
+        }
+        Die("The game has crashed!\n");
+      }
+      cpu->k = new_k;
       cpu->pc = value;
       break;
     }

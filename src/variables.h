@@ -127,6 +127,10 @@
 #define coroutine_completion_flags (*(uint8*)(g_ram+0x782))
 #define my_counter (*(uint16*)(g_ram+0x77E))
 
+// Keep track of which bug fixes have been made to prevent
+// replays from desyncing.
+#define bug_fix_counter (*(uint16*)(g_ram+0x1FF00))
+
 #define g_word_7E0596 (*(uint16*)(g_ram+0x596))
 #define g_word_7E0598 (*(uint16*)(g_ram+0x598))
 #define set_to_e0_by_scrolling_sky (*(uint16*)(g_ram+0x59A))
@@ -205,17 +209,17 @@
 #define sfx2_queue ((uint8*)(g_ram+0x666))
 #define sfx3_queue ((uint8*)(g_ram+0x676))
 #define sound_handler_downtime (*(uint16*)(g_ram+0x686))
-#define g_byte_7E0688 (*(uint8*)(g_ram+0x688))
+#define croco_target_0688 (*(uint16*)(g_ram+0x688))
 #define g_word_7E068A (*(uint16*)(g_ram+0x68A))
-#define g_byte_7E068C (*(uint8*)(g_ram+0x68C))
+#define croco_word_068C (*(uint8*)(g_ram+0x68C))
 #define g_word_7E068E (*(uint16*)(g_ram+0x68E))
-#define g_word_7E0690 (*(uint16*)(g_ram+0x690))
+#define croco_cur_vline_idx (*(uint16*)(g_ram+0x690))
 #define g_word_7E0692 (*(uint16*)(g_ram+0x692))
 #define g_word_7E0694 (*(uint16*)(g_ram+0x694))
 #define g_word_7E0696 (*(uint16*)(g_ram+0x696))
 #define g_word_7E0698 (*(uint16*)(g_ram+0x698))
-#define g_word_7E069A (*(uint16*)(g_ram+0x69A))
-#define g_byte_7E069C ((uint8*)(g_ram+0x69C))
+#define croco_word_7E069A (*(uint16*)(g_ram+0x69A))
+#define croco_vline_height ((uint8*)(g_ram+0x69C))
 #define UNUSED_byte_7E071C (*(uint8*)(g_ram+0x71C))
 #define nmi_copy_samus_halves (*(uint16*)(g_ram+0x71D))
 #define nmi_copy_samus_top_half_src (*(uint16*)(g_ram+0x71F))

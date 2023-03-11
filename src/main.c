@@ -35,6 +35,7 @@ static void HandleGamepadInput(int button, bool pressed);
 static void HandleInput(int keyCode, int keyMod, bool pressed);
 void OpenGLRenderer_Create(struct RendererFuncs *funcs);
 
+bool g_debug_flag;
 bool g_is_turbo;
 bool g_is_turbo;
 bool g_want_dump_memmap_flags;
@@ -310,6 +311,10 @@ int main(int argc, char** argv) {
     argc -= 2, argv += 2;
   } else {
     SwitchDirectory();
+  }
+  if (argc >= 1 && strcmp(argv[0], "--debug") == 0) {
+    g_debug_flag = true;
+    argc -= 1, argv += 1;
   }
   ParseConfigFile(config_file);
 

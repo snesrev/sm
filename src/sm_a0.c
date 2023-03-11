@@ -755,7 +755,7 @@ void CallEnemyAi(uint32 ea) {
   case fnLowerNorfairRio_Main: LowerNorfairRio_Main(); return;
   case fnMaridiaLargeSnail_Init: MaridiaLargeSnail_Init(); return;
   case fnMaridiaLargeSnail_Main: MaridiaLargeSnail_Main(); return;
-  case fnMaridiaLargeSnail_Touch: MaridiaLargeSnail_Touch(cur_enemy_index); return;
+  case fnMaridiaLargeSnail_Touch: MaridiaLargeSnail_Touch(); return;
   case fnMaridiaLargeSnail_Shot: MaridiaLargeSnail_Shot(); return;
   case fnHirisingSlowfalling_Init: HirisingSlowfalling_Init(); return;
   case fnHirisingSlowfalling_Main: HirisingSlowfalling_Main(); return;
@@ -2401,7 +2401,7 @@ void CallHitboxTouch(uint32 ea) {
   switch (ea) {
   case fnEnemy_NormalTouchAI_A0: Enemy_NormalTouchAI_A0(); return;  // 0xa08023
   case fnMaridiaLargeSnail_Func_12: MaridiaLargeSnail_Func_12(); return;  // 0xa2d388
-  case fnMaridiaLargeSnail_Touch: MaridiaLargeSnail_Touch(cur_enemy_index); return;  // 0xa2d38c
+  case fnMaridiaLargeSnail_Touch: MaridiaLargeSnail_Touch(); return;  // 0xa2d38c
   case fnEnemy_NormalTouchAI_A4: Enemy_NormalTouchAI_A4(); return;  // 0xa48023
   case fnCrocomire_Func_92: Crocomire_Func_92(); return;  // 0xa4b93d
   case fnnullsub_34: return;  // 0xa4b950

@@ -269,7 +269,7 @@ void LoadStdBG3andSpriteTilesClearTilemaps(void) {  // 0x8282E2
 CoroutineRet GameState_32_MadeItToCeresElevator(void) {  // 0x828367
   if (timer_status)
     DrawTimer();
-  GameState_8_MainGameplay();
+  COROUTINE_AWAIT_ONLY(GameState_8_MainGameplay());
   bool v0 = (--reached_ceres_elevator_fade_timer & 0x8000u) != 0;
   if (!reached_ceres_elevator_fade_timer || v0) {
     ++game_state;
@@ -282,7 +282,7 @@ CoroutineRet GameState_32_MadeItToCeresElevator(void) {  // 0x828367
 CoroutineRet GameState_33_BlackoutFromCeres(void) {  // 0x828388
   if (timer_status)
     DrawTimer();
-  GameState_8_MainGameplay();
+  COROUTINE_AWAIT_ONLY(GameState_8_MainGameplay());
   HandleFadeOut();
   if (reg_INIDISP == 0x80) {
     EnableNMI();
@@ -314,7 +314,7 @@ CoroutineRet GameState_33_BlackoutFromCeres(void) {  // 0x828388
 }
 
 CoroutineRet GameState_35_TimeUp(void) {  // 0x828411
-  GameState_8_MainGameplay();
+  COROUTINE_AWAIT_ONLY(GameState_8_MainGameplay());
   palette_change_denom = 8;
   if (AdvancePaletteFadeForAllPalettes()) {
     game_state = kGameState_36_WhitingOutFromTimeUp;
@@ -361,7 +361,7 @@ CoroutineRet GameState_36_WhitingOutFromTimeUp(void) {  // 0x828431
 }
 
 CoroutineRet GameState_38_SamusEscapesFromZebes(void) {  // 0x8284BD
-  GameState_8_MainGameplay();
+  COROUTINE_AWAIT_ONLY(GameState_8_MainGameplay());
   HandleFadeOut();
   if (reg_INIDISP == 0x80) {
     EnableNMI();
@@ -389,7 +389,7 @@ CoroutineRet GameState_38_SamusEscapesFromZebes(void) {  // 0x8284BD
 }
 
 CoroutineRet GameState_41_TransitionToDemo(void) {  // 0x82852D
-  GameState_8_MainGameplay();
+  COROUTINE_AWAIT_ONLY(GameState_8_MainGameplay());
   HdmaObjectHandler();
   ++game_state;
   reg_INIDISP = 15;
@@ -399,7 +399,7 @@ CoroutineRet GameState_41_TransitionToDemo(void) {  // 0x82852D
 CoroutineRet GameState_42_PlayingDemo_Async(void) {  // 0x828548
   COROUTINE_BEGIN(coroutine_state_3, 0)
 //  assert(0);
-  GameState_8_MainGameplay();
+  COROUTINE_AWAIT(2, GameState_8_MainGameplay());
   if (joypad1_newkeys) {
     substate = 1;
     goto LABEL_10;
@@ -763,7 +763,7 @@ CoroutineRet GameState_39_EndingAndCredits(void) {  // 0x828B13
 }
 
 CoroutineRet GameState_7_MainGameplayFadeIn(void) {  // 0x828B20
-  GameState_8_MainGameplay();
+  COROUTINE_AWAIT_ONLY(GameState_8_MainGameplay());
   HandleFadeIn();
   if (reg_INIDISP == 15) {
     screen_fade_delay = 0;
@@ -976,7 +976,7 @@ void DrawOptionsMenuSpritemaps(void) {  // 0x828CA1
 }
 
 CoroutineRet GameState_12_Pausing_Darkening_Async(void) {  // 0x828CCF
-  GameState_8_MainGameplay();
+  COROUTINE_AWAIT_ONLY(GameState_8_MainGameplay());
   HandleFadeOut();
   if ((reg_INIDISP & 0xF) == 0) {
     EnableNMI();
@@ -1465,7 +1465,7 @@ CoroutineRet GameState_17_Unpausing_Async(void) {  // 0x829367
 }
 
 CoroutineRet GameState_18_Unpausing(void) {  // 0x8293A1
-  GameState_8_MainGameplay();
+  COROUTINE_AWAIT_ONLY(GameState_8_MainGameplay());
   HandleFadeIn();
   if (reg_INIDISP == 15) {
     screen_fade_delay = 0;
@@ -3750,12 +3750,13 @@ void HandleSamusOutOfHealthAndGameTile(void) {  // 0x82DB69
 }
 
 CoroutineRet GameState_27_ReserveTanksAuto(void) {  // 0x82DC10
-  if (RefillHealthFromReserveTanks()) {
+  // todo: Ugly to inspect GameState_8_MainGameplay's coroutine_state_1 like this.
+  if (coroutine_state_1 == 0 && RefillHealthFromReserveTanks()) {
     time_is_frozen_flag = 0;
     game_state = kGameState_8_MainGameplay;
     CallSomeSamusCode(0x10u);
   }
-  GameState_8_MainGameplay();
+  COROUTINE_AWAIT_ONLY(GameState_8_MainGameplay());
   Samus_LowHealthCheck_0();
   return kCoroutineNone;
 }
@@ -3782,18 +3783,14 @@ LABEL_9:
 }
 
 CoroutineRet GameState_19_SamusNoHealth(void) {  // 0x82DC80
-  uint16 j;
-  uint16 k;
-  uint16 m;
-
-  GameState_8_MainGameplay();
+  COROUTINE_AWAIT_ONLY(GameState_8_MainGameplay());
   for (int i = 255; i >= 0; --i)
     ram3000.pause_menu_map_tilemap[i + 384] = palette_buffer[i];
-  for (j = 382; (j & 0x8000u) == 0; j -= 2)
+  for (int j = 382; (j & 0x8000u) == 0; j -= 2)
     target_palettes[j >> 1] = 0;
-  for (k = 94; (k & 0x8000u) == 0; k -= 2)
+  for (int k = 94; (k & 0x8000u) == 0; k -= 2)
     target_palettes[(k >> 1) + 208] = 0;
-  for (m = 30; (m & 0x8000u) == 0; m -= 2)
+  for (int m = 30; (m & 0x8000u) == 0; m -= 2)
     target_palettes[(m >> 1) + 192] = palette_buffer[(m >> 1) + 192];
   game_options_screen_index = 3;
   g_word_7E0DE4 = 0;
@@ -3809,7 +3806,7 @@ CoroutineRet GameState_19_SamusNoHealth(void) {  // 0x82DC80
 }
 
 CoroutineRet GameState_20_SamusNoHealth_BlackOut(void) {  // 0x82DCE0
-  GameState_8_MainGameplay();
+  COROUTINE_AWAIT_ONLY(GameState_8_MainGameplay());
   palette_change_denom = 6;
   if (AdvancePaletteFadeForAllPalettes()) {
     WaitUntilEndOfVblankAndClearHdma();
