@@ -4274,10 +4274,8 @@ void CinematicFunction_Intro_Func57(uint16 j) {  // 0x8BBE7E
 }
 
 void CinematicFunction_Intro_Func58(uint16 k) {  // 0x8BBEB5
-  char v3; // t0
   unsigned int v8; // kr08_4
   unsigned int v9; // kr0C_4
-  uint16 v4;
 
   if (cinematic_function == FUNC16(CinematicFunction_Intro_Func56)) {
     int v1 = k >> 1;
@@ -6153,9 +6151,7 @@ void CinematicFunction_Intro_Func127(void) {  // 0x8BE7BB
 void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
   int16 v2;
   int16 v5;
-  int16 v7;
   int16 v8;
-  int16 v11;
   int16 v12;
   int16 v17;
   OamEnt *v18;

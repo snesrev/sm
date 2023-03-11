@@ -1,3 +1,9 @@
+#ifndef SM_VARIABLES_H_
+#define SM_VARIABLES_H_
+#include "types.h"
+
+extern uint8 g_ram[0x20000];
+
 #define R0_ (*(LongPtr*)(g_ram+0x0))
 #define R3_ (*(LongPtr*)(g_ram+0x3))
 #define R6_ (*(uint16*)(g_ram+0x6))
@@ -1161,3 +1167,5 @@
 #include "variables_extra.h"
 
 #define ADDR16_OF_RAM(x) ((uint8*)&(x) - g_ram)
+
+#endif // SM_VARIABLES_H_

@@ -633,10 +633,6 @@ void GrappleBeamFunc_BD44(void) {  // 0x9BBD44
 }
 
 void GrappleBeamFunc_BD95(void) {  // 0x9BBD95
-  int16 v4;
-  int16 v5;
-  int16 v6;
-
   uint16 v0 = abs16(grapple_beam_unkD26);
   uint16 v1;
 
