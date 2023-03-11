@@ -605,15 +605,24 @@ static Func_V_Coroutine *const kGameStateFuncs[45] = {
   GameState_44_TransitionFromDemo,
 };
 
-CoroutineRet RunGameStateTrampoline_Async(void) {
-  //  printf("gamestate %d\n", game_state);
-  return kGameStateFuncs[(uint16)(2 * (uint8)game_state) >> 1]();
-}
-
 CoroutineRet RunOneFrameOfGameInner(void) {
-  COROUTINE_BEGIN(coroutine_state_0, 1: case 2: case 3);
-  COROUTINE_AWAIT_ONLY(Vector_RESET_Async())
-  COROUTINE_MANUAL_POS(0);
+  int st = coroutine_state_0;
+  // This uses manual coroutine handling because of the 
+  // kGameStateFuncs[game_state]() thing, we need to make
+  // sure we resume at the same position even if it changes
+  // behind our back.
+  if (st >= 1 && st <= 3) {
+    COROUTINE_AWAIT_ONLY(Vector_RESET_Async())
+  } else if (st >= 10) {
+    goto RESUME_AT_SWITCH;
+  } else if (st != 0) {
+    Die("Incorrect coroutine_state_0");
+  }
+
+  // Ensure these are reset to a known state.
+  // There was a bug where these would have the wrong value.
+  coroutine_state_1 = coroutine_state_2 = coroutine_state_3 = coroutine_state_4 = 0;
+
   ReadJoypadInputs();
   HdmaObjectHandler();
   NextRandom();
@@ -622,11 +631,23 @@ CoroutineRet RunOneFrameOfGameInner(void) {
   nmi_copy_samus_halves = 0;
   nmi_copy_samus_top_half_src = 0;
   nmi_copy_samus_bottom_half_src = 0;
-  COROUTINE_AWAIT(4, RunGameStateTrampoline_Async());
+
+  coroutine_state_0 = st = game_state + 10;
+RESUME_AT_SWITCH:
+  COROUTINE_AWAIT_ONLY(kGameStateFuncs[st - 10]());
+
   HandleSoundEffects();
   ClearUnusedOam();
   ShowSpareCpu();
-  COROUTINE_END(0);
+  
+  if (coroutine_state_1 | coroutine_state_2 | coroutine_state_3 | coroutine_state_4) {
+    printf("Coroutine state: %d, %d, %d, %d\n",
+      coroutine_state_1, coroutine_state_2, coroutine_state_3, coroutine_state_4);
+    Warning("Coroutine State is broken!");
+  }
+
+  coroutine_state_0 = 0;
+  return kCoroutineNone;
 }
 
 void RunOneFrameOfGame(void) {  // 0x828948

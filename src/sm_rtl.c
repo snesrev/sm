@@ -465,6 +465,16 @@ void RtlSaveLoad(int cmd, int slot) {
     RtlApuUnlock();
     RtlSynchronizeWholeState();
     fclose(f);
+
+    if (coroutine_state_0 | coroutine_state_1 | coroutine_state_2 | coroutine_state_3 | coroutine_state_4) {
+      printf("Coroutine state: %d, %d, %d, %d, %d\n",
+        coroutine_state_0, coroutine_state_1, coroutine_state_2, coroutine_state_3, coroutine_state_4);
+    }
+
+    // Earlier versions used coroutine_state_0 differently
+    if (coroutine_state_0 == 4)
+      coroutine_state_0 = 10 + game_state;
+
   } else {
     RtlSaveSnapshot(name, false);
   }
