@@ -2709,7 +2709,7 @@ LABEL_18:
       uint16 v1 = *(uint16 *)RomPtr_91(R36 + special_samus_palette_frame);
       CopyToSamusSuitPalette(v1);
       uint16 v2 = special_samus_palette_frame + 2;
-      if (!sign16(special_samus_palette_frame - 10))
+      if (special_samus_palette_frame >= 10)
         v2 = 0;
       special_samus_palette_frame = v2;
       return 1;
@@ -2725,10 +2725,13 @@ LABEL_10:
   if (!special_samus_palette_timer || v3) {
     special_samus_palette_timer = 4;
     R36 = kSamusPal_SpeedBoost[samus_suit_palette_index >> 1];
+    // Bugfix: The original game can do an out of bounds read here.
+    if (special_samus_palette_frame > 6)
+      special_samus_palette_frame = 6;
     uint16 v4 = *(uint16 *)RomPtr_91(R36 + special_samus_palette_frame);
     CopyToSamusSuitPalette(v4);
     uint16 v5 = special_samus_palette_frame + 2;
-    if (!sign16(special_samus_palette_frame - 6))
+    if (special_samus_palette_frame >= 6)
       v5 = 6;
     special_samus_palette_frame = v5;
   }

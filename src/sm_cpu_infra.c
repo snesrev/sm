@@ -314,6 +314,10 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
       g_cpu->mf = 0;
       return 0xA497CE;
     }
+  } else if (FixBugHook(0x91DA89)) {
+    // Samus_HandleScrewAttackSpeedBoostingPals reads OOB
+    if (special_samus_palette_frame > 6)
+      special_samus_palette_frame = 6;
   }
 
   return 0;
