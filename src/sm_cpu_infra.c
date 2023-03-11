@@ -798,8 +798,6 @@ void DrawFrameToPpu(void) {
   g_snes->cpu->nmiWanted = false;
 }
 
-extern bool g_debug_flag;
-
 void SaveBugSnapshot() {
   if (!g_debug_flag && g_got_mismatch_count == 0) {
     char buffer[64];

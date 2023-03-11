@@ -10,6 +10,7 @@ extern int snes_frame_counter;
 extern uint8 *g_sram;
 extern bool g_use_my_apu_code;
 #define LONGPTR(t) {(t) & 0xffff, (t) >> 16}
+extern bool g_debug_flag;
 
 typedef void HandlerFunc(void);
 typedef uint8 Func_V_A(void);
