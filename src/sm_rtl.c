@@ -446,7 +446,7 @@ void RtlSaveLoad(int cmd, int slot) {
     int i = slot - 256;
     if (cmd == kSaveLoad_Save || i >= sizeof(kBugSaves) / sizeof(kBugSaves[0]))
       return;
-    sprintf(name, "saves/bug-%s.sav", kBugSaves[i]);
+    sprintf(name, "saves/%s.sav", kBugSaves[i]);
   } else {
     sprintf(name, "saves/save%d.sav", slot);
   }

@@ -5,10 +5,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <assert.h>
 #include "cpu.h"
 #include "snes.h"
 #include "../types.h"
+#include "../variables.h"
 
 static const int cyclesPerOpcode[256] = {
   7, 6, 7, 4, 5, 3, 5, 6, 3, 2, 2, 4, 6, 4, 6, 5,
@@ -721,18 +721,21 @@ static void cpu_trb(Cpu* cpu, uint32_t low, uint32_t high) {
 }
 
 
-int CpuOpcodeHook(uint32_t addr);
+extern int CpuOpcodeHook(uint32 addr);
 
 uint32_t pc_hist[8], pc_hist_ctr;
 
 uint32_t pc_bp = 0;
 
 static void cpu_doOpcode(Cpu* cpu, uint8_t opcode) {
-  pc_hist[pc_hist_ctr] = cpu->k << 16 | cpu->pc;
+  uint32 cur_pc = ((cpu->k << 16) | cpu->pc - 1);
+  pc_hist[pc_hist_ctr] = cur_pc;
   pc_hist_ctr = (pc_hist_ctr + 1) & 7;
-  if (((cpu->k << 16) | cpu->pc - 1) == pc_bp) {
+  
+  if (cur_pc == pc_bp) {
     opcode += 0;
   }
+
 restart:
   switch(opcode) {
     case 0x00: { // brk imp
