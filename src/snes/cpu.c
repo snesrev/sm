@@ -8,6 +8,7 @@
 #include <assert.h>
 #include "cpu.h"
 #include "snes.h"
+#include "../types.h"
 
 static const int cyclesPerOpcode[256] = {
   7, 6, 7, 4, 5, 3, 5, 6, 3, 2, 2, 4, 6, 4, 6, 5,
