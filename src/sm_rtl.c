@@ -245,6 +245,8 @@ void StateRecorder_Load(StateRecorder *sr, FILE *f, bool replay_mode) {
   if (!is_reset)
     RtlRestoreMusicAfterLoad_Locked(false);
 
+  RtlUpdateSnesPatchForBugfix();
+
   // Temporarily fix reset state
 //  if (g_snes->cpu->k == 0x82 && g_snes->cpu->pc == 0xf716)
 //    g_snes->cpu->pc = 0xf71c;

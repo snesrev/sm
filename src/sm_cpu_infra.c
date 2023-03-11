@@ -553,7 +553,7 @@ void RtlUpdateSnesPatchForBugfix() {
   // Patch HandleMessageBoxInteraction logic
   { uint8 t[] = { 0x20, 0x50, 0x96, 0x60 }; PatchBytes(0x8584A3, t, sizeof(t)); }
   // while ((bug_fix_counter < 1 ? joypad1_newkeys : joypad1_lastkeys) == 0);
-  { uint8 t[] = { 0x20, 0x36, 0x81, 0x22, 0x59, 0x94, 0x80, 0xc2, 0x30, 0xa5, (bug_fix_counter < 1) ? 0x8f : 0x85, 0xf0, 0xf3, 0x60 }; PatchBytes(0x859650, t, sizeof(t)); }
+  { uint8 t[] = { 0x20, 0x36, 0x81, 0x22, 0x59, 0x94, 0x80, 0xc2, 0x30, 0xa5, (bug_fix_counter < 1) ? 0x8f : 0x8b, 0xf0, 0xf3, 0x60 }; PatchBytes(0x859650, t, sizeof(t)); }
   { uint8 t[] = { 0x18, 0x18 }; PatchBytes(0x8584CC, t, sizeof(t)); }  // Don't wait 2 loops
 }
 
@@ -675,10 +675,6 @@ Snes *SnesInit(const char *filename) {
   // Patch ToggleSaveConfirmationSelection
   { uint8 t[] = { 0x18, 0x18, 0x18 }; PatchBytes(0x858532, t, sizeof(t)); } // WaitForNMI_NoUpdate
   { uint8 t[] = { 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18 }; PatchBytes(0x85856b, t, sizeof(t)); } // HandleMusicQueue etc.
-
-  // Remove WaitForLagFrame in various places
-  { uint8 t[] = { 0x18, 0x18, 0x18 }; PatchBytes(0x85861C, t, sizeof(t)); } // RestorePpuForMessageBox
-  { uint8 t[] = { 0x18, 0x18, 0x18 }; PatchBytes(0x858651, t, sizeof(t)); } // RestorePpuForMessageBox
 
   // Patch DisplayMessageBox
   { uint8 t[] = { 0x18, 0x18, 0x18 }; PatchBytes(0x858096, t, sizeof(t)); } // Remove MsgBoxDelayFrames_2
