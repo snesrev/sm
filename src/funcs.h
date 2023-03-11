@@ -3132,7 +3132,7 @@ void Samus_GetXposSpan(void);
 void Samus_GetYposSpan(void);
 
 // Bank 9B
-int CheckBannedDraygonGrappleDirs(uint16 a);
+uint16 CheckBannedDraygonGrappleDirs(uint16 a);
 int ProcessEnemyGrappleBeamColl(uint16 a);
 uint16 GameState_24_SamusNoHealth_Explosion_2(void);
 uint16 GameState_24_SamusNoHealth_Explosion_Helper(void);

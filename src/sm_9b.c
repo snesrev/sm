@@ -840,13 +840,10 @@ void GrappleBeamFunc_FireGoToCancel(void) {  // 0x9BC51E
   int v0;
   if (samus_pose == kPose_F0_FaceR_Draygon_Move || samus_pose == kPose_BE_FaceL_Draygon_Move) {
     v0 = CheckBannedDraygonGrappleDirs(samus_pose);
-    if (!(v0 & 0x80000000))
-      goto LABEL_4;
   } else {
     R22_ = *(&kPoseParams[0].y_offset_to_gfx + (uint16)(8 * samus_pose));
     v0 = *(&kPoseParams[0].direction_shots_fired + (uint16)(8 * samus_pose));
     if ((v0 & 0xF0) != 0) {
-LABEL_4:
       grapple_beam_function = FUNC16(GrappleBeamFunc_Cancel);
       return;
     }
@@ -922,25 +919,25 @@ LABEL_4:
     samus_movement_handler = FUNC16(Samus_MovementHandler_Normal);
 }
 
-int CheckBannedDraygonGrappleDirs(uint16 a) {  // 0x9BC6B2
+uint16 CheckBannedDraygonGrappleDirs(uint16 a) {  // 0x9BC6B2
   if (a == kPose_BE_FaceL_Draygon_Move) {
     R22_ = 6;
     if ((joypad1_lastkeys & kButton_Left) != 0) {
       if ((joypad1_lastkeys & kButton_Down) != 0)
-        return -2147483642;
+        return 6;
       if ((joypad1_lastkeys & kButton_Up) != 0)
-        return -2147483640;
+        return 8;
     }
-    return -2147483641;
+    return 7;
   }
   R22_ = 6;
   if ((joypad1_lastkeys & kButton_Right) == 0)
-    return -2147483646;
+    return 2;
   if ((joypad1_lastkeys & kButton_Down) != 0)
-    return -2147483645;
+    return 3;
   if ((joypad1_lastkeys & kButton_Up) == 0)
-    return -2147483646;
-  return -2147483647;
+    return 2;
+  return 1;
 }
 
 uint8 ClearCarry_12(void) {  // 0x9BC701
