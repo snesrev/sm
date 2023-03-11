@@ -740,6 +740,9 @@ Snes *SnesInit(const char *filename) {
   { uint8 t[] = { 0x18, 0x18, 0x18, 0x80 }; PatchBytes(0x828A80, t, sizeof(t)); } // SfxHandlers_3_WaitForAck
   { uint8 t[] = { 0x06 }; PatchBytes(0x828A67, t, sizeof(t)); } // sfx_clear_delay
 
+  // LoadStdBG3andSpriteTilesClearTilemaps does DMA from RAM
+  { uint8 t[] = { 0x00, 0x2E }; PatchBytes(0x82831E, t, sizeof(t)); }
+
   RtlUpdateSnesPatchForBugfix();
 
   for (size_t i = 0; i != arraysize(kPatchedCarrys); i++) {

@@ -184,6 +184,8 @@ void dma_write(Dma* dma, uint16_t adr, uint8_t val) {
   }
 }
 
+extern bool g_fail;
+
 void dma_doDma(Dma* dma) {
   if(dma->dmaTimer > 0) {
     dma->dmaTimer -= 2;
@@ -201,6 +203,12 @@ void dma_doDma(Dma* dma) {
     dma->dmaBusy = false;
     return;
   }
+
+  if (!dma->channel[i].fromB && (dma->channel[i].aBank & 0x80) && !(dma->channel[i].aAdr & 0x8000) && !g_fail) {
+    printf("Warning! DMA from addr 0x%x\n", dma->channel[i].aBank << 16 | dma->channel[i].aAdr);
+    g_fail = true;
+  }
+
   // do channel i
   dma_transferByte(
     dma, dma->channel[i].aAdr, dma->channel[i].aBank,

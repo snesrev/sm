@@ -249,7 +249,8 @@ void LoadStdBG3andSpriteTilesClearTilemaps(void) {  // 0x8282E2
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0x60u);
   WriteReg(VMAIN, 0x80);
-  static const StartDmaCopy unk_828318 = { 1, 1, 0x18, LONGPTR(0x9ad200), 0x4000 };
+  // Bug fix: Asm code does DMA from RAM here.
+  static const StartDmaCopy unk_828318 = { 1, 1, 0x18, LONGPTR(0x9ad200), 0x2e00 };
   SetupDmaTransfer(&unk_828318);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
