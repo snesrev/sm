@@ -438,7 +438,7 @@ void RtlSaveSnapshot(const char *filename, bool saving_with_bug) {
 }
 
 static const char *const kBugSaves[] = {
-  "shaktool", "shinespark", "bombtorizo", "chozo", "draygon", "draygon2", "golden-torizo", "motherbomb", "phantoon"
+  "After Crocomire"
 };
 
 void RtlSaveLoad(int cmd, int slot) {
