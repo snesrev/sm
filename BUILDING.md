@@ -47,7 +47,7 @@ Download VS installer. On installer prompt, make sure you're on "Workloads" and 
  Dependencies and requirements:
  * You'll need [TCC](https://github.com/FitzRoyX/tinycc/releases/download/tcc_20221020/tcc_20221020.zip) and [SDL2](https://github.com/libsdl-org/SDL/releases/download/release-2.24.1/SDL2-devel-2.24.1-VC.zip) in order to compile using TCC.
 
-1. Unzip both TCC and SDL and place them in `third_party` folder.
+1. Unzip both TCC and SDL and place them in `third_party` folder or modify `run_with_tcc.bat` with their correct locations.
 2. Double click `run_with_tcc.bat`
 3. Wait for it to compile and the game will automatically boot-up.
 
