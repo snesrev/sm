@@ -3394,7 +3394,7 @@ LABEL_23:
 LABEL_22:
         EK->phant_var_E = 0;
         Get_Phantoon(0x80)->phant_var_A = 0;
-        E2->phant_var_B = 0;
+        Get_Phantoon(v1 + 0x80)->phant_var_B = 0;
         phantom_related_layer_flag |= 0x4000u;
         E0->base.instruction_timer = 1;
         Enemy_Phantoon *E1 = Get_Phantoon(0x40u);
