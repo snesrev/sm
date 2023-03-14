@@ -79,7 +79,7 @@ Dependencies and requirements:
 3. Now go to the 'switch' folder inside MSYS2 'cd platform/switch' 
 4. Type 'make' to build the game.
 
-**OPTINOAL STEPS**
+**OPTIONAL STEPS**
 
 ```sh
 make -j$(nproc) # To build using all cores
