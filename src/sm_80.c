@@ -510,16 +510,14 @@ void NMI_ProcessVramWriteQueue(void) {  // 0x808C83
     gVramWriteEntry(vram_write_queue_tail)->size = 0;
     WriteRegWord(DMAP1, 0x1801u);
     for (int i = 0; ; i += 7) {
-      uint16 *v1 = (uint16 *)gVramWriteEntry(i);
-      if (!v1[0])
+      VramWriteEntry *e = gVramWriteEntry(i);
+      if (!e->size)
         break;
-      WriteRegWord(DAS1L, v1[0]);
-      WriteRegWord(A1T1L, v1[1]);
-      WriteRegWord(A1T1H, *(uint16 *)((char *)v1 + 3));
-      v3 = *(uint16 *)((char *)v1 + 5);
-      uint16 v2 = (sign16(v3)) ? 129 : 128;
-      WriteRegWord(VMAIN, v2);
-      WriteRegWord(VMADDL, v3);
+      WriteRegWord(DAS1L, e->size);
+      WriteRegWord(A1T1L, e->src.addr);
+      WriteReg(A1B1, e->src.bank);
+      WriteRegWord(VMAIN, sign16(e->vram_dst) ? 0x81 : 0x80);
+      WriteRegWord(VMADDL, e->vram_dst);
       WriteReg(MDMAEN, 2u);
     }
   }

@@ -1872,45 +1872,39 @@ void RoomMainAsm_ScrollingSkyOcean(void) {  // 0x88AF99
 }
 
 void RoomMainAsm_ScrollingSky(void) {  // 0x88AFA3
-  VramWriteEntry *v1;
-  int16 v2;
-  VoidP v3;
-  int16 v4;
-  VoidP v5;
-
   if (time_is_frozen_flag) {
     WORD(scrolling_sky_bg2_indirect_hdma[0]) = 0;
   } else {
     reg_BG2VOFS = layer1_y_pos;
     uint16 v0 = vram_write_queue_tail;
-    v1 = gVramWriteEntry(vram_write_queue_tail);
-    v1->size = 64;
+    VramWriteEntry *v1 = gVramWriteEntry(vram_write_queue_tail);
+    v1[0].size = 64;
     v1[1].size = 64;
     v1[2].size = 64;
     v1[3].size = 64;
-    v2 = 8 * (uint8)((layer1_y_pos & 0xF8) - 16);
-    v3 = *(uint16 *)IndirPtr(
-      &R0_,
-      2 * (uint8)((uint16)(((layer1_y_pos & 0x7F8) - 16) & 0xFF00) >> 8))
-      + v2;
-    v1->src.addr = v3;
+    int tt = (layer1_y_pos & 0x7F8) - 16;
+    // fixed: prevent out of bounds read when tt is negative.
+    if (sign16(tt))
+      tt = 0;
+    int v2 = 8 * (uint8)tt;
+    int y1 = (uint8)(tt >> 8);
+    int y2 = (uint8)((tt >> 8) + 1);
+    VoidP v3 = *(uint16 *)IndirPtr(&R0_, 2 * y1) + v2;
+    v1[0].src.addr = v3;
     v1[1].src.addr = v3 + 64;
-    v4 = 8 * (uint8)((layer1_y_pos & 0xF8) - 16);
-    v5 = *(uint16 *)IndirPtr(
-      &R0_,
-      2 * (uint8)((uint16)(((layer1_y_pos & 0x7F8) + 240) & 0xFF00) >> 8))
-      + v4;
+    VoidP v5 = *(uint16 *)IndirPtr(&R0_, 2 * y2) + v2;
     v1[2].src.addr = v5;
     v1[3].src.addr = v5 + 64;
-    v1->src.bank = -118;
-    v1[1].src.bank = -118;
-    v1[2].src.bank = -118;
-    v1[3].src.bank = -118;
-    R18_ = (reg_BG2SC & 0xFC) << 8;
-    uint16 v6 = R18_ + 4 * ((layer1_y_pos - 16) & 0x1F8);
-    v1->vram_dst = v6;
+    v1[0].src.bank = 0x8a;
+    v1[1].src.bank = 0x8a;
+    v1[2].src.bank = 0x8a;
+    v1[3].src.bank = 0x8a;
+    int t = (reg_BG2SC & 0xFC) << 8;
+    R18_ = t;
+    uint16 v6 = t + 4 * ((layer1_y_pos - 16) & 0x1F8);
+    v1[0].vram_dst = v6;
     v1[1].vram_dst = v6 + 32;
-    uint16 v7 = R18_ + 4 * ((layer1_y_pos + 240) & 0x1F8);
+    uint16 v7 = t + 4 * ((layer1_y_pos + 240) & 0x1F8);
     v1[2].vram_dst = v7;
     v1[3].vram_dst = v7 + 32;
     vram_write_queue_tail = v0 + 28;

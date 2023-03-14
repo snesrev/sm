@@ -320,6 +320,12 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
       special_samus_palette_frame = 6;
   } else if (FixBugHook(0x828D56)) {
     WriteReg(VMAIN, 0x80); // BackupBG2TilemapForPauseMenu lacks this
+  } else if (FixBugHook(0x88AFCF)) {
+    if (g_cpu->a & 0x8000)  // RoomMainAsm_ScrollingSky reads oob
+      g_cpu->a = 0;
+  } else if (FixBugHook(0x88AFF2)) {
+    if (g_cpu->a < 256)  // RoomMainAsm_ScrollingSky reads oob
+      g_cpu->a = 256;
   }
 
   return 0;
