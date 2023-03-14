@@ -1215,6 +1215,7 @@ void CallEnemyPreInstr(uint32 ea) {
   case fnnullsub_215: return;  // 0xa3cf5f
   case fnMaridiaSnail_Func_15: MaridiaSnail_Func_15(k); return;  // 0xa3d1b3
   case fnnullsub_343: return;  // 0xa3e08a
+  case fnWreckedShipOrangeZoomer_Func_2: WreckedShipOrangeZoomer_Func_2(k); return;
   case fnnullsub_304: return;  // 0xa3e6c1
   case fnFireZoomer_Func_1: FireZoomer_Func_1(k); return;  // 0xa3e6c8
   case fnFireZoomer_Func_2: FireZoomer_Func_2(k); return;  // 0xa3e785

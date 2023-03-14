@@ -8010,6 +8010,7 @@ void DecompressToMem_IpArg(const void* p);
 #define fnWreckedShipOrangeZoomer_Func_1 0xA3DFC2
 #define fnWreckedShipOrangeZoomer_Init 0xA3E043
 #define fnnullsub_343 0xA3E08A
+#define fnWreckedShipOrangeZoomer_Func_2 0xA3E091
 #define fnWreckedShipOrangeZoomer_Main 0xA3E08B
 #define fnsub_A3E168 0xA3E168
 #define fnBigEyeBugs_Init 0xA3E2D4
