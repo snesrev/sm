@@ -520,8 +520,6 @@ void DrawSpritemapWithBaseTile(uint8 db, uint16 j) {  // 0x818AB8
 void DrawSpritemapWithBaseTile2(uint8 db, uint16 j) {  // 0x818B22
   int16 v6;
   OamEnt *v7;
-  int16 v9;
-  int16 v11;
 
   uint16 *v2 = (uint16 *)RomPtrWithBank(db, j);
   if (*v2) {
@@ -535,15 +533,11 @@ void DrawSpritemapWithBaseTile2(uint8 db, uint16 j) {  // 0x818B22
       *(uint16 *)&v7->xcoord = v6;
       if ((v6 & 0x100) != 0) {
         int v8 = v4 >> 1;
-        R22_ = kOamExtra_Address_And_X8Large[v8];
-        v9 = kOamExtra_X8Small_And_Large[v8] | *(uint16 *)RomPtr_RAM(R22_);
-        *(uint16 *)RomPtr_RAM(R22_) = v9;
+        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v8]) |= kOamExtra_X8Small_And_Large[v8];
       }
       if (*(int16 *)v5 < 0) {
         int v10 = v4 >> 1;
-        R22_ = kOamExtra_Address_And_X8Large[v10];
-        v11 = kOamExtra_X8Small_And_Large[v10 + 1] | *(uint16 *)RomPtr_RAM(R22_);
-        *(uint16 *)RomPtr_RAM(R22_) = v11;
+        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v10]) |= kOamExtra_X8Small_And_Large[v10 + 1];
       }
       int y = v5[2] + LOBYTE(R18_);
       if ((v5[2] & 0x80) ? (y & 0x100) == 0 : (y & 0x100) != 0)
