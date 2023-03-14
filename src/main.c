@@ -438,6 +438,8 @@ int main(int argc, char** argv) {
   for (int i = 0; i < SDL_NumJoysticks(); i++)
     OpenOneGamepad(i);
 
+  if (g_config.autosave)
+    HandleCommand(kKeys_Load + 0, true);
 
   bool running = true;
   uint32 lastTick = SDL_GetTicks();
