@@ -280,7 +280,7 @@ void Boulder_Func_4(void) {  // 0xA6888B
       E->base.properties |= kEnemyProps_Deleted;
       R18_ = E->base.x_pos;
       R20_ = E->base.y_pos;
-      SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x11u);
+      SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x11);
       QueueSfx2_Max6(0x43u);
     } else {
       E->boulder_var_A = FUNC16(Boulder_Func_3);
@@ -323,7 +323,7 @@ void Boulder_Func_5(void) {  // 0xA68942
     QueueSfx2_Max6(0x42u);
     R18_ = E->base.x_pos;
     R20_ = E->base.y_pos;
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x11u);
+    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x11);
     QueueSfx2_Max6(0x43u);
   } else {
     uint16 v5 = E->boulder_var_B + 64;
@@ -1099,7 +1099,7 @@ uint16 FakeKraid_Instr_3(uint16 k, uint16 j) {  // 0xA69BB2
 }
 
 uint16 FakeKraid_Instr_4(uint16 k, uint16 j) {  // 0xA69BC4
-  FakeKraid_InstrHelper_45(k, 0, 0xFFFCu);
+  FakeKraid_InstrHelper_45(k, 0, 0xFFFC);
   return j;
 }
 
@@ -1193,7 +1193,7 @@ void CeresRidley_Init(void) {  // 0xA6A0F5
       E->cry_var_23 = 224;
       E->cry_var_10 = 2;
       E->cry_var_1C = 120;
-      WriteColorsToTargetPalette(0xa6, 0x140u, addr_word_A6E1CF, 0x20u);
+      WriteColorsToTargetPalette(0xa6, 0x140, addr_word_A6E1CF, 0x20);
       uint16 v3 = 0;
       v4 = 15;
       do {
@@ -1219,7 +1219,7 @@ void CeresRidley_Init(void) {  // 0xA6A0F5
       E->cry_var_21 = 176;
       E->cry_var_22 = 40;
       E->cry_var_23 = 224;
-      WriteColorsToTargetPalette(0xa6, 0x140u, addr_word_A6E16F, 0x20u);
+      WriteColorsToTargetPalette(0xa6, 0x140, addr_word_A6E16F, 0x20);
       uint16 v7 = 482;
       v8 = 15;
       do {
@@ -1338,7 +1338,7 @@ void CeresRidley_Hurt(void) {  // 0xA6A2D3
 void Ridley_A2DC(void) {  // 0xA6A2DC
   Ridley_Func_49();
   if (Get_CeresRidley(0)->cry_var_02) {
-    mov24(&enemy_gfx_drawn_hook, 0xA6A2F2u);
+    mov24(&enemy_gfx_drawn_hook, 0xA6A2F2);
   } else {
     Ridley_A2F2();
   }
@@ -1355,7 +1355,7 @@ void Ridley_A2F2(void) {  // 0xA6A2F2
     R20_ = E->base.x_pos + g_word_A6A321[(uint8)(earthquake_timer & 3)];
     R18_ = E->base.y_pos;
     R22_ = 1024;
-    DrawSpritemap(0xA6u, addr_kCeresRidley_Sprmap_A329);
+    DrawSpritemap(0xA6, addr_kCeresRidley_Sprmap_A329);
   }
 }
 
@@ -1495,7 +1495,7 @@ uint8 CeresRidley_Func_8(uint16 a) {  // 0xA6A4D6
   uint16 v1 = g_off_A6A4EB[a];
   if (!v1)
     return 1;
-  WriteColorsToPalette(0xE2u, 0xa6, v1, 0xEu);
+  WriteColorsToPalette(0xE2, 0xa6, v1, 0xE);
   return 0;
 }
 
@@ -1607,7 +1607,7 @@ void CeresRidley_Func_15(void) {  // 0xA6A84E
   if (sign16(samus_y_pos - 132))
     v0 = 64;
   R20_ = v0;
-  Ridley_Func_106(0, 0xDu);
+  Ridley_Func_106(0, 0xD);
   R22_ = 2;
   R24_ = 2;
   if (!(Shitroid_Func_2(0) & 1)
@@ -1713,9 +1713,9 @@ void CeresRidley_Func_23(void) {  // 0xA6A9A0
     E->cry_var_C = 0;
     tilemap_stuff[0] = 0;
     E->cry_var_A = FUNC16(CeresRidley_Func_24);
-    WriteColorsToPalette(0xA2u, 0xa6, addr_word_A6A9E3, 0xFu);
-    WriteColorsToPalette(0x42u, 0xa6, addr_word_A6AA01, 8u);
-    WriteColorsToPalette(0x1E2u, 0xa6, addr_word_A6AA01, 8u);
+    WriteColorsToPalette(0xA2, 0xa6, addr_word_A6A9E3, 0xF);
+    WriteColorsToPalette(0x42, 0xa6, addr_word_A6AA01, 8u);
+    WriteColorsToPalette(0x1E2, 0xa6, addr_word_A6AA01, 8u);
   }
 }
 
@@ -1726,8 +1726,8 @@ void CeresRidley_Func_24(void) {  // 0xA6AA11
 }
 
 void CeresRidley_Func_25(void) {  // 0xA6AA20
-  SpawnEnemy(0xA6u, addr_stru_A6AA2F);
-  SpawnEnemy(0xA6u, addr_stru_A6AA3F);
+  SpawnEnemy(0xA6, addr_stru_A6AA2F);
+  SpawnEnemy(0xA6, addr_stru_A6AA3F);
 }
 
 void CeresRidley_Func_26(void) {  // 0xA6AA50
@@ -1873,7 +1873,7 @@ void CeresRidley_Func_33(void) {  // 0xA6ACBC
     Enemy_CeresRidley *E = Get_CeresRidley(0);
     uint16 v1 = ((uint8)E->cry_var_36 + 1) & 3;
     E->cry_var_36 = v1;
-    QueueMode7Transfers(0xA6u, g_off_A6ACDA[v1]);
+    QueueMode7Transfers(0xA6, g_off_A6ACDA[v1]);
   }
 }
 
@@ -1882,12 +1882,12 @@ void CeresRidley_Func_34(void) {  // 0xA6AD27
     Enemy_CeresRidley *E = Get_CeresRidley(0);
     uint16 v1 = ((uint8)E->cry_var_37 + 1) & 1;
     E->cry_var_37 = v1;
-    QueueMode7Transfers(0xA6u, g_off_A6AD45[v1]);
+    QueueMode7Transfers(0xA6, g_off_A6AD45[v1]);
   }
 }
 
 void CeresRidley_Func_35(uint16 a) {  // 0xA6B0EF
-  WriteColorsToPalette(0xA2u, 0xa6, 32 * HIBYTE(a) - 0x4EF9, 0xFu);
+  WriteColorsToPalette(0xA2, 0xa6, 32 * HIBYTE(a) - 0x4EF9, 0xF);
 }
 
 void Ridley_Main(void) {  // 0xA6B227
@@ -2269,7 +2269,7 @@ void Ridley_Func_21(void) {  // 0xA6B70E
       earthquake_timer = 4;
       Ridley_Func_28();
       Ridley_Func_29();
-      Ridley_Func_93(0x2026u, addr_word_A6D37C);
+      Ridley_Func_93(0x2026, addr_word_A6D37C);
       tilemap_stuff[20] = 3072;
       tilemap_stuff[30] = 3072;
       tilemap_stuff[40] = 3072;
@@ -2798,7 +2798,7 @@ uint16 BabyMetroid_Incr2(uint16 k) {  // 0xA6BFDE
 
 uint16 BabyMetroid_Instr_3(uint16 k) {  // 0xA6BFE1
   uint16 v1 = *(uint16 *)RomPtr_A6(k);
-  WriteColorsToPalette(0x162u, 0xa6, v1, 0xFu);
+  WriteColorsToPalette(0x162, 0xa6, v1, 0xF);
   return BabyMetroid_Incr2(k);
 }
 
@@ -3162,7 +3162,7 @@ void Ridley_Func_67(void) {  // 0xA6C5DA
 uint8 Ridley_Func_68(void) {  // 0xA6C601
   R18_ = 128;
   R20_ = 328;
-  Ridley_Func_104(0, 0, 0x10u);
+  Ridley_Func_104(0, 0, 0x10);
   R22_ = 4;
   R24_ = 4;
   return Shitroid_Func_2(0) & 1;
@@ -3333,18 +3333,18 @@ void RidleysExplosion_Func_1(uint16 k) {  // 0xA6C913
 }
 
 void RidleysExplosion_Func_2(void) {  // 0xA6C932
-  SpawnEnemy(0xA6u, addr_stru_A6C9E7);
-  SpawnEnemy(0xA6u, addr_stru_A6C9D7);
-  SpawnEnemy(0xA6u, addr_stru_A6C9C7);
-  SpawnEnemy(0xA6u, addr_stru_A6C9B7);
-  SpawnEnemy(0xA6u, addr_stru_A6C9A7);
-  SpawnEnemy(0xA6u, addr_stru_A6C997);
-  SpawnEnemy(0xA6u, addr_stru_A6C987);
-  SpawnEnemy(0xA6u, addr_stru_A6C9F7);
-  SpawnEnemy(0xA6u, addr_stru_A6CA07);
-  SpawnEnemy(0xA6u, addr_stru_A6CA27);
-  SpawnEnemy(0xA6u, addr_stru_A6CA17);
-  SpawnEnemy(0xA6u, addr_stru_A6CA37);
+  SpawnEnemy(0xA6, addr_stru_A6C9E7);
+  SpawnEnemy(0xA6, addr_stru_A6C9D7);
+  SpawnEnemy(0xA6, addr_stru_A6C9C7);
+  SpawnEnemy(0xA6, addr_stru_A6C9B7);
+  SpawnEnemy(0xA6, addr_stru_A6C9A7);
+  SpawnEnemy(0xA6, addr_stru_A6C997);
+  SpawnEnemy(0xA6, addr_stru_A6C987);
+  SpawnEnemy(0xA6, addr_stru_A6C9F7);
+  SpawnEnemy(0xA6, addr_stru_A6CA07);
+  SpawnEnemy(0xA6, addr_stru_A6CA27);
+  SpawnEnemy(0xA6, addr_stru_A6CA17);
+  SpawnEnemy(0xA6, addr_stru_A6CA37);
 }
 
 void locret_A6CB20(void) {}
@@ -3867,11 +3867,11 @@ void Ridley_Func_92(void) {  // 0xA6D2D6
   tilemap_stuff[57] = 17;
   tilemap_stuff[67] = 17;
   tilemap_stuff[77] = 17;
-  Ridley_Func_93(0x2024u, addr_word_A6D36E);
-  Ridley_Func_93(0x2026u, addr_word_A6D37C);
-  Ridley_Func_93(0x202Au, addr_word_A6D38A);
-  Ridley_Func_93(0x202Cu, addr_word_A6D398);
-  Ridley_Func_93(0x202Eu, addr_word_A6D3A6);
+  Ridley_Func_93(0x2024, addr_word_A6D36E);
+  Ridley_Func_93(0x2026, addr_word_A6D37C);
+  Ridley_Func_93(0x202A, addr_word_A6D38A);
+  Ridley_Func_93(0x202C, addr_word_A6D398);
+  Ridley_Func_93(0x202E, addr_word_A6D3A6);
   tilemap_stuff[16] = 0;
   tilemap_stuff[26] = 0;
   tilemap_stuff[36] = 0;
@@ -3920,7 +3920,7 @@ void Ridley_Func_D3DC(uint16 a) {  // 0xA6D3DC
 void Ridley_Func_96(void) {  // 0xA6D3F9
   int16 v0;
 
-  Ridley_Func_93(0x2026u, addr_word_A6D37C);
+  Ridley_Func_93(0x2026, addr_word_A6D37C);
   v0 = 7;
   uint16 v1 = 0;
   do {
@@ -3972,7 +3972,7 @@ void Ridley_Func_100(void) {  // 0xA6D474
 
 void Ridley_D495(void) {  // 0xA6D495
   if (!palette_change_num)
-    WriteColorsToPalette(0x1E2u, 0xa6, 28 * R18_ - 7062, 0xEu);
+    WriteColorsToPalette(0x1E2, 0xa6, 28 * R18_ - 7062, 0xE);
 }
 
 void Ridley_Func_101(void) {  // 0xA6D4B5
@@ -4790,7 +4790,7 @@ void Ridley_Func_129(void) {  // 0xA6E088
         QueueSfx1_Max6(0x3Du);
         v2 = 6;
       }
-      SpawnEnemyProjectileWithRoomGfx(0xE509u, v2);
+      SpawnEnemyProjectileWithRoomGfx(0xE509, v2);
     }
   }
 }
@@ -4942,7 +4942,7 @@ uint16 Ridley_Instr_13(uint16 k, uint16 j) {  // 0xA6E909
 uint16 Ridley_E90C(uint16 k, uint16 j, uint16 a) {  // 0xA6E90C
   enemy_projectile_unk1995 = a;
   Enemy_Ridley *E = Get_Ridley(0);
-  SpawnEnemyProjectileWithRoomGfx(0x9642u, E->ridley_var_10);
+  SpawnEnemyProjectileWithRoomGfx(0x9642, E->ridley_var_10);
   return j;
 }
 
@@ -5117,13 +5117,13 @@ void CeresDoor_Init(void) {  // 0xA6F6C5
     v3 = addr_word_A6F50C__plus__2;
   } else {
     if (E->cdr_parameter_1 == 3) {
-      WriteColorsToTargetPalette(0xa6, 0x142u, addr_kCeresDoor_Palette__plus__2, 0xFu);
+      WriteColorsToTargetPalette(0xa6, 0x142, addr_kCeresDoor_Palette__plus__2, 0xF);
       return;
     }
     v3 = addr_kCeresDoor_Palette__plus__2;
   }
   Get_CeresDoor(cur_enemy_index)->base.palette_index = 3584;
-  WriteColorsToTargetPalette(0xa6, 0x1E2u, v3, 0xFu);
+  WriteColorsToTargetPalette(0xa6, 0x1E2, v3, 0xF);
 }
 
 void CeresDoor_Func_1(uint16 k) {  // 0xA6F739
@@ -5219,7 +5219,7 @@ void CeresDoor_Func_6(uint16 k) {  // 0xA6F7DC
       uint16 v6 = 3;
       if (NextRandom() < 0x4000u)
         v6 = 12;
-      SpawnEnemyProjectileWithRoomGfx(0xE509u, v6);
+      SpawnEnemyProjectileWithRoomGfx(0xE509, v6);
       QueueSfx2_Max6(0x25u);
     }
   }
@@ -5235,7 +5235,7 @@ void CeresDoor_Func_7(void) {  // 0xA6F850
 }
 
 void CeresDoor_Func_8(void) {  // 0xA6F8F1
-  QueueMode7Transfers(0xA6u, g_off_A6F900[(uint8)(nmi_frame_counter_word & 2) >> 1]);
+  QueueMode7Transfers(0xA6, g_off_A6F900[(uint8)(nmi_frame_counter_word & 2) >> 1]);
 }
 
 void Zebetites_Init(void) {  // 0xA6FB72
@@ -5348,11 +5348,11 @@ void Zebetites_Func_7(uint16 j, uint8 a) {  // 0xA6FCCB
 }
 
 void Zebetites_Func_8(void) {  // 0xA6FCD9
-  SpawnEnemy(0xA6u, addr_stru_A6FCE1);
+  SpawnEnemy(0xA6, addr_stru_A6FCE1);
 }
 
 uint16 Zebetites_Func_9(void) {  // 0xA6FCF1
-  return SpawnEnemy(0xA6u, addr_stru_A6FCF9);
+  return SpawnEnemy(0xA6, addr_stru_A6FCF9);
 }
 
 void Zebetites_Func_5(void) {  // 0xA6FD09
@@ -5384,7 +5384,7 @@ void Zebetites_Func_4(void) {  // 0xA6FD5E
     Enemy_Zebetites *E = Get_Zebetites(0);
     uint16 v1 = ((uint8)E->zebet_var_C + 1) & 7;
     E->zebet_var_C = v1;
-    WriteColorsToPalette(0x158u, 0xa6, 4 * v1 - 0x279, 2u);
+    WriteColorsToPalette(0x158, 0xa6, 4 * v1 - 0x279, 2u);
   }
 }
 

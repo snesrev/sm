@@ -334,7 +334,7 @@ void InitializeSpecialEffectsForNewRoom(void) {  // 0x8882C1
   debug_disable_minimap = 0;
   for (int i = 32; i != 0x80; i += 16) {
     WriteReg((SnesRegs)(i + 17152), 0);
-    WriteReg((SnesRegs)(i + 17153), 0x13u);
+    WriteReg((SnesRegs)(i + 17153), 0x13);
     WriteReg((SnesRegs)(i + 17154), 0);
     WriteReg((SnesRegs)(i + 17155), 0);
     WriteReg((SnesRegs)(i + 17156), 0);
@@ -382,7 +382,7 @@ void InitializeSpecialEffectsForNewRoom(void) {  // 0x8882C1
   pause_hook.addr = FUNC16(PauseHook_Empty);
   unpause_hook.addr = FUNC16(PauseHook_Empty);
   WriteReg(WMADDL, 0xF0);
-  WriteReg(WMADDM, 0xFFu);
+  WriteReg(WMADDM, 0xFF);
   WriteReg(WMADDH, 1u);
   reg_HDMAEN = 0;
   reg_COLDATA[0] = 32;
@@ -995,7 +995,7 @@ void HdmaobjPreInstr_XrayFunc5_DeactivateBeam(uint16 k) {  // 0x888A08
     R0_.bank = 126;
     R0_.addr = ADDR16_OF_RAM(*hdma_table_1);
     for (int i = 510; i >= 0; i -= 2)
-      IndirWriteWord(&R0_, i, 0xFFu);
+      IndirWriteWord(&R0_, i, 0xFF);
     if (samus_auto_cancel_hud_item_index) {
       hud_item_index = 0;
       samus_auto_cancel_hud_item_index = 0;
@@ -2195,7 +2195,7 @@ void HdmaobjPreInstr_LavaAcidBG2YScroll(uint16 k) {  // 0x88B4D5
 }
 
 void Handle_LavaAcidBG2YScroll_Func1(uint16 v0) {  // 0x88B51D
-  WriteReg((SnesRegs)(*((uint8 *)hdma_object_bank_slot + v0) + 17153), 0x10u);
+  WriteReg((SnesRegs)(*((uint8 *)hdma_object_bank_slot + v0) + 17153), 0x10);
   uint8 v1 = 30;
   uint16 v2 = reg_BG2VOFS & 0x1FF;
   do {
@@ -2205,7 +2205,7 @@ void Handle_LavaAcidBG2YScroll_Func1(uint16 v0) {  // 0x88B51D
 }
 #define g_word_88B589 ((uint16*)RomPtr(0x88b589))
 void Handle_LavaAcidBG2YScroll_Func2(uint16 v0) {  // 0x88B53B
-  WriteReg((SnesRegs)(*((uint8 *)hdma_object_bank_slot + v0) + 17153), 0xFu);
+  WriteReg((SnesRegs)(*((uint8 *)hdma_object_bank_slot + v0) + 17153), 0xF);
   int v1 = v0 >> 1;
   if (hdma_object_B[v1]-- == 1) {
     hdma_object_B[v1] = 6;
@@ -2223,7 +2223,7 @@ void Handle_LavaAcidBG2YScroll_Func2(uint16 v0) {  // 0x88B53B
 }
 #define g_word_88B60A ((uint16*)RomPtr(0x88b60a))
 void Handle_LavaAcidBG2YScroll_Func3(uint16 v0) {  // 0x88B5A9
-  WriteReg((SnesRegs)(*((uint8 *)hdma_object_bank_slot + v0) + BBAD0), 0x10u);
+  WriteReg((SnesRegs)(*((uint8 *)hdma_object_bank_slot + v0) + BBAD0), 0x10);
   int v1 = v0 >> 1;
   if (hdma_object_B[v1]-- == 1) {
     hdma_object_B[v1] = 4;
@@ -2656,7 +2656,7 @@ void HdmaobjPreInstr_HazeColorMathSubscreen_CeresRidleyAlive(uint16 k) {  // 0x8
 }
 
 void HdmaobjPreInstr_HazeColorMathSubscreen_CeresRidleyDead(uint16 k) {  // 0x88DE15
-  sub_88DE18(k, 0x20u);
+  sub_88DE18(k, 0x20);
 }
 
 void sub_88DE18(uint16 k, uint16 a) {  // 0x88DE18

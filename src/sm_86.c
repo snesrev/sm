@@ -1538,7 +1538,7 @@ void EprojPreInstr_CrocomireSpikeWallPieces(uint16 k) {
     int v12 = k >> 1;
     R18_ = enemy_projectile_x_pos[v12];
     R20_ = enemy_projectile_y_pos[v12];
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15u);
+    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
     QueueSfx2_Max6(0x25u);
   }
 }
@@ -1706,7 +1706,7 @@ void EprojInit_9688(uint16 j) {  // 0x8694A0
   int v2 = j >> 1;
   enemy_projectile_x_vel[v2] = 0;
   enemy_projectile_y_vel[v2] = -3584;
-  EprojInit_Common(j, v1, 0x9688u);
+  EprojInit_Common(j, v1, 0x9688);
 }
 
 void EprojInit_9696(uint16 j) {  // 0x8694B4
@@ -1730,7 +1730,7 @@ void EprojInit_967A(uint16 j) {  // 0x8694DC
   int v2 = j >> 1;
   enemy_projectile_x_vel[v2] = -3584;
   enemy_projectile_y_vel[v2] = 0;
-  EprojInit_Common(j, v1, 0x967Au);
+  EprojInit_Common(j, v1, 0x967A);
 }
 
 void EprojInit_Common(uint16 j, uint16 k, uint16 a) {  // 0x8694EE
@@ -1907,7 +1907,7 @@ void EprojInit_PhantoonStartingFireballs(uint16 j) {  // 0x86993A
   enemy_projectile_y_vel[v1] = 0;
   uint16 v2 = byte_869979[enemy_projectile_init_param];
   enemy_projectile_E[v1] = v2;
-  Eproj_PhantomFireballs_Func1(v2, 0x30u);
+  Eproj_PhantomFireballs_Func1(v2, 0x30);
   enemy_projectile_x_pos[v1] = R20_ + enemy_data[0].x_pos;
   enemy_projectile_y_pos[v1] = R22_ + enemy_data[0].y_pos + 16;
 }
@@ -3625,7 +3625,7 @@ void EprojPreInstr_MotherBrainRoomTurrets(uint16 k) {  // 0x86BFDF
     int v5 = k >> 1;
     R18_ = enemy_projectile_x_pos[v5];
     R20_ = enemy_projectile_y_pos[v5];
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0xCu);
+    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0xC);
   } else {
     int v1 = k >> 1;
     bool v2 = enemy_projectile_x_vel[v1]-- == 1;
@@ -4054,7 +4054,7 @@ void EprojInit_MotherBrainDeathBeemFired(uint16 j) {  // 0x86C684
     enemy_projectile_id[v1] = 0;
     R18_ = enemy_projectile_x_pos[v1];
     R20_ = enemy_projectile_y_pos[v1];
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x1Du);
+    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x1D);
     QueueSfx3_Max6(0x13u);
     earthquake_timer = 10;
     earthquake_type = 5;
@@ -4265,7 +4265,7 @@ void MotherBrainTubeFallingFunc_Falling(uint16 k) {  // 0x86CC08
     enemy_projectile_id[v1] = 0;
     R18_ = enemy_projectile_x_pos[v1];
     R20_ = enemy_projectile_y_pos[v1];
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0xCu);
+    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0xC);
   }
 }
 

@@ -1834,7 +1834,7 @@ void GunshipTop_18(uint16 k) {  // 0xA2AC1B
       SpawnEnemyProjectileWithRoomGfx(addr_stru_86A379, 4u);
       SpawnEnemyProjectileWithRoomGfx(addr_stru_86A379, 6u);
       SpawnEnemyProjectileWithRoomGfx(addr_stru_86A379, 8u);
-      SpawnEnemyProjectileWithRoomGfx(addr_stru_86A379, 0xAu);
+      SpawnEnemyProjectileWithRoomGfx(addr_stru_86A379, 0xA);
     }
   } else {
     E0->gtp_var_F = FUNC16(GunshipTop_19);
@@ -1947,7 +1947,7 @@ void Flies_4(uint16 k) {  // 0xA2B14E
   uint16 flies_var_A = E->flies_var_A;
   if (flies_var_A) {
     E->flies_var_A = flies_var_A - 1;
-  } else if (!(CompareDistToSamus_X(k, 0x70u) & 1)) {
+  } else if (!(CompareDistToSamus_X(k, 0x70) & 1)) {
     Flies_3(k);
     return;
   }
@@ -1963,7 +1963,7 @@ void Flies_5(uint16 k) {  // 0xA2B17C
   uint16 flies_var_A = E->flies_var_A;
   if (flies_var_A) {
     E->flies_var_A = flies_var_A - 1;
-  } else if (!(CompareDistToSamus_X(k, 0x70u) & 1)) {
+  } else if (!(CompareDistToSamus_X(k, 0x70) & 1)) {
     Flies_3(k);
     return;
   }
@@ -2064,8 +2064,8 @@ void LavaquakeRocks_Main(void) {  // 0xA2B58F
 }
 
 void LavaquakeRocks_1(void) {  // 0xA2B596
-  if (IsSamusWithinEnemy_X(cur_enemy_index, 0x40u)) {
-    if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x40u))
+  if (IsSamusWithinEnemy_X(cur_enemy_index, 0x40)) {
+    if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x40))
       Get_LavaquakeRocks(cur_enemy_index)->lrs_var_A = FUNC16(LavaquakeRocks_2);
   }
 }
@@ -2383,7 +2383,7 @@ void Rinka_B960(uint16 k) {  // 0xA2B960
       E->base.properties |= kEnemyProps_Tangible | kEnemyProps_Invisible;
       R18_ = E->base.x_pos;
       R20_ = E->base.y_pos;
-      SpawnEnemyProjectileWithRoomGfx(0xE509u, 3u);
+      SpawnEnemyProjectileWithRoomGfx(0xE509, 3u);
       E->rinka_var_A = FUNC16(Rinka_4);
       E->rinka_var_F = 1;
     } else {
@@ -2453,7 +2453,7 @@ void Rio_Main(void) {  // 0xA2BBE3
 }
 
 void Rio_1(uint16 k) {  // 0xA2BBED
-  if (!(CompareDistToSamus_X(k, 0xA0u) & 1)) {
+  if (!(CompareDistToSamus_X(k, 0xA0) & 1)) {
     Enemy_Rio *E = Get_Rio(k);
     E->rio_var_C = g_word_A2BBBB;
     E->rio_var_D = g_word_A2BBBF;
@@ -2788,7 +2788,7 @@ void NorfairRio_Func_1(uint16 k) {  // 0xA2C281
 
 void NorfairRio_Func_2(uint16 k) {  // 0xA2C2E7
   Enemy_NorfairRio *E = Get_NorfairRio(k);
-  if ((random_number & 0x101) != 0 && !(CompareDistToSamus_X(k, 0xC0u) & 1)) {
+  if ((random_number & 0x101) != 0 && !(CompareDistToSamus_X(k, 0xC0) & 1)) {
     E->nro_var_A = g_word_A2C1C1[(uint16)((random_number >> 1) & 2) >> 1];
     E->nro_var_B = g_word_A2C1C5;
     if ((int16)(samus_x_pos - E->base.x_pos) < 0)
@@ -2940,7 +2940,7 @@ void LowerNorfairRio_Func_1(uint16 k) {  // 0xA2C72E
 
 void LowerNorfairRio_Func_2(uint16 k) {  // 0xA2C771
   Enemy_NorfairRio *E = Get_NorfairRio(k);
-  if ((random_number & 0x101) != 0 && !(CompareDistToSamus_X(k, 0x70u) & 1)) {
+  if ((random_number & 0x101) != 0 && !(CompareDistToSamus_X(k, 0x70) & 1)) {
     E->nro_var_C = g_word_A2C6CA;
     E->nro_var_D = g_word_A2C6CE;
     if ((int16)(samus_x_pos - E->base.x_pos) < 0)
@@ -3157,7 +3157,7 @@ void MaridiaLargeSnail_Func_4(void) {  // 0xA2CDE6
       E->mlsl_var_00 = 1;
     }
     MaridiaLargeSnail_Func_10(cur_enemy_index);
-    if (IsSamusWithinEnemy_X(cur_enemy_index, 0x18u)) {
+    if (IsSamusWithinEnemy_X(cur_enemy_index, 0x18)) {
       E->mlsl_var_00 |= 2u;
       MaridiaLargeSnail_Func_10(cur_enemy_index);
       E->mlsl_var_A = FUNC16(MaridiaLargeSnail_Func_5);
@@ -3181,7 +3181,7 @@ void MaridiaLargeSnail_Func_5(void) {  // 0xA2CE2B
   if (!E->mlsl_var_0B) {
     R36 = 0;
     bool v4 = (--E->mlsl_var_C & 0x8000u) != 0;
-    if (v4 && (E->mlsl_var_C = 0, IsSamusWithinEnemy_X(cur_enemy_index, 0x20u)) && E->mlsl_var_03 && !E->mlsl_var_E) {
+    if (v4 && (E->mlsl_var_C = 0, IsSamusWithinEnemy_X(cur_enemy_index, 0x20)) && E->mlsl_var_03 && !E->mlsl_var_E) {
       E->mlsl_var_00 = 0;
       E->mlsl_var_D = 0;
       if ((GetSamusEnemyDelta_X(cur_enemy_index) & 0x8000u) != 0) {
@@ -3305,7 +3305,7 @@ void MaridiaLargeSnail_Func_11(void) {  // 0xA2CFFF
   Enemy_MaridiaLargeSnail *E = Get_MaridiaLargeSnail(cur_enemy_index);
   E->mlsl_var_04 = 0;
   E->mlsl_var_05 = 0;
-  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x20u) && IsSamusWithinEnemy_X(cur_enemy_index, 0x18u)) {
+  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x20) && IsSamusWithinEnemy_X(cur_enemy_index, 0x18)) {
     E->mlsl_var_04 = 1;
     if ((GetSamusEnemyDelta_X(cur_enemy_index) & 0x8000u) != 0)
       E->mlsl_var_05 = 1;
@@ -3392,7 +3392,7 @@ void HirisingSlowfalling_Main(void) {  // 0xA2E02E
 }
 
 void HirisingSlowfalling_Func_4(void) {  // 0xA2E035
-  if (IsSamusWithinEnemy_X(cur_enemy_index, 0x50u)) {
+  if (IsSamusWithinEnemy_X(cur_enemy_index, 0x50)) {
     Enemy_HirisingSlowfalling *E = Get_HirisingSlowfalling(cur_enemy_index);
     E->hsg_var_07 = E->hsg_parameter_2;
     E->hsg_var_A = FUNC16(HirisingSlowfalling_Func_5);
@@ -3699,7 +3699,7 @@ void LavaSeahorse_Func_3(uint16 k) {  // 0xA2E6F1
   if (E->lse_var_02) {
     E->lse_var_02 = 0;
     E->lse_var_01 = -1;
-    SpawnEnemyProjectileWithGfx(0xFFFFu, k, addr_kEproj_LavaSeahorseFireball);
+    SpawnEnemyProjectileWithGfx(0xFFFF, k, addr_kEproj_LavaSeahorseFireball);
     QueueSfx2_Max6(0x61u);
     if (E->lse_var_D-- == 1) {
       E->lse_var_00 -= 4;

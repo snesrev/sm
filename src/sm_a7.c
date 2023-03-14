@@ -1345,7 +1345,7 @@ void KraidsFoot_SecondPhaseSetup_WalkToStartPt(void) {  // 0xA7BB6E
 }
 
 void KraidsFoot_SecondPhase_Init(void) {  // 0xA7BBA4
-  Kraid_SetWalkingBackwards(0xB4u, 0x160u);
+  Kraid_SetWalkingBackwards(0xB4, 0x160);
 }
 
 void KraidsFoot_SecondPhase_WalkForward(void) {  // 0xA7BBAE
@@ -1653,7 +1653,7 @@ void UnpauseHook_Kraid_IsDead(void) {  // 0xA7C1FB
   SetupDmaTransfer(&unk_A7C21E);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x40u);
+  WriteReg(VMADDH, 0x40);
   WriteReg(VMAIN, 0x80);
   SetupDmaTransfer(&unk_A7C23E);
   WriteReg(MDMAEN, 2u);
@@ -1750,17 +1750,17 @@ void Kraid_Death_Init(void) {  // 0xA7C360
     Enemy_Kraid *E6 = Get_Kraid(0x180u);
     E6->base.properties &= ~0x4000u;
     cur_enemy_index = 384;
-    EnemyDeathAnimation(v4, 0x180u);
+    EnemyDeathAnimation(v4, 0x180);
     Enemy_Kraid *E7 = Get_Kraid(0x1C0u);
     E7->base.properties &= ~0x4000u;
     cur_enemy_index = 448;
-    EnemyDeathAnimation(v4, 0x1C0u);
+    EnemyDeathAnimation(v4, 0x1C0);
     cur_enemy_index = 128;
     EnemyDeathAnimation(v4, 0x80);
     cur_enemy_index = 192;
-    EnemyDeathAnimation(v4, 0xC0u);
+    EnemyDeathAnimation(v4, 0xC0);
     cur_enemy_index = 256;
-    EnemyDeathAnimation(v4, 0x100u);
+    EnemyDeathAnimation(v4, 0x100);
     cur_enemy_index = v7;
     static const SpawnHardcodedPlmArgs unk_A7C3F4 = { 0x05, 0x1b, 0xb7bf };
     SpawnHardcodedPlm(&unk_A7C3F4);
@@ -1905,22 +1905,22 @@ static const SpawnHardcodedPlmArgs unk_A7C6FA = { 0x08, 0x12, 0xb7af };
 static const SpawnHardcodedPlmArgs unk_A7C710 = { 0x10, 0x12, 0xb7af };
 
 void Kraid_CrumbleLeftPlatform_Left(void) {  // 0xA7C691
-  SpawnEnemyProjectileWithGfx(0x70u, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
+  SpawnEnemyProjectileWithGfx(0x70, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
   SpawnHardcodedPlm(&unk_A7C6A2);
 }
 
 void Kraid_CrumbleRightPlatform_Middle(void) {  // 0xA7C6A7
-  SpawnEnemyProjectileWithGfx(0xF0u, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
+  SpawnEnemyProjectileWithGfx(0xF0, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
   SpawnHardcodedPlm(&unk_A7C6B8);
 }
 
 void Kraid_CrumbleRightPlatform_Left(void) {  // 0xA7C6BD
-  SpawnEnemyProjectileWithGfx(0xE0u, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
+  SpawnEnemyProjectileWithGfx(0xE0, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
   SpawnHardcodedPlm(&unk_A7C6CE);
 }
 
 void Kraid_CrumbleLeftPlatform_Right(void) {  // 0xA7C6D3
-  SpawnEnemyProjectileWithGfx(0x90u, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
+  SpawnEnemyProjectileWithGfx(0x90, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
   SpawnHardcodedPlm(&unk_A7C6E4);
 }
 
@@ -1930,7 +1930,7 @@ void Kraid_CrumbleLeftPlatform_Middle(void) {  // 0xA7C6E9
 }
 
 void Kraid_CrumbleRightPlatform_Right(void) {  // 0xA7C6FF
-  SpawnEnemyProjectileWithGfx(0x100u, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
+  SpawnEnemyProjectileWithGfx(0x100, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
   SpawnHardcodedPlm(&unk_A7C710);
 }
 
@@ -3506,7 +3506,7 @@ void Etecoon_Func_6(uint16 k) {  // 0xA7EA37
   if (Etecoon_Func_3(k) & 1) {
     Enemy_Etecoon *E = Get_Etecoon(k);
     if ((E->etecoon_var_A & 0x8000u) == 0) {
-      if (IsSamusWithinEnemy_Y(k, 0x40u) && IsSamusWithinEnemy_X(k, g_word_A7E910)) {
+      if (IsSamusWithinEnemy_Y(k, 0x40) && IsSamusWithinEnemy_X(k, g_word_A7E910)) {
         uint16 v2 = DetermineDirectionOfSamusFromEnemy();
         if (sign16(v2 - 5)) {
           E->base.current_instruction = addr_kEtecoon_Ilist_E81E;
@@ -3790,7 +3790,7 @@ void Etecoon_Func_24(uint16 k) {  // 0xA7EE3E
   bool v2 = E->etecoon_var_E == 1;
   bool v3 = (--E->etecoon_var_E & 0x8000u) != 0;
   if (v2 || v3) {
-    if (IsSamusWithinEnemy_Y(k, 0x40u) && IsSamusWithinEnemy_X(k, 0x30u)) {
+    if (IsSamusWithinEnemy_Y(k, 0x40) && IsSamusWithinEnemy_X(k, 0x30)) {
       E->base.current_instruction = addr_stru_A7E880;
       E->etecoon_var_F = FUNC16(Etecoon_Func_18);
     } else {
@@ -3879,7 +3879,7 @@ void Dachora_Func_2(uint16 k) {  // 0xA7F570
   R20_ = 1;
   R18_ = 0;
   Enemy_MoveDown(k);
-  if (IsSamusWithinEnemy_Y(k, 0x40u) && IsSamusWithinEnemy_X(k, g_word_A7F4C9)) {
+  if (IsSamusWithinEnemy_Y(k, 0x40) && IsSamusWithinEnemy_X(k, g_word_A7F4C9)) {
     Enemy_Dachora *E = Get_Dachora(k);
     if (E->dachor_parameter_1)
       E->base.current_instruction = addr_kDachora_Ilist_F48B;

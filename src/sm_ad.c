@@ -419,9 +419,9 @@ void MotherBrain_HealthBasedPaletteHandling(void) {  // 0xADE3D5
           v0 = 6;
       }
     }
-    WriteColorsToPalette(0x82u, 0xad, kMotherBrain_HealthBasedPalettes_Brain[v0 >> 1], 0xFu);
-    WriteColorsToPalette(0x122u, 0xad, kMotherBrain_HealthBasedPalettes_Brain[v0 >> 1], 0xFu);
-    WriteColorsToPalette(0x162u, 0xad, kMotherBrain_HealthBasedPalettes_BackLeg[v0 >> 1], 0xFu);
+    WriteColorsToPalette(0x82, 0xad, kMotherBrain_HealthBasedPalettes_Brain[v0 >> 1], 0xF);
+    WriteColorsToPalette(0x122, 0xad, kMotherBrain_HealthBasedPalettes_Brain[v0 >> 1], 0xF);
+    WriteColorsToPalette(0x162, 0xad, kMotherBrain_HealthBasedPalettes_BackLeg[v0 >> 1], 0xF);
   }
 }
 
@@ -430,9 +430,9 @@ uint8 MotherBrain_FadePalToBlack(uint16 a) {  // 0xADE9B4
   if (!kMotherBrain_FadePalToBlack[v1])
     return 1;
   uint16 j = kMotherBrain_FadePalToBlack[v1];
-  WriteColorsToPalette(0x82u, 0xad, j, 14);
-  WriteColorsToPalette(0x122u, 0xad, j, 14);
-  WriteColorsToPalette(0x162u, 0xad, j + 28, 14);
+  WriteColorsToPalette(0x82, 0xad, j, 14);
+  WriteColorsToPalette(0x122, 0xad, j, 14);
+  WriteColorsToPalette(0x162, 0xad, j + 28, 14);
   return 0;
 }
 
@@ -453,7 +453,7 @@ uint8 MotherBrain_FadeFromGray_FakeDeath(uint16 a) {  // 0xADEEEA
 }
 
 uint8 MotherBrain_EEF6(uint16 a) {  // 0xADEEF6
-  WriteColorsToPalette(0x122u, 0xad, a, 3u);
+  WriteColorsToPalette(0x122, 0xad, a, 3u);
   return 0;
 }
 
@@ -464,9 +464,9 @@ uint8 MotherBrain_FadeFromGray_Drained(uint16 a) {  // 0xADEF0D
   if (!kMotherBrain_TransitionToFromGrey_Decr[v1])
     return 1;
   uint16 j = kMotherBrain_TransitionToFromGrey_Decr[v1];
-  WriteColorsToPalette(0x82u, 0xad, j, 13);
-  WriteColorsToPalette(0x122u, 0xad, j, 13);
-  WriteColorsToPalette(0x168u, 0xad, j + 26, 5);
+  WriteColorsToPalette(0x82, 0xad, j, 13);
+  WriteColorsToPalette(0x122, 0xad, j, 13);
+  WriteColorsToPalette(0x168, 0xad, j + 26, 5);
   v3 = *(uint16 *)RomPtr_AD(j + 36);
   *(uint16 *)&g_ram[0x17C] = v3;
   return 0;
@@ -479,9 +479,9 @@ uint8 MotherBrain_FadeToGray_Drained(uint16 a) {  // 0xADEF4A
   if (!kMotherBrain_FadeToGray_Drained[v1])
     return 1;
   uint16 j = kMotherBrain_FadeToGray_Drained[v1];
-  WriteColorsToPalette(0x82u, 0xad, j, 15);
-  WriteColorsToPalette(0x122u, 0xad, j, 15);
-  WriteColorsToPalette(0x168u, 0xad, j + 30, 5);
+  WriteColorsToPalette(0x82, 0xad, j, 15);
+  WriteColorsToPalette(0x122, 0xad, j, 15);
+  WriteColorsToPalette(0x168, 0xad, j + 30, 5);
   v3 = *(uint16 *)RomPtr_AD(j + 40);
   *(uint16 *)&g_ram[0x17C] = v3;
   return 0;
@@ -491,13 +491,13 @@ uint8 MotherBrain_FadeToGray_RealDeath(uint16 a) {  // 0xADF0E9
   int v1 = a;
   if (!kMotherBrain_FadeToGray_RealDeath[v1])
     return 1;
-  WriteColorsToPalette(0x1E2u, 0xad, kMotherBrain_FadeToGray_RealDeath[v1], 0xFu);
+  WriteColorsToPalette(0x1E2, 0xad, kMotherBrain_FadeToGray_RealDeath[v1], 0xF);
   return 0;
 }
 
 void TurnOffLightsForShitroidDeath(void) {  // 0xADF209
-  WriteColorsToPalette(0x62u, 0xad, addr_kTurnOffLightsForShitroidDeath, 14);
-  WriteColorsToPalette(0xA2u, 0xad, addr_kTurnOffLightsForShitroidDeath, 14);
+  WriteColorsToPalette(0x62, 0xad, addr_kTurnOffLightsForShitroidDeath, 14);
+  WriteColorsToPalette(0xA2, 0xad, addr_kTurnOffLightsForShitroidDeath, 14);
 }
 
 uint8 MotherBrain_Phase3_TurnLightsBackOn(uint16 a) {  // 0xADF24B
@@ -505,8 +505,8 @@ uint8 MotherBrain_Phase3_TurnLightsBackOn(uint16 a) {  // 0xADF24B
   if (!kMotherBrain_Phase3_TurnLightsBackOn[v1])
     return 1;
   uint16 v3 = kMotherBrain_Phase3_TurnLightsBackOn[v1];
-  WriteColorsToPalette(0x62u, 0xad, v3, 14);
-  WriteColorsToPalette(0xA2u, 0xad, v3 + 28, 14);
+  WriteColorsToPalette(0x62, 0xad, v3, 14);
+  WriteColorsToPalette(0xA2, 0xad, v3 + 28, 14);
   return 0;
 }
 

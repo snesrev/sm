@@ -3586,12 +3586,12 @@ uint16 EnemyWithNormalSpritesIsOffScreen(void) {  // 0xA0ADE7
 }
 
 uint16 DetermineDirectionOfSamusFromEnemy(void) {  // 0xA0AE29
-  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x20u)) {
+  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x20)) {
     uint16 v1 = 2;
     if ((GetSamusEnemyDelta_X(cur_enemy_index) & 0x8000u) != 0)
       return 7;
     return v1;
-  } else if (IsSamusWithinEnemy_X(cur_enemy_index, 0x20u)) {
+  } else if (IsSamusWithinEnemy_X(cur_enemy_index, 0x20)) {
     uint16 v3 = 4;
     if ((GetSamusEnemyDelta_Y(cur_enemy_index) & 0x8000u) != 0)
       return 0;

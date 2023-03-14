@@ -716,19 +716,19 @@ void LoadInitialMenuTiles(void) {  // 0x818DDB
   SetupDmaTransfer(&unk_818DF1);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x30u);
+  WriteReg(VMADDH, 0x30);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_818E11 = { 1, 1, 0x18, LONGPTR(0xb68000), 0x2000 };
   SetupDmaTransfer(&unk_818E11);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x60u);
+  WriteReg(VMADDH, 0x60);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_818E31 = { 1, 1, 0x18, LONGPTR(0xb6c000), 0x2000 };
   SetupDmaTransfer(&unk_818E31);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x40u);
+  WriteReg(VMADDH, 0x40);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_818E51 = { 1, 1, 0x18, LONGPTR(0x8ed600), 0x0600 };
   SetupDmaTransfer(&unk_818E51);
@@ -814,7 +814,7 @@ void RestorePalettesAndIoAfterDebugGameover(void) {  // 0x81905B
 
 void GameOverMenu_5_Continue(void) {  // 0x81907E
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x40u);
+  WriteReg(VMADDH, 0x40);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_819093 = { 1, 1, 0x18, LONGPTR(0x9ab200), 0x2000 };
   SetupDmaTransfer(&unk_819093);
@@ -918,11 +918,11 @@ void GameOverMenu_1_Init(void) {  // 0x8191A4
   v2->vram_dst = (reg_BG1SC & 0xFC) << 8;
   vram_write_queue_tail = v1 + 7;
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x156u, addr_kMenuTilemap_GameOver);
-  LoadMenuTilemap(0x38Au, addr_kMenuTilemap_FindMetroidLarva);
-  LoadMenuTilemap(0x414u, addr_kMenuTilemap_TryAgain);
-  LoadMenuTilemap(0x4CEu, addr_kMenuTilemap_YesReturnToGame);
-  LoadMenuTilemap(0x5CEu, addr_kMenuTilemap_NoGoToTitle);
+  LoadMenuTilemap(0x156, addr_kMenuTilemap_GameOver);
+  LoadMenuTilemap(0x38A, addr_kMenuTilemap_FindMetroidLarva);
+  LoadMenuTilemap(0x414, addr_kMenuTilemap_TryAgain);
+  LoadMenuTilemap(0x4CE, addr_kMenuTilemap_YesReturnToGame);
+  LoadMenuTilemap(0x5CE, addr_kMenuTilemap_NoGoToTitle);
   enemy_data[0].current_instruction = 0;
   enemy_data[0].instruction_timer = 0;
   HandleGameOverBabyMetroid();
@@ -1094,8 +1094,8 @@ void FileSelectMenu_6_FileCopyInit(void) {  // 0x819561
 void FileSelectMenu_Func1(void) {  // 0x819566
   ClearMenuTilemap();
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x52u, addr_kMenuTilemap_DataCopyMode);
-  LoadMenuTilemap(0x150u, addr_kMenuTilemap_CopyWhichData);
+  LoadMenuTilemap(0x52, addr_kMenuTilemap_DataCopyMode);
+  LoadMenuTilemap(0x150, addr_kMenuTilemap_CopyWhichData);
   LoadMenuExitTilemap();
   DrawFileCopySaveFileInfo();
   SetInitialFileCopyMenuSelection();
@@ -1126,7 +1126,7 @@ void ClearMenuTilemap(void) {  // 0x8195A6
 }
 
 void LoadMenuExitTilemap(void) {  // 0x8195B5
-  LoadMenuTilemap(0x688u, addr_kMenuTilemap_Exit);
+  LoadMenuTilemap(0x688, addr_kMenuTilemap_Exit);
 }
 
 void DrawFileCopySaveFileInfo(void) {  // 0x8195BE
@@ -1149,24 +1149,24 @@ void DrawFileCopySaveFileInfo(void) {  // 0x8195BE
 }
 
 void DrawFileCopySaveSlotAInfo(void) {  // 0x81960F
-  DrawFileSelectionHealth((nonempty_save_slots & 1) == 0, 0x218u);
-  DrawFileSelectionTime((nonempty_save_slots & 1) == 0, 0x272u);
-  LoadMenuTilemap(0x234u, addr_kMenuTilemap_TIME);
-  LoadMenuTilemap(0x208u, addr_kMenuTilemap_SamusA);
+  DrawFileSelectionHealth((nonempty_save_slots & 1) == 0, 0x218);
+  DrawFileSelectionTime((nonempty_save_slots & 1) == 0, 0x272);
+  LoadMenuTilemap(0x234, addr_kMenuTilemap_TIME);
+  LoadMenuTilemap(0x208, addr_kMenuTilemap_SamusA);
 }
 
 void DrawFileCopySaveSlotBInfo(void) {  // 0x81963F
-  DrawFileSelectionHealth(~(uint8)nonempty_save_slots & 2, 0x318u);
-  DrawFileSelectionTime(~(uint8)nonempty_save_slots & 2, 0x372u);
-  LoadMenuTilemap(0x334u, addr_kMenuTilemap_TIME);
-  LoadMenuTilemap(0x308u, addr_kMenuTilemap_SamusB);
+  DrawFileSelectionHealth(~(uint8)nonempty_save_slots & 2, 0x318);
+  DrawFileSelectionTime(~(uint8)nonempty_save_slots & 2, 0x372);
+  LoadMenuTilemap(0x334, addr_kMenuTilemap_TIME);
+  LoadMenuTilemap(0x308, addr_kMenuTilemap_SamusB);
 }
 
 void DrawFileCopySaveSlotCInfo(void) {  // 0x81966F
-  DrawFileSelectionHealth(~(uint8)nonempty_save_slots & 4, 0x418u);
-  DrawFileSelectionTime(~(uint8)nonempty_save_slots & 4, 0x472u);
-  LoadMenuTilemap(0x434u, addr_kMenuTilemap_TIME);
-  LoadMenuTilemap(0x408u, addr_kMenuTilemap_SamusC);
+  DrawFileSelectionHealth(~(uint8)nonempty_save_slots & 4, 0x418);
+  DrawFileSelectionTime(~(uint8)nonempty_save_slots & 4, 0x472);
+  LoadMenuTilemap(0x434, addr_kMenuTilemap_TIME);
+  LoadMenuTilemap(0x408, addr_kMenuTilemap_SamusC);
 }
 
 void QueueTransferOfMenuTilemapToVramBG1(void) {  // 0x81969F
@@ -1247,9 +1247,9 @@ void FileSelectMenu_9_InitializeSelectDest(void) {  // 0x81977A
 void DrawFileCopySelectDestinationSaveFileInfo(void) {  // 0x819799
   ClearMenuTilemap();
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x52u, addr_kMenuTilemap_DataCopyMode);
+  LoadMenuTilemap(0x52, addr_kMenuTilemap_DataCopyMode);
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x148u, addr_kMenuTilemap_CopySamusToWhere);
+  LoadMenuTilemap(0x148, addr_kMenuTilemap_CopySamusToWhere);
   ram3000.pause_menu_map_tilemap[944] = enemy_projectile_id[16] + 8298;
   LoadMenuExitTilemap();
   LoadFromSram_(0);
@@ -1322,7 +1322,7 @@ LABEL_8:
 void FileSelectMenu_11_InitializeConfirm(void) {  // 0x8198B7
   DrawBorderAroundDataCopyMode();
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x144u, addr_kMenuTilemap_CopySamusToSamus);
+  LoadMenuTilemap(0x144, addr_kMenuTilemap_CopySamusToSamus);
   ram3000.pause_menu_map_tilemap[942] = enemy_projectile_id[16] + 8298;
   ram3000.pause_menu_map_tilemap[955] = enemy_projectile_id[17] + 8298;
   DrawFileCopyClearConfirmation();
@@ -1333,16 +1333,16 @@ void FileSelectMenu_11_InitializeConfirm(void) {  // 0x8198B7
 
 void DrawFileCopyClearConfirmation(void) {  // 0x8198ED
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x514u, addr_kMenuTilemap_IsThisOk);
+  LoadMenuTilemap(0x514, addr_kMenuTilemap_IsThisOk);
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x59Cu, addr_kMenuTilemap_Yes);
+  LoadMenuTilemap(0x59C, addr_kMenuTilemap_Yes);
   int v0 = 832;
   do {
     ram3000.pause_menu_map_tilemap[v0 + 768] = 15;
     ++v0;
   } while ((int16)(v0 * 2 - 1728) < 0);
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x65Cu, addr_kMenuTilemap_No);
+  LoadMenuTilemap(0x65C, addr_kMenuTilemap_No);
   DrawFileCopyConfirmationSaveFileInfo();
 }
 
@@ -1453,7 +1453,7 @@ void FileSelectMenu_13_FileCopyDoIt(void) {  // 0x819A2C
     v7 += 2;
   } while ((int16)(v7 - 22) < 0);
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x510u, addr_kMenuTilemap_CopyCompleted);
+  LoadMenuTilemap(0x510, addr_kMenuTilemap_CopyCompleted);
   DrawFileCopyConfirmationSaveFileInfo();
   RtlWriteSram();
 }
@@ -1485,8 +1485,8 @@ void FileSelectMenu_20_FileClearInit(void) {  // 0x819B33
 void InitFileSelectMenuFileClear(void) {  // 0x819B3C
   ClearMenuTilemap();
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x50u, addr_kMenuTilemap_DataClearMode);
-  LoadMenuTilemap(0x140u, addr_kMenuTilemap_ClearWhichData);
+  LoadMenuTilemap(0x50, addr_kMenuTilemap_DataClearMode);
+  LoadMenuTilemap(0x140, addr_kMenuTilemap_ClearWhichData);
   LoadMenuExitTilemap();
   DrawFileCopySaveFileInfo();
   enemy_projectile_id[16] = 0;
@@ -1547,7 +1547,7 @@ void SetFileClearMenuMissilePos(void) {  // 0x819BEF
 void FileSelectMenu_23_FileClearInitConfirm(void) {  // 0x819C0B
   DrawBorderAroundDataClearMode();
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x140u, addr_kMenuTilemap_ClearSamusA);
+  LoadMenuTilemap(0x140, addr_kMenuTilemap_ClearSamusA);
   ram3000.pause_menu_map_tilemap[949] = enemy_projectile_id[16] + 8298;
   enemy_projectile_id[17] = 3;
   DrawFileCopyClearConfirmation();
@@ -1612,7 +1612,7 @@ void FileSelectMenu_25_FileClearDoClear(void) {  // 0x819C9E
   } while ((int16)(v3 * 2 - 1856) < 0);
   nonempty_save_slots &= kBitShl_Not[enemy_projectile_id[16]];
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x500u, addr_kMenuTilemap_DataCleared);
+  LoadMenuTilemap(0x500, addr_kMenuTilemap_DataCleared);
   DrawFileCopyConfirmationSaveFileInfo();
   RtlWriteSram();
 }
@@ -1762,36 +1762,36 @@ void FileSelectMenu_16(void) {  // 0x819EF3
     *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[768] + (uint16)i) = 15;
   nonempty_save_slots = -1;
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x56u, addr_kMenuTilemap_SamusData);
-  LoadMenuTilemap(0x146u, addr_kMenuTilemap_SamusA);
+  LoadMenuTilemap(0x56, addr_kMenuTilemap_SamusData);
+  LoadMenuTilemap(0x146, addr_kMenuTilemap_SamusA);
   uint8 c = LoadFromSram_(0);
   nonempty_save_slots = (nonempty_save_slots >> 1) | (c << 15);
-  DrawFileSelectionHealth(nonempty_save_slots & 0x8000, 0x15Cu);
-  DrawFileSelectionTime(nonempty_save_slots & 0x8000, 0x1B4u);
-  LoadMenuTilemap(0x176u, addr_kMenuTilemap_TIME);
+  DrawFileSelectionHealth(nonempty_save_slots & 0x8000, 0x15C);
+  DrawFileSelectionTime(nonempty_save_slots & 0x8000, 0x1B4);
+  LoadMenuTilemap(0x176, addr_kMenuTilemap_TIME);
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x286u, addr_kMenuTilemap_SamusB);
+  LoadMenuTilemap(0x286, addr_kMenuTilemap_SamusB);
   c = LoadFromSram_(1u);
   nonempty_save_slots = (nonempty_save_slots >> 1) | (c << 15);
-  DrawFileSelectionHealth(nonempty_save_slots & 0x8000, 0x29Cu);
-  DrawFileSelectionTime(nonempty_save_slots & 0x8000, 0x2F4u);
-  LoadMenuTilemap(0x2B6u, addr_kMenuTilemap_TIME);
+  DrawFileSelectionHealth(nonempty_save_slots & 0x8000, 0x29C);
+  DrawFileSelectionTime(nonempty_save_slots & 0x8000, 0x2F4);
+  LoadMenuTilemap(0x2B6, addr_kMenuTilemap_TIME);
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x3C6u, addr_kMenuTilemap_SamusC);
+  LoadMenuTilemap(0x3C6, addr_kMenuTilemap_SamusC);
   c = LoadFromSram_(2u);
   nonempty_save_slots = (nonempty_save_slots >> 1) | (c << 15);
-  DrawFileSelectionHealth(nonempty_save_slots & 0x8000, 0x3DCu);
-  DrawFileSelectionTime(nonempty_save_slots & 0x8000, 0x434u);
-  LoadMenuTilemap(0x3F6u, addr_kMenuTilemap_TIME);
+  DrawFileSelectionHealth(nonempty_save_slots & 0x8000, 0x3DC);
+  DrawFileSelectionTime(nonempty_save_slots & 0x8000, 0x434);
+  LoadMenuTilemap(0x3F6, addr_kMenuTilemap_TIME);
   nonempty_save_slots = swap16(~nonempty_save_slots) >> 5;
   if (nonempty_save_slots) {
     enemy_data[0].palette_index = 0;
-    LoadMenuTilemap(0x508u, addr_kMenuTilemap_DataCopy);
+    LoadMenuTilemap(0x508, addr_kMenuTilemap_DataCopy);
     enemy_data[0].palette_index = 0;
-    LoadMenuTilemap(0x5C8u, addr_kMenuTilemap_DataClear);
+    LoadMenuTilemap(0x5C8, addr_kMenuTilemap_DataClear);
   }
   enemy_data[0].palette_index = 0;
-  LoadMenuTilemap(0x688u, addr_kMenuTilemap_Exit);
+  LoadMenuTilemap(0x688, addr_kMenuTilemap_Exit);
   QueueTransferOfMenuTilemapToVramBG1();
   enemy_projectile_enable_flag = 1;
   enemy_projectile_unk198F = 0;
@@ -2014,7 +2014,7 @@ void FileSelectMap_1(void) {  // 0x81A37C
   int16 v2;
 
 
-  if (AdvanceGradualColorChangeOfPalette(0, 0x40u)) {
+  if (AdvanceGradualColorChangeOfPalette(0, 0x40)) {
     reg_BG1VOFS = 0;
     reg_BG1HOFS = 0;
     reg_BG2VOFS = 0;
@@ -2128,13 +2128,13 @@ void FileSelectMap_4_SetupExpandingSquareTransition(void) {  // 0x81A5B3
   reg_CGWSEL = 2;
   WriteReg(CGWSEL, 2u);
   reg_CGADSUB = 37;
-  WriteReg(CGADSUB, 0x25u);
+  WriteReg(CGADSUB, 0x25);
   reg_COLDATA[2] = 0x80;
   reg_COLDATA[1] = 64;
   reg_COLDATA[0] = 32;
   SetupInitialExpandingSquareHDMA();
   reg_HDMAEN = 12;
-  WriteReg(HDMAEN, 0xCu);
+  WriteReg(HDMAEN, 0xC);
   ConfigureWindow1ForExpandingSquare();
   hdma_objects_enable_flag = 0;
   LOBYTE(menu_index) = menu_index + 1;
@@ -2142,15 +2142,15 @@ void FileSelectMap_4_SetupExpandingSquareTransition(void) {  // 0x81A5B3
 
 void ConfigureWindow1ForExpandingSquare(void) {  // 0x81A5F6
   reg_TM = 19;
-  WriteReg(TM, 0x13u);
+  WriteReg(TM, 0x13);
   reg_TMW = 19;
-  WriteReg(TMW, 0x13u);
+  WriteReg(TMW, 0x13);
   reg_W12SEL = 35;
-  WriteReg(W12SEL, 0x23u);
+  WriteReg(W12SEL, 0x23);
   reg_W34SEL = 3;
   WriteReg(W34SEL, 3u);
   reg_WOBJSEL = 35;
-  WriteReg(WOBJSEL, 0x23u);
+  WriteReg(WOBJSEL, 0x23);
 }
 
 void SetupInitialExpandingSquareHDMA(void) {  // 0x81A61C
@@ -2170,12 +2170,12 @@ void SetupInitialExpandingSquareHDMA(void) {  // 0x81A61C
   hdma_window_1_left_pos[3].field_0 = 111;
   hdma_window_1_left_pos[3].field_1 = 32;
   hdma_window_1_left_pos[3].field_2 = -98;
-  WriteReg(DMAP2, 0x40u);
-  WriteReg(BBAD2, 0x26u);
+  WriteReg(DMAP2, 0x40);
+  WriteReg(BBAD2, 0x26);
   WriteReg(A1T2L, 0);
-  WriteReg(A1T2H, 0x9Eu);
-  WriteReg(A1B2, 0x7Eu);
-  WriteReg(DAS20, 0x7Eu);
+  WriteReg(A1T2H, 0x9E);
+  WriteReg(A1B2, 0x7E);
+  WriteReg(DAS20, 0x7E);
   WriteReg(DAS2L, 0);
   WriteReg(DAS2H, 0);
   WriteReg(A2A2L, 0);
@@ -2193,12 +2193,12 @@ void SetupInitialExpandingSquareHDMA(void) {  // 0x81A61C
   hdma_window_1_right_pos[3].field_0 = 111;
   hdma_window_1_right_pos[3].field_1 = 32;
   hdma_window_1_right_pos[3].field_2 = -98;
-  WriteReg(DMAP3, 0x40u);
-  WriteReg(BBAD3, 0x27u);
-  WriteReg(A1T3L, 0x10u);
-  WriteReg(A1T3H, 0x9Eu);
-  WriteReg(A1B3, 0x7Eu);
-  WriteReg(DAS30, 0x7Eu);
+  WriteReg(DMAP3, 0x40);
+  WriteReg(BBAD3, 0x27);
+  WriteReg(A1T3L, 0x10);
+  WriteReg(A1T3H, 0x9E);
+  WriteReg(A1B3, 0x7E);
+  WriteReg(DAS30, 0x7E);
   WriteReg(DAS3L, 0);
   WriteReg(DAS3H, 0);
   WriteReg(A2A3L, 0);
@@ -2415,7 +2415,7 @@ void DrawAreaSelectMapLabels(void) {
   int v5;
 
   R3_.addr = 0;
-  DrawMenuSpritemap(g_word_82C749[0], 0x80, 0x10u);
+  DrawMenuSpritemap(g_word_82C749[0], 0x80, 0x10);
   R28_ = 0;
   do {
     v0 = 512;
@@ -2464,13 +2464,13 @@ void FileSelectMap_7_PrepExpandSquareTransToRoomMap(void) {  // 0x81AAAC
   reg_TM = 19;
   reg_TMW = 19;
   reg_W12SEL = 50;
-  WriteReg(W12SEL, 0x32u);
+  WriteReg(W12SEL, 0x32);
   reg_W34SEL = 2;
   WriteReg(W34SEL, 2u);
   reg_CGADSUB = 5;
   WriteReg(CGADSUB, 5u);
   reg_WOBJSEL = 34;
-  WriteReg(WOBJSEL, 0x22u);
+  WriteReg(WOBJSEL, 0x22);
   reg_BG12NBA = 48;
   hdma_window_1_left_pos[3].field_0 = 0;
   hdma_window_1_right_pos[3].field_0 = 0;
@@ -2510,7 +2510,7 @@ void FileSelectMap_7_PrepExpandSquareTransToRoomMap(void) {  // 0x81AAAC
                                             + (uint16)(16 * area_index));
   SetupRoomSelectMapExpandingSquareTransHDMA();
   reg_HDMAEN = 12;
-  WriteReg(HDMAEN, 0xCu);
+  WriteReg(HDMAEN, 0xC);
   ++menu_index;
   QueueSfx1_Max6(0x3Bu);
 }
@@ -2518,18 +2518,18 @@ void FileSelectMap_7_PrepExpandSquareTransToRoomMap(void) {  // 0x81AAAC
 void SetupRoomSelectMapExpandingSquareTransHDMA(void) {  // 0x81ABA7
   uint16 k = 0;
   uint16 v0 = expanding_square_top_pos;
-  AddExpandingSqTransLeftIndirHDMA(v0, k, 0x9E22u);
-  k = AddExpandingSqTransRightIndirHDMA(v0, k, 0x9E20u);
+  AddExpandingSqTransLeftIndirHDMA(v0, k, 0x9E22);
+  k = AddExpandingSqTransRightIndirHDMA(v0, k, 0x9E20);
   uint16 v2 = expanding_square_bottom_pos - expanding_square_top_pos;
   if ((uint8)expanding_square_bottom_pos == (uint8)expanding_square_top_pos)
     v2 = 1;
-  AddExpandingSqTransLeftIndirHDMA(v2, k, 0x9E32u);
-  k = AddExpandingSqTransRightIndirHDMA(v2, k, 0x9E36u);
+  AddExpandingSqTransLeftIndirHDMA(v2, k, 0x9E32);
+  k = AddExpandingSqTransRightIndirHDMA(v2, k, 0x9E36);
   uint16 v4 = -32 - expanding_square_bottom_pos;
   if ((uint8)expanding_square_bottom_pos == 0xE0)
     v4 = 1;
-  AddExpandingSqTransLeftIndirHDMA(v4, k, 0x9E22u);
-  k = AddExpandingSqTransRightIndirHDMA(v4, k, 0x9E20u);
+  AddExpandingSqTransLeftIndirHDMA(v4, k, 0x9E22);
+  k = AddExpandingSqTransRightIndirHDMA(v4, k, 0x9E20);
   *(&hdma_window_1_left_pos[0].field_0 + k) = 0;
   *(&hdma_window_1_right_pos[0].field_0 + k) = 0;
 }
@@ -2812,9 +2812,9 @@ void FileSelectMap_20_SetupExpandingSquare(void) {  // 0x81AFF6
   SetupRoomSelectMapExpandingSquareTransHDMA();
   ++menu_index;
   reg_HDMAEN = 12;
-  WriteReg(HDMAEN, 0xCu);
+  WriteReg(HDMAEN, 0xC);
   reg_W12SEL = 50;
-  WriteReg(W12SEL, 0x32u);
+  WriteReg(W12SEL, 0x32);
   reg_W34SEL = 2;
   WriteReg(W34SEL, 2u);
   reg_BG12NBA = 48;

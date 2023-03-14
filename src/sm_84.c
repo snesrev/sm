@@ -1654,8 +1654,8 @@ uint8 PlmSetup_B6D3_MapStation(uint16 j) {  // 0x84B18B
   if (map_station_byte_array[area_index]) {
     plm_instr_list_ptrs[v1] = addr_word_84AD76;
   } else {
-    WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, 0xB047u);
-    WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] - 4, 0xB048u);
+    WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, 0xB047);
+    WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] - 4, 0xB048);
   }
   return 0;
 }
@@ -1678,7 +1678,7 @@ uint8 PlmSetup_PlmB6DF_EnergyStation(uint16 j) {  // 0x84B21D
   int v1 = j >> 1;
   int v2 = plm_block_indices[v1] >> 1;
   level_data[v2] = level_data[v2] & 0xFFF | 0x8000;
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, 0xB049u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, 0xB049);
   WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] - 2, FUNC16(PlmSetup_SetrupWreckedShipEntrance));
   return 0;
 }
@@ -1687,8 +1687,8 @@ uint8 PlmSetup_PlmB6EB_EnergyStation(uint16 j) {  // 0x84B245
   int v1 = j >> 1;
   int v2 = plm_block_indices[v1] >> 1;
   level_data[v2] = level_data[v2] & 0xFFF | 0x8000;
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, 0xB04Bu);
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] - 2, 0xB04Cu);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, 0xB04B);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] - 2, 0xB04C);
   return 0;
 }
 
@@ -1743,25 +1743,25 @@ void DeletePlm(uint16 j) {  // 0x84B333
 }
 
 uint8 PlmSetup_B638_Rightwards_Extension(uint16 j) {  // 0x84B33A
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x50FFu);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x50FF);
   DeletePlm(j);
   return 0;
 }
 
 uint8 PlmSetup_B63F_Leftwards_Extension(uint16 j) {  // 0x84B345
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x5001u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x5001);
   DeletePlm(j);
   return 0;
 }
 
 uint8 PlmSetup_B643_Downwards_Extension(uint16 j) {  // 0x84B350
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xD0FF);
   DeletePlm(j);
   return 0;
 }
 
 uint8 PlmSetup_B647_Upwards_Extension(uint16 j) {  // 0x84B35B
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xD001u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xD001);
   DeletePlm(j);
   return 0;
 }
@@ -1772,7 +1772,7 @@ void SkipDebugDrawInstructionsForScrollPlms(uint16 j) {  // 0x84B366
 
 uint8 PlmSetup_B703_ScrollPLM(uint16 j) {  // 0x84B371
   int v1 = j >> 1;
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0x3046u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0x3046);
   plm_variable[v1] = 0;
   SkipDebugDrawInstructionsForScrollPlms(j);
   return 0;
@@ -1780,7 +1780,7 @@ uint8 PlmSetup_B703_ScrollPLM(uint16 j) {  // 0x84B371
 
 uint8 PlmSetup_B707_SolidScrollPLM(uint16 j) {  // 0x84B382
   int v1 = j >> 1;
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xB046u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xB046);
   plm_variable[v1] = 0;
   SkipDebugDrawInstructionsForScrollPlms(j);
   return 0;
@@ -2040,17 +2040,17 @@ uint8 PlmSetup_B76B_SaveStationTrigger(uint16 j) {  // 0x84B590
 }
 
 uint8 PlmSetup_B76F_SaveStation(uint16 j) {  // 0x84B5EE
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xB04Du);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xB04D);
   return 0;
 }
 
 uint8 PlmSetup_MotherBrainRoomEscapeDoor(uint16 j) {  // 0x84B5F8
   uint16 v1 = plm_block_indices[j >> 1];
-  WriteLevelDataBlockTypeAndBts(v1, 0x9001u);
+  WriteLevelDataBlockTypeAndBts(v1, 0x9001);
   uint16 v2 = room_width_in_blocks * 2 + v1;
-  WriteLevelDataBlockTypeAndBts(v2, 0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(v2, 0xD0FF);
   uint16 v3 = room_width_in_blocks * 2 + v2;
-  WriteLevelDataBlockTypeAndBts(v3, 0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(v3, 0xD0FF);
   WriteLevelDataBlockTypeAndBts(
     room_width_in_blocks * 2 + v3,
     0xD0FFu);
@@ -2175,7 +2175,7 @@ void PlmPreInstr_OldTourianEscapeShaftEscape(uint16 k) {  // 0x84B927
   R18_ = 240;
   R20_ = 2080;
   if (!WakePlmIfSamusIsBelowAndRightOfTarget(k))
-    SpawnEnemyProjectileWithRoomGfx(0xB4B1u, 0);
+    SpawnEnemyProjectileWithRoomGfx(0xB4B1, 0);
 }
 
 void PlmPreInstr_EscapeRoomBeforeOldTourianEscapeShaft(uint16 k) {  // 0x84B948
@@ -2213,9 +2213,9 @@ uint16 PlmInstr_SetCrittersEscapedEvent(uint16 j, uint16 k) {  // 0x84B9B9
 
 uint8 PlmSetup_B9ED_CrittersEscapeBlock(uint16 j) {  // 0x84B9C5
   uint16 v1 = plm_block_indices[j >> 1];
-  WriteLevelDataBlockTypeAndBts(v1, 0xC04Fu);
+  WriteLevelDataBlockTypeAndBts(v1, 0xC04F);
   uint16 v2 = room_width_in_blocks * 2 + v1;
-  WriteLevelDataBlockTypeAndBts(v2, 0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(v2, 0xD0FF);
   WriteLevelDataBlockTypeAndBts(
     room_width_in_blocks * 2 + v2,
     0xD0FFu);
@@ -2245,7 +2245,7 @@ void UNUSED_sub_84BAD1(uint16 j) {  // 0x84BAD1
   int v1 = j >> 1;
   plm_variable[v1] = 4;
   plm_room_arguments[v1] = plm_room_arguments[v1] & 0x3FF | 0x8000;
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC044u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC044);
 }
 
 uint8 PlmSetup_BB30_CrateriaMainstreetEscape(uint16 j) {  // 0x84BB09
@@ -2566,13 +2566,13 @@ uint16 SetBtsTo0x10AdvanceRowUp(uint16 k) {  // 0x84C6A9
 }
 
 uint8 PlmSetup_C82A_DownwardsClosedGate(uint16 j) {  // 0x84C6BE
-  SpawnEnemyProjectileWithRoomGfx(0xE659u, 0);
+  SpawnEnemyProjectileWithRoomGfx(0xE659, 0);
   SetBts0x10FiveStepsDown(j);
   return 0;
 }
 
 uint8 PlmSetup_C832_UpwardsClosedGate(uint16 j) {  // 0x84C6CB
-  SpawnEnemyProjectileWithRoomGfx(0xE675u, 0);
+  SpawnEnemyProjectileWithRoomGfx(0xE675, 0);
   SetBts0x10FiveStepsUp(j);
   return 0;
 }
@@ -2615,12 +2615,12 @@ uint8 PlmSetup_C794_GreyDoor(uint16 j) {  // 0x84C794
   int v1 = j >> 1;
   plm_variable[v1] = (uint16)(HIBYTE(plm_room_arguments[v1]) & 0x7C) >> 1;
   plm_room_arguments[v1] &= ~0x7C00;
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC044u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC044);
   return 0;
 }
 
 uint8 PlmSetup_Door_Colored(uint16 j) {  // 0x84C7B1
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xC044u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xC044);
   return 0;
 }
 
@@ -2827,12 +2827,12 @@ uint8 PlmSetup_D113_LowerNorfairChozoRoomPlug(uint16 j) {  // 0x84D108
 }
 
 uint8 PlmSetup_D127(uint16 j) {  // 0x84D117
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xC000u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xC000);
   return 0;
 }
 
 uint8 PlmSetup_D138(uint16 j) {  // 0x84D12B
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xE000u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xE000);
   return 0;
 }
 
@@ -2845,7 +2845,7 @@ void PlmPreInstr_DeletePlmAndSpawnTriggerIfBlockDestroyed(uint16 k) {  // 0x84D1
   uint16 prod = 8 * (uint8)room_width_in_blocks;
   uint16 v1 = 2 * (prod + 4);
   if (level_data[v1 >> 1] == 255) {
-    WriteLevelDataBlockTypeAndBts(v1, 0xB083u);
+    WriteLevelDataBlockTypeAndBts(v1, 0xB083);
     plm_header_ptr[plm_id >> 1] = 0;
   }
 }
@@ -2903,7 +2903,7 @@ uint16 PlmInstr_SpawnFourMotherBrainGlass(uint16 j, uint16 k) {  // 0x84D30B
 }
 
 void SpawnMotherBrainGlassShatteringShard(uint16 a) {  // 0x84D331
-  SpawnEnemyProjectileWithRoomGfx(0xCEFCu, a);
+  SpawnEnemyProjectileWithRoomGfx(0xCEFC, a);
 }
 
 void PlmPreInstr_WakePlmIfSamusHasBombs(uint16 k) {  // 0x84D33B
@@ -2918,7 +2918,7 @@ void PlmPreInstr_WakePlmIfSamusHasBombs(uint16 k) {  // 0x84D33B
 
 uint16 PlmInstr_SpawnTorizoStatueBreaking(uint16 j, uint16 k) {  // 0x84D357
   uint16 *v2 = (uint16 *)RomPtr_84(j);
-  SpawnEnemyProjectileWithRoomGfx(0xA993u, *v2);
+  SpawnEnemyProjectileWithRoomGfx(0xA993, *v2);
   return j + 2;
 }
 
@@ -2928,14 +2928,14 @@ uint16 PlmInstr_QueueSong1MusicTrack(uint16 j, uint16 k) {  // 0x84D3C7
 }
 
 uint16 PlmInstr_TransferWreckedShipChozoSpikesToSlopes(uint16 j, uint16 k) {  // 0x84D3D7
-  WriteLevelDataBlockTypeAndBts(0x1608u, 0x1012u);
-  WriteLevelDataBlockTypeAndBts(0x160Au, 0x1013u);
+  WriteLevelDataBlockTypeAndBts(0x1608, 0x1012);
+  WriteLevelDataBlockTypeAndBts(0x160A, 0x1013);
   return j;
 }
 
 uint16 PlmInstr_TransferWreckedShipSlopesToChozoSpikes(uint16 j, uint16 k) {  // 0x84D3F4
-  WriteLevelDataBlockTypeAndBts(0x1608u, 0xA000u);
-  WriteLevelDataBlockTypeAndBts(0x160Au, 0xA000u);
+  WriteLevelDataBlockTypeAndBts(0x1608, 0xA000);
+  WriteLevelDataBlockTypeAndBts(0x160A, 0xA000);
   return j;
 }
 
@@ -2974,7 +2974,7 @@ uint16 PlmInstr_EnableWaterPhysics(uint16 j, uint16 k) {  // 0x84D525
 
 uint16 PlmInstr_SpawnN00bTubeCrackEnemyProjectile(uint16 j, uint16 k) {  // 0x84D52C
   uint16 v2 = 0; // undefined
-  SpawnEnemyProjectileWithRoomGfx(0xD904u, v2);
+  SpawnEnemyProjectileWithRoomGfx(0xD904, v2);
   return j;
 }
 
@@ -2990,17 +2990,17 @@ uint16 PlmInstr_Spawn10shardsAnd6n00bs(uint16 j, uint16 k) {  // 0x84D543
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 4u);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 6u);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 8u);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xAu);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xCu);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xEu);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0x10u);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0x12u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xA);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xC);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xE);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0x10);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0x12);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 0);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 2u);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 4u);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 6u);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 8u);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 0xAu);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 0xA);
   return j;
 }
 
@@ -3017,7 +3017,7 @@ uint16 PlmInstr_EnableSamusControls(uint16 j, uint16 k) {  // 0x84D5EE
 uint8 PlmSetup_MotherBrainGlass(uint16 j) {  // 0x84D5F6
   int v1 = j >> 1;
   plm_room_arguments[v1] = 0;
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0x8044u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0x8044);
   return 0;
 }
 
@@ -3028,7 +3028,7 @@ uint8 PlmSetup_DeletePlmIfAreaTorizoDead(uint16 j) {  // 0x84D606
 }
 
 uint8 PlmSetup_MakeBllockChozoHandTrigger(uint16 j) {  // 0x84D616
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xB080u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xB080);
   return 0;
 }
 
@@ -3052,19 +3052,19 @@ uint8 PlmSetup_D6F2_WreckedShipChozoHandTrigger(uint16 j) {  // 0x84D620
 }
 
 uint8 PlmSetup_D700_MakePlmAirBlock_Unused(uint16 j) {  // 0x84D67F
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x44u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x44);
   return 0;
 }
 
 uint8 PlmSetup_D704_AlteranateLowerNorfairChozoHand_Unused(uint16 j) {  // 0x84D689
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x8044u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x8044);
   return 0;
 }
 
 uint8 PlmSetup_D708_LowerNorfairChozoBlockUnused(uint16 j) {  // 0x84D693
   int v1 = j >> 1;
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0x8044u);
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, 0x50FFu);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0x8044);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1] + 2, 0x50FF);
   WriteLevelDataBlockTypeAndBts(
     room_width_in_blocks
     + room_width_in_blocks
@@ -3080,7 +3080,7 @@ uint8 PlmSetup_D708_LowerNorfairChozoBlockUnused(uint16 j) {  // 0x84D693
 }
 
 uint8 PlmSetup_D70C_NoobTube(uint16 j) {  // 0x84D6CC
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x8044u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x8044);
   return 0;
 }
 
@@ -3109,13 +3109,13 @@ uint16 PlmInstr_SpawnEyeDoorSweatEnemyProjectile(uint16 j, uint16 k) {  // 0x84D
 }
 
 uint16 PlmInstr_SpawnTwoEyeDoorSmoke(uint16 j, uint16 k) {  // 0x84D79F
-  SpawnEnemyProjectileWithRoomGfx(0xE517u, 0x30Au);
-  SpawnEnemyProjectileWithRoomGfx(0xE517u, 0x30Au);
+  SpawnEnemyProjectileWithRoomGfx(0xE517, 0x30A);
+  SpawnEnemyProjectileWithRoomGfx(0xE517, 0x30A);
   return j;
 }
 
 uint16 PlmInstr_SpawnEyeDoorSmokeProjectile(uint16 j, uint16 k) {  // 0x84D7B6
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorSmoke, 0xBu);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorSmoke, 0xB);
   return j;
 }
 
@@ -3125,7 +3125,7 @@ uint16 PlmInstr_MoveUpAndMakeBlueDoorFacingRight(uint16 j, uint16 k) {  // 0x84D
         - __PAIR32__(room_width_in_blocks, room_width_in_blocks)) >> 16;
   plm_block_indices[v2] = v3;
   uint16 v4 = v3;
-  WriteLevelDataBlockTypeAndBts(v3, 0xC041u);
+  WriteLevelDataBlockTypeAndBts(v3, 0xC041);
   sub_84D7EF(v4);
   return j;
 }
@@ -3136,16 +3136,16 @@ uint16 PlmInstr_MoveUpAndMakeBlueDoorFacingLeft(uint16 j, uint16 k) {  // 0x84D7
         - __PAIR32__(room_width_in_blocks, room_width_in_blocks)) >> 16;
   plm_block_indices[v2] = v3;
   uint16 v4 = v3;
-  WriteLevelDataBlockTypeAndBts(v3, 0xC040u);
+  WriteLevelDataBlockTypeAndBts(v3, 0xC040);
   sub_84D7EF(v4);
   return j;
 }
 
 void sub_84D7EF(uint16 k) {  // 0x84D7EF
   uint16 v1 = room_width_in_blocks * 2 + k;
-  WriteLevelDataBlockTypeAndBts(v1, 0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(v1, 0xD0FF);
   uint16 v2 = room_width_in_blocks * 2 + v1;
-  WriteLevelDataBlockTypeAndBts(v2, 0xD0FEu);
+  WriteLevelDataBlockTypeAndBts(v2, 0xD0FE);
   WriteLevelDataBlockTypeAndBts(
     room_width_in_blocks * 2 + v2,
     0xD0FDu);
@@ -3155,7 +3155,7 @@ uint8 PlmSetup_EyeDoorEye(uint16 j) {  // 0x84DA8C
   int idx = PrepareBitAccess(plm_room_arguments[j >> 1]);
   if ((bitmask & opened_door_bit_array[idx]) == 0) {
     int v1 = j >> 1;
-    WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC044u);
+    WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC044);
     WriteLevelDataBlockTypeAndBts(
       room_width_in_blocks
       + room_width_in_blocks
@@ -3168,7 +3168,7 @@ uint8 PlmSetup_EyeDoorEye(uint16 j) {  // 0x84DA8C
 uint8 PlmSetup_EyeDoor(uint16 j) {  // 0x84DAB9
   int idx = PrepareBitAccess(plm_room_arguments[j >> 1]);
   if ((bitmask & opened_door_bit_array[idx]) == 0)
-    WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xA000u);
+    WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0xA000);
   return 0;
 }
 
@@ -3219,7 +3219,7 @@ void SetPlmVarPtr(uint16 k, uint16 a) {
 uint16 PlmInstr_DamageDraygonTurret(uint16 j, uint16 k) {  // 0x84DB8E
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
-  WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v2, 0xA003);
   WriteLevelDataBlockTypeAndBts(
     room_width_in_blocks * 2 + v2,
     0xA003u);
@@ -3229,11 +3229,11 @@ uint16 PlmInstr_DamageDraygonTurret(uint16 j, uint16 k) {  // 0x84DB8E
 uint16 PlmInstr_DamageDraygonTurretFacingDownRight(uint16 j, uint16 k) {  // 0x84DBB8
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
-  WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
-  WriteLevelDataBlockTypeAndBts(v2 + 2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v2, 0xA003);
+  WriteLevelDataBlockTypeAndBts(v2 + 2, 0xA003);
   uint16 v3 = plm_block_indices[plm_id >> 1];
   uint16 v4 = room_width_in_blocks * 2 + v3;
-  WriteLevelDataBlockTypeAndBts(v4, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v4, 0xA003);
   WriteLevelDataBlockTypeAndBts(v4 + 2, 0);
   return j;
 }
@@ -3241,18 +3241,18 @@ uint16 PlmInstr_DamageDraygonTurretFacingDownRight(uint16 j, uint16 k) {  // 0x8
 uint16 PlmInstr_DamageDraygonTurretFacingUpRight(uint16 j, uint16 k) {  // 0x84DBF7
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
-  WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v2, 0xA003);
   WriteLevelDataBlockTypeAndBts(v2 + 2, 0);
   uint16 v4 = room_width_in_blocks * 2 + v2;
-  WriteLevelDataBlockTypeAndBts(v4, 0xA003u);
-  WriteLevelDataBlockTypeAndBts(v4 + 2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v4, 0xA003);
+  WriteLevelDataBlockTypeAndBts(v4 + 2, 0xA003);
   return j;
 }
 
 uint16 PlmInstr_DamageDraygonTurret2(uint16 j, uint16 k) {  // 0x84DC36
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
-  WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v2, 0xA003);
   WriteLevelDataBlockTypeAndBts(
     room_width_in_blocks * 2 + v2,
     0xA003u);
@@ -3262,10 +3262,10 @@ uint16 PlmInstr_DamageDraygonTurret2(uint16 j, uint16 k) {  // 0x84DC36
 uint16 PlmInstr_DamageDraygonTurretFacingDownLeft(uint16 j, uint16 k) {  // 0x84DC60
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
-  WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
-  WriteLevelDataBlockTypeAndBts(v2 - 2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v2, 0xA003);
+  WriteLevelDataBlockTypeAndBts(v2 - 2, 0xA003);
   uint16 v4 = room_width_in_blocks * 2 + v2;
-  WriteLevelDataBlockTypeAndBts(v4, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v4, 0xA003);
   WriteLevelDataBlockTypeAndBts(v4 - 2, 0);
   return j;
 }
@@ -3273,11 +3273,11 @@ uint16 PlmInstr_DamageDraygonTurretFacingDownLeft(uint16 j, uint16 k) {  // 0x84
 uint16 PlmInstr_DamageDraygonTurretFacingUpLeft(uint16 j, uint16 k) {  // 0x84DC9F
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
-  WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v2, 0xA003);
   WriteLevelDataBlockTypeAndBts(v2 - 2, 0);
   uint16 v4 = v2 + room_width_in_blocks * 2;
-  WriteLevelDataBlockTypeAndBts(v4, 0xA003u);
-  WriteLevelDataBlockTypeAndBts(v4 - 2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(v4, 0xA003);
+  WriteLevelDataBlockTypeAndBts(v4 - 2, 0xA003);
   return j;
 }
 
@@ -3286,8 +3286,8 @@ uint8 PlmSetup_DraygonCannonFacingRight(uint16 j) {  // 0x84DE94
   plm_variable[v1] = plm_room_arguments[v1];
   plm_room_arguments[v1] = 0;
   uint16 v2 = plm_block_indices[v1];
-  WriteLevelDataBlockTypeAndBts(v2, 0xC044u);
-  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(v2, 0xC044);
+  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xD0FF);
   return 0;
 }
 
@@ -3296,11 +3296,11 @@ uint8 PlmSetup_DraygonCannonFacingDiagonalRight(uint16 j) {  // 0x84DEB9
   plm_variable[v1] = plm_room_arguments[v1];
   plm_room_arguments[v1] = 0;
   uint16 v2 = plm_block_indices[v1];
-  WriteLevelDataBlockTypeAndBts(v2, 0xC044u);
-  WriteLevelDataBlockTypeAndBts(v2 + 2, 0x50FFu);
+  WriteLevelDataBlockTypeAndBts(v2, 0xC044);
+  WriteLevelDataBlockTypeAndBts(v2 + 2, 0x50FF);
   uint16 v3 = room_width_in_blocks * 2 + v2;
-  WriteLevelDataBlockTypeAndBts(v3, 0xD0FFu);
-  WriteLevelDataBlockTypeAndBts(v3 + 2, 0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(v3, 0xD0FF);
+  WriteLevelDataBlockTypeAndBts(v3 + 2, 0xD0FF);
   return 0;
 }
 
@@ -3309,8 +3309,8 @@ uint8 PlmSetup_DraygonCannonFacingLeft(uint16 j) {  // 0x84DEF0
   plm_variable[v1] = plm_room_arguments[v1];
   plm_room_arguments[v1] = 0;
   uint16 v2 = plm_block_indices[v1];
-  WriteLevelDataBlockTypeAndBts(v2, 0xC044u);
-  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(v2, 0xC044);
+  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xD0FF);
   return 0;
 }
 
@@ -3319,11 +3319,11 @@ uint8 PlmSetup_DraygonCannonFacingDiagonalLeft(uint16 j) {  // 0x84DF15
   plm_variable[v1] = plm_room_arguments[v1];
   plm_room_arguments[v1] = 0;
   uint16 v2 = plm_block_indices[v1];
-  WriteLevelDataBlockTypeAndBts(v2, 0xC044u);
-  WriteLevelDataBlockTypeAndBts(v2 - 2, 0x5001u);
+  WriteLevelDataBlockTypeAndBts(v2, 0xC044);
+  WriteLevelDataBlockTypeAndBts(v2 - 2, 0x5001);
   uint16 v3 = room_width_in_blocks * 2 + v2;
-  WriteLevelDataBlockTypeAndBts(v3, 0xD0FFu);
-  WriteLevelDataBlockTypeAndBts(v3 - 2, 0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(v3, 0xD0FF);
+  WriteLevelDataBlockTypeAndBts(v3 - 2, 0xD0FF);
   return 0;
 }
 
@@ -3390,15 +3390,15 @@ uint8 sub_84EE4D(uint16 j) {  // 0x84EE4D
 }
 
 uint8 sub_84EE52(uint16 j) {  // 0x84EE52
-  return sub_84EE5F(j, 0xAu);
+  return sub_84EE5F(j, 0xA);
 }
 
 uint8 sub_84EE57(uint16 j) {  // 0x84EE57
-  return sub_84EE5F(j, 0xCu);
+  return sub_84EE5F(j, 0xC);
 }
 
 uint8 sub_84EE5C(uint16 j) {  // 0x84EE5C
-  return sub_84EE5F(j, 0xEu);
+  return sub_84EE5F(j, 0xE);
 }
 
 uint8 sub_84EE5F(uint16 j, uint16 a) {  // 0x84EE5F
@@ -3407,7 +3407,7 @@ uint8 sub_84EE5F(uint16 j, uint16 a) {  // 0x84EE5F
 }
 
 uint8 sub_84EE64(uint16 j) {  // 0x84EE64
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x45u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[j >> 1], 0x45);
   ++global_number_of_items_loaded_ctr;
   return 0;
 }
@@ -3417,15 +3417,15 @@ uint8 sub_84EE77(uint16 j) {  // 0x84EE77
 }
 
 uint8 sub_84EE7C(uint16 j) {  // 0x84EE7C
-  return sub_84EE89(j, 0xAu);
+  return sub_84EE89(j, 0xA);
 }
 
 uint8 sub_84EE81(uint16 j) {  // 0x84EE81
-  return sub_84EE89(j, 0xCu);
+  return sub_84EE89(j, 0xC);
 }
 
 uint8 sub_84EE86(uint16 j) {  // 0x84EE86
-  return sub_84EE89(j, 0xEu);
+  return sub_84EE89(j, 0xE);
 }
 
 uint8 sub_84EE89(uint16 j, uint16 a) {  // 0x84EE89
@@ -3435,7 +3435,7 @@ uint8 sub_84EE89(uint16 j, uint16 a) {  // 0x84EE89
 
 uint8 sub_84EE8E(uint16 j) {  // 0x84EE8E
   int v1 = j >> 1;
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC045u);
+  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC045);
   plm_variable[v1] = level_data[plm_block_indices[v1] >> 1];
   ++global_number_of_items_loaded_ctr;
   return 0;

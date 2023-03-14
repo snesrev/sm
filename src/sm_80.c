@@ -267,7 +267,7 @@ void InitializeCpuIoRegs(void) {  // 0x80875D
 }
 
 void InitializePpuIoRegs(void) {  // 0x808792
-  WriteReg(INIDISP, 0x8Fu);
+  WriteReg(INIDISP, 0x8F);
   reg_INIDISP = 0x8f;
   WriteReg(OBSEL, 3u);
   reg_OBSEL = 3;
@@ -281,11 +281,11 @@ void InitializePpuIoRegs(void) {  // 0x808792
   reg_BGMODE = 9;
   WriteReg(MOSAIC, 0);
   reg_MOSAIC = 0;
-  WriteReg(BG1SC, 0x40u);
+  WriteReg(BG1SC, 0x40);
   reg_BG1SC = 64;
-  WriteReg(BG2SC, 0x44u);
+  WriteReg(BG2SC, 0x44);
   reg_BG2SC = 68;
-  WriteReg(BG3SC, 0x48u);
+  WriteReg(BG3SC, 0x48);
   reg_BG3SC = 72;
   WriteReg(BG4SC, 0);
   reg_BG4SC = 0;
@@ -326,7 +326,7 @@ void InitializePpuIoRegs(void) {  // 0x808792
   reg_WOBJSEL = 0;
   WriteReg(WH0, 0);
   reg_WH0 = 0;
-  WriteReg(WH1, 0xF8u);
+  WriteReg(WH1, 0xF8);
   reg_WH1 = -8;
   WriteReg(WH2, 0);
   reg_WH2 = 0;
@@ -336,9 +336,9 @@ void InitializePpuIoRegs(void) {  // 0x808792
   reg_WBGLOG = 0;
   WriteReg(WOBJLOG, 0);
   reg_WOBJLOG = 0;
-  WriteReg(TM, 0x11u);
+  WriteReg(TM, 0x11);
   reg_TM = 17;
-  WriteReg(TMW, 0x11u);
+  WriteReg(TMW, 0x11);
   reg_TMW = 17;
   WriteReg(TS, 2u);
   reg_TS = 2;
@@ -346,15 +346,15 @@ void InitializePpuIoRegs(void) {  // 0x808792
   reg_TSW = 2;
   WriteReg(CGWSEL, 2u);
   next_gameplay_CGWSEL = 2;
-  WriteReg(CGADSUB, 0xA1u);
+  WriteReg(CGADSUB, 0xA1);
   next_gameplay_CGADSUB = -95;
-  WriteReg(COLDATA, 0xE0u);
-  WriteReg(COLDATA, 0xE0u);
+  WriteReg(COLDATA, 0xE0);
+  WriteReg(COLDATA, 0xE0);
   WriteReg(COLDATA, 0x80);
   reg_COLDATA[0] = 0x80;
-  WriteReg(COLDATA, 0x40u);
+  WriteReg(COLDATA, 0x40);
   reg_COLDATA[1] = 64;
-  WriteReg(COLDATA, 0x20u);
+  WriteReg(COLDATA, 0x20);
   reg_COLDATA[2] = 32;
   WriteReg(SETINI, 0);
   reg_SETINI = 0;
@@ -367,15 +367,15 @@ void WriteLotsOf0x1c2f(void) {  // 0x8088D1
 }
 
 void sub_8088EB(uint16 a) {  // 0x8088EB
-  memset7E((uint16*)(g_ram + 0x3000), a, 0x800u);
+  memset7E((uint16*)(g_ram + 0x3000), a, 0x800);
 }
 
 void sub_8088FE(uint16 a) {  // 0x8088FE
-  memset7E((uint16 *)(g_ram + 0x4000), a, 0x800u);
+  memset7E((uint16 *)(g_ram + 0x4000), a, 0x800);
 }
 
 void sub_808911(uint16 a) {  // 0x808911
-  memset7E((uint16 *)(g_ram + 0x6000), a, 0x800u);
+  memset7E((uint16 *)(g_ram + 0x6000), a, 0x800);
 }
 
 void HandleFadeOut(void) {  // 0x808924
@@ -471,9 +471,9 @@ void NMI_ProcessMode7QueueInner(uint16 k) {  // 0x808BD3
       WriteReg(A1B1, v5->src_addr.bank);
       WriteRegWord(DAS1L, v5->count);
       if (v4 < 0)
-        WriteReg(BBAD1, 0x19u);
+        WriteReg(BBAD1, 0x19);
       else
-        WriteReg(BBAD1, 0x18u);
+        WriteReg(BBAD1, 0x18);
       WriteRegWord(VMADDL, v5->vram_addr);
       WriteReg(VMAIN, v5->vmain);
       WriteReg(MDMAEN, 2u);
@@ -486,7 +486,7 @@ void NMI_ProcessMode7QueueInner(uint16 k) {  // 0x808BD3
     WriteRegWord(A1T1L, *(uint16 *)(v1 + 1));
     WriteReg(A1B1, v1[3]);
     WriteRegWord(DAS1L, *((uint16 *)v1 + 2));
-    WriteReg(BBAD1, 0x22u);
+    WriteReg(BBAD1, 0x22);
     WriteReg(CGADD, v1[6]);
     WriteReg(MDMAEN, 2u);
     k += 7;
@@ -496,7 +496,7 @@ void NMI_ProcessMode7QueueInner(uint16 k) {  // 0x808BD3
 void NMI_ProcessVramWriteQueue(void) {  // 0x808C83
   if (vram_write_queue_tail) {
     gVramWriteEntry(vram_write_queue_tail)->size = 0;
-    WriteRegWord(DMAP1, 0x1801u);
+    WriteRegWord(DMAP1, 0x1801);
     for (int i = 0; ; i += 7) {
       VramWriteEntry *e = gVramWriteEntry(i);
       if (!e->size)
@@ -515,14 +515,14 @@ void NMI_ProcessVramWriteQueue(void) {  // 0x808C83
 }
 
 void Nmi_ProcessHorizScrollingDma(void) {  // 0x808CD8
-  WriteReg(VMAIN, 0x81u);
+  WriteReg(VMAIN, 0x81);
   if ((uint8)bg1_update_col_enable) {
     LOBYTE(bg1_update_col_enable) = 0;
     uint16 v0 = bg1_update_col_unwrapped_dst;
     WriteRegWord(VMADDL, bg1_update_col_unwrapped_dst);
-    WriteRegWord(DMAP1, 0x1801u);
+    WriteRegWord(DMAP1, 0x1801);
     WriteRegWord(A1T1L, ADDR16_OF_RAM(*bg1_column_update_tilemap_left_halves));
-    WriteReg(A1B1, 0x7Eu);
+    WriteReg(A1B1, 0x7E);
     uint16 v1 = bg1_update_col_unwrapped_size;
     WriteRegWord(DAS1L, bg1_update_col_unwrapped_size);
     WriteReg(MDMAEN, 2u);
@@ -547,9 +547,9 @@ void Nmi_ProcessHorizScrollingDma(void) {  // 0x808CD8
     LOBYTE(bg2_update_col_enable) = 0;
     uint16 v4 = bg2_update_col_unwrapped_dst;
     WriteRegWord(VMADDL, bg2_update_col_unwrapped_dst);
-    WriteRegWord(DMAP1, 0x1801u);
+    WriteRegWord(DMAP1, 0x1801);
     WriteRegWord(A1T1L, ADDR16_OF_RAM(*bg2_column_update_tilemap_left_halves));
-    WriteReg(A1B1, 0x7Eu);
+    WriteReg(A1B1, 0x7E);
     uint16 v5 = bg2_update_col_unwrapped_size;
     WriteRegWord(DAS1L, bg2_update_col_unwrapped_size);
     WriteReg(MDMAEN, 2u);
@@ -578,9 +578,9 @@ void Nmi_ProcessVertScrollingDma(void) {  // 0x808DAC
     LOBYTE(bg1_update_row_enable) = 0;
     uint16 v0 = bg1_update_row_unwrapped_dst;
     WriteRegWord(VMADDL, bg1_update_row_unwrapped_dst);
-    WriteRegWord(DMAP1, 0x1801u);
+    WriteRegWord(DMAP1, 0x1801);
     WriteRegWord(A1T1L, ADDR16_OF_RAM(*bg1_column_update_tilemap_top_halves));
-    WriteReg(A1B1, 0x7Eu);
+    WriteReg(A1B1, 0x7E);
     uint16 v1 = bg1_update_row_unwrapped_size;
     WriteRegWord(DAS1L, bg1_update_row_unwrapped_size);
     WriteReg(MDMAEN, 2u);
@@ -605,9 +605,9 @@ void Nmi_ProcessVertScrollingDma(void) {  // 0x808DAC
     LOBYTE(bg2_update_row_enable) = 0;
     uint16 v4 = bg2_update_row_unwrapped_dst;
     WriteRegWord(VMADDL, bg2_update_row_unwrapped_dst);
-    WriteRegWord(DMAP1, 0x1801u);
+    WriteRegWord(DMAP1, 0x1801);
     WriteRegWord(A1T1L, ADDR16_OF_RAM(*bg2_column_update_tilemap_top_halves));
-    WriteReg(A1B1, 0x7Eu);
+    WriteReg(A1B1, 0x7E);
     uint16 v5 = bg2_update_row_unwrapped_size;
     WriteRegWord(DAS1L, bg2_update_row_unwrapped_size);
     WriteReg(MDMAEN, 2u);
@@ -933,15 +933,15 @@ void NmiUpdateIoRegisters(void) {  // 0x8091EE
 }
 
 void NmiUpdatePalettesAndOam(void) {  // 0x80933A
-  WriteRegWord(DMAP0, 0x400u);
+  WriteRegWord(DMAP0, 0x400);
   WriteRegWord(A1T0L, ADDR16_OF_RAM(*oam_ent));
   WriteReg(A1B0, 0);
-  WriteRegWord(DAS0L, 0x220u);
+  WriteRegWord(DAS0L, 0x220);
   WriteRegWord(OAMADDL, 0);
-  WriteRegWord(DMAP1, 0x2200u);
+  WriteRegWord(DMAP1, 0x2200);
   WriteRegWord(A1T1L, ADDR16_OF_RAM(*palette_buffer));
-  WriteReg(A1B1, 0x7Eu);
-  WriteRegWord(DAS1L, 0x200u);
+  WriteReg(A1B1, 0x7E);
+  WriteRegWord(DAS1L, 0x200);
   WriteReg(CGADD, 0);
   WriteReg(MDMAEN, 3u);
 }
@@ -950,8 +950,8 @@ void NmiTransferSamusToVram(void) {  // 0x809376
   WriteReg(VMAIN, 0x80);
   if ((uint8)nmi_copy_samus_halves) {
     nmicopy1_var_d = nmi_copy_samus_top_half_src;
-    WriteRegWord(VMADDL, 0x6000u);
-    WriteRegWord(DMAP1, 0x1801u);
+    WriteRegWord(VMADDL, 0x6000);
+    WriteRegWord(DMAP1, 0x1801);
     uint16 v0 = *(uint16 *)RomPtr_92(nmicopy1_var_d);
     WriteRegWord(A1T1L, v0);
     R20_ = v0;
@@ -961,7 +961,7 @@ void NmiTransferSamusToVram(void) {  // 0x809376
     WriteRegWord(DAS1L, v2);
     R20_ += v2;
     WriteReg(MDMAEN, 2u);
-    WriteRegWord(VMADDL, 0x6100u);
+    WriteRegWord(VMADDL, 0x6100);
     WriteRegWord(A1T1L, R20_);
     uint8 *v3 = RomPtr_92(nmicopy1_var_d);
     if (*(uint16 *)(v3 + 5)) {
@@ -971,8 +971,8 @@ void NmiTransferSamusToVram(void) {  // 0x809376
   }
   if (HIBYTE(nmi_copy_samus_halves)) {
     nmicopy1_var_d = nmi_copy_samus_bottom_half_src;
-    WriteRegWord(VMADDL, 0x6080u);
-    WriteRegWord(DMAP1, 0x1801u);
+    WriteRegWord(VMADDL, 0x6080);
+    WriteRegWord(DMAP1, 0x1801);
     uint16 v4 = *(uint16 *)RomPtr_92(nmicopy1_var_d);
     WriteRegWord(A1T1L, v4);
     R20_ = v4;
@@ -982,7 +982,7 @@ void NmiTransferSamusToVram(void) {  // 0x809376
     WriteRegWord(DAS1L, v6);
     R20_ += v6;
     WriteReg(MDMAEN, 2u);
-    WriteRegWord(VMADDL, 0x6180u);
+    WriteRegWord(VMADDL, 0x6180);
     WriteRegWord(A1T1L, R20_);
     uint8 *v7 = RomPtr_92(nmicopy1_var_d);
     if (*(uint16 *)(v7 + 5)) {
@@ -999,8 +999,8 @@ void NmiProcessAnimtilesVramTransfers(void) {  // 0x809416
       if (animtiles_ids[v1]) {
         if (animtiles_src_ptr[v1]) {
           WriteRegWord(A1T0L, animtiles_src_ptr[v1]);
-          WriteReg(A1B0, 0x87u);
-          WriteRegWord(DMAP0, 0x1801u);
+          WriteReg(A1B0, 0x87);
+          WriteRegWord(DMAP0, 0x1801);
           WriteRegWord(DAS0L, animtiles_sizes[v1]);
           WriteRegWord(VMADDL, animtiles_vram_ptr[v1]);
           WriteReg(VMAIN, 0x80);
@@ -1117,14 +1117,14 @@ void Vector_NMI(void) {  // 0x809583
 void Irq_DoorTransitionVramUpdate(void) {  // 0x809632
   WriteReg(INIDISP, 0x80);
   WriteRegWord(VMADDL, door_transition_vram_update_dst);
-  WriteRegWord(DMAP1, 0x1801u);
+  WriteRegWord(DMAP1, 0x1801);
   WriteRegWord(A1T1L, door_transition_vram_update_src.addr);
   WriteReg(A1B1, door_transition_vram_update_src.bank);
   WriteRegWord(DAS1L, door_transition_vram_update_size);
   WriteReg(VMAIN, 0x80);
   WriteReg(MDMAEN, 2u);
   door_transition_vram_update_enabled &= ~0x8000;
-  WriteReg(INIDISP, 0xFu);
+  WriteReg(INIDISP, 0xF);
 }
 
 void WaitForIrqDoorTransitionVramUpdate(void) {
@@ -1151,7 +1151,7 @@ void IrqHandler_2_DisableIRQ(void) {  // 0x809680
 }
 
 void IrqHandler_4_Main_BeginHudDraw(void) {  // 0x80968B
-  WriteReg(BG3SC, 0x5Au);
+  WriteReg(BG3SC, 0x5A);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
   WriteReg(TM, 4u);
@@ -1170,7 +1170,7 @@ void IrqHandler_6_Main_EndHudDraw(void) {  // 0x8096A9
 }
 
 void IrqHandler_8_StartOfDoor_BeginHud(void) {  // 0x8096D3
-  WriteReg(BG3SC, 0x5Au);
+  WriteReg(BG3SC, 0x5A);
   WriteReg(TM, 4u);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
@@ -1331,19 +1331,19 @@ void AddMissilesToHudTilemap(void) {
 }
 
 void AddSuperMissilesToHudTilemap(void) {  // 0x809A0E
-  AddToTilemapInner(0x1Cu, addr_kHudTilemaps_Missiles + 12);
+  AddToTilemapInner(0x1C, addr_kHudTilemaps_Missiles + 12);
 }
 
 void AddPowerBombsToHudTilemap(void) {  // 0x809A1E
-  AddToTilemapInner(0x22u, addr_kHudTilemaps_Missiles + 20);
+  AddToTilemapInner(0x22, addr_kHudTilemaps_Missiles + 20);
 }
 
 void AddGrappleToHudTilemap(void) {  // 0x809A2E
-  AddToTilemapInner(0x28u, addr_kHudTilemaps_Missiles + 28);
+  AddToTilemapInner(0x28, addr_kHudTilemaps_Missiles + 28);
 }
 
 void AddXrayToHudTilemap(void) {  // 0x809A3E
-  AddToTilemapInner(0x2Eu, addr_kHudTilemaps_Missiles + 36);
+  AddToTilemapInner(0x2E, addr_kHudTilemaps_Missiles + 36);
 }
 
 void AddToTilemapInner(uint16 k, uint16 j) {  // 0x809A4C
@@ -1384,13 +1384,13 @@ void InitializeHud(void) {  // 0x809A79
   R0_.addr = addr_kDigitTilesetsWeapon;
   *(uint16 *)&R0_.bank = 128;
   if (samus_max_missiles)
-    DrawThreeHudDigits(samus_missiles, 0x94u);
+    DrawThreeHudDigits(samus_missiles, 0x94);
   if (samus_max_super_missiles)
-    DrawTwoHudDigits(samus_super_missiles, 0x9Cu);
+    DrawTwoHudDigits(samus_super_missiles, 0x9C);
   if (samus_max_power_bombs)
-    DrawTwoHudDigits(samus_power_bombs, 0xA2u);
-  ToggleHudItemHighlight(hud_item_index, 0x1000u);
-  ToggleHudItemHighlight(samus_prev_hud_item_index, 0x1400u);
+    DrawTwoHudDigits(samus_power_bombs, 0xA2);
+  ToggleHudItemHighlight(hud_item_index, 0x1000);
+  ToggleHudItemHighlight(samus_prev_hud_item_index, 0x1400);
   HandleHudTilemap();
 }
 
@@ -1429,27 +1429,27 @@ void HandleHudTilemap(void) {  // 0x809B44
       v2 += 2;
     } while ((int16)(v2 - 28) < 0);
     R0_.addr = addr_kDigitTilesetsHealth;
-    DrawTwoHudDigits(R18_, 0x8Cu);
+    DrawTwoHudDigits(R18_, 0x8C);
   }
   R0_.addr = addr_kDigitTilesetsWeapon;
   if (samus_max_missiles && samus_missiles != samus_prev_missiles) {
     samus_prev_missiles = samus_missiles;
-    DrawThreeHudDigits(samus_missiles, 0x94u);
+    DrawThreeHudDigits(samus_missiles, 0x94);
   }
   if (samus_max_super_missiles && samus_super_missiles != samus_prev_super_missiles) {
     samus_prev_super_missiles = samus_super_missiles;
     if ((joypad_dbg_flags & 0x1F40) != 0)
-      DrawThreeHudDigits(samus_prev_super_missiles, 0x9Cu);
+      DrawThreeHudDigits(samus_prev_super_missiles, 0x9C);
     else
-      DrawTwoHudDigits(samus_prev_super_missiles, 0x9Cu);
+      DrawTwoHudDigits(samus_prev_super_missiles, 0x9C);
   }
   if (samus_max_power_bombs && samus_power_bombs != samus_prev_power_bombs) {
     samus_prev_power_bombs = samus_power_bombs;
-    DrawTwoHudDigits(samus_power_bombs, 0xA2u);
+    DrawTwoHudDigits(samus_power_bombs, 0xA2);
   }
   if (hud_item_index != samus_prev_hud_item_index) {
-    ToggleHudItemHighlight(hud_item_index, 0x1000u);
-    ToggleHudItemHighlight(samus_prev_hud_item_index, 0x1400u);
+    ToggleHudItemHighlight(hud_item_index, 0x1000);
+    ToggleHudItemHighlight(samus_prev_hud_item_index, 0x1400);
     samus_prev_hud_item_index = hud_item_index;
     if (samus_movement_type != 3
         && samus_movement_type != 20
@@ -1634,9 +1634,9 @@ uint8 ProcessTimer_Decrement(void) {  // 0x809EA9
 
 void DrawTimer(void) {  // 0x809F6C
   DrawTimerSpritemap(0, addr_word_80A060);
-  DrawTwoTimerDigits(*(uint16 *)&timer_minutes, 0xFFE4u);
-  DrawTwoTimerDigits(*(uint16 *)&timer_seconds, 0xFFFCu);
-  DrawTwoTimerDigits(*(uint16 *)&timer_centiseconds, 0x14u);
+  DrawTwoTimerDigits(*(uint16 *)&timer_minutes, 0xFFE4);
+  DrawTwoTimerDigits(*(uint16 *)&timer_seconds, 0xFFFC);
+  DrawTwoTimerDigits(*(uint16 *)&timer_centiseconds, 0x14);
 }
 
 #define kTimerDigitsSpritemapPtr ((uint16*)RomPtr(0x809fd4))
@@ -1768,35 +1768,35 @@ void QueueClearingOfFxTilemap(void) {  // 0x80A211
 }
 
 void ClearBG2Tilemap(void) {  // 0x80A23F
-  WriteRegWord(VMADDL, 0x4800u);
-  WriteRegWord(DMAP1, 0x1808u);
-  WriteRegWord(A1T1L, 0xA29Au);
+  WriteRegWord(VMADDL, 0x4800);
+  WriteRegWord(DMAP1, 0x1808);
+  WriteRegWord(A1T1L, 0xA29A);
   WriteRegWord(A1B1, 0x80);
-  WriteRegWord(DAS1L, 0x800u);
+  WriteRegWord(DAS1L, 0x800);
   WriteReg(VMAIN, 0);
   WriteReg(MDMAEN, 2u);
-  WriteRegWord(VMADDL, 0x4800u);
-  WriteRegWord(DMAP1, 0x1908u);
-  WriteRegWord(A1T1L, 0xA29Au);
+  WriteRegWord(VMADDL, 0x4800);
+  WriteRegWord(DMAP1, 0x1908);
+  WriteRegWord(A1T1L, 0xA29A);
   WriteRegWord(A1B1, 0x80);
-  WriteRegWord(DAS1L, 0x800u);
+  WriteRegWord(DAS1L, 0x800);
   WriteReg(VMAIN, 0x80);
   WriteReg(MDMAEN, 2u);
 }
 
 void ClearFXTilemap(void) {  // 0x80A29C
-  WriteRegWord(VMADDL, 0x5880u);
-  WriteRegWord(DMAP1, 0x1808u);
-  WriteRegWord(A1T1L, 0xA2F7u);
+  WriteRegWord(VMADDL, 0x5880);
+  WriteRegWord(DMAP1, 0x1808);
+  WriteRegWord(A1T1L, 0xA2F7);
   WriteRegWord(A1B1, 0x80);
-  WriteRegWord(DAS1L, 0x780u);
+  WriteRegWord(DAS1L, 0x780);
   WriteReg(VMAIN, 0);
   WriteReg(MDMAEN, 2u);
-  WriteRegWord(VMADDL, 0x5880u);
-  WriteRegWord(DMAP1, 0x1908u);
-  WriteRegWord(A1T1L, 0xA2F8u);
+  WriteRegWord(VMADDL, 0x5880);
+  WriteRegWord(DMAP1, 0x1908);
+  WriteRegWord(A1T1L, 0xA2F8);
   WriteRegWord(A1B1, 0x80);
-  WriteRegWord(DAS1L, 0x780u);
+  WriteRegWord(DAS1L, 0x780);
   WriteReg(VMAIN, 0x80);
   WriteReg(MDMAEN, 2u);
 }
@@ -2175,7 +2175,7 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
     uint16 v3 = (4 * (uint8)vram_blocks_to_update_y_block) & 0x3C;
     *(uint16 *)((char *)&bg1_update_col_wrapped_size + k) = v3;
     *(uint16 *)((char *)&bg1_update_col_unwrapped_size + k) = (v3 ^ 0x3F) + 1;
-    prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40u);
+    prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40);
     x_block_of_vram_blocks_to_update = vram_blocks_to_update_x_block & 0x1F;
     uint16 v4 = 2 * x_block_of_vram_blocks_to_update;
     temp933 = prod + v4;
@@ -2266,7 +2266,7 @@ void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
     temp933 = vram_blocks_to_update_x_block & 0xF;
     *(uint16 *)((char *)&bg1_update_row_unwrapped_size + v0) = 4 * (16 - temp933);
     *(uint16 *)((char *)&bg1_update_row_wrapped_size + v0) = 4 * (temp933 + 1);
-    prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40u);
+    prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40);
     x_block_of_vram_blocks_to_update = vram_blocks_to_update_x_block & 0x1F;
     uint16 v3 = 2 * x_block_of_vram_blocks_to_update;
     temp933 = prod + v3;

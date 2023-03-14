@@ -463,7 +463,7 @@ uint16 Torizo_Instr_23(uint16 k, uint16 j) {  // 0xAAC55A
 }
 
 uint16 Torizo_Instr_14(uint16 k, uint16 j) {  // 0xAAC567
-  if (CompareDistToSamus_X(k, 0x38u) & 1)
+  if (CompareDistToSamus_X(k, 0x38) & 1)
     return j + 2;
   Enemy_Torizo *E = Get_Torizo(k);
   if (((E->toriz_parameter_1 ^ (samus_x_pos - E->base.x_pos)) & 0x8000u) == 0)
@@ -473,7 +473,7 @@ uint16 Torizo_Instr_14(uint16 k, uint16 j) {  // 0xAAC567
 }
 
 uint16 Torizo_Instr_15(uint16 k, uint16 j) {  // 0xAAC58B
-  if (CompareDistToSamus_X(k, 0x20u) & 1 || (Torizo_Func_12(k) & 0x8000u) != 0)
+  if (CompareDistToSamus_X(k, 0x20) & 1 || (Torizo_Func_12(k) & 0x8000u) != 0)
     return j + 2;
   Torizo_C22D(k);
   return *(uint16 *)RomPtr_AA(j);
@@ -940,7 +940,7 @@ uint16 Torizo_Instr_47(uint16 k, uint16 j) {  // 0xAAD3E0
 uint16 Torizo_Instr_49(uint16 k, uint16 j) {  // 0xAAD3EA
   if ((Torizo_Func_12(k) & 0x8000u) == 0
       || !(CompareDistToSamus_X(k, 4u) & 1)
-      || CompareDistToSamus_X(k, 0x28u) & 1
+      || CompareDistToSamus_X(k, 0x28) & 1
       || samus_pose != kPose_1D_FaceR_Morphball_Ground
       && samus_pose != kPose_1E_MoveR_Morphball_Ground
       && samus_pose != kPose_1F_MoveL_Morphball_Ground
@@ -962,8 +962,8 @@ uint16 Torizo_Instr_61(uint16 k, uint16 j) {  // 0xAAD436
 
 uint16 Torizo_Instr_53(uint16 k, uint16 j) {  // 0xAAD445
   if ((Torizo_Func_12(k) & 0x8000u) != 0
-      || !(CompareDistToSamus_X(k, 0x20u) & 1)
-      || CompareDistToSamus_X(k, 0x60u) & 1
+      || !(CompareDistToSamus_X(k, 0x20) & 1)
+      || CompareDistToSamus_X(k, 0x60) & 1
       || (NextRandom() & 0x110) != 0) {
     return j + 2;
   }
@@ -989,7 +989,7 @@ uint16 Torizo_Instr_52(uint16 k, uint16 j) {  // 0xAAD49B
 }
 
 uint16 Torizo_Instr_50(uint16 k, uint16 j) {  // 0xAAD4BA
-  if (!(CompareDistToSamus_X(k, 0x70u) & 1))
+  if (!(CompareDistToSamus_X(k, 0x70) & 1))
     return j + 2;
   if ((Torizo_Func_12(k) & 0x8000u) != 0)
     return j + 2;
@@ -1010,7 +1010,7 @@ uint16 Torizo_Instr_43(uint16 k, uint16 j) {  // 0xAAD4F3
 
 uint16 Torizo_Instr_51(uint16 k, uint16 j) {  // 0xAAD4FD
   Enemy_Torizo *E = Get_Torizo(k);
-  if (E->toriz_var_09 < 8u && (CompareDistToSamus_X(k, 0x20u) & 1 || (Torizo_Func_12(k) & 0x8000u) != 0))
+  if (E->toriz_var_09 < 8u && (CompareDistToSamus_X(k, 0x20) & 1 || (Torizo_Func_12(k) & 0x8000u) != 0))
     return j + 2;
   E->toriz_var_09 = 0;
   Torizo_C22D(k);
