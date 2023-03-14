@@ -33,6 +33,7 @@ static void HandleGamepadAxisInput(int gamepad_id, int axis, int value);
 static int RemapSdlButton(int button);
 static void HandleGamepadInput(int button, bool pressed);
 static void HandleInput(int keyCode, int keyMod, bool pressed);
+static void HandleCommand(uint32 j, bool pressed);
 void OpenGLRenderer_Create(struct RendererFuncs *funcs);
 
 bool g_debug_flag;
@@ -525,8 +526,10 @@ int main(int argc, char** argv) {
         lastTick = curTick;
       }
     }
-
   }
+
+  if (g_config.autosave)
+    HandleCommand(kKeys_Save + 0, true);
 
   // clean sdl
   SDL_PauseAudioDevice(g_audio_device, 1);
@@ -586,8 +589,6 @@ static void RenderNumber(uint8 *dst, size_t pitch, int n, uint8 big) {
   for (s = buf, i = 2 * 4; *s; s++, i += 8 * 4)
     RenderDigit(dst + (i << big), pitch, *s - '0', 0xffffff, big);
 }
-
-static void HandleCommand_Locked(uint32 j, bool pressed);
 
 static void HandleCommand(uint32 j, bool pressed) {
   if (j <= kKeys_Controls_Last) {
