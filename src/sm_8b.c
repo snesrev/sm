@@ -66,7 +66,7 @@ void SetupPpuForTitleSequence(void) {  // 0x8B8000
   WriteReg(COLDATA, 0xE0u);
   WriteReg(SETINI, 0);
   reg_SETINI = 0;
-  memset7E(0x3000u, 0, 0x7FEu);
+  memset(g_ram + 0x3000u, 0, 0x7FEu);
   oam_next_ptr = 0;
   menu_option_index = 0;
   screen_fade_delay = 0;
@@ -141,7 +141,7 @@ void SetupPpu_Intro(void) {  // 0x8B80DA
   reg_COLDATA[1] = 64;
   reg_COLDATA[2] = 0x80;
   reg_MOSAIC = 0;
-  memset7E(0x3000u, 0x2Fu, 0x7FEu);
+  memset7E((uint16*)(g_ram + 0x3000), 0x2Fu, 0x7FEu);
   oam_next_ptr = 0;
   cinematic_var5 = 0;
   cinematic_var6 = 256;

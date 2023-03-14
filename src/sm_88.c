@@ -1811,7 +1811,7 @@ void HdmaobjPreInstr_SkyLandBG2XscrollInner(uint16 k) {  // 0x88ADC2
   uint16 v1 = 0;
   do {
     uint16 scroll_subspeed = kHdmaScrollEntrys[v1].scroll_subspeed;
-    uint8 *v3 = RomPtr_7E(kHdmaScrollEntrys[v1].hdma_data_table_entry);
+    uint8 *v3 = &g_ram[kHdmaScrollEntrys[v1].hdma_data_table_entry];
     bool v4 = __CFADD__uint16(*(uint16 *)v3, scroll_subspeed);
     *(uint16 *)v3 += scroll_subspeed;
     *((uint16 *)v3 + 1) += v4 + kHdmaScrollEntrys[v1++].scroll_speed;

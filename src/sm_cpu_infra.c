@@ -370,10 +370,11 @@ bool HookedFunctionRts(int is_long) {
 }
 
 static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
+  memcpy(&b->ram[0x0], &a->ram[0x0], 0x34);  // R18, R20, R22 etc
+
   memcpy(&b->ram[0x1f5b], &a->ram[0x1f5b], 0x100 - 0x5b);  // stacck
   memcpy(&b->ram[0x44], &a->ram[0x44], 3);  // decompress_dst_tmp
   memcpy(&b->ram[0x19b3], &a->ram[0x19b3], 1);  // mode7_spawn_param
-  memcpy(&b->ram[0x12], &a->ram[0x12], 6);  // R18, R20, R22
   memcpy(&b->ram[0x1993], &a->ram[0x1993], 2);  // enemy_projectile_init_param
   memcpy(&b->ram[0x49], &a->ram[0x49], 1);  // decompress_src.bank
   memcpy(&b->ram[0x1B9D], &a->ram[0x1B9D], 2);  // cinematic_spawn_param
@@ -381,12 +382,12 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
   memcpy(&b->ram[0xA82], &a->ram[0xA82], 2);  // xray_angle
   memcpy(&b->ram[0xad], &a->ram[0xad], 2);  // ptr_to_retaddr_parameters
   memcpy(&b->ram[0x641], &a->ram[0x641], 2);  // apu_attempts_countdown
-  memcpy(&b->ram[0x0], &a->ram[0x0], 3);  // R0
   memcpy(&b->ram[0x5e9], &a->ram[0x5e9], 4);  // mult_tmp
   memcpy(&b->ram[0x19b3], &a->ram[0x19b3], 2);  // mode7_spawn_param
 
   memcpy(&a->ram[0x611], &b->ram[0x611], 6);  // coroutine_state (copy from mine to theirs)
   memcpy(&a->ram[0x77e], &b->ram[0x77e], 5);  // my counter
+  memcpy(&a->ram[0xe20], &b->ram[0xe20], 2);  // enemy_population_ptr
    
 
   if (memcmp(b->ram, a->ram, 0x20000)) {

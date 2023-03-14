@@ -145,20 +145,10 @@ void ScreenOn(void) {
   reg_INIDISP &= ~0x80;
 }
 
-void memset7E(uint16 k, uint16 a, uint16 j) {  // 0x8083F6
+void memset7E(uint16 *k, uint16 a, uint16 j) {  // 0x8083F6
   do {
-    *(uint16 *)RomPtr_7E(k) = a;
-    k += 2;
-    j -= 2;
-  } while (j);
-}
-
-void memset7F(uint16 k, uint16 a, uint16 j) {  // 0x808409
-  do {
-    *(uint16 *)RomPtr_7F(k) = a;
-    k += 2;
-    j -= 2;
-  } while (j);
+    *k++ = a;
+  } while (j -= 2);
 }
 
 CoroutineRet Vector_RESET_Async(void) {  // 0x80841C
@@ -377,15 +367,15 @@ void WriteLotsOf0x1c2f(void) {  // 0x8088D1
 }
 
 void sub_8088EB(uint16 a) {  // 0x8088EB
-  memset7E(0x3000u, a, 0x800u);
+  memset7E((uint16*)(g_ram + 0x3000), a, 0x800u);
 }
 
 void sub_8088FE(uint16 a) {  // 0x8088FE
-  memset7E(0x4000u, a, 0x800u);
+  memset7E((uint16 *)(g_ram + 0x4000), a, 0x800u);
 }
 
 void sub_808911(uint16 a) {  // 0x808911
-  memset7E(0x6000u, a, 0x800u);
+  memset7E((uint16 *)(g_ram + 0x6000), a, 0x800u);
 }
 
 void HandleFadeOut(void) {  // 0x808924
@@ -504,8 +494,6 @@ void NMI_ProcessMode7QueueInner(uint16 k) {  // 0x808BD3
 }
 
 void NMI_ProcessVramWriteQueue(void) {  // 0x808C83
-  int16 v3;
-
   if (vram_write_queue_tail) {
     gVramWriteEntry(vram_write_queue_tail)->size = 0;
     WriteRegWord(DMAP1, 0x1801u);
@@ -2251,7 +2239,7 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
         bg1_column_update_tilemap_right_halves[v13 + 1] = tile_table.tables[v10].bottom_right;
       }
       tmp_vram_base_addr = v11 + 4;
-      v9 = room_width_in_blocks + room_width_in_blocks + v17;
+      v9 = room_width_in_blocks * 2 + v17;
       --loopcounter;
     } while (loopcounter);
     ++ *(uint16 *)((char *)&bg1_update_col_enable + t2);

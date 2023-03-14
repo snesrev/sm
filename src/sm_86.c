@@ -1135,7 +1135,7 @@ uint8 EnemyProjectileBlockCollisition_Horiz(uint16 k) {  // 0x8688B6
   R34 = v4;
   uint16 v5 = 2 * (prod + (v4 >> 4));
   while (!(EnemyProjectileBlockCollisition_CheckHorizontal(v5) & 1)) {
-    v5 += room_width_in_blocks + room_width_in_blocks;
+    v5 += room_width_in_blocks * 2;
     if ((--R26_ & 0x8000u) != 0) {
       int v6 = k >> 1;
       enemy_projectile_1A27[v6] = R22_;

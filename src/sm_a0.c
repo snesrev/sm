@@ -525,8 +525,8 @@ void LoadEnemyTileData(void) {  // 0xA08C6C
     gEnemySpawnData(i)->some_flag = kStandardSpriteTiles[(i >> 1) + 3072];
   if (enemy_tile_load_data_write_pos) {
     uint16 v1 = 0;
+    EnemyTileLoadData *load_data = enemy_tile_load_data;
     do {
-      EnemyTileLoadData *load_data = (EnemyTileLoadData *)((char *)enemy_tile_load_data + v1);
       uint16 v2 = load_data->tile_data_ptr.addr;
       R18_ = load_data->tile_data_size + v2;
       uint16 v3 = load_data->offset_into_ram;
@@ -536,6 +536,7 @@ void LoadEnemyTileData(void) {  // 0xA08C6C
         v3 += 8;
         v2 += 8;
       } while (v2 != R18_);
+      load_data++;
       v1 += 7;
     } while (v1 != enemy_tile_load_data_write_pos);
     enemy_tile_load_data_write_pos = 0;
@@ -574,12 +575,6 @@ void TransferEnemyTilesToVramAndInit(void) {  // 0xA08CD7
 }
 
 void ProcessEnemyTilesets(void) {  // 0xA08D64
-  int16 v6;
-  EnemyTileset *v7;
-  EnemyDef_A2 *v8;
-  EnemyTileset *v12;
-  EnemyTileset *EnemyTileset;
-
   enemy_tile_load_data_write_pos = 0;
   g_word_7E001E = 2048;
   enemy_def_ptr[0] = 0;
@@ -596,50 +591,28 @@ void ProcessEnemyTilesets(void) {  // 0xA08D64
   enemy_gfxdata_vram_ptr[3] = 0;
   enemy_gfx_data_write_ptr = 0;
   next_enemy_tiles_index = 0;
-  uint16 v0 = room_enemy_tilesets_ptr;
-  for (R28_ = room_enemy_tilesets_ptr; ; R28_ += 4) {
-    uint16 enemy_def = get_EnemyTileset(v0)->enemy_def;
-    if (enemy_def == 0xFFFF)
-      break;
-    uint16 *EnemyDef_A2 = (uint16 *)get_EnemyDef_A2(enemy_def);
-    R18_ = *EnemyDef_A2;
-    R20_ = EnemyDef_A2[1];
-    enemy_population_ptr = EnemyDef_A2[6];
-    EnemyTileset = get_EnemyTileset(R28_);
-    R22_ = Mult32(LOBYTE(EnemyTileset->vram_dst) + 8) - 15872;
-    uint8 v13 = enemy_population_ptr;
-    varE2E = 16;
-    uint16 v4 = R22_;
-    uint16 v5 = R20_;
-    do {
-      v6 = *(uint16 *)RomPtrWithBank(v13, v5);
-      *(uint16 *)RomPtr_7E(v4) = v6;
-      v4 += 2;
-      v5 += 2;
-      --varE2E;
-    } while (varE2E);
-    v7 = get_EnemyTileset(R28_);
-    v8 = get_EnemyDef_A2(v7->enemy_def);
-    R22_ = v8->tile_data.addr;
-    R26_ = v8->tile_data.bank;
-    uint16 v9 = enemy_tile_load_data_write_pos;
-    *(uint16 *)((char *)&enemy_tile_load_data[0].tile_data_size + enemy_tile_load_data_write_pos) = R18_ & 0x7FFF;
-    *(VoidP *)((char *)&enemy_tile_load_data[0].tile_data_ptr.addr + enemy_tile_load_data_write_pos) = R22_;
+  EnemyTileset *ET = get_EnemyTileset(room_enemy_tilesets_ptr);
+  EnemyTileLoadData *LD = enemy_tile_load_data;
+  for (; ET->enemy_def != 0xffff; ET++) {
+    EnemyDef_A2 *ED = get_EnemyDef_A2(ET->enemy_def);
+    memcpy(&target_palettes[(LOBYTE(ET->vram_dst) + 8) * 16], 
+           RomPtrWithBank(ED->bank, ED->palette_ptr), 32);
+    varE2E = 0;
+    LD->tile_data_size = ED->tile_data_size & 0x7FFF;
+    LD->tile_data_ptr = ED->tile_data;
     uint16 v10 = g_word_7E001E;
-    if ((R18_ & 0x8000u) != 0)
-      v10 = (uint16)(get_EnemyTileset(R28_)->vram_dst & 0x3000) >> 3;
-    *(uint16 *)((char *)&enemy_tile_load_data[0].offset_into_ram + v9) = v10;
-    *(&enemy_tile_load_data[0].tile_data_ptr.bank + v9) = R26_;
+    if ((ED->tile_data_size & 0x8000u) != 0)
+      v10 = (uint16)(ET->vram_dst & 0x3000) >> 3;
+    LD->offset_into_ram = v10;
     enemy_tile_load_data_write_pos += 7;
+    LD++;
     uint16 v11 = enemy_gfx_data_write_ptr;
     enemy_gfxdata_tiles_index[enemy_gfx_data_write_ptr >> 1] = next_enemy_tiles_index;
-    enemy_def_ptr[v11 >> 1] = get_EnemyTileset(R28_)->enemy_def;
-    enemy_gfxdata_vram_ptr[v11 >> 1] = get_EnemyTileset(R28_)->vram_dst;
+    enemy_def_ptr[v11 >> 1] = ET->enemy_def;
+    enemy_gfxdata_vram_ptr[v11 >> 1] = ET->vram_dst;
     enemy_gfx_data_write_ptr += 2;
-    next_enemy_tiles_index += R18_ >> 5;
-    v12 = get_EnemyTileset(R28_);
-    g_word_7E001E += get_EnemyDef_A2(v12->enemy_def)->tile_data_size;
-    v0 = R28_ + 4;
+    next_enemy_tiles_index += ED->tile_data_size >> 5;
+    g_word_7E001E += ED->tile_data_size;
   }
 }
 
@@ -2159,40 +2132,18 @@ void NormalEnemyFrozenAI(void) {  // 0xA0957E
 }
 
 void ProcessExtendedTilemap(uint8 db) {  // 0xA096CA
-  int16 v3;
-
-  uint16 v0 = R22_ + 2;
+  uint8 *p = RomPtrWithBank(db, R22_ + 2);
   while (1) {
-    uint8 *v1 = RomPtrWithBank(db, v0);
-    if (*(uint16 *)v1 == 0xFFFF)
+    uint16 v2 = *(uint16 *)p;
+    if (v2 == 0xFFFF)
       break;
-    uint16 v2 = *(uint16 *)v1;
-    remaining_enemy_hitbox_entries = *((uint16 *)v1 + 1);
-    v0 += 4;
-    if (remaining_enemy_hitbox_entries & 1) {
-      do {
-        v3 = *(uint16 *)RomPtrWithBank(db, v0);
-        *(uint16 *)RomPtr_7E(v2) = v3;
-        v2 += 2;
-        v0 += 2;
-        --remaining_enemy_hitbox_entries;
-      } while (remaining_enemy_hitbox_entries);
-    } else {
-      do {
-        uint8 *v4 = RomPtrWithBank(db, v0);
-        uint8 *v5 = RomPtr_7E(v2);
-        *(uint16 *)v5 = *(uint16 *)v4;
-        *((uint16 *)v5 + 1) = *((uint16 *)v4 + 1);
-        v2 += 4;
-        v0 += 4;
-        while ((int16)(v2 - 10240) >= 0)
-          ;
-        --remaining_enemy_hitbox_entries;
-        --remaining_enemy_hitbox_entries;
-      } while (remaining_enemy_hitbox_entries);
-    }
+    int n = *((uint16 *)p + 1);
+    p += 4;
+    memcpy(g_ram + v2, p, n * 2);
+    p += n * 2;
   }
   ++nmi_flag_bg2_enemy_vram_transfer;
+  remaining_enemy_hitbox_entries = 0;
 }
 
 void QueueEnemyBG2TilemapTransfers(void) {  // 0xA09726
@@ -4018,7 +3969,7 @@ uint8 EnemyFunc_BBBF(uint16 k) {  // 0xA0BBBF
   R34 = v3;
   uint16 v4 = 2 * (prod + (v3 >> 4));
   while ((level_data[v4 >> 1] & 0x8000u) == 0) {
-    v4 += room_width_in_blocks + room_width_in_blocks;
+    v4 += room_width_in_blocks * 2;
     if ((--R26_ & 0x8000u) != 0)
       return 0;
   }
@@ -4524,7 +4475,7 @@ uint8 Enemy_MoveRight_IgnoreSlopes_Inner(uint16 k) {  // 0xA0C6AD
   R26_ = v5;
   uint16 v6 = 2 * (prod + (v5 >> 4));
   while (!(EnemyBlockCollReact_Horiz(v6) & 1)) {
-    v6 += room_width_in_blocks + room_width_in_blocks;
+    v6 += room_width_in_blocks * 2;
     if ((--R28_ & 0x8000u) != 0) {
       EnemyData *v7 = gEnemyData(k);
       bool v8 = __CFADD__uint16(v7->x_subpos, R18_);

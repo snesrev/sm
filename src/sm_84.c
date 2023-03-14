@@ -611,7 +611,7 @@ void ProcessPlmDrawInstruction(uint16 v0) {  // 0x84861E
       do {
         level_data[v3 >> 1] = *(uint16 *)RomPtr_84orRAM(v5);
         v5 += 2;
-        v3 += room_width_in_blocks + room_width_in_blocks;
+        v3 += room_width_in_blocks * 2;
         --R22_;
       } while (R22_);
     } else {
@@ -1994,7 +1994,7 @@ uint8 PlmSetup_ClearShitroidInvisibleWall(uint16 j) {  // 0x84B551
   v2 = 10;
   do {
     level_data[v1 >> 1] &= 0xFFFu;
-    v1 += room_width_in_blocks + room_width_in_blocks;
+    v1 += room_width_in_blocks * 2;
     --v2;
   } while (v2);
   return 0;
@@ -2007,7 +2007,7 @@ uint8 PlmSetup_B767_ClearShitroidInvisibleWall(uint16 j) {  // 0x84B56F
   v2 = 10;
   do {
     level_data[v1 >> 1] = level_data[v1 >> 1] & 0xFFF | 0x8000;
-    v1 += room_width_in_blocks + room_width_in_blocks;
+    v1 += room_width_in_blocks * 2;
     --v2;
   } while (v2);
   return 0;
@@ -2047,12 +2047,12 @@ uint8 PlmSetup_B76F_SaveStation(uint16 j) {  // 0x84B5EE
 uint8 PlmSetup_MotherBrainRoomEscapeDoor(uint16 j) {  // 0x84B5F8
   uint16 v1 = plm_block_indices[j >> 1];
   WriteLevelDataBlockTypeAndBts(v1, 0x9001u);
-  uint16 v2 = room_width_in_blocks + room_width_in_blocks + v1;
+  uint16 v2 = room_width_in_blocks * 2 + v1;
   WriteLevelDataBlockTypeAndBts(v2, 0xD0FFu);
-  uint16 v3 = room_width_in_blocks + room_width_in_blocks + v2;
+  uint16 v3 = room_width_in_blocks * 2 + v2;
   WriteLevelDataBlockTypeAndBts(v3, 0xD0FFu);
   WriteLevelDataBlockTypeAndBts(
-    room_width_in_blocks + room_width_in_blocks + v3,
+    room_width_in_blocks * 2 + v3,
     0xD0FFu);
   return 0;
 }
@@ -2214,10 +2214,10 @@ uint16 PlmInstr_SetCrittersEscapedEvent(uint16 j, uint16 k) {  // 0x84B9B9
 uint8 PlmSetup_B9ED_CrittersEscapeBlock(uint16 j) {  // 0x84B9C5
   uint16 v1 = plm_block_indices[j >> 1];
   WriteLevelDataBlockTypeAndBts(v1, 0xC04Fu);
-  uint16 v2 = room_width_in_blocks + room_width_in_blocks + v1;
+  uint16 v2 = room_width_in_blocks * 2 + v1;
   WriteLevelDataBlockTypeAndBts(v2, 0xD0FFu);
   WriteLevelDataBlockTypeAndBts(
-    room_width_in_blocks + room_width_in_blocks + v2,
+    room_width_in_blocks * 2 + v2,
     0xD0FFu);
   return 0;
 }
@@ -2225,11 +2225,11 @@ uint8 PlmSetup_B9ED_CrittersEscapeBlock(uint16 j) {  // 0x84B9C5
 uint8  sub_84B9F1(uint16 j) {  // 0x84B9F1
   uint16 v1 = plm_block_indices[j >> 1];
   level_data[v1 >> 1] = level_data[v1 >> 1] & 0xFFF | 0x8000;
-  uint16 v2 = room_width_in_blocks + room_width_in_blocks + v1;
+  uint16 v2 = room_width_in_blocks * 2 + v1;
   level_data[v2 >> 1] = level_data[v2 >> 1] & 0xFFF | 0x8000;
   uint16 v3 = room_width_in_blocks +  room_width_in_blocks + v2;
   level_data[v3 >> 1] = level_data[v3 >> 1] & 0xFFF | 0x8000;
-  int v4 = (uint16)(room_width_in_blocks + room_width_in_blocks + v3) >> 1;
+  int v4 = (uint16)(room_width_in_blocks * 2 + v3) >> 1;
   level_data[v4] = level_data[v4] & 0xFFF | 0x8000;
   return 0;
 }
@@ -3142,12 +3142,12 @@ uint16 PlmInstr_MoveUpAndMakeBlueDoorFacingLeft(uint16 j, uint16 k) {  // 0x84D7
 }
 
 void sub_84D7EF(uint16 k) {  // 0x84D7EF
-  uint16 v1 = room_width_in_blocks + room_width_in_blocks + k;
+  uint16 v1 = room_width_in_blocks * 2 + k;
   WriteLevelDataBlockTypeAndBts(v1, 0xD0FFu);
-  uint16 v2 = room_width_in_blocks + room_width_in_blocks + v1;
+  uint16 v2 = room_width_in_blocks * 2 + v1;
   WriteLevelDataBlockTypeAndBts(v2, 0xD0FEu);
   WriteLevelDataBlockTypeAndBts(
-    room_width_in_blocks + room_width_in_blocks + v2,
+    room_width_in_blocks * 2 + v2,
     0xD0FDu);
 }
 
@@ -3212,69 +3212,70 @@ void PlmPreInstr_GotoLinkIfShotWithSuperMissile(uint16 k) {  // 0x84DB64
   plm_instruction_timer[v2] = 1;
 }
 
+void SetPlmVarPtr(uint16 k, uint16 a) {
+  *(uint16 *)&g_ram[plm_variable[k >> 1]] = a;
+}
+
 uint16 PlmInstr_DamageDraygonTurret(uint16 j, uint16 k) {  // 0x84DB8E
-  *(uint16 *)RomPtr_7E(plm_variable[k >> 1]) = 1;
+  SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
   WriteLevelDataBlockTypeAndBts(
-    room_width_in_blocks + room_width_in_blocks + v2,
+    room_width_in_blocks * 2 + v2,
     0xA003u);
   return j;
 }
 
 uint16 PlmInstr_DamageDraygonTurretFacingDownRight(uint16 j, uint16 k) {  // 0x84DBB8
-  *(uint16 *)RomPtr_7E(plm_variable[k >> 1]) = 1;
+  SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
   WriteLevelDataBlockTypeAndBts(v2 + 2, 0xA003u);
   uint16 v3 = plm_block_indices[plm_id >> 1];
-  uint16 v4 = room_width_in_blocks + room_width_in_blocks + v3;
+  uint16 v4 = room_width_in_blocks * 2 + v3;
   WriteLevelDataBlockTypeAndBts(v4, 0xA003u);
   WriteLevelDataBlockTypeAndBts(v4 + 2, 0);
   return j;
 }
 
 uint16 PlmInstr_DamageDraygonTurretFacingUpRight(uint16 j, uint16 k) {  // 0x84DBF7
-  *(uint16 *)RomPtr_7E(plm_variable[k >> 1]) = 1;
+  SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
   WriteLevelDataBlockTypeAndBts(v2 + 2, 0);
-  uint16 v3 = plm_block_indices[plm_id >> 1];
-  uint16 v4 = room_width_in_blocks + room_width_in_blocks + v3;
+  uint16 v4 = room_width_in_blocks * 2 + v2;
   WriteLevelDataBlockTypeAndBts(v4, 0xA003u);
   WriteLevelDataBlockTypeAndBts(v4 + 2, 0xA003u);
   return j;
 }
 
 uint16 PlmInstr_DamageDraygonTurret2(uint16 j, uint16 k) {  // 0x84DC36
-  *(uint16 *)RomPtr_7E(plm_variable[k >> 1]) = 1;
+  SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
   WriteLevelDataBlockTypeAndBts(
-    room_width_in_blocks + room_width_in_blocks + v2,
+    room_width_in_blocks * 2 + v2,
     0xA003u);
   return j;
 }
 
 uint16 PlmInstr_DamageDraygonTurretFacingDownLeft(uint16 j, uint16 k) {  // 0x84DC60
-  *(uint16 *)RomPtr_7E(plm_variable[k >> 1]) = 1;
+  SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
   WriteLevelDataBlockTypeAndBts(v2 - 2, 0xA003u);
-  uint16 v3 = plm_block_indices[plm_id >> 1];
-  uint16 v4 = room_width_in_blocks + room_width_in_blocks + v3;
+  uint16 v4 = room_width_in_blocks * 2 + v2;
   WriteLevelDataBlockTypeAndBts(v4, 0xA003u);
   WriteLevelDataBlockTypeAndBts(v4 - 2, 0);
   return j;
 }
 
 uint16 PlmInstr_DamageDraygonTurretFacingUpLeft(uint16 j, uint16 k) {  // 0x84DC9F
-  *(uint16 *)RomPtr_7E(plm_variable[k >> 1]) = 1;
+  SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003u);
   WriteLevelDataBlockTypeAndBts(v2 - 2, 0);
-  uint16 v3 = plm_block_indices[plm_id >> 1];
-  uint16 v4 = room_width_in_blocks + room_width_in_blocks + v3;
+  uint16 v4 = v2 + room_width_in_blocks * 2;
   WriteLevelDataBlockTypeAndBts(v4, 0xA003u);
   WriteLevelDataBlockTypeAndBts(v4 - 2, 0xA003u);
   return j;
@@ -3286,9 +3287,7 @@ uint8 PlmSetup_DraygonCannonFacingRight(uint16 j) {  // 0x84DE94
   plm_room_arguments[v1] = 0;
   uint16 v2 = plm_block_indices[v1];
   WriteLevelDataBlockTypeAndBts(v2, 0xC044u);
-  WriteLevelDataBlockTypeAndBts(
-    room_width_in_blocks + room_width_in_blocks + v2,
-    0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xD0FFu);
   return 0;
 }
 
@@ -3299,9 +3298,7 @@ uint8 PlmSetup_DraygonCannonFacingDiagonalRight(uint16 j) {  // 0x84DEB9
   uint16 v2 = plm_block_indices[v1];
   WriteLevelDataBlockTypeAndBts(v2, 0xC044u);
   WriteLevelDataBlockTypeAndBts(v2 + 2, 0x50FFu);
-  uint16 v3 = room_width_in_blocks
-    + room_width_in_blocks
-    + plm_block_indices[v1];
+  uint16 v3 = room_width_in_blocks * 2 + v2;
   WriteLevelDataBlockTypeAndBts(v3, 0xD0FFu);
   WriteLevelDataBlockTypeAndBts(v3 + 2, 0xD0FFu);
   return 0;
@@ -3313,9 +3310,7 @@ uint8 PlmSetup_DraygonCannonFacingLeft(uint16 j) {  // 0x84DEF0
   plm_room_arguments[v1] = 0;
   uint16 v2 = plm_block_indices[v1];
   WriteLevelDataBlockTypeAndBts(v2, 0xC044u);
-  WriteLevelDataBlockTypeAndBts(
-    room_width_in_blocks + room_width_in_blocks + v2,
-    0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xD0FFu);
   return 0;
 }
 
@@ -3326,9 +3321,7 @@ uint8 PlmSetup_DraygonCannonFacingDiagonalLeft(uint16 j) {  // 0x84DF15
   uint16 v2 = plm_block_indices[v1];
   WriteLevelDataBlockTypeAndBts(v2, 0xC044u);
   WriteLevelDataBlockTypeAndBts(v2 - 2, 0x5001u);
-  uint16 v3 = room_width_in_blocks
-    + room_width_in_blocks
-    + plm_block_indices[v1];
+  uint16 v3 = room_width_in_blocks * 2 + v2;
   WriteLevelDataBlockTypeAndBts(v3, 0xD0FFu);
   WriteLevelDataBlockTypeAndBts(v3 - 2, 0xD0FFu);
   return 0;

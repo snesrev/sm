@@ -220,9 +220,9 @@ void InitPpuForGameplay(void) {  // 0x8281DD
   WriteReg(SETINI, 0);
   reg_SETINI = 0;
   oam_next_ptr = 0;
-  memset7E(ADDR16_OF_RAM(ram3000), 0, 0x7FEu);
-  memset7E(ADDR16_OF_RAM(ram4000), 0x6Fu, 0x7FEu);
-  memset7E(ADDR16_OF_RAM(ram4000.bg2_tilemap), 0x2C0Fu, 0xFEu);
+  memset7E((uint16*)&ram3000, 0, 0x7FEu);
+  memset7E((uint16 *)&ram4000, 0x6Fu, 0x7FEu);
+  memset7E(ram4000.bg2_tilemap, 0x2C0Fu, 0xFEu);
 }
 
 #define kInitialPalette ((uint16*)RomPtr(0x9a8000))
@@ -5443,7 +5443,7 @@ void LoadControllerOptionsFromControllerBindings(void) {  // 0x82F4DC
   uint16 v0 = 0;
   do {
     int v1 = v0 >> 1;
-    v2 = *(uint16 *)RomPtr_7E(off_82F54A[v1]);
+    v2 = *(uint16 *)&g_ram[off_82F54A[v1]];
     if ((v2 & kButton_X) != 0) {
 LABEL_9:
       enemy_projectile_F[v1 + 13] = 0;
@@ -5480,13 +5480,12 @@ static const Buttons word_82F575[9] = {  // 0x82F558
   kButton_Right,
 };
 uint8 OptionsMenuFunc8(void) {
-
-  uint16 v0 = 0, v2;
+  int v0 = 0, v2;
   do {
     v2 = v0;
-    *(uint16 *)RomPtr_7E(off_82F54A[v0 >> 1]) = word_82F575[(uint16)(2 * enemy_projectile_F[(v0 >> 1) + 13]) >> 1];
+    *(uint16 *)&g_ram[off_82F54A[v0 >> 1]] = word_82F575[(uint16)(2 * enemy_projectile_F[(v0 >> 1) + 13]) >> 1];
     v0 += 2;
-  } while ((int16)(v2 - 12) < 0);
+  } while (v2 < 12);
   return 0;
 }
 #define g_word_82F639 ((uint16*)RomPtr(0x82f639))
