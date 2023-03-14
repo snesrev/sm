@@ -275,11 +275,11 @@ void MotherBrainsBody_Init(void) {  // 0xA98687
   E->base.vram_tiles_index = 0;
   E->base.properties |= kEnemyProps_BlockPlasmaBeam | kEnemyProps_Tangible | kEnemyProps_Invisible;
   E->base.palette_index = 0;
-  WriteColorsToTargetPalette(0xa9, 0x162u, addr_kMotherBrainPalette_4__plus__2, 0xFu);
-  WriteColorsToTargetPalette(0xa9, 0x1E2u, addr_kMotherBrainPalette_3__plus__2, 0xFu);
+  WriteColorsToTargetPalette(0xa9, 0x162, addr_kMotherBrainPalette_4 + 2, 0xF);
+  WriteColorsToTargetPalette(0xa9, 0x1E2, addr_kMotherBrainPalette_3 + 2, 0xF);
   E->mbn_var_00 = 0;
 
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   E1->mbn_var_02 = 0;
   E->mbn_var_04 = 2;
   E1->mbn_var_A = FUNC16(MotherBrainsBrain_SetupBrainToDraw);
@@ -294,8 +294,8 @@ void MotherBrainsBody_Init(void) {  // 0xA98687
 }
 
 void MotherBrainsBrain_Init(void) {  // 0xA98705
-  InitializeEnemyCorpseRotting(0x40u, addr_stru_A9DE08);
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  InitializeEnemyCorpseRotting(0x40, addr_stru_A9DE08);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   E1->base.health = 3000;
   MotherBrain_SetBrainUnusedInstrs(addr_kMotherBrain_Ilist_9C13);
   E1->base.vram_tiles_index = 0;
@@ -321,14 +321,14 @@ void MotherBrainsBody_Hurt(void) {  // 0xA9873E
   MotherBrain_HandlePalette();
   MotherBrain_SamusCollDetect();
   MotherBrain_Pal_ProcessInvincibility();
-  if (Get_MotherBrain(0x40u)->mbn_var_02)
+  if (Get_MotherBrain(0x40)->mbn_var_02)
     mov24(&unpause_hook, fnMotherBrainsBody_UnpauseHook);
 }
 
 void MotherBrainsBody_UnpauseHook(void) {  // 0xA98763
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   if (E->mbn_var_16)
-    QueueSfx1_Max6(0x40u);
+    QueueSfx1_Max6(0x40);
   if ((E->base.extra_properties & 4) != 0) {
     enemy_bg2_tilemap_size = 2048;
     nmi_flag_bg2_enemy_vram_transfer = 1;
@@ -341,7 +341,7 @@ void MotherBrainsBody_Powerbomb(void) {  // 0xA98787
 }
 
 void MotherBrainsBrain_Hurt(void) {  // 0xA9878B
-  mov24(&enemy_gfx_drawn_hook, 0xA98786u);
+  mov24(&enemy_gfx_drawn_hook, 0xA98786);
   EnemyData *v0 = gEnemyData(0);
   if ((v0[1].properties & 0x100) != 0)
     CallMotherBrainFunc(v0[1].ai_var_A | 0xA90000);
@@ -350,10 +350,10 @@ void MotherBrainsBrain_Hurt(void) {  // 0xA9878B
 void MotherBrainsBrain_SetupBrainAndNeckToDraw(void) {  // 0xA987A2
   if (!time_is_frozen_flag)
     MotherBrain_HandleNeck();
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   E1->base.x_pos = E1->mbn_var_2E;
   E1->base.y_pos = E1->mbn_var_2F - 21;
-  mov24(&enemy_gfx_drawn_hook, 0xA987C9u);
+  mov24(&enemy_gfx_drawn_hook, 0xA987C9);
 }
 
 void MotherBrain_DrawBrainNeck_EnemyGfxDrawHook(void) {  // 0xA987C9
@@ -362,7 +362,7 @@ void MotherBrain_DrawBrainNeck_EnemyGfxDrawHook(void) {  // 0xA987C9
 }
 
 void MotherBrainsBrain_SetupBrainToDraw(void) {  // 0xA987D0
-  mov24(&enemy_gfx_drawn_hook, 0xA987DDu);
+  mov24(&enemy_gfx_drawn_hook, 0xA987DD);
 }
 
 void MotherBrainsBrain_GfxDrawHook(void) {  // 0xA987DD
@@ -371,7 +371,7 @@ void MotherBrainsBrain_GfxDrawHook(void) {  // 0xA987DD
 
 void MotherBrainsBody_FirstPhase_DoubleRet(void) {  // 0xA987E1
   if (CheckEventHappened(2u)) {
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->mbn_var_00 = earthquake_timer;
     if (sign16(samus_x_pos - 236)) {
       if (!E1->base.health) {
@@ -396,7 +396,7 @@ void MotherBrainBody_FakeDeath_Descent_0_Pause(void) {  // 0xA9881D
 
 void MotherBrainBody_FakeDeath_Descent_1(void) {  // 0xA98829
   Enemy_MotherBrainBody *E = Get_MotherBrainBody(0);
-  if ((--E->mbby_var_F & 0x8000u) != 0) {
+  if ((--E->mbby_var_F & 0x8000) != 0) {
     CallSomeSamusCode(0);
     *(uint16 *)scrolls = scrolls[0];
     E->mbby_var_A = FUNC16(MotherBrainBody_FakeDeath_Descent_2);
@@ -407,7 +407,7 @@ void MotherBrainBody_FakeDeath_Descent_1(void) {  // 0xA98829
 
 void MotherBrainBody_FakeDeath_Descent_2(void) {  // 0xA9884D
   Enemy_MotherBrainBody *E = Get_MotherBrainBody(0);
-  if ((--E->mbby_var_F & 0x8000u) != 0) {
+  if ((--E->mbby_var_F & 0x8000) != 0) {
     QueueMusic_Delayed8(0);
     QueueMusic_Delayed8(0xFF21u);
     E->mbby_var_A = FUNC16(MotherBrainBody_FakeDeath_Descent_3);
@@ -418,7 +418,7 @@ void MotherBrainBody_FakeDeath_Descent_2(void) {  // 0xA9884D
 
 void MotherBrainBody_FakeDeath_Descent_3(void) {  // 0xA9886C
   Enemy_MotherBrainBody *E = Get_MotherBrainBody(0);
-  if ((--E->mbby_var_F & 0x8000u) != 0) {
+  if ((--E->mbby_var_F & 0x8000) != 0) {
     CallSomeSamusCode(1u);
     E->mbby_var_A = FUNC16(MotherBrainBody_FakeDeath_Descent_4);
     E->mbby_var_F = 8;
@@ -428,10 +428,10 @@ void MotherBrainBody_FakeDeath_Descent_3(void) {  // 0xA9886C
 
 void MotherBrainBody_FakeDeath_Descent_4(void) {  // 0xA98884
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     MotherBrain_Pal_BeginScreenFlash();
     LoadFxEntry(2u);
-    Get_MotherBrain(0x40u)->mbn_var_E = FUNC16(MotherBrainBody_0_Wait);
+    Get_MotherBrain(0x40)->mbn_var_E = FUNC16(MotherBrainBody_0_Wait);
     E->mbn_var_A = FUNC16(MotherBrainBody_FakeDeath_Descent_5);
     E->mbn_var_F = 0;
     E->mbn_var_37 = 0;
@@ -442,7 +442,7 @@ void MotherBrainBody_FakeDeath_Descent_4(void) {  // 0xA98884
 
 void MotherBrainBody_FakeDeath_Descent_5(void) {  // 0xA988B2
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     E->mbn_var_F = 8;
     uint16 v2 = E->mbn_var_37 + 1;
     E->mbn_var_37 = v2;
@@ -453,7 +453,7 @@ void MotherBrainBody_FakeDeath_Descent_5(void) {  // 0xA988B2
 }
 
 void MotherBrainBody_FakeDeath_Descent_6(void) {  // 0xA988D3
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
   CallMotherBrainFunc(E->mbby_var_E | 0xA90000);
   MotherBrain_HandleFakeDeathExplosions();
 }
@@ -474,7 +474,7 @@ void MotherBrain_HandleFakeDeathExplosions(void) {  // 0xA988DD
     R18_ = g_word_A98929[v3];
     R20_ = g_word_A98929[v3 + 1];
     uint16 v4 = 3;
-    if (random_number < 0x4000u)
+    if (random_number < 0x4000)
       v4 = 12;
     SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, v4);
     QueueSfx2_Max3(0x24u);
@@ -494,8 +494,8 @@ void MotherBrainBody_0_Wait(void) {  // 0xA98949
     v0 += 2;
   } while ((int16)(v0 - 36) < 0);
   if ((int16)(v1 - 4) >= 0) {
-    SpawnEnemy(0xA9u, addr_stru_A98AE5);
-    Get_MotherBrainBody(0x40u)->mbby_var_E = FUNC16(MotherBrainBody_1_ClearBottomLeftTube);
+    SpawnEnemy(0xA9, addr_stru_A98AE5);
+    Get_MotherBrainBody(0x40)->mbby_var_E = FUNC16(MotherBrainBody_1_ClearBottomLeftTube);
   }
 }
 
@@ -511,135 +511,135 @@ static const SpawnHardcodedPlmArgs unk_A98ADA = { 0x07, 0x07, 0xb6bf };
 
 void MotherBrainBody_1_ClearBottomLeftTube(void) {  // 0xA9896E
   SpawnHardcodedPlm(&unk_A98972);
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
   E->mbby_var_E = FUNC16(MotherBrainBody_2_SpawnTopRightTubeFalling);
   E->mbby_var_F = 32;
 }
 
 void MotherBrainBody_2_SpawnTopRightTubeFalling(void) {  // 0xA98983
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
-  if ((--E->mbby_var_F & 0x8000u) != 0) {
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
+  if ((--E->mbby_var_F & 0x8000) != 0) {
     R18_ = 152;
     R20_ = 47;
-    SpawnEnemyProjectileWithRoomGfx(0xCC5Bu, 0x2Fu);
+    SpawnEnemyProjectileWithRoomGfx(0xCC5B, 0x2F);
     E->mbby_var_E = -30304;
   }
 }
 
 void MotherBrainBody_3_ClearCeilingBlock9(void) {  // 0xA989A0
   SpawnHardcodedPlm(&unk_A989A4);
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
   E->mbby_var_E = FUNC16(MotherBrainBody_4_SpawnTopLeftTubeFalling);
   E->mbby_var_F = 32;
 }
 
 void MotherBrainBody_4_SpawnTopLeftTubeFalling(void) {  // 0xA989B5
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
-  if ((--E->mbby_var_F & 0x8000u) != 0) {
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
+  if ((--E->mbby_var_F & 0x8000) != 0) {
     R18_ = 104;
     R20_ = 47;
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_MotherBrainTubeFalling_TopLeft, 0x2Fu);
+    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_MotherBrainTubeFalling_TopLeft, 0x2F);
     E->mbby_var_E = FUNC16(MotherBrainBody_4_ClearCeilingBlock6);
   }
 }
 
 void MotherBrainBody_4_ClearCeilingBlock6(void) {  // 0xA989D2
   SpawnHardcodedPlm(&unk_A989D6);
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
   E->mbby_var_E = FUNC16(MotherBrainBody_5_SpawnTubeFallingEnemy1);
   E->mbby_var_F = 32;
 }
 
 void MotherBrainBody_5_SpawnTubeFallingEnemy1(void) {  // 0xA989E7
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
-  if ((--E->mbby_var_F & 0x8000u) != 0) {
-    SpawnEnemy(0xA9u, addr_stru_A98AF5);
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
+  if ((--E->mbby_var_F & 0x8000) != 0) {
+    SpawnEnemy(0xA9, addr_stru_A98AF5);
     E->mbby_var_E = FUNC16(MotherBrainBody_6_ClearBottomRightTube);
   }
 }
 
 void MotherBrainBody_6_ClearBottomRightTube(void) {  // 0xA989FA
   SpawnHardcodedPlm(&unk_A989FE);
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
   E->mbby_var_E = FUNC16(MotherBrainBody_7_SpawnTubeFallingEnemy2);
   E->mbby_var_F = 32;
 }
 
 void MotherBrainBody_7_SpawnTubeFallingEnemy2(void) {  // 0xA98A0F
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
-  if ((--E->mbby_var_F & 0x8000u) != 0) {
-    SpawnEnemy(0xA9u, addr_stru_A98B05);
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
+  if ((--E->mbby_var_F & 0x8000) != 0) {
+    SpawnEnemy(0xA9, addr_stru_A98B05);
     E->mbby_var_E = FUNC16(MotherBrainBody_8_ClearBottomMiddleLeftTube);
   }
 }
 
 void MotherBrainBody_8_ClearBottomMiddleLeftTube(void) {  // 0xA98A22
   SpawnHardcodedPlm(&unk_A98A26);
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
   E->mbby_var_E = FUNC16(MotherBrainBody_9_SpawnTopMiddleLeftFalling);
   E->mbby_var_F = 32;
 }
 
 void MotherBrainBody_9_SpawnTopMiddleLeftFalling(void) {  // 0xA98A37
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
-  if ((--E->mbby_var_F & 0x8000u) != 0) {
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
+  if ((--E->mbby_var_F & 0x8000) != 0) {
     R18_ = 120;
     R20_ = 59;
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_MotherBrainTubeFalling_TopMiddleLeft, 0x3Bu);
+    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_MotherBrainTubeFalling_TopMiddleLeft, 0x3B);
     E->mbby_var_E = FUNC16(MotherBrainBody_10_ClearCeilingTubeColumn7);
   }
 }
 
 void MotherBrainBody_10_ClearCeilingTubeColumn7(void) {  // 0xA98A54
   SpawnHardcodedPlm(&unk_A98A58);
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
   E->mbby_var_E = FUNC16(MotherBrainBody_11_SpawnTopMiddleRightFalling);
   E->mbby_var_F = 32;
 }
 
 void MotherBrainBody_11_SpawnTopMiddleRightFalling(void) {  // 0xA98A69
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
-  if ((--E->mbby_var_F & 0x8000u) != 0) {
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
+  if ((--E->mbby_var_F & 0x8000) != 0) {
     R18_ = 136;
     R20_ = 59;
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_MotherBrainTubeFalling_TopMiddleRight, 0x3Bu);
+    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_MotherBrainTubeFalling_TopMiddleRight, 0x3B);
     E->mbby_var_E = FUNC16(MotherBrainBody_12_ClearCeilingTubeColumn8);
   }
 }
 
 void MotherBrainBody_12_ClearCeilingTubeColumn8(void) {  // 0xA98A86
   SpawnHardcodedPlm(&unk_A98A8A);
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
   E->mbby_var_E = FUNC16(MotherBrainBody_13_SpawnTubeFallingEnemy3);
   E->mbby_var_F = 32;
 }
 
 void MotherBrainBody_13_SpawnTubeFallingEnemy3(void) {  // 0xA98A9B
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
-  if ((--E->mbby_var_F & 0x8000u) != 0) {
-    SpawnEnemy(0xA9u, FUNC16(EnemyProj_Init_0x8bde_SkreeDownLeft));
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
+  if ((--E->mbby_var_F & 0x8000) != 0) {
+    SpawnEnemy(0xA9, FUNC16(EnemyProj_Init_0x8bde_SkreeDownLeft));
     E->mbby_var_E = FUNC16(MotherBrainBody_14_ClearBottomMiddleRightTube);
   }
 }
 
 void MotherBrainBody_14_ClearBottomMiddleRightTube(void) {  // 0xA98AAE
   SpawnHardcodedPlm(&unk_A98AB2);
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
   E->mbby_var_E = FUNC16(MotherBrainBody_15_SpawnTubeFallingEnemy4);
   E->mbby_var_F = 2;
 }
 
 void MotherBrainBody_15_SpawnTubeFallingEnemy4(void) {  // 0xA98AC3
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
-  if ((--E->mbby_var_F & 0x8000u) != 0) {
-    SpawnEnemy(0xA9u, addr_stru_A98B25);
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
+  if ((--E->mbby_var_F & 0x8000) != 0) {
+    SpawnEnemy(0xA9, addr_stru_A98B25);
     E->mbby_var_E = FUNC16(MotherBrainBody_16_ClearBottomMiddleTubes);
   }
 }
 
 void MotherBrainBody_16_ClearBottomMiddleTubes(void) {  // 0xA98AD6
   SpawnHardcodedPlm(&unk_A98ADA);
-  Get_MotherBrainBody(0x40u)->mbby_var_E = addr_locret_A98AE4;
+  Get_MotherBrainBody(0x40)->mbby_var_E = addr_locret_A98AE4;
 }
 
 void MotherBrainsTubesFalling_Init(void) {  // 0xA98B35
@@ -681,7 +681,7 @@ void MotherBrainsTubesFalling_Main_NonMain(uint16 k) {  // 0xA98B88
 
 void MotherBrainsTubesFalling_HandleSmoke(uint16 k) {  // 0xA98B9D
   Enemy_MotherBrainsTubesFalling *E = Get_MotherBrainsTubesFalling(k);
-  if ((--E->mbtfg_var_D & 0x8000u) != 0)
+  if ((--E->mbtfg_var_D & 0x8000) != 0)
     MotherBrainsTubesFalling_SpawnSmoke(k);
 }
 
@@ -696,7 +696,7 @@ void MotherBrainsTubesFalling_Explode(uint16 k) {  // 0xA98BA6
 
 void MotherBrainsTubesFalling_WaitToFall(uint16 k) {  // 0xA98BCB
   Enemy_MotherBrainsTubesFalling *E = Get_MotherBrainsTubesFalling(k);
-  if ((--E->mbtfg_parameter_2 & 0x8000u) != 0) {
+  if ((--E->mbtfg_parameter_2 & 0x8000) != 0) {
     E->mbtfg_var_A = FUNC16(MotherBrainsTubesFalling_Falling);
     MotherBrainsTubesFalling_Falling(k);
   }
@@ -710,7 +710,7 @@ void MotherBrainsTubesFalling_Falling(uint16 k) {  // 0xA98BD6
   uint16 ypos = E->base.y_pos;
   if (!sign16(ypos - 244))
     E->base.properties |= kEnemyProps_Invisible;
-  Enemy_MotherBrainsTubesFalling *E1 = Get_MotherBrainsTubesFalling(0x40u);
+  Enemy_MotherBrainsTubesFalling *E1 = Get_MotherBrainsTubesFalling(0x40);
   E1->base.y_pos = ypos - 56;
   if (sign16(E1->base.y_pos - 0xc4)) {
     MotherBrainsTubesFalling_HandleSmoke(k);
@@ -793,16 +793,16 @@ void MotherBrainBody_FakeDeath_Ascent_5_DrawBG1RowCD(void) {  // 0xA98CFA
 void MotherBrainBody_FakeDeath_Ascent_6_SetupPhase2Gfx(void) {  // 0xA98D11
   *(uint16 *)&layer2_scroll_x = 257;
   *(uint16 *)&reg_BG2SC &= 0xFFFCu;
-  WriteColorsToPalette(0x142u, 0xa9, addr_kMotherBrainPalette_1__plus__2, 0xFu);
-  WriteColorsToPalette(0x162u, 0xa9, addr_kMotherBrainPalette_0__plus__2, 0xFu);
+  WriteColorsToPalette(0x142, 0xa9, addr_kMotherBrainPalette_1 + 2, 0xF);
+  WriteColorsToPalette(0x162, 0xa9, addr_kMotherBrainPalette_0 + 2, 0xF);
   Get_MotherBrain(0)->mbn_var_A = FUNC16(MotherBrainBody_FakeDeath_Ascent_7_SetupPhase2Brain);
   nmi_flag_bg2_enemy_vram_transfer = 1;
-  Get_MotherBrain(0x40u)->mbn_var_02 = 1;
+  Get_MotherBrain(0x40)->mbn_var_02 = 1;
 }
 
 void MotherBrainBody_FakeDeath_Ascent_7_SetupPhase2Brain(void) {  // 0xA98D49
   fx_layer_blending_config_a = 52;
-  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40u);
+  Enemy_MotherBrainBody *E = Get_MotherBrainBody(0x40);
   E->mbby_var_A = FUNC16(MotherBrainsBrain_SetupBrainAndNeckToDraw);
   Enemy_MotherBrainBody *E0 = Get_MotherBrainBody(0);
   E0->base.properties &= ~kEnemyProps_Tangible;
@@ -815,7 +815,7 @@ void MotherBrainBody_FakeDeath_Ascent_7_SetupPhase2Brain(void) {  // 0xA98D49
 
 void MotherBrainBody_FakeDeath_Ascent_8_Pause(void) {  // 0xA98D79
   Enemy_MotherBrainBody *E = Get_MotherBrainBody(0);
-  if ((--E->mbby_var_F & 0x8000u) != 0) {
+  if ((--E->mbby_var_F & 0x8000) != 0) {
     E->mbby_var_A = FUNC16(MotherBrainBody_FakeDeath_Ascent_9_PrepareRise);
     E->mbby_var_F = 32;
     MotherBrainBody_FakeDeath_Ascent_9_PrepareRise();
@@ -824,9 +824,9 @@ void MotherBrainBody_FakeDeath_Ascent_8_Pause(void) {  // 0xA98D79
 
 void MotherBrainBody_FakeDeath_Ascent_9_PrepareRise(void) {  // 0xA98D8B
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     E->mbn_var_09 = MotherBrainRisingHdmaObject();
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->base.properties |= 0x100u;
     MotherBrain_SetBrainInstrs(addr_stru_A99C21);
     E->mbn_var_A = FUNC16(MotherBrainBody_FakeDeath_Ascent_10_LoadLegTiles);
@@ -844,7 +844,7 @@ void MotherBrainBody_FakeDeath_Ascent_10_LoadLegTiles(void) {  // 0xA98DB4
 
 void MotherBrainBody_FakeDeath_Ascent_11_ContinuePause(void) {  // 0xA98DC3
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     E->base.x_pos = 59;
     E->base.y_pos = 279;
     reg_BG2HOFS = -27;
@@ -856,7 +856,7 @@ void MotherBrainBody_FakeDeath_Ascent_11_ContinuePause(void) {  // 0xA98DC3
 
 void MotherBrainBody_FakeDeath_Ascent_12_StartMusic(void) {  // 0xA98DEC
   MotherBrain_SetBodyInstrs(addr_kMotherBrain_Ilist_9A02);
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   E1->base.instruction_timer = 1;
   Enemy_MotherBrain *E0 = Get_MotherBrain(0);
   E0->base.properties &= ~kEnemyProps_Invisible;
@@ -906,12 +906,12 @@ void MotherBrainBody_FakeDeath_Ascent_14_WaitForUncouching(void) {  // 0xA98E95
 
 void MotherBrainBody_FakeDeath_Ascent_15_TransitionFromGrey(void) {  // 0xA98EAA
   Enemy_MotherBrain *E0 = Get_MotherBrain(0);
-  if ((--E0->mbn_var_F & 0x8000u) != 0) {
+  if ((--E0->mbn_var_F & 0x8000) != 0) {
     E0->mbn_var_F = 4;
     uint16 v3 = E0->mbn_var_37 + 1;
     E0->mbn_var_37 = v3;
     if (MotherBrain_FadeFromGray_FakeDeath(v3 - 1) & 1) {
-      Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+      Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
       E1->mbn_var_10 = 1;
       E0->mbn_var_00 = 2;
       E1->mbn_var_12 = 1;
@@ -926,10 +926,10 @@ void MotherBrainBody_FakeDeath_Ascent_15_TransitionFromGrey(void) {  // 0xA98EAA
 
 void MotherBrainBody_2ndphase_16_ShakeHeadMenacingly(void) {  // 0xA98EF5
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9B7F);
     E->mbn_var_A = FUNC16(MotherBrainBody_2ndphase_17_BringHeadBackUp);
-    Get_MotherBrain(0x40u)->mbn_var_34 = 64;
+    Get_MotherBrain(0x40)->mbn_var_34 = 64;
     E->mbn_var_F = 256;
     MotherBrainBody_2ndphase_17_BringHeadBackUp();
   }
@@ -937,8 +937,8 @@ void MotherBrainBody_2ndphase_16_ShakeHeadMenacingly(void) {  // 0xA98EF5
 
 void MotherBrainBody_2ndphase_17_BringHeadBackUp(void) {  // 0xA98F14
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  if ((--E->mbn_var_F & 0x8000) != 0) {
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->mbn_var_32 = 2;
     E1->mbn_var_33 = 4;
     E->mbn_var_A = FUNC16(MotherBrainBody_2ndphase_18_FinishStretching);
@@ -949,15 +949,15 @@ void MotherBrainBody_2ndphase_17_BringHeadBackUp(void) {  // 0xA98F14
 
 void MotherBrainBody_2ndphase_18_FinishStretching(void) {  // 0xA98F33
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
-    Get_MotherBrain(0x40u)->mbn_var_14 = 1;
+  if ((--E->mbn_var_F & 0x8000) != 0) {
+    Get_MotherBrain(0x40)->mbn_var_14 = 1;
     E->mbn_var_A = FUNC16(MotherBrain_Body_Phase2_Thinking);
   }
 }
 
 void MotherBrain_SpawnDustCloudsForAscent(void) {  // 0xA98F46
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
-  if ((--E->mbn_var_F & 0x8000u) != 0)
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
+  if ((--E->mbn_var_F & 0x8000) != 0)
     E->mbn_var_F = 7;
   R18_ = g_word_A98F7F[E->mbn_var_F];
   R20_ = 212;
@@ -968,7 +968,7 @@ void MotherBrain_SpawnDustCloudsForAscent(void) {  // 0xA98F46
 }
 
 void MotherBrain_SetupNeckForFakeAscent(void) {  // 0xA9903F
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   E->mbn_var_24 = 2;
   E->mbn_var_27 = 10;
   E->mbn_var_2D = 10;
@@ -980,7 +980,7 @@ void MotherBrain_SetupNeckForFakeAscent(void) {  // 0xA9903F
 }
 
 void MotherBrain_HandleNeckLower(void) {  // 0xA99072
-  uint16 mbn_var_32 = Get_MotherBrain(0x40u)->mbn_var_32;
+  uint16 mbn_var_32 = Get_MotherBrain(0x40)->mbn_var_32;
   if (mbn_var_32) {
     switch (mbn_var_32) {
     case 2u:
@@ -1012,9 +1012,9 @@ void MotherBrain_HandleNeckLower_0(void) {  // 0xA99084
 void MotherBrain_HandleNeckLower_2_BobDown(void) {  // 0xA99085
   int16 v1;
 
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   v1 = E->mbn_var_20 - E->mbn_var_34;
-  if ((uint16)v1 < 0x2800u) {
+  if ((uint16)v1 < 0x2800) {
     E->mbn_var_32 = 4;
     v1 = 10240;
   }
@@ -1024,12 +1024,12 @@ void MotherBrain_HandleNeckLower_2_BobDown(void) {  // 0xA99085
 void MotherBrain_HandleNeckLower_4_BobUp(void) {  // 0xA990A2
   int16 v1;
 
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   if (sign16(E->base.y_pos - 60)) {
     E->mbn_var_32 = 2;
   } else {
     v1 = E->mbn_var_34 + E->mbn_var_20;
-    if ((uint16)v1 >= 0x9000u) {
+    if ((uint16)v1 >= 0x9000) {
       E->mbn_var_32 = 2;
       v1 = -28672;
     }
@@ -1040,9 +1040,9 @@ void MotherBrain_HandleNeckLower_4_BobUp(void) {  // 0xA990A2
 void MotherBrain_HandleNeckLower_6_Lower(void) {  // 0xA990CF
   int16 v1;
 
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   v1 = E->mbn_var_20 - E->mbn_var_34;
-  if ((uint16)v1 < 0x3000u) {
+  if ((uint16)v1 < 0x3000) {
     E->mbn_var_32 = 0;
     v1 = 12288;
   }
@@ -1052,9 +1052,9 @@ void MotherBrain_HandleNeckLower_6_Lower(void) {  // 0xA990CF
 void MotherBrain_HandleNeckLower_8_Raise(void) {  // 0xA990EC
   int16 v1;
 
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   v1 = E->mbn_var_34 + E->mbn_var_20;
-  if ((uint16)v1 >= 0x9000u) {
+  if ((uint16)v1 >= 0x9000) {
     E->mbn_var_32 = 0;
     v1 = -28672;
   }
@@ -1064,14 +1064,14 @@ void MotherBrain_HandleNeckLower_8_Raise(void) {  // 0xA990EC
 void MotherBrain_HandleNeckUpper(void) {  // 0xA99109
   int16 v2;
   int16 v6;
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   uint16 mbn_var_33 = E->mbn_var_33;
   if (mbn_var_33) {
     switch (mbn_var_33) {
     case 2u:
       if ((int16)(E->base.y_pos + 4 - samus_y_pos) < 0) {
         v2 = E->mbn_var_21 - E->mbn_var_34;
-        if ((uint16)v2 < 0x2000u) {
+        if ((uint16)v2 < 0x2000) {
           E->mbn_var_33 = 4;
           v2 = 0x2000;
         }
@@ -1093,7 +1093,7 @@ void MotherBrain_HandleNeckUpper(void) {  // 0xA99109
     }
     case 6u: {
       v6 = E->mbn_var_21 - E->mbn_var_34;
-      if ((uint16)v6 < 0x2000u) {
+      if ((uint16)v6 < 0x2000) {
         E->mbn_var_33 = 0;
         v6 = 0x2000;
       }
@@ -1123,7 +1123,7 @@ void MotherBrain_HandleNeck(void) {  // 0xA991B8
   E->mbn_var_0A = E->base.x_pos - 80;
   E->mbn_var_0B = E->base.y_pos + 46;
 
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   if (E1->mbn_var_31) {
     MotherBrain_HandleNeckLower();
     MotherBrain_HandleNeckUpper();
@@ -1212,7 +1212,7 @@ LABEL_10:
 
 void MotherBrain_DrawNeck(void) {  // 0xA99303
   if ((Get_MotherBrain(0)->base.properties & kEnemyProps_Invisible) == 0) {
-    Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+    Enemy_MotherBrain *E = Get_MotherBrain(0x40);
     R18_ = E->mbn_var_2E;
     R20_ = E->mbn_var_2F;
     MotherBrain_DrawNeckSegment();
@@ -1232,8 +1232,8 @@ void MotherBrain_DrawNeck(void) {  // 0xA99303
 }
 
 void MotherBrain_DrawBrain(void) {  // 0xA99357
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
-  if (E->mbn_var_14 && !E->mbn_var_15 && (random_number & 0x8000u) == 0)
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
+  if (E->mbn_var_14 && !E->mbn_var_15 && (random_number & 0x8000) == 0)
     SpawnEnemyProjectileWithRoomGfx(addr_kEproj_MotherBrainPurpleBreathSmall, random_number);
   int tt = MotherBrain_Func_1_DoubleRet();
   if (tt < 0)
@@ -1262,7 +1262,7 @@ void MotherBrain_DrawBrain(void) {  // 0xA99357
 }
 
 void MotherBrain_DrawNeckSegment(void) {  // 0xA993CB
-  int v0 = (uint8)(Get_MotherBrain(0x40u)->base.flash_timer & 6) >> 1;
+  int v0 = (uint8)(Get_MotherBrain(0x40)->base.flash_timer & 6) >> 1;
   R18_ += g_word_A993BB[v0];
   R20_ += g_word_A993C3[v0];
   R22_ = Get_MotherBrain(0)->mbn_var_0C;
@@ -1352,32 +1352,32 @@ void MotherBrain_FootstepEffect(void) {  // 0xA99599
 }
 
 uint16 MotherBrain_Instr_MoveBodyUp10Left4(uint16 k, uint16 j) {  // 0xA995B6
-  MotherBrain_MoveBodyDownScrollLeft(4u, 0xFFF6u);
+  MotherBrain_MoveBodyDownScrollLeft(4u, 0xFFF6);
   return j;
 }
 
 uint16 MotherBrain_Instr_MoveBodyUp16Left4(uint16 k, uint16 j) {  // 0xA995C0
-  MotherBrain_MoveBodyDownScrollLeft(4u, 0xFFF0u);
+  MotherBrain_MoveBodyDownScrollLeft(4u, 0xFFF0);
   return j;
 }
 
 uint16 MotherBrain_Instr_MoveBodyUp12Right2(uint16 k, uint16 j) {  // 0xA995CA
-  MotherBrain_MoveBodyDownScrollLeft(0xFFFEu, 0xFFF4u);
+  MotherBrain_MoveBodyDownScrollLeft(0xFFFE, 0xFFF4);
   return j;
 }
 
 uint16 MotherBrain_Instr_MoveDown12Left4(uint16 k, uint16 j) {  // 0xA995DE
-  MotherBrain_MoveBodyDownScrollLeft(4u, 0xCu);
+  MotherBrain_MoveBodyDownScrollLeft(4u, 0xC);
   return j;
 }
 
 uint16 MotherBrain_Instr_MoveDown16Right2(uint16 k, uint16 j) {  // 0xA995E8
-  MotherBrain_MoveBodyDownScrollLeft(0xFFFEu, 0x10u);
+  MotherBrain_MoveBodyDownScrollLeft(0xFFFE, 0x10);
   return j;
 }
 
 uint16 MotherBrain_Instr_MoveDown10Right2(uint16 k, uint16 j) {  // 0xA995F2
-  MotherBrain_MoveBodyDownScrollLeft(0xFFFEu, 0xAu);
+  MotherBrain_MoveBodyDownScrollLeft(0xFFFE, 0xA);
   return j;
 }
 
@@ -1536,7 +1536,7 @@ uint16 MotherBrain_Instr_SpawnDeathBeamEproj(uint16 k, uint16 j) {  // 0xA99AEF
   uint16 v2;
   printf("A undefined\n"); v2 = 0;
   QueueSfx2_Max6(0x63u);
-  SpawnEnemyProjectileWithGfx(v2, 0x40u, addr_kEproj_MotherBrainDeathBeamCharging);
+  SpawnEnemyProjectileWithGfx(v2, 0x40, addr_kEproj_MotherBrainDeathBeamCharging);
   return j;
 }
 
@@ -1551,12 +1551,12 @@ uint16 MotherBrain_Instr_Goto(uint16 k) {  // 0xA99B0F
 }
 
 uint16 MotherBrain_Instr_EnableNeckMovementGoto(uint16 k) {  // 0xA99B14
-  Get_MotherBrain(0x40u)->mbn_var_31 = 1;
+  Get_MotherBrain(0x40)->mbn_var_31 = 1;
   return *(uint16 *)RomPtr_A9(k);
 }
 
 uint16 MotherBrain_Instr_DisableNeckMovement(uint16 k) {  // 0xA99B20
-  Get_MotherBrain(0x40u)->mbn_var_31 = 0;
+  Get_MotherBrain(0x40)->mbn_var_31 = 0;
   return k;
 }
 
@@ -1573,7 +1573,7 @@ uint16 MotherBrain_Instr_QueueSfx3(uint16 k) {  // 0xA99B32
 }
 
 uint16 MotherBrain_Instr_SpawnDroolEproj(uint16 k) {  // 0xA99B3C
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   if (E->mbn_var_12) {
     uint16 v2 = E->mbn_var_13 + 1;
     if (!sign16(E->mbn_var_13 - 5))
@@ -1595,7 +1595,7 @@ uint16 MotherBrain_Instr_SpawnPurpleBreath(uint16 k) {  // 0xA99B6D
 }
 
 uint16 MotherBrain_Instr_SetMainShakeTimer50(uint16 k) {  // 0xA99B77
-  Get_MotherBrain(0x40u)->mbn_var_00 = 50;
+  Get_MotherBrain(0x40)->mbn_var_00 = 50;
   return k;
 }
 
@@ -1607,7 +1607,7 @@ uint16 MotherBrain_Instr_GotoEitherOr(uint16 k) {  // 0xA99C65
 }
 
 uint16 MotherBrain_Instr_MaybeGoto(uint16 k) {  // 0xA99CAD
-  if (random_number < 0xF000u)
+  if (random_number < 0xF000)
     return addr_stru_A99C9F;
   return k;
 }
@@ -1635,7 +1635,7 @@ uint16 MotherBrain_Instr_SpawnBlueRingEproj(uint16 k) {  // 0xA99E29
 }
 
 uint16 MotherBrain_Instr_AimRingsAtShitroid(uint16 k) {  // 0xA99E37
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   Enemy_MotherBrain *E1 = Get_MotherBrain(E->mbn_var_0A);
   R18_ = E1->base.x_pos - E->base.x_pos - 10;
   R20_ = E1->base.y_pos - E->base.y_pos - 16;
@@ -1644,7 +1644,7 @@ uint16 MotherBrain_Instr_AimRingsAtShitroid(uint16 k) {  // 0xA99E37
 }
 
 uint16 MotherBrain_Instr_AimRingsAtSamus(uint16 k) {  // 0xA99E5B
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   R18_ = samus_x_pos - E->base.x_pos - 10;
   R20_ = samus_y_pos - E->base.y_pos - 16;
   MotherBrain_Instr_AimRings();
@@ -1690,7 +1690,7 @@ uint16 MotherBrain_Instr_SpawnBombEproj(uint16 k) {  // 0xA99EBD
 }
 
 uint16 MotherBrain_Instr_SpawnLaserEproj(uint16 k) {  // 0xA99F46
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   E->mbn_var_31 = 0;
   R18_ = E->base.x_pos + 16;
   R20_ = E->base.y_pos + 4;
@@ -1706,7 +1706,7 @@ uint16 MotherBrain_Instr_SpawnRainbowEproj(uint16 k) {  // 0xA99F84
 }
 
 uint16 MotherBrain_Instr_SetupFxForRainbowBeam(uint16 k) {  // 0xA99F8E
-  Get_MotherBrain(0x40u)->mbn_var_14 = 0;
+  Get_MotherBrain(0x40)->mbn_var_14 = 0;
   MotherBrain_SetupBrainPalForLaser();
   QueueSfx2_Max6(0x7Fu);
   return k;
@@ -1715,10 +1715,10 @@ uint16 MotherBrain_Instr_SetupFxForRainbowBeam(uint16 k) {  // 0xA99F8E
 void MotherBrain_Phase3_Death_0(void) {  // 0xA9AEE1
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   E->base.properties |= kEnemyProps_Tangible;
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   E1->base.properties |= 0x400u;
   E->mbn_var_04 = 0;
-  if (MotherBrain_MakeWalkBackwards(0x28u, 6u) & 1) {
+  if (MotherBrain_MakeWalkBackwards(0x28, 6u) & 1) {
     E->mbn_var_A = FUNC16(MotherBrain_Phase3_Death_1);
     E->mbn_var_F = 128;
     MotherBrain_Phase3_Death_1();
@@ -1728,15 +1728,15 @@ void MotherBrain_Phase3_Death_0(void) {  // 0xA9AEE1
 void MotherBrain_Phase3_Death_1(void) {  // 0xA9AF12
   MotherBrain_GenerateSmokyExplosions();
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0)
+  if ((--E->mbn_var_F & 0x8000) != 0)
     E->mbn_var_A = FUNC16(MotherBrain_Phase3_Death_2);
 }
 
 void MotherBrain_Phase3_Death_2(void) {  // 0xA9AF21
   MotherBrain_GenerateSmokyExplosions();
-  if (MotherBrain_MakeWalkForwards(2u, 0x60u) & 1) {
+  if (MotherBrain_MakeWalkForwards(2u, 0x60) & 1) {
     MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9C39);
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->mbn_var_32 = 6;
     E1->mbn_var_33 = 6;
     E1->mbn_var_34 = 1280;
@@ -1749,8 +1749,8 @@ void MotherBrain_Phase3_Death_2(void) {  // 0xA9AF21
 void MotherBrain_Phase3_Death_3(void) {  // 0xA9AF54
   MotherBrain_GenerateSmokyExplosions();
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  if ((--E->mbn_var_F & 0x8000) != 0) {
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->mbn_var_32 = 0;
     E1->mbn_var_33 = 0;
     E1->mbn_var_12 = 0;
@@ -1771,7 +1771,7 @@ void MotherBrain_Phase3_Death_3(void) {  // 0xA9AF54
 void MotherBrain_Phase3_Death_4(void) {  // 0xA9AF9D
   MotherBrain_GenerateMixedExplosions();
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     E->mbn_var_37 = 0;
     E->mbn_var_A = FUNC16(MotherBrain_Phase3_Death_5);
     E->mbn_var_F = 0;
@@ -1783,7 +1783,7 @@ void MotherBrain_Phase3_Death_5(void) {  // 0xA9AFB6
   HandleMotherBrainBodyFlickering();
   MotherBrain_GenerateMixedExplosions();
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     E->mbn_var_F = 16;
     uint16 v2 = E->mbn_var_37 + 1;
     E->mbn_var_37 = v2;
@@ -1803,14 +1803,14 @@ void MotherBrain_Phase3_Death_5(void) {  // 0xA9AFB6
 void MotherBrain_Phase3_Death_6(void) {  // 0xA9B013
   MotherBrain_GenerateMixedExplosions();
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0)
+  if ((--E->mbn_var_F & 0x8000) != 0)
     E->mbn_var_A = FUNC16(MotherBrain_Phase3_Death_7);
 }
 
 void MotherBrain_GenerateSmokyExplosions(void) {  // 0xA9B022
   R22_ = addr_word_A9B10F;
   R24_ = 2;
-  MotherBrain_GenerateExplosions(0x10u);
+  MotherBrain_GenerateExplosions(0x10);
 }
 
 void MotherBrain_GenerateMixedExplosions(void) {  // 0xA9B031
@@ -1820,11 +1820,11 @@ void MotherBrain_GenerateMixedExplosions(void) {  // 0xA9B031
 }
 
 void MotherBrain_GenerateExplosions(uint16 a) {  // 0xA9B03E
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
-  bool v2 = (--E->mbn_var_E & 0x8000u) != 0;
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
+  bool v2 = (--E->mbn_var_E & 0x8000) != 0;
   if (v2) {
     E->mbn_var_E = a;
-    v2 = (--E->mbn_var_F & 0x8000u) != 0;
+    v2 = (--E->mbn_var_F & 0x8000) != 0;
     if (v2)
       E->mbn_var_F = 6;
     uint16 v3 = 16 * E->mbn_var_F;
@@ -1838,9 +1838,9 @@ void MotherBrain_GenerateExplosions(uint16 a) {  // 0xA9B03E
       uint16 *v6 = (uint16 *)RomPtr_A9(R22_);
       uint16 v7 = *v6;
       uint16 Random = NextRandom();
-      if (Random >= 0x4000u) {
+      if (Random >= 0x4000) {
         v7 = v6[1];
-        if (Random >= 0xE000u)
+        if (Random >= 0xE000)
           v7 = v6[2];
       }
       SpawnEnemyProjectileWithRoomGfx(addr_kEproj_MotherBrainDeathExplosion, v7);
@@ -1853,7 +1853,7 @@ void MotherBrain_GenerateExplosions(uint16 a) {  // 0xA9B03E
 
 void MotherBrain_Phase3_Death_7(void) {  // 0xA9B115
   MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9C29);
-  Get_MotherBrain(0x40u)->mbn_var_A = FUNC16(MotherBrainsBrain_SetupBrainToDraw);
+  Get_MotherBrain(0x40)->mbn_var_A = FUNC16(MotherBrainsBrain_SetupBrainToDraw);
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   E->mbn_var_F = 0;
   E->mbn_var_A = FUNC16(MotherBrain_Phase3_Death_8);
@@ -1866,7 +1866,7 @@ void MotherBrain_Phase3_Death_8(void) {  // 0xA9B12D
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   uint16 v1 = E->mbn_var_F + 32;
   E->mbn_var_F = v1;
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   v3 = E1->base.y_pos + HIBYTE(v1);
   if ((uint16)v3 >= 0xC4u) {
     EnableEarthquakeAframes(2u);
@@ -1887,7 +1887,7 @@ void MotherBrain_Phase3_Death_9(void) {  // 0xA9B15E
 
 void MotherBrain_Phase3_Death_10(void) {  // 0xA9B173
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     E->mbn_var_37 = 0;
     E->mbn_var_A = FUNC16(MotherBrain_Phase3_Death_11);
     E->mbn_var_F = 0;
@@ -1896,7 +1896,7 @@ void MotherBrain_Phase3_Death_10(void) {  // 0xA9B173
 
 void MotherBrain_Phase3_Death_11(void) {  // 0xA9B189
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     uint16 v2 = E->mbn_var_37 + 1;
     E->mbn_var_37 = v2;
     if (MotherBrain_FadeToGray_RealDeath(v2 - 1) & 1) {
@@ -1911,20 +1911,20 @@ void MotherBrain_Phase3_Death_11(void) {  // 0xA9B189
 
 void MotherBrain_Phase3_Death_12(void) {  // 0xA9B1B8
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     E->mbn_var_A = FUNC16(MotherBrain_Phase3_Death_13);
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->base.properties |= 0x400u;
     E->mbn_var_04 = 0;
   }
 }
 
 void MotherBrain_Phase3_Death_13(void) {  // 0xA9B1D5
-  if (ProcessCorpseRotting(0x40u) & 1) {
-    uint16 dms_var_53 = Get_DeadMonsters(0x40u)->dms_var_53;
+  if (ProcessCorpseRotting(0x40) & 1) {
+    uint16 dms_var_53 = Get_DeadMonsters(0x40)->dms_var_53;
     ProcessCorpseRottingVramTransfers(dms_var_53);
   } else {
-    Enemy_DeadMonsters *E1 = Get_DeadMonsters(0x40u);
+    Enemy_DeadMonsters *E1 = Get_DeadMonsters(0x40);
     E1->base.properties = E1->base.properties & 0xDEFF | 0x100;
     E1->base.extra_properties = 0;
     QueueMusic_Delayed8(0);
@@ -1938,8 +1938,8 @@ void MotherBrain_Phase3_Death_13(void) {  // 0xA9B1D5
 
 void MotherBrain_Phase3_Death_14_20framedelay(void) {  // 0xA9B211
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  if ((--E->mbn_var_F & 0x8000) != 0) {
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->base.x_pos = 0;
     E1->base.y_pos = 0;
     E->mbn_var_A = FUNC16(MotherBrain_Phase3_Death_15_LoadEscapeTimerTiles);
@@ -1947,12 +1947,12 @@ void MotherBrain_Phase3_Death_14_20framedelay(void) {  // 0xA9B211
 }
 
 void MotherBrain_CorpseRottingFinished(void) {  // 0xA9B223
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   R18_ = E1->base.x_pos + (random_number & 0x1F) - 16;
   R20_ = E1->base.y_pos + 16;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0xAu);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0xA);
   if ((enemy_damage_routine_exec_count & 7) == 0)
-    QueueSfx2_Max3(0x10u);
+    QueueSfx2_Max3(0x10);
 }
 
 void MotherBrain_Phase3_Death_15_LoadEscapeTimerTiles(void) {  // 0xA9B258
@@ -1964,7 +1964,7 @@ void MotherBrain_Phase3_Death_15_LoadEscapeTimerTiles(void) {  // 0xA9B258
 
 void MotherBrain_Phase3_Death_16_StartEscape(void) {  // 0xA9B26D
   if (ProcessSpriteTilesTransfers(0xa9, addr_stru_A9902F)) {
-    WriteColorsToPalette(0x122u, 0xa9, addr_kMotherBrainPalette_5__plus__2, 0xEu);
+    WriteColorsToPalette(0x122, 0xa9, addr_kMotherBrainPalette_5 + 2, 0xE);
     QueueMusic_Delayed8(7u);
     earthquake_type = 5;
     earthquake_timer = -1;
@@ -1972,7 +1972,7 @@ void MotherBrain_Phase3_Death_16_StartEscape(void) {  // 0xA9B26D
     SpawnPalfxObject(addr_kPalfx_FFCD);
     SpawnPalfxObject(addr_kPalfx_FFD1);
     SpawnPalfxObject(addr_kPalfx_FFD5);
-    Get_MotherBrain(0x40u)->mbn_var_02 = 0;
+    Get_MotherBrain(0x40)->mbn_var_02 = 0;
     SetupZebesEscapeTypewriter();
     Enemy_MotherBrain *E = Get_MotherBrain(0);
     E->mbn_var_F = 32;
@@ -1985,7 +1985,7 @@ void MotherBrain_Phase3_Death_16_StartEscape(void) {  // 0xA9B26D
 
 void MotherBrain_Phase3_Death_17_SpawnTimeBomb(void) {  // 0xA9B2D1
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     E->mbn_var_A = FUNC16(MotherBrain_Phase3_Death_18_TypesZebesText);
     SpawnEnemyProjectileWithRoomGfx(
       addr_kEproj_TimeBombSetJapaneseText,
@@ -1995,7 +1995,7 @@ void MotherBrain_Phase3_Death_17_SpawnTimeBomb(void) {  // 0xA9B2D1
 }
 
 void MotherBrain_Phase3_Death_18_TypesZebesText(void) {  // 0xA9B2E3
-  if (HandleTypewriterText_Ext(0x2610u) & 1) {
+  if (HandleTypewriterText_Ext(0x2610) & 1) {
     Enemy_MotherBrain *E = Get_MotherBrain(0);
     E->mbn_var_A = FUNC16(MotherBrain_Phase3_Death_19_EscapeDoorExploding);
     E->mbn_var_F = 32;
@@ -2005,13 +2005,13 @@ void MotherBrain_Phase3_Death_18_TypesZebesText(void) {  // 0xA9B2E3
 void MotherBrain_Phase3_Death_19_EscapeDoorExploding(void) {  // 0xA9B2F9
   MotherBrain_GenerateEscapeDoorExploding();
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     CallSomeSamusCode(0xFu);
     timer_status = 2;
     SetBossBitForCurArea(2u);
     SetEventHappened(0xEu);
     E->mbn_var_A = FUNC16(MotherBrain_Phase3_Death_20_BlowUpEscapeDoor);
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->mbn_var_E = 0;
     E1->mbn_var_F = 0;
   }
@@ -2033,7 +2033,7 @@ void MotherBrain_GenerateEscapeDoorExploding(void) {  // 0xA9B346
   int16 v1;
   int16 v2;
 
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   v1 = E->mbn_var_E - 1;
   E->mbn_var_E = v1;
   if (v1 < 0) {
@@ -2046,7 +2046,7 @@ void MotherBrain_GenerateEscapeDoorExploding(void) {  // 0xA9B346
     R18_ = g_word_A9B393[v3];
     R20_ = g_word_A9B393[v3 + 1];
     uint16 v4 = 3;
-    if (NextRandom() < 0x4000u)
+    if (NextRandom() < 0x4000)
       v4 = 12;
     SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, v4);
     QueueSfx2_Max3(0x24u);
@@ -2074,7 +2074,7 @@ void MotherBrain_SamusCollDetect(void) {  // 0xA9B3B6
           R20_ = E0->base.y_pos,
           !(MotherBrain_SamusCollDetectPart(addr_word_A9B427) & 1))) {
 
-    Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+    Enemy_MotherBrain *E = Get_MotherBrain(0x40);
     v1 = R26_ & 1;
     R26_ >>= 1;
     if (!v1
@@ -2167,7 +2167,7 @@ void MotherBrainsBrain_Shot(void) {  // 0xA9B507
       plm_room_arguments[39] += g_byte_A9B546[v1];
       QueueSfx2_Max6(0x6Eu);
       v2 = 13;
-      Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+      Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
       uint16 flash_timer = E1->base.flash_timer;
       if (flash_timer) {
         if (flash_timer & 1)
@@ -2202,7 +2202,7 @@ void MotherBrain_Phase3_BeamShotReaction(void) {  // 0xA9B5A9
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   v1 = E->mbn_var_07 - 266;
   if (v1 < 0) {
-    Get_MotherBrain(0x40u)->mbn_var_18 = FUNC16(MotherBrain_Phase3_Neck_SetupHyperBeamRecoil);
+    Get_MotherBrain(0x40)->mbn_var_18 = FUNC16(MotherBrain_Phase3_Neck_SetupHyperBeamRecoil);
     v1 = 0;
     E->mbn_var_F = 0;
   }
@@ -2233,7 +2233,7 @@ void MotherBrain_HurtSamus(void) {  // 0xA9B5E1
 
 void MotherBrain_Body_Phase2_Thinking(void) {  // 0xA9B605
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   if (!E1->base.health) {
     E->mbn_var_A = FUNC16(MotherBomb_FiringRainbowBeam_0);
     MotherBomb_FiringRainbowBeam_0();
@@ -2241,7 +2241,7 @@ void MotherBrain_Body_Phase2_Thinking(void) {  // 0xA9B605
   }
   if (!E->mbn_var_02) {
     if (!sign16(E1->base.health - 4500)) {
-      if (random_number >= 0x1000u) {
+      if (random_number >= 0x1000) {
 LABEL_6:
         MotherBrain_HandleWalking();
         return;
@@ -2250,9 +2250,9 @@ LABEL_7:
       E->mbn_var_A = FUNC16(MotherBrain_Body_Phase2_TryAttack);
       return;
     }
-    if (random_number < 0x2000u)
+    if (random_number < 0x2000)
       goto LABEL_6;
-    if (random_number >= 0xA000u)
+    if (random_number >= 0xA000)
       goto LABEL_7;
     E->mbn_var_A = FUNC16(MotherBomb_FiringDeathBeam);
   }
@@ -2280,8 +2280,8 @@ void MotherBrain_Body_Phase2_TryAttack(void) {  // 0xA9B64B
     if (MotherBrain_Phase2_DecideAttackStrategy_DoubleRet())
       return;
     uint16 v2 = addr_byte_A9B6DC;
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
-    if (abs16(E1->base.y_pos + 4 - samus_y_pos) < 0x20u)
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
+    if (abs16(E1->base.y_pos + 4 - samus_y_pos) < 0x20)
       v2 = addr_byte_A9B6DF;
     uint16 v4 = 0;
     uint8 *v5 = RomPtr_A9(v2);
@@ -2313,7 +2313,7 @@ uint8 MotherBrain_Phase2_DecideAttackStrategy_DoubleRet(void) {  // 0xA9B6E2
     if (sign16((uint8)random_number - 128)) {
       return 0;
     } else {
-      Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+      Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
       if (sign16(E1->mbn_var_05 - 1)) {
         Get_MotherBrain(0)->mbn_var_A = FUNC16(MotherBrain_FiringBomb_DecideOnWalking);
         MotherBrain_FiringBomb_DecideOnWalking();
@@ -2345,12 +2345,12 @@ void MotherBrain_Phase2_Attack_End(void) {  // 0xA9B773
 }
 
 void MotherBrain_FiringBomb_DecideOnWalking(void) {  // 0xA9B781
-  if (random_number >= 0xFF80u) {
+  if (random_number >= 0xFF80) {
     MotherBrain_FiringBomb_DecideOnCrouching();
     return;
   }
   uint16 v0 = 64;
-  if (random_number < 0x6000u)
+  if (random_number < 0x6000)
     v0 = 96;
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   if ((int16)(v0 - E->base.x_pos) >= 0
@@ -2368,7 +2368,7 @@ void MotherBrain_FiringBomb_WalkingBackwards(void) {  // 0xA9B7AC
 }
 
 void MotherBrain_FiringBomb_DecideOnCrouching(void) {  // 0xA9B7B7
-  if (NextRandom() >= 0x8000u) {
+  if (NextRandom() >= 0x8000) {
     Get_MotherBrain(0)->mbn_var_A = FUNC16(MotherBrain_FiringBomb_Crouch);
     MotherBrain_FiringBomb_Crouch();
   } else {
@@ -2393,7 +2393,7 @@ void MotherBrain_B7CB(void) {  // 0xA9B7CB
 
 void MotherBrain_FiringBomb_Fired(void) {  // 0xA9B7E8
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     if (MotherBrain_MakeHerStandUp() & 1) {
       MotherBrain_FiringBomb_Finish();
     } else {
@@ -2420,7 +2420,7 @@ void MotherBomb_FiringLaser_PositionHead(void) {  // 0xA9B80E
   int16 v0;
 
   v0 = 8;
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   if ((int16)(E1->base.y_pos - samus_y_pos) < 0)
     v0 = 6;
   E1->mbn_var_32 = v0;
@@ -2435,10 +2435,10 @@ void MotherBomb_FiringLaser_PositionHeadSlowlyFire(void) {  // 0xA9B839
   int16 v2;
 
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     v2 = 256;
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
-    if ((E1->mbn_var_34 & 0x8000u) != 0)
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
+    if ((E1->mbn_var_34 & 0x8000) != 0)
       v2 = -256;
     E1->mbn_var_34 = v2;
     MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9F34);
@@ -2449,8 +2449,8 @@ void MotherBomb_FiringLaser_PositionHeadSlowlyFire(void) {  // 0xA9B839
 
 void MotherBomb_FiringLaser_FinishAttack(void) {  // 0xA9B863
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  if ((--E->mbn_var_F & 0x8000) != 0) {
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->mbn_var_32 = 4;
     E1->mbn_var_33 = 4;
     E->mbn_var_A = FUNC16(MotherBrain_Body_Phase2_Thinking);
@@ -2471,8 +2471,8 @@ void MotherBomb_FiringDeathBeam(void) {
 }
 
 void MotherBomb_FiringDeathBeam_0(void) {  // 0xA9B88F
-  if (MotherBrain_MakeWalkBackwards(0x28u, 8u) & 1) {
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  if (MotherBrain_MakeWalkBackwards(0x28, 8u) & 1) {
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->mbn_var_32 = 8;
     E1->mbn_var_33 = 6;
     Enemy_MotherBrain *E = Get_MotherBrain(0);
@@ -2481,7 +2481,7 @@ void MotherBomb_FiringDeathBeam_0(void) {  // 0xA9B88F
 }
 
 void MotherBomb_FiringDeathBeam_1(void) {  // 0xA9B8B2
-  if (!Get_MotherBrain(0x40u)->mbn_var_05) {
+  if (!Get_MotherBrain(0x40)->mbn_var_05) {
     MotherBrain_SetBodyInstrs(addr_kMotherBrain_Ilist_9A42);
     Enemy_MotherBrain *E = Get_MotherBrain(0);
     ++E->mbn_var_17;
@@ -2494,7 +2494,7 @@ void MotherBomb_FiringDeathBeam_2(void) {  // 0xA9B8C8
 
 void MotherBomb_FiringDeathBeam_3(void) {  // 0xA9B8C9
   MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9C87);
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   E1->mbn_var_32 = 2;
   E1->mbn_var_33 = 4;
   Enemy_MotherBrain *E = Get_MotherBrain(0);
@@ -2504,7 +2504,7 @@ void MotherBomb_FiringDeathBeam_3(void) {  // 0xA9B8C9
 
 void MotherBomb_FiringRainbowBeam_0(void) {  // 0xA9B8EB
   MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9C87);
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   E1->mbn_var_34 = 64;
   E1->mbn_var_31 = 1;
   E1->mbn_var_32 = 2;
@@ -2517,7 +2517,7 @@ void MotherBomb_FiringRainbowBeam_0(void) {  // 0xA9B8EB
 
 void MotherBomb_FiringRainbowBeam_1_StartCharge(void) {  // 0xA9B91A
   Enemy_MotherBomb *E = Get_MotherBomb(0);
-  if ((--E->mbb_var_F & 0x8000u) != 0) {
+  if ((--E->mbb_var_F & 0x8000) != 0) {
     MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9F6C);
     E->mbb_var_A = FUNC16(MotherBomb_FiringRainbowBeam_2_RetractNeck);
     MotherBomb_FiringRainbowBeam_2_RetractNeck();
@@ -2535,7 +2535,7 @@ void MotherBomb_FiringRainbowBeam_2_RetractNeck(void) {  // 0xA9B92B
 
 void MotherBomb_FiringRainbowBeam_3_Wait(void) {  // 0xA9B93F
   Enemy_MotherBomb *E = Get_MotherBomb(0);
-  if ((--E->mbb_var_F & 0x8000u) != 0) {
+  if ((--E->mbb_var_F & 0x8000) != 0) {
     QueueSfx2_Max6(0x71u);
     E->mbb_var_A = FUNC16(MotherBomb_FiringRainbowBeam_4_ExtendNeckDown);
     MotherBomb_FiringRainbowBeam_4_ExtendNeckDown();
@@ -2544,7 +2544,7 @@ void MotherBomb_FiringRainbowBeam_3_Wait(void) {  // 0xA9B93F
 
 void MotherBomb_FiringRainbowBeam_4_ExtendNeckDown(void) {  // 0xA9B951
   cooldown_timer = 8;
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   E1->mbn_var_32 = 6;
   E1->mbn_var_33 = 6;
   E1->mbn_var_34 = 1280;
@@ -2558,13 +2558,13 @@ void MotherBomb_FiringRainbowBeam_5_StartFiring(void) {  // 0xA9B975
   MotherBrain_AimBeamAndIncrWidth();
   if (!power_bomb_flag) {
     Enemy_MotherBrain *E = Get_MotherBrain(0);
-    if ((--E->mbn_var_F & 0x8000u) != 0 && !power_bomb_flag) {
+    if ((--E->mbn_var_F & 0x8000) != 0 && !power_bomb_flag) {
       cooldown_timer = 0;
       MotherBrain_BodyRainbowBeamPalAnimIndex0();
       MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9C77);
       E->mbn_var_33 = 512;
       E->mbn_var_09 = SpawnMotherBrainRainbowBeamHdma();
-      Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+      Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
       E1->mbn_var_34 = 64;
       E1->mbn_var_31 = 1;
       E1->mbn_var_32 = 2;
@@ -2600,7 +2600,7 @@ void MotherBomb_FiringRainbowBeam_7_DelayFrame(void) {  // 0xA9BA00
   MotherBrain_HandleRainbowBeamExplosions();
   MotherBrain_MoveSamusTowardsWallDueToBeam();
   Enemy_MotherBomb *E = Get_MotherBomb(0);
-  if ((--E->mbb_var_F & 0x8000u) != 0) {
+  if ((--E->mbb_var_F & 0x8000) != 0) {
     earthquake_type = 8;
     earthquake_timer = 8;
     E->mbb_var_A = FUNC16(MotherBomb_FiringRainbowBeam_8_StartDrainSamus);
@@ -2625,7 +2625,7 @@ void MotherBomb_FiringRainbowBeam_9_DrainingSamus(void) {  // 0xA9BA3C
   Samus_DecrementAmmoDueToRainbowBeam();
   MotherBrain_MoveSamusTowardsMiddleOfWall();
   Enemy_MotherBomb *E = Get_MotherBomb(0);
-  if ((--E->mbb_var_F & 0x8000u) != 0)
+  if ((--E->mbb_var_F & 0x8000) != 0)
     E->mbb_var_A = FUNC16(MotherBomb_FiringRainbowBeam_10_FinishFiringRainbow);
 }
 
@@ -2666,7 +2666,7 @@ void MotherBomb_FiringRainbowBeam_12_WaitForSamusHitGround(void) {  // 0xA9BAD1
 }
 
 void MotherBomb_FiringRainbowBeam_13_LowerHead(void) {  // 0xA9BADD
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   E1->mbn_var_34 = 64;
   E1->mbn_var_31 = 1;
   E1->mbn_var_32 = 2;
@@ -2678,9 +2678,9 @@ void MotherBomb_FiringRainbowBeam_13_LowerHead(void) {  // 0xA9BADD
 
 void MotherBomb_FiringRainbowBeam_14_DecideNextAction(void) {  // 0xA9BB06
   Enemy_MotherBomb *E = Get_MotherBomb(0);
-  if ((--E->mbb_var_F & 0x8000u) != 0) {
+  if ((--E->mbb_var_F & 0x8000) != 0) {
     if (sign16(samus_health - 400)) {
-      MotherBrain_MakeWalkForwards(0xAu, E->base.x_pos + 16);
+      MotherBrain_MakeWalkForwards(0xA, E->base.x_pos + 16);
       E->mbb_var_A = FUNC16(MotherBrain_Phase2Cut_0);
     } else {
       E->mbb_var_A = FUNC16(MotherBomb_FiringRainbowBeam_0);
@@ -2695,20 +2695,20 @@ void MotherBrain_PlayRainbowBeamSfx(void) {  // 0xA9BB2E
   mbn_var_15 = E->mbn_var_15;
   if (mbn_var_15 >= 0) {
     E->mbn_var_15 = mbn_var_15 - 1;
-    QueueSfx1_Max6(0x40u);
+    QueueSfx1_Max6(0x40);
     E->mbn_var_16 = 1;
   }
 }
 
 uint8 MotherBrain_WalkBackwardsSlowlyAndRetractHead(uint16 a) {  // 0xA9BB48
-  uint8 rv = MotherBrain_MakeWalkBackwards(a, 0xAu);
+  uint8 rv = MotherBrain_MakeWalkBackwards(a, 0xA);
   if (rv)
     MotherBrain_RetractHead();
   return rv;
 }
 
 void MotherBrain_RetractHead(void) {  // 0xA9BB51
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   E->mbn_var_34 = 80;
   E->mbn_var_31 = 1;
   E->mbn_var_32 = 8;
@@ -2727,7 +2727,7 @@ void MotherBrain_AimBeamAndIncrWidth(void) {  // 0xA9BB6E
 }
 
 void MotherBrain_AimBeam(void) {  // 0xA9BB82
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   R18_ = samus_x_pos - E->base.x_pos - 16;
   R20_ = samus_y_pos - E->base.y_pos - 4;
   uint16 v1 = (uint8)-(int8)(CalculateAngleFromXY() + 0x80);
@@ -2739,10 +2739,10 @@ void MotherBrain_CalculateRainbowBeamHdma_(void) {  // 0xA9BBB0
 }
 
 uint8 MotherBrain_MoveSamusTowardsWallDueToBeam(void) {  // 0xA9BBB5
-  uint8 v0 = MotherBrain_MoveSamusHorizTowardsWall(0x1000u);
+  uint8 v0 = MotherBrain_MoveSamusHorizTowardsWall(0x1000);
   if (!v0) {
     R18_ = Get_MotherBrain(0)->mbn_var_31;
-    uint16 v1 = Math_MultByCos(0x1000u);
+    uint16 v1 = Math_MultByCos(0x1000);
     MotherBrain_MoveSamusVerticallyTowardsCeilingFloor(v1);
   }
   return v0;
@@ -2809,7 +2809,7 @@ uint8 MotherBrain_MoveSamusHorizTowardsWall(uint16 a) {  // 0xA9BC3F
 
 void MotherBrain_HandleRainbowBeamExplosions(void) {  // 0xA9BC76
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_parameter_2 & 0x8000u) != 0) {
+  if ((--E->mbn_parameter_2 & 0x8000) != 0) {
     E->mbn_parameter_2 = 8;
     ++E->mbn_parameter_1;
     int v2 = E->mbn_parameter_1 & 7;
@@ -2821,13 +2821,13 @@ void MotherBrain_HandleRainbowBeamExplosions(void) {  // 0xA9BC76
 }
 
 void MotherBrain_BodyRainbowBeamPalAnimIndex0(void) {  // 0xA9BCC6
-  Get_MotherBrain(0x40u)->mbn_var_01 = 0;
+  Get_MotherBrain(0x40)->mbn_var_01 = 0;
 }
 
 void MotherBrain_WriteDefaultPalette(void) {  // 0xA9BCCE
-  WriteColorsToPalette(0x82u, 0xa9, addr_kMotherBrainsBrain_Palette__plus__2, 0xFu);
-  WriteColorsToPalette(0x122u, 0xa9, addr_kMotherBrainsBrain_Palette__plus__2, 0xFu);
-  WriteColorsToPalette(0x162u, 0xa9, addr_kMotherBrainPalette_0__plus__2, 0xFu);
+  WriteColorsToPalette(0x82, 0xa9, addr_kMotherBrainsBrain_Palette + 2, 0xF);
+  WriteColorsToPalette(0x122, 0xa9, addr_kMotherBrainsBrain_Palette + 2, 0xF);
+  WriteColorsToPalette(0x162, 0xa9, addr_kMotherBrainPalette_0 + 2, 0xF);
 }
 
 void MotherBrain_WritePhase2DeathPalette(void) {  // 0xA9BCF6
@@ -2836,26 +2836,26 @@ void MotherBrain_WritePhase2DeathPalette(void) {  // 0xA9BCF6
 
 void MotherBrain_HandleRainbowBeamPalette(void) {  // 0xA9BCFD
   if ((Get_MotherBrain(0)->base.frame_counter & 2) != 0) {
-    uint16 mbn_var_01 = Get_MotherBrain(0x40u)->mbn_var_01;
+    uint16 mbn_var_01 = Get_MotherBrain(0x40)->mbn_var_01;
     uint16 v1;
     do {
       v1 = mbn_var_01;
       mbn_var_01 = MotherBrain_RainbowBeamPalettes[mbn_var_01 >> 1];
     } while (!mbn_var_01);
     uint16 v2 = v1 + 2;
-    Get_MotherBrain(0x40u)->mbn_var_01 = v2;
+    Get_MotherBrain(0x40)->mbn_var_01 = v2;
     MotherBrain_WritePalette(*(uint16 *)((char *)MotherBrain_RainbowBeamPalettes + v2 - 2));
   }
 }
 
 void MotherBrain_WritePalette(uint16 j) {  // 0xA9BD1D
-  WriteColorsToPalette(0x82u, 0xad, j, 15);
-  WriteColorsToPalette(0x122u, 0xad, j, 15);
-  WriteColorsToPalette(0x162u, 0xad, j + 30, 15);
+  WriteColorsToPalette(0x82, 0xad, j, 15);
+  WriteColorsToPalette(0x122, 0xad, j, 15);
+  WriteColorsToPalette(0x162, 0xad, j + 30, 15);
 }
 
 void MotherBrain_Phase2Cut_0(void) {  // 0xA9BD45
-  uint16 v0 = SuitDamageDivision(0x50u);
+  uint16 v0 = SuitDamageDivision(0x50);
   if ((int16)(4 * v0 + 20 - samus_health) >= 0) {
     Get_MotherBrain(0)->mbn_var_A = FUNC16(MotherBrain_Phase2Cut_1);
   } else if ((random_number & 0xFFFu) < 0xFA0) {
@@ -2863,7 +2863,7 @@ void MotherBrain_Phase2Cut_0(void) {  // 0xA9BD45
       MotherBrain_MaybeStandupOrLeanDown();
   } else {
     uint16 v1;
-    if ((int16)(SuitDamageDivision(0xA0u) + 20 - samus_health) >= 0
+    if ((int16)(SuitDamageDivision(0xA0) + 20 - samus_health) >= 0
         || (v1 = addr_kMotherBrain_Ilist_9ECC, (random_number & 0xFFFu) < 0xFF0)) {
       v1 = addr_kMotherBrain_Ilist_9D7F;
     }
@@ -2882,7 +2882,7 @@ void MotherBrain_Phase2Cut_1(void) {  // 0xA9BD98
 
 void MotherBrain_Phase2Cut_2(void) {  // 0xA9BDA9
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9B7F);
     E->mbn_var_A = FUNC16(MotherBrain_Phase2Cut_3);
     E->mbn_var_F = 256;
@@ -2891,7 +2891,7 @@ void MotherBrain_Phase2Cut_2(void) {  // 0xA9BDA9
 
 void MotherBrain_Phase2Cut_3(void) {  // 0xA9BDC1
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9F6C);
     E->mbn_var_A = FUNC16(MotherBrain_Phase2Cut_4);
     MotherBrain_Phase2Cut_4();
@@ -2910,10 +2910,10 @@ void MotherBrain_Phase2Cut_4(void) {  // 0xA9BDD2
 
 void MotherBrain_Phase2Cut_5(void) {  // 0xA9BDED
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     MotherBrain_BodyRainbowBeamPalAnimIndex0();
     MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9C77);
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->mbn_var_32 = 6;
     E1->mbn_var_33 = 6;
     E1->mbn_var_34 = 1280;
@@ -2923,13 +2923,13 @@ void MotherBrain_Phase2Cut_5(void) {  // 0xA9BDED
 }
 
 void MotherBrain_SpawnShitroidInCutscene(void) {  // 0xA9BE1B
-  Get_MotherBrain(0x40u)->mbn_var_0A = SpawnEnemy(0xA9u, addr_stru_A9BE28);
+  Get_MotherBrain(0x40)->mbn_var_0A = SpawnEnemy(0xA9, addr_stru_A9BE28);
 }
 
 void MotherBrain_DrainedByShitroid_0(void) {  // 0xA9BE38
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   E->mbn_var_00 = 3;
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   E1->mbn_var_32 = 8;
   E1->mbn_var_33 = 8;
   E1->mbn_var_34 = 1792;
@@ -2941,9 +2941,9 @@ void MotherBrain_DrainedByShitroid_0(void) {  // 0xA9BE38
 void MotherBrain_DrainedByShitroid_1(void) {  // 0xA9BE5D
   MotherBrain_HandleRainbowBeamPalette();
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     E->mbn_var_A = FUNC16(MotherBrain_DrainedByShitroid_2);
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->mbn_var_08 = FUNC16(MotherBrain_PainfulWalkForwards);
     E1->mbn_var_06 = 0;
     E1->mbn_var_07 = 2;
@@ -2963,7 +2963,7 @@ void CallMotherBrainPainfulWalk(uint32 ea) {
 }
 
 void MotherBrain_DrainedByShitroid_2(void) {  // 0xA9BE96
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   if (!E1->mbn_var_00)
     E1->mbn_var_00 = 50;
   MotherBrain_HandleRainbowBeamPalette();
@@ -2983,7 +2983,7 @@ void MotherBrain_DrainedByShitroid_2(void) {  // 0xA9BE96
 }
 
 void MotherBrain_DrainedByShitroid_3(void) {  // 0xA9BF0E
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   R18_ = E1->mbn_var_08;
   CallMotherBrainPainfulWalk(R18_ | 0xA90000);
   if (sign16(E1->mbn_var_06 - 8)) {
@@ -2998,15 +2998,15 @@ void MotherBrain_DrainedByShitroid_3(void) {  // 0xA9BF0E
 }
 
 void MotherBrain_DrainedByShitroid_4(void) {  // 0xA9BF41
-  if (MotherBrain_MakeWalkBackwards(0x28u, 0) & 1) {
+  if (MotherBrain_MakeWalkBackwards(0x28, 0) & 1) {
     Get_MotherBrain(0)->mbn_var_A = FUNC16(MotherBrain_DrainedByShitroid_5);
-    Get_MotherBrain(0x40u)->mbn_var_33 = 0;
+    Get_MotherBrain(0x40)->mbn_var_33 = 0;
     MotherBrain_DrainedByShitroid_5();
   }
 }
 
 void MotherBrain_DrainedByShitroid_5(void) {  // 0xA9BF56
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   if (!*(uint32 *)&E1->mbn_var_32) {
     E1->mbn_var_12 = E1->mbn_var_33 | E1->mbn_var_32;
     Enemy_MotherBrain *E = Get_MotherBrain(0);
@@ -3020,7 +3020,7 @@ void MotherBrain_DrainedByShitroid_5(void) {  // 0xA9BF56
 
 void MotherBrain_DrainedByShitroid_6(void) {  // 0xA9BF7D
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     E->mbn_var_37 = 0;
     E->mbn_var_A = FUNC16(MotherBrain_DrainedByShitroid_7);
     E->mbn_var_F = 16;
@@ -3030,14 +3030,14 @@ void MotherBrain_DrainedByShitroid_6(void) {  // 0xA9BF7D
 
 void MotherBrain_DrainedByShitroid_7(void) {  // 0xA9BF95
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  bool v2 = (--E->mbn_var_F & 0x8000u) != 0;
+  bool v2 = (--E->mbn_var_F & 0x8000) != 0;
   uint16 v3;
   if (v2
       && (E->mbn_var_F = 16,
           v3 = E->mbn_var_37 + 1,
           E->mbn_var_37 = v3,
           MotherBrain_FadeToGray_Drained(v3 - 1) & 1)) {
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->base.health = -29536;
     E->mbn_var_1F = 1;
     E1->mbn_var_14 = 0;
@@ -3047,15 +3047,15 @@ void MotherBrain_DrainedByShitroid_7(void) {  // 0xA9BF95
 }
 
 void MotherBrain_PainfulWalkForwards(void) {  // 0xA9BFD0
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
-  if (MotherBrain_MakeWalkForwards(E->mbn_var_07, 0x48u) & 1) {
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
+  if (MotherBrain_MakeWalkForwards(E->mbn_var_07, 0x48) & 1) {
     E->mbn_var_08 = FUNC16(MotherBrain_PainfulWalkingForwards);
     MotherBrain_SetPainfulWalkingTimer();
   }
 }
 
 void MotherBrain_PainfulWalkingForwards(void) {  // 0xA9BFE8
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   uint16 v1 = E->mbn_var_09 - 1;
   E->mbn_var_09 = v1;
   if (!v1) {
@@ -3065,15 +3065,15 @@ void MotherBrain_PainfulWalkingForwards(void) {  // 0xA9BFE8
 }
 
 void MotherBrain_PainfulWalkBackwards(void) {  // 0xA9C004
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
-  if (MotherBrain_MakeWalkBackwards(0x28u, E->mbn_var_07) & 1) {
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
+  if (MotherBrain_MakeWalkBackwards(0x28, E->mbn_var_07) & 1) {
     E->mbn_var_08 = FUNC16(MotherBrain_PainfulWalkingBackwards);
     MotherBrain_SetPainfulWalkingTimer();
   }
 }
 
 void MotherBrain_PainfulWalkingBackwards(void) {  // 0xA9C01C
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   uint16 v1 = E->mbn_var_09 - 1;
   E->mbn_var_09 = v1;
   if (!v1) {
@@ -3083,7 +3083,7 @@ void MotherBrain_PainfulWalkingBackwards(void) {  // 0xA9C01C
 }
 
 void MotherBrain_SetPainfulWalkingTimer(void) {  // 0xA9C038
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   E->mbn_var_09 = LOBYTE(g_word_A9C049[E->mbn_var_06]);
 }
 
@@ -3095,8 +3095,8 @@ void MotherBrain_Phase2_Revive_0(void) {  // 0xA9C059
 
 void MotherBrain_Phase2_Revive_1(void) {  // 0xA9C066
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  if ((--E->mbn_var_F & 0x8000) != 0) {
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->mbn_var_14 = 1;
     E1->mbn_var_12 = 1;
     E->mbn_var_A = FUNC16(MotherBrain_Phase2_Revive_2);
@@ -3114,7 +3114,7 @@ void MotherBrain_Phase2_Revive_2(void) {  // 0xA9C082
 
 void MotherBrain_Phase2_Revive_3(void) {  // 0xA9C08F
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  bool v1 = (--E->mbn_var_F & 0x8000u) != 0;
+  bool v1 = (--E->mbn_var_F & 0x8000) != 0;
   uint16 v2;
   if (v1
       && (E->mbn_var_F = 16,
@@ -3122,7 +3122,7 @@ void MotherBrain_Phase2_Revive_3(void) {  // 0xA9C08F
           E->mbn_var_37 = v2,
           MotherBrain_FadeFromGray_Drained(v2 - 1) & 1)) {
     E->mbn_var_A = FUNC16(MotherBrain_Phase2_Revive_4);
-    Get_MotherBrain(0x40u)->mbn_var_10 = 1;
+    Get_MotherBrain(0x40)->mbn_var_10 = 1;
     MotherBrain_SetupBrainNormalPal();
     MotherBrain_Phase2_Revive_4();
   }
@@ -3130,7 +3130,7 @@ void MotherBrain_Phase2_Revive_3(void) {  // 0xA9C08F
 
 void MotherBrain_Phase2_Revive_4(void) {  // 0xA9C0BA
   if (MotherBrain_MakeHerStandUp() & 1) {
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->mbn_var_32 = 6;
     E1->mbn_var_33 = 6;
     E1->mbn_var_34 = 1280;
@@ -3144,7 +3144,7 @@ void MotherBrain_Phase2_Revive_4(void) {  // 0xA9C0BA
 
 void MotherBrain_Phase2_Revive_5(void) {  // 0xA9C0E4
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9BB3);
     E->mbn_var_A = FUNC16(MotherBrain_Phase2_Revive_6);
     E->mbn_var_F = 128;
@@ -3154,18 +3154,18 @@ void MotherBrain_Phase2_Revive_5(void) {  // 0xA9C0E4
 
 void MotherBrain_Phase2_Revive_6(void) {  // 0xA9C0FB
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  bool v1 = (--E->mbn_var_F & 0x8000u) != 0;
-  if (v1 && MotherBrain_MakeWalkForwards(4u, 0x50u) & 1) {
+  bool v1 = (--E->mbn_var_F & 0x8000) != 0;
+  if (v1 && MotherBrain_MakeWalkForwards(4u, 0x50) & 1) {
     E->mbn_var_A = FUNC16(MotherBrain_Phase2_Revive_7);
     E->mbn_var_1F = 2;
-    Get_MotherBrain(0x40u)->mbn_var_11 = 1;
+    Get_MotherBrain(0x40)->mbn_var_11 = 1;
   }
 }
 
 void MotherBrain_Phase2_Revive_7(void) {  // 0xA9C11E
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   E->mbn_var_13 = 0;
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   E1->mbn_var_31 = 1;
   E1->mbn_var_32 = 2;
   E1->mbn_var_33 = 4;
@@ -3177,16 +3177,16 @@ void MotherBrain_Phase2_Revive_7(void) {  // 0xA9C11E
 void MotherBrain_Phase2_Revive_8(void) {  // 0xA9C147
   if (MotherBrain_MakeHerStandUp() & 1) {
     Get_MotherBrain(0)->mbn_var_A = FUNC16(MotherBrain_Phase2_MurderShitroid_1);
-    MotherBrain_MakeWalkForwards(0xAu, 0x50u);
+    MotherBrain_MakeWalkForwards(0xA, 0x50);
     MotherBrain_Phase2_MurderShitroid_1();
   }
 }
 
 void MotherBrain_Phase2_MurderShitroid_1(void) {  // 0xA9C15C
   MotherBrain_MaybeStandupOrLeanDown();
-  if ((random_number & 0x8000u) != 0) {
+  if ((random_number & 0x8000) != 0) {
     uint16 v0 = addr_kMotherBrain_Ilist_9DBB;
-    if (Get_MotherBrain(0x40u)->mbn_var_0A)
+    if (Get_MotherBrain(0x40)->mbn_var_0A)
       v0 = addr_kMotherBrain_Ilist_9DB1;
     MotherBrain_SetBrainInstrs(v0);
     Enemy_MotherBrain *E = Get_MotherBrain(0);
@@ -3197,13 +3197,13 @@ void MotherBrain_Phase2_MurderShitroid_1(void) {  // 0xA9C15C
 
 void MotherBrain_Phase2_MurderShitroid_2(void) {  // 0xA9C182
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0)
+  if ((--E->mbn_var_F & 0x8000) != 0)
     E->mbn_var_A = FUNC16(MotherBrain_Phase2_MurderShitroid_1);
 }
 
 void MotherBrain_Phase2_PrepareForFinalShitroid(void) {  // 0xA9C18E
   MotherBrain_MakeHerStandUp();
-  MotherBrain_MakeWalkBackwards(0x40u, 4u);
+  MotherBrain_MakeWalkBackwards(0x40, 4u);
 }
 
 void MotherBrain_Phase2_ExecuteFinalkShitroid(void) {  // 0xA9C19A
@@ -3214,9 +3214,9 @@ void MotherBrain_Phase2_ExecuteFinalkShitroid(void) {  // 0xA9C19A
 void MotherBrain_MaybeStandupOrLeanDown(void) {  // 0xA9C1A7
   uint16 mbn_var_02 = Get_MotherBrain(0)->mbn_var_02;
   if (mbn_var_02) {
-    if (mbn_var_02 == 6 && (uint8)random_number >= 0xC0u)
+    if (mbn_var_02 == 6 && (uint8)random_number >= 0xC0)
       MotherBrain_MakeHerStandUp();
-  } else if ((uint8)random_number >= 0xC0u) {
+  } else if ((uint8)random_number >= 0xC0) {
     MotherBrain_MakeHerLeanDown();
   }
 }
@@ -3231,9 +3231,9 @@ void MotherBrain_Phase3_Recover_MakeDistance(void) {  // 0xA9C1CF
 
 void MotherBrain_Phase3_Recover_SetupForFight(void) {  // 0xA9C1F0
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0) {
+  if ((--E->mbn_var_F & 0x8000) != 0) {
     E->mbn_var_A = FUNC16(MotherBrain_Phase3_Fighting_Main);
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->mbn_var_18 = FUNC16(MotherBrain_Phase3_Neck_Normal);
     E1->mbn_var_1A = FUNC16(MotherBrain_Phase3_Walk_TryToInchForward);
     MotherBrain_Phase3_Fighting_Main();
@@ -3241,11 +3241,11 @@ void MotherBrain_Phase3_Recover_SetupForFight(void) {  // 0xA9C1F0
 }
 
 void MotherBrain_Phase3_Fighting_Main(void) {  // 0xA9C209
-  if (Get_MotherBrain(0x40u)->base.health) {
+  if (Get_MotherBrain(0x40)->base.health) {
     MotherBrain_Phase3_NeckHandler();
     MotherBrain_Phase3_WalkHandler();
     Enemy_MotherBrain *E = Get_MotherBrain(0);
-    if (!E->mbn_var_02 && !E->mbn_var_06 && (random_number & 0x8000u) != 0) {
+    if (!E->mbn_var_02 && !E->mbn_var_06 && (random_number & 0x8000) != 0) {
       uint16 v1 = addr_kMotherBrain_Ilist_9F00;
       if ((uint8)random_number >= 0x80)
         v1 = addr_kMotherBrain_Ilist_9DBB;
@@ -3260,7 +3260,7 @@ void MotherBrain_Phase3_Fighting_Main(void) {  // 0xA9C209
 
 void MotherBrain_Phase3_Fighting_Cooldown(void) {  // 0xA9C24E
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  if ((--E->mbn_var_F & 0x8000u) != 0)
+  if ((--E->mbn_var_F & 0x8000) != 0)
     E->mbn_var_A = FUNC16(MotherBrain_Phase3_Fighting_Main);
 }
 
@@ -3275,7 +3275,7 @@ void CallMotherBrainWallkFunc1A(uint32 ea) {
 
 void MotherBrain_Phase3_WalkHandler(void) {  // 0xA9C25A
   if (!Get_MotherBrain(0)->mbn_var_02) {
-    R18_ = Get_MotherBrain(0x40u)->mbn_var_1A;
+    R18_ = Get_MotherBrain(0x40)->mbn_var_1A;
     CallMotherBrainWallkFunc1A(R18_ | 0xA90000);
   }
 }
@@ -3286,16 +3286,16 @@ void MotherBrain_Phase3_Walk_TryToInchForward(void) {  // 0xA9C26A
   if (mbn_var_07) {
     uint16 v3 = mbn_var_07 + 32;
     E->mbn_var_07 = v3;
-    if (v3 >= 0x100u) {
+    if (v3 >= 0x100) {
       uint16 v4 = E->base.x_pos + 1;
-      Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+      Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
       E1->mbn_var_1B = v4;
       if (MotherBrain_MakeWalkForwards((random_number & 2) + 4, E1->mbn_var_1B) & 1)
         E->mbn_var_07 = 128;
     }
   } else {
     uint16 v6 = E->base.x_pos - 14;
-    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+    Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
     E1->mbn_var_1B = v6;
     E1->mbn_var_1A = FUNC16(MotherBrain_Phase3_Walk_RetreatQuickly);
     MotherBrain_Phase3_Walk_RetreatQuickly();
@@ -3303,7 +3303,7 @@ void MotherBrain_Phase3_Walk_TryToInchForward(void) {  // 0xA9C26A
 }
 
 void MotherBrain_Phase3_Walk_RetreatQuickly(void) {  // 0xA9C2B3
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   if (MotherBrain_MakeWalkBackwards(E->mbn_var_1B, 2u) & 1) {
     E->mbn_var_1B = Get_MotherBrain(0)->base.x_pos - 14;
     E->mbn_var_1A = FUNC16(MotherBrain_Phase3_Walk_RetreatSlowly);
@@ -3311,15 +3311,15 @@ void MotherBrain_Phase3_Walk_RetreatQuickly(void) {  // 0xA9C2B3
 }
 
 void MotherBrain_Phase3_Walk_RetreatSlowly(void) {  // 0xA9C2D2
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   if (MotherBrain_MakeWalkBackwards(E->mbn_var_1B, 4u) & 1)
-    MotherBrain_SetToTryToInchForward(0x40u);
+    MotherBrain_SetToTryToInchForward(0x40);
 }
 
 void MotherBrain_SetToTryToInchForward(uint16 a) {  // 0xA9C313
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   E->mbn_var_07 = a;
-  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E1 = Get_MotherBrain(0x40);
   E1->mbn_var_1A = FUNC16(MotherBrain_Phase3_Walk_TryToInchForward);
   E1->mbn_var_1B = E->base.x_pos + 1;
 }
@@ -3337,12 +3337,12 @@ void CallMotherBrainNeckFunc(uint32 ea) {
 }
 
 void MotherBrain_Phase3_NeckHandler(void) {  // 0xA9C327
-  R18_ = Get_MotherBrain(0x40u)->mbn_var_18;
+  R18_ = Get_MotherBrain(0x40)->mbn_var_18;
   CallMotherBrainNeckFunc(R18_ | 0xA90000);
 }
 
 void MotherBrain_Phase3_Neck_Normal(void) {  // 0xA9C330
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   E->mbn_var_32 = 1;
   E->mbn_var_34 = 128;
   E->mbn_var_32 = 2;
@@ -3351,7 +3351,7 @@ void MotherBrain_Phase3_Neck_Normal(void) {  // 0xA9C330
 }
 
 void MotherBrain_Phase3_Neck_SetupRecoilRecovery(void) {  // 0xA9C354
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   E->mbn_var_31 = 1;
   E->mbn_var_34 = 1280;
   E->mbn_var_32 = 6;
@@ -3364,7 +3364,7 @@ void MotherBrain_Phase3_Neck_SetupRecoilRecovery(void) {  // 0xA9C354
 void MotherBrain_Phase3_Neck_RecoilRecovery(void) {  // 0xA9C37B
   int16 v1;
 
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   v1 = E->mbn_var_19 - 1;
   if (v1 < 0) {
     MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9DBB);
@@ -3375,7 +3375,7 @@ void MotherBrain_Phase3_Neck_RecoilRecovery(void) {  // 0xA9C37B
 }
 
 void MotherBrain_Phase3_Neck_SetupHyperBeamRecoil(void) {  // 0xA9C395
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   E->mbn_var_31 = 1;
   Get_MotherBrain(0)->mbn_var_06 = 1;
   MotherBrain_SetBrainInstrs(addr_kMotherBrain_Ilist_9BE7);
@@ -3391,7 +3391,7 @@ void MotherBrain_Phase3_Neck_SetupHyperBeamRecoil(void) {  // 0xA9C395
 void MotherBrain_Phase3_Neck_HyperBeamRecoil(void) {  // 0xA9C3CD
   int16 v2;
 
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   v2 = E->mbn_var_19 - 1;
   if (v2 < 0) {
     E->mbn_var_34 = 128;
@@ -3423,7 +3423,7 @@ void MotherBrain_SetBodyInstrs(uint16 a) {  // 0xA9C42D
 }
 
 void MotherBrain_SetBrainUnusedInstrs(uint16 a) {  // 0xA9C43A
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   E->base.current_instruction = a;
   E->base.instruction_timer = 1;
   E->base.timer = 0;
@@ -3633,7 +3633,7 @@ void MotherBrain_HandleWalking(void) {  // 0xA9C6B8
       uint16 v2;
       v2 = mbn_var_07 + 6;
       E->mbn_var_07 = v2;
-      if (v2 >= 0x100u) {
+      if (v2 >= 0x100) {
 LABEL_4:
         E->mbn_var_07 = 128;
         if (sign16(E->base.x_pos - 128))
@@ -3673,7 +3673,7 @@ void ShitroidInCutscene_Init(void) {  // 0xA9C710
   E->sice_var_A = FUNC16(ShitroidInCutscene_DashOntoScreen);
   E->sice_var_F = 248;
   E->sice_var_0F = FUNC16(Shitroid_HandleCutscenePalette);
-  WriteColorsToPalette(0x1E2u, 0xa9, addr_kMotherBrainPalette_2__plus__2, 0xFu);
+  WriteColorsToPalette(0x1E2, 0xa9, addr_kMotherBrainPalette_2 + 2, 0xF);
 }
 
 void CallShitroidCutsceneFuncA(uint32 ea, uint16 k) {
@@ -3756,7 +3756,7 @@ void ShitroidInCutscene_HandleCry(void) {  // 0xA9C7B7
 
 void ShitroidInCutscene_DashOntoScreen(uint16 k) {  // 0xA9C7CC
   Enemy_ShitroidInCutscene *E = Get_ShitdroidInCutscene(k);
-  if ((--E->sice_var_F & 0x8000u) != 0) {
+  if ((--E->sice_var_F & 0x8000) != 0) {
     E->sice_var_0A = -10240;
     E->sice_var_0B = 2560;
     E->sice_var_A = FUNC16(ShitroidInCutscene_CurveTowardsBrain);
@@ -3771,7 +3771,7 @@ void ShitroidInCutscene_CurveTowardsBrain(uint16 k) {  // 0xA9C7EC
   R22_ = 2560;
   ShitroidInCutscene_UpdateSpeedAndAngle(k);
   Enemy_ShitroidInCutscene *E = Get_ShitroidInCutscene(k);
-  if ((--E->sice_var_F & 0x8000u) != 0) {
+  if ((--E->sice_var_F & 0x8000) != 0) {
     E->sice_var_A = FUNC16(ShitroidInCutscene_GetIntoFace);
     E->sice_var_F = 9;
   }
@@ -3784,7 +3784,7 @@ void ShitroidInCutscene_GetIntoFace(uint16 k) {  // 0xA9C811
   R20_ = -32256;
   R22_ = 3584;
   ShitroidInCutscene_UpdateSpeedAndAngle(k);
-  Enemy_ShitroidInCutscene *E = Get_ShitroidInCutscene(0x40u);
+  Enemy_ShitroidInCutscene *E = Get_ShitroidInCutscene(0x40);
   R18_ = E->base.x_pos;
   R20_ = E->base.y_pos;
   R22_ = 4;
@@ -3797,7 +3797,7 @@ void ShitroidInCutscene_GetIntoFace(uint16 k) {  // 0xA9C811
 }
 
 void ShitroidInCutscene_LatchOntoBrain(uint16 k) {  // 0xA9C851
-  Enemy_ShitroidInCutscene *E = Get_ShitroidInCutscene(0x40u);
+  Enemy_ShitroidInCutscene *E = Get_ShitroidInCutscene(0x40);
   R18_ = E->base.x_pos;
   R20_ = E->base.y_pos - 24;
   Shitroid_Func_GraduallyAccelerateTowards0x400(k, 0);
@@ -3815,10 +3815,10 @@ void ShitroidInCutscene_SetMotherBrainToStumbleBack(uint16 k) {  // 0xA9C879
 }
 
 void ShitroidInCutscene_ActivateRainbowBeam(uint16 k) {  // 0xA9C889
-  Enemy_ShitroidInCutscene *E1 = Get_ShitdroidInCutscene(0x40u);
+  Enemy_ShitroidInCutscene *E1 = Get_ShitdroidInCutscene(0x40);
   R18_ = E1->base.x_pos;
   R20_ = E1->base.y_pos - 24;
-  if (Shitroid_AccelerateTowardsPoint(k, 0x200u) & 1) {
+  if (Shitroid_AccelerateTowardsPoint(k, 0x200) & 1) {
     Enemy_ShitroidInCutscene *E = Get_ShitdroidInCutscene(k);
     E->sice_var_B = 0;
     E->sice_var_C = 0;
@@ -3829,14 +3829,14 @@ void ShitroidInCutscene_ActivateRainbowBeam(uint16 k) {  // 0xA9C889
     E->sice_var_E = 1;
     Enemy_ShitroidInCutscene *E0 = Get_ShitdroidInCutscene(0);
     E0->sice_var_A = FUNC16(MotherBrain_DrainedByShitroid_0);
-    QueueSfx1_Max6(0x40u);
+    QueueSfx1_Max6(0x40);
     E0->sice_var_16 = 1;
   }
 }
 
 void ShitroidInCutscene_BrainTurnsToCorpse(uint16 k) {  // 0xA9C8E2
   Enemy_ShitroidInCutscene *E = Get_ShitdroidInCutscene(k);
-  Enemy_ShitroidInCutscene *E1 = Get_ShitdroidInCutscene(0x40u);
+  Enemy_ShitroidInCutscene *E1 = Get_ShitdroidInCutscene(0x40);
 
   int v2 = (uint8)(E->base.frame_counter & 6) >> 1;
   E->base.x_pos = E1->base.x_pos + g_word_A993BB[v2];
@@ -3849,10 +3849,10 @@ void ShitroidInCutscene_BrainTurnsToCorpse(uint16 k) {  // 0xA9C8E2
 
 void ShitroidInCutscene_StopDraining(uint16 k) {  // 0xA9C915
   Enemy_ShitroidInCutscene *E = Get_ShitroidInCutscene(k);
-  Enemy_ShitroidInCutscene *E1 = Get_ShitroidInCutscene(0x40u);
+  Enemy_ShitroidInCutscene *E1 = Get_ShitroidInCutscene(0x40);
   E->base.x_pos = E1->base.x_pos;
   E->base.y_pos = E1->base.y_pos - 24;
-  if ((--E->sice_var_F & 0x8000u) != 0) {
+  if ((--E->sice_var_F & 0x8000) != 0) {
     Enemy_SetInstrList(k, addr_kShitroid_Ilist_CFA2);
     E->sice_var_E = 10;
     E->sice_var_A = FUNC16(ShitroidInCutscene_LetGoAndSpawnDust);
@@ -3864,7 +3864,7 @@ void ShitroidInCutscene_StopDraining(uint16 k) {  // 0xA9C915
 
 void ShitroidInCutscene_LetGoAndSpawnDust(uint16 k) {  // 0xA9C94B
   Enemy_ShitroidInCutscene *E = Get_ShitdroidInCutscene(k);
-  if ((--E->sice_var_F & 0x8000u) != 0) {
+  if ((--E->sice_var_F & 0x8000) != 0) {
     ShitroidInCutscene_SpawnThreeDustClouds();
     E->sice_var_A = addr_loc_A9C959;
   }
@@ -3872,7 +3872,7 @@ void ShitroidInCutscene_LetGoAndSpawnDust(uint16 k) {  // 0xA9C94B
 }
 
 void ShitroidInCutscene_MoveUpToCeiling(uint16 k) {  // 0xA9C959
-  R18_ = Get_ShitdroidInCutscene(0x40u)->base.x_pos;
+  R18_ = Get_ShitdroidInCutscene(0x40)->base.x_pos;
   R20_ = 0;
   Shitroid_Func_GraduallyAccelerateTowards0x400(k, 0);
   R22_ = 4;
@@ -3887,15 +3887,15 @@ void ShitroidInCutscene_MoveUpToCeiling(uint16 k) {  // 0xA9C959
 
 void ShitroidInCutscene_SpawnThreeDustClouds(void) {  // 0xA9C98C
   R20_ = -8;
-  ShitroidInCutscene_SpawnOneDustCloudAt(0xFFF0u);
+  ShitroidInCutscene_SpawnOneDustCloudAt(0xFFF0);
   R20_ = -16;
   ShitroidInCutscene_SpawnOneDustCloudAt(0);
   R20_ = -8;
-  ShitroidInCutscene_SpawnOneDustCloudAt(0x10u);
+  ShitroidInCutscene_SpawnOneDustCloudAt(0x10);
 }
 
 void ShitroidInCutscene_SpawnOneDustCloudAt(uint16 a) {  // 0xA9C9AA
-  Enemy_ShitroidInCutscene *E = Get_ShitroidInCutscene(0x40u);
+  Enemy_ShitroidInCutscene *E = Get_ShitroidInCutscene(0x40);
   R18_ = E->base.x_pos + a;
   R20_ += E->base.y_pos;
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 9u);
@@ -3977,7 +3977,7 @@ void ShitroidInCutscene_IdleUntilToNoHealth(uint16 k) {  // 0xA9CABD
 
 void ShitroidInCutscene_ReleaseSamus(uint16 k) {  // 0xA9CB13
   QueueSfx2_Max6(0x72u);
-  Get_ShitdroidInCutscene(0x40u)->sice_var_0B = 1;
+  Get_ShitdroidInCutscene(0x40)->sice_var_0B = 1;
   Get_ShitdroidInCutscene(k)->sice_var_A = FUNC16(ShitroidInCutscene_StareDownMotherBrain);
   Get_ShitdroidInCutscene(0)->sice_var_A = FUNC16(MotherBrain_Phase2_PrepareForFinalShitroid);
   ShitroidInCutscene_StareDownMotherBrain(k);
@@ -4012,7 +4012,7 @@ void ShitroidInCutscene_MoveToFinalChargeStart(uint16 k) {  // 0xA9CB7B
   if (!(Shitroid_Func_2(k) & 1)) {
     Enemy_ShitroidInCutscene *E = Get_ShitdroidInCutscene(k);
     E->base.health = 79;
-    Get_ShitdroidInCutscene(0x40u)->sice_var_0B = 0;
+    Get_ShitdroidInCutscene(0x40)->sice_var_0B = 0;
     Get_ShitdroidInCutscene(0)->sice_var_A = FUNC16(MotherBrain_Phase2_ExecuteFinalkShitroid);
     E->sice_var_A = FUNC16(ShitroidInCutscene_InitiateFinalCharge);
   }
@@ -4021,7 +4021,7 @@ void ShitroidInCutscene_MoveToFinalChargeStart(uint16 k) {  // 0xA9CB7B
 void ShitroidInCutscene_InitiateFinalCharge(uint16 k) {  // 0xA9CBB3
   R18_ = 290;
   R20_ = 128;
-  Shitroid_Func_GraduallyAccelerateTowards0x400(k, 0xAu);
+  Shitroid_Func_GraduallyAccelerateTowards0x400(k, 0xA);
   R22_ = 4;
   R24_ = 4;
   if (!(Shitroid_Func_2(k) & 1))
@@ -4029,10 +4029,10 @@ void ShitroidInCutscene_InitiateFinalCharge(uint16 k) {  // 0xA9CBB3
 }
 
 void ShitroidInCutscene_FinalCharge(uint16 k) {  // 0xA9CBD8
-  Enemy_ShitroidInCutscene *E1 = Get_ShitdroidInCutscene(0x40u);
+  Enemy_ShitroidInCutscene *E1 = Get_ShitdroidInCutscene(0x40);
   R18_ = E1->base.x_pos;
   R20_ = E1->base.y_pos - 32;
-  Shitroid_Func_GraduallyAccelerateTowards0x400(k, 0xCu);
+  Shitroid_Func_GraduallyAccelerateTowards0x400(k, 0xC);
   Enemy_ShitroidInCutscene *E = Get_ShitdroidInCutscene(k);
   if (!E->base.health) {
     E->sice_var_0F = FUNC16(nullsub_338);
@@ -4055,7 +4055,7 @@ void ShitroidInCutscene_FinalCharge(uint16 k) {  // 0xA9CBD8
 void ShitroidInCutscene_ShitroidFinalBelow(uint16 k) {  // 0xA9CC3E
   ShitroidInCutscene_Shake(k);
   Enemy_ShitroidInCutscene *E = Get_ShitdroidInCutscene(k);
-  if ((--E->sice_var_F & 0x8000u) != 0) {
+  if ((--E->sice_var_F & 0x8000) != 0) {
     E->base.x_pos = E->sice_var_10;
     E->base.y_pos = E->sice_var_11;
     E->sice_var_A = FUNC16(ShitroidInCutscene_PlaySamusTheme);
@@ -4066,7 +4066,7 @@ void ShitroidInCutscene_ShitroidFinalBelow(uint16 k) {  // 0xA9CC3E
 
 void ShitroidInCutscene_PlaySamusTheme(uint16 k) {  // 0xA9CC60
   Enemy_ShitroidInCutscene *E = Get_ShitroidInCutscene(k);
-  if ((--E->sice_var_F & 0x8000u) != 0) {
+  if ((--E->sice_var_F & 0x8000) != 0) {
     QueueMusic_Delayed8(0xFF48u);
     QueueMusic_Delayed8(5u);
     E->sice_var_A = FUNC16(ShitroidInCutscene_PrepareSamusHyperbeam);
@@ -4077,9 +4077,9 @@ void ShitroidInCutscene_PlaySamusTheme(uint16 k) {  // 0xA9CC60
 
 void ShitroidInCutscene_PrepareSamusHyperbeam(uint16 k) {  // 0xA9CC7F
   Enemy_ShitroidInCutscene *E = Get_ShitdroidInCutscene(k);
-  if ((--E->sice_var_F & 0x8000u) != 0) {
+  if ((--E->sice_var_F & 0x8000) != 0) {
     CallSomeSamusCode(0x19u);
-    Get_ShitdroidInCutscene(0x40u)->sice_var_16 = FUNC16(SamusRainbowPaletteFunc_ActivateWhenEnemyLow);
+    Get_ShitdroidInCutscene(0x40)->sice_var_16 = FUNC16(SamusRainbowPaletteFunc_ActivateWhenEnemyLow);
     E->sice_var_A = FUNC16(ShitroidInCutscene_DeathSequence);
   }
 }
@@ -4101,7 +4101,7 @@ void ShitroidInCutscene_DeathSequence(uint16 k) {  // 0xA9CC99
 void ShitroidInCutscene_UnloadShitroid(uint16 k) {  // 0xA9CCC0
   HandleSamusRainbowPaletteAnimation(k);
   Enemy_ShitroidInCutscene *E = Get_ShitroidInCutscene(k);
-  bool v2 = (--E->sice_var_F & 0x8000u) != 0;
+  bool v2 = (--E->sice_var_F & 0x8000) != 0;
   if (v2 && ProcessSpriteTilesTransfers(0xa9, addr_stru_A98FC7)) {
     E->sice_var_A = FUNC16(ShitroidInCutscene_LetSamusRainbowMore);
     E->sice_var_F = 176;
@@ -4111,7 +4111,7 @@ void ShitroidInCutscene_UnloadShitroid(uint16 k) {  // 0xA9CCC0
 
 void ShitroidInCutscene_LetSamusRainbowMore(uint16 k) {  // 0xA9CCDE
   Enemy_ShitroidInCutscene *E = Get_ShitdroidInCutscene(k);
-  if ((--E->sice_var_F & 0x8000u) != 0) {
+  if ((--E->sice_var_F & 0x8000) != 0) {
     E->sice_var_A = FUNC16(ShitroidInCutscene_FinishCutscene);
     Get_ShitdroidInCutscene(0)->sice_var_37 = 0;
     ShitroidInCutscene_FinishCutscene(k);
@@ -4127,7 +4127,7 @@ void ShitroidInCutscene_FinishCutscene(uint16 k) {  // 0xA9CCF0
     CallSomeSamusCode(0x17u);
     SomeMotherBrainScripts(3u);
     Get_ShitdroidInCutscene(k)->base.properties |= kEnemyProps_Deleted;
-    Get_ShitdroidInCutscene(0x40u)->sice_var_0A = 0;
+    Get_ShitdroidInCutscene(0x40)->sice_var_0A = 0;
   }
 }
 
@@ -4140,22 +4140,22 @@ void CallSamusRainbowPaletteFunc(uint32 ea, uint16 k) {
 }
 
 void HandleSamusRainbowPaletteAnimation(uint16 k) {  // 0xA9CD27
-  R18_ = Get_ShitdroidInCutscene(0x40u)->sice_var_16;
+  R18_ = Get_ShitdroidInCutscene(0x40)->sice_var_16;
   CallSamusRainbowPaletteFunc(R18_ | 0xA90000, k);
 }
 
 void SamusRainbowPaletteFunc_ActivateWhenEnemyLow(uint16 k) {  // 0xA9CD30
   if ((int16)(Get_ShitdroidInCutscene(k)->base.y_pos + 16 - samus_y_pos) >= 0) {
     CallSomeSamusCode(0x16u);
-    Get_ShitdroidInCutscene(0x40u)->sice_var_16 = FUNC16(SamusRainbowPaletteFunc_GraduallySlowDown);
+    Get_ShitdroidInCutscene(0x40)->sice_var_16 = FUNC16(SamusRainbowPaletteFunc_GraduallySlowDown);
   }
 }
 
 void SamusRainbowPaletteFunc_GraduallySlowDown(void) {  // 0xA9CD4B
-  Enemy_ShitroidInCutscene *E = Get_ShitdroidInCutscene(0x40u);
+  Enemy_ShitroidInCutscene *E = Get_ShitdroidInCutscene(0x40);
   uint16 sice_var_1D = E->sice_var_1D;
   E->sice_var_1D = sice_var_1D + 768;
-  if (sice_var_1D >= 0xFD00u) {
+  if (sice_var_1D >= 0xFD00) {
     uint16 v2 = special_samus_palette_frame + 1;
     if (!sign16(special_samus_palette_frame - 9))
       v2 = 10;
@@ -4179,7 +4179,7 @@ uint8 ShitroidInCutscene_FadeShitroidToBlack(uint16 k) {  // 0xA9CD69
   if (!sign16(E->sice_var_0D - 6))
     return 1;
   E->sice_var_0D = v4;
-  WriteColorsToPalette(0x1E2u, 0xad, kShitroid_FadingToBlack[v4], 0xEu);
+  WriteColorsToPalette(0x1E2, 0xad, kShitroid_FadingToBlack[v4], 0xE);
   return 0;
 }
 
@@ -4248,9 +4248,9 @@ void ShitroidInCutscene_HandleHealthBasedPalette(uint16 k) {  // 0xA9CE69
       }
       uint16 v5 = v3;
       uint16 v4 = kShitroid_HealthBasedPalettes_Shell[v3 >> 1];
-      WriteColorsToPalette(0x1E2u, 0xad, v4, 4);
-      WriteColorsToPalette(0x1F4u, 0xad, v4 + 8, 5);
-      WriteColorsToPalette(0x1EAu, 0xad, kShitroid_HealthBasedPalettes_Innards[v5 >> 1], 5u);
+      WriteColorsToPalette(0x1E2, 0xad, v4, 4);
+      WriteColorsToPalette(0x1F4, 0xad, v4 + 8, 5);
+      WriteColorsToPalette(0x1EA, 0xad, kShitroid_HealthBasedPalettes_Innards[v5 >> 1], 5u);
     }
   }
 }
@@ -4268,7 +4268,7 @@ void ShitroidInCutscene_Touch(void) {  // 0xA9CF03
   if (E->sice_var_A == (uint16)FUNC16(ShitroidInCutscene_LatchOntoSamus)) {
     R18_ = samus_x_pos;
     R20_ = samus_y_pos - 20;
-    if (Shitroid_AccelerateTowardsPoint(cur_enemy_index, 0x10u) & 1) {
+    if (Shitroid_AccelerateTowardsPoint(cur_enemy_index, 0x10) & 1) {
       E->sice_var_B = 0;
       E->sice_var_C = 0;
       E->sice_var_A = FUNC16(ShitroidInCutscene_HealSamusToFullHealth);
@@ -4292,7 +4292,7 @@ void ShitroidInCutscene_UpdateSpeedAndAngle(uint16 k) {  // 0xA9CF31
     }
   }
   uint16 v4;
-  if ((R18_ & 0x8000u) != 0) {
+  if ((R18_ & 0x8000) != 0) {
     v4 = E->sice_var_0A + R18_;
     if (sign16(v4 - R20_))
       LABEL_13:
@@ -4318,7 +4318,7 @@ uint16 Shitroid_Instr_2(uint16 k, uint16 j) {  // 0xA9CFCA
 
 void MotherBrain_Pal_ProcessInvincibility(void) {  // 0xA9CFD4
   if (Get_MotherBrain(0)->mbn_var_00 == 4) {
-    uint16 flash_timer = Get_MotherBrain(0x40u)->base.flash_timer;
+    uint16 flash_timer = Get_MotherBrain(0x40)->base.flash_timer;
     if (flash_timer >> 1) {
       if (!(flash_timer & 1)) {
         for (int i = 28; i >= 0; i -= 2) {
@@ -4353,9 +4353,9 @@ void MotherBrain_Pal_HandleRoomPal(void) {  // 0xA9D01C
 }
 
 void MotherBrain_Pal_WriteRoomPal(uint16 j) {  // 0xA9D025
-  WriteColorsToPalette(0x68u, 0xa9, j, 12);
-  WriteColorsToPalette(0xA6u, 0xa9, j + 24, 12);
-  WriteColorsToPalette(0xE6u, 0xa9, j + 24, 12);
+  WriteColorsToPalette(0x68, 0xa9, j, 12);
+  WriteColorsToPalette(0xA6, 0xa9, j + 24, 12);
+  WriteColorsToPalette(0xE6, 0xa9, j + 24, 12);
 }
 
 uint16 HandleRoomPaletteInstructionList(uint16 a) {  // 0xA9D192
@@ -4366,7 +4366,7 @@ uint16 HandleRoomPaletteInstructionList(uint16 a) {  // 0xA9D192
   R0_.bank = 126;
   R3_.bank = 126;
   uint16 *v1 = (uint16 *)IndirPtr(&R0_, 0);
-  if ((*v1 & 0x8000u) == 0)
+  if ((*v1 & 0x8000) == 0)
     return 0;
   uint16 v3 = *v1;
   v4 = *(uint16 *)RomPtr_A9(*v1);
@@ -4397,7 +4397,7 @@ LABEL_8:
 }
 
 void MotherBrain_HandlePalette(void) {  // 0xA9D1E4
-  Enemy_MotherBrain *E = Get_MotherBrain(0x40u);
+  Enemy_MotherBrain *E = Get_MotherBrain(0x40);
   if (E->mbn_var_10)
     MotherBrain_HandleBrainPal();
   if (E->mbn_var_11)
@@ -4426,7 +4426,7 @@ void MotherBrain_HandleBrainPal(void) {  // 0xA9D206
       HIBYTE(E->mbn_var_D) = E->mbn_var_E;
       mbn_var_D = E->mbn_var_D;
       if (mbn_var_D
-          || Get_MotherBrain(0x40u)->mbn_var_A == (uint16)FUNC16(MotherBrainsBrain_SetupBrainAndNeckToDraw)) {
+          || Get_MotherBrain(0x40)->mbn_var_A == (uint16)FUNC16(MotherBrainsBrain_SetupBrainAndNeckToDraw)) {
         uint8 v4 = (mbn_var_D + 1) & 7;
         LOBYTE(E->mbn_var_D) = v4;
         uint16 v5 = 290;
@@ -4492,7 +4492,7 @@ void DeadTorizo_Main(void) {  // 0xA9D368
     E->base.properties |= kEnemyProps_Tangible;
     E->dto_var_A = FUNC16(DeadTorizo_Rotting);
   }
-  mov24(&enemy_gfx_drawn_hook, 0xA9D39Au);
+  mov24(&enemy_gfx_drawn_hook, 0xA9D39A);
   CallDeadTorizoFuncA(E->dto_var_A | 0xA90000);
   DeadTorizo_Func_1();
 }
@@ -4517,7 +4517,7 @@ void DeadTorizo_PreRotDelay(void) {  // 0xA9D3C8
   Enemy_DeadTorizo *E = Get_DeadTorizo(0);
   uint16 v1 = E->dto_var_04 + 1;
   E->dto_var_04 = v1;
-  if (v1 >= 0x10u) {
+  if (v1 >= 0x10) {
     E->base.properties |= kEnemyProps_Tangible;
     E->dto_var_A = FUNC16(DeadTorizo_Rotting);
     DeadTorizo_Rotting();
@@ -4639,9 +4639,9 @@ void DeadTorizo_Func_1(void) {  // 0xA9D4CF
 void DeadTorizo_CorpseRottingFinished(void) {  // 0xA9D5BD
   R18_ = (random_number & 0x1F) + 272;
   R20_ = 188;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0xAu);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0xA);
   if ((enemy_damage_routine_exec_count & 7) == 0)
-    QueueSfx2_Max6(0x10u);
+    QueueSfx2_Max6(0x10);
 }
 
 void DeadTorizo_CopyLineOfSandHeapTileData(uint16 a) {  // 0xA9D5EA
@@ -4800,7 +4800,7 @@ void DeadMonsters_Func_1(uint16 k) {  // 0xA9D910
 
 void DeadMonsters_Func_2(uint16 k) {  // 0xA9D91D
   Enemy_DeadMonsters *E = Get_DeadMonsters(k);
-  if ((--E->dms_var_F & 0x8000u) != 0) {
+  if ((--E->dms_var_F & 0x8000) != 0) {
     if (E->dms_var_08) {
       E->dms_var_A = FUNC16(DeadMonsters_Func_5);
     } else {
@@ -4817,7 +4817,7 @@ uint8 DeadMonsters_Func_3(uint16 k) {  // 0xA9D961
   Enemy_DeadMonsters *E = Get_DeadMonsters(k);
   DeadMonsters_Func_4(k, E->dms_var_0A);
   uint16 v2 = 32;
-  if ((E->dms_var_0B & 0x8000u) == 0)
+  if ((E->dms_var_0B & 0x8000) == 0)
     v2 = 128;
   uint16 v3 = E->dms_var_0B + v2;
   E->dms_var_0B = v3;
@@ -4914,7 +4914,7 @@ void DeadSkree_PreRotDelay(uint16 k) {  // 0xA9DA9E
 
 void DeadMonsters_PreRotDelay_Common(uint16 k, uint16 j) {  // 0xA9DAA1
   Enemy_DeadMonsters *E = Get_DeadMonsters(k);
-  if (++E->dms_var_B >= 0x10u) {
+  if (++E->dms_var_B >= 0x10) {
     E->dms_var_A = j;
     E->base.properties |= kEnemyProps_Tangible;
   }
@@ -5039,9 +5039,9 @@ void CorpseRottingRotEntryFinishedHook(void) {  // 0xA9DC08
   EnemyData *v0 = gEnemyData(cur_enemy_index);
   R18_ = v0->x_pos + (random_number & 0x1A) - 14;
   R20_ = v0->y_pos + 16;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0xAu);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0xA);
   if ((enemy_damage_routine_exec_count & 7) == 0)
-    QueueSfx2_Max3(0x10u);
+    QueueSfx2_Max3(0x10);
 }
 
 void InitializeCorpseRottingDataTable(uint16 k, uint16 a) {  // 0xA9DC40
@@ -5152,195 +5152,120 @@ void DeadSidehopper_Touch(void) {  // 0xA9DD44
     DeadSidehopper_DD31();
 }
 
+#define TILEMAP_ADDR(x) RomPtr_7E(0x2000 + x)
+
 void Torizo_CorpseRottingInitFunc(void) {  // 0xA9DE18
-  uint8 *v0 = RomPtr_7E(0x2060u);
-  uint8 *v1 = RomPtr_B7(addr_kDeadTorizo_TileData__plus__288);
-  MemCpy(v0, v1, 0xC0u);
-  uint8 *v2 = RomPtr_7E(0x21A0u);
-  uint8 *v3 = RomPtr_B7(addr_kDeadTorizo_TileData__plus__800);
-  MemCpy(v2, v3, 0xC0u);
-  uint8 *v4 = RomPtr_7E(0x22C0u);
-  uint8 *v5 = RomPtr_B7(addr_kDeadTorizo_TileData__plus__1280);
-  MemCpy(v4, v5, 0x100u);
-  uint8 *v6 = RomPtr_7E(0x2400u);
-  uint8 *v7 = RomPtr_B7(addr_kDeadTorizo_TileData__plus__1792);
-  MemCpy(v6, v7, 0x100u);
-  uint8 *v8 = RomPtr_7E(0x2540u);
-  uint8 *v9 = RomPtr_B7(addr_kDeadTorizo_TileData__plus__2304);
-  MemCpy(v8, v9, 0x100u);
-  uint8 *v10 = RomPtr_7E(0x2680u);
-  uint8 *v11 = RomPtr_B7(addr_kDeadTorizo_TileData__plus__2816);
-  MemCpy(v10, v11, 0x100u);
-  uint8 *v12 = RomPtr_7E(0x27C0u);
-  uint8 *v13 = RomPtr_B7(addr_kDeadTorizo_TileData__plus__3328);
-  MemCpy(v12, v13, 0x100u);
-  uint8 *v14 = RomPtr_7E(0x2900u);
-  uint8 *v15 = RomPtr_B7(addr_kDeadTorizo_TileData__plus__3840);
-  MemCpy(v14, v15, 0x100u);
-  uint8 *v16 = RomPtr_7E(0x2A40u);
-  uint8 *v17 = RomPtr_B7(addr_kDeadTorizo_TileData__plus__4352);
-  MemCpy(v16, v17, 0x100u);
-  uint8 *v18 = RomPtr_7E(0x2B60u);
-  uint8 *v19 = RomPtr_B7(addr_kDeadTorizo_TileData__plus__4832);
-  MemCpy(v18, v19, 0x120u);
-  uint8 *v20 = RomPtr_7E(0x2C80u);
-  uint8 *v21 = RomPtr_B7(addr_kDeadTorizo_TileData__plus__5312);
-  MemCpy(v20, v21, 0x140u);
-  uint8 *v22 = RomPtr_7E(0x2DC0u);
-  uint8 *v23 = RomPtr_B7(addr_kDeadTorizo_TileData__plus__5824);
-  MemCpy(v22, v23, 0x140u);
+  uint8 *p = RomPtr_B7(addr_kDeadTorizo_TileData);
+  MemCpy(TILEMAP_ADDR(0x060), p + 288, 0xC0);
+  MemCpy(TILEMAP_ADDR(0x1A0), p + 800, 0xC0);
+  MemCpy(TILEMAP_ADDR(0x2C0), p + 1280, 0x100);
+  MemCpy(TILEMAP_ADDR(0x400), p + 1792, 0x100);
+  MemCpy(TILEMAP_ADDR(0x540), p + 2304, 0x100);
+  MemCpy(TILEMAP_ADDR(0x680), p + 2816, 0x100);
+  MemCpy(TILEMAP_ADDR(0x7C0), p + 3328, 0x100);
+  MemCpy(TILEMAP_ADDR(0x900), p + 3840, 0x100);
+  MemCpy(TILEMAP_ADDR(0xA40), p + 4352, 0x100);
+  MemCpy(TILEMAP_ADDR(0xB60), p + 4832, 0x120);
+  MemCpy(TILEMAP_ADDR(0xC80), p + 5312, 0x140);
+  MemCpy(TILEMAP_ADDR(0xDC0), p + 5824, 0x140);
 }
 
 void Sidehopper_CorpseRottingInitFunc_0(void) {  // 0xA9DEC1
-  uint8 *v0 = RomPtr_7E(0x2040u);
-  uint8 *v1 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__64);
-  MemCpy(v0, v1, 0x60u);
-  uint8 *v2 = RomPtr_7E(0x20A0u);
-  uint8 *v3 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__512);
-  MemCpy(v2, v3, 0xA0u);
-  uint8 *v4 = RomPtr_7E(0x2140u);
-  uint8 *v5 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__1024);
-  MemCpy(v4, v5, 0xA0u);
-  uint8 *v6 = RomPtr_7E(0x21E0u);
-  uint8 *v7 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__1536);
-  MemCpy(v6, v7, 0xA0u);
-  uint8 *v8 = RomPtr_7E(0x2280u);
-  uint8 *v9 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__2048);
-  MemCpy(v8, v9, 0xA0u);
+  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  MemCpy(TILEMAP_ADDR(0x040), p + 64, 0x60);
+  MemCpy(TILEMAP_ADDR(0x0A0), p + 512, 0xA0);
+  MemCpy(TILEMAP_ADDR(0x140), p + 1024, 0xA0);
+  MemCpy(TILEMAP_ADDR(0x1E0), p + 1536, 0xA0);
+  MemCpy(TILEMAP_ADDR(0x280), p + 2048, 0xA0);
 }
 
 void Sidehopper_CorpseRottingInitFunc_2(void) {  // 0xA9DF08
-  uint8 *v0 = RomPtr_7E(0x2320u);
-  uint8 *v1 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__288);
-  MemCpy(v0, v1, 0x40u);
-  uint8 *v2 = RomPtr_7E(0x23C0u);
-  uint8 *v3 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__800);
-  MemCpy(v2, v3, 0xA0u);
-  uint8 *v4 = RomPtr_7E(0x2460u);
-  uint8 *v5 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__1312);
-  MemCpy(v4, v5, 0xA0u);
-  uint8 *v6 = RomPtr_7E(0x2500u);
-  uint8 *v7 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__1824);
-  MemCpy(v6, v7, 0xA0u);
-  uint8 *v8 = RomPtr_7E(0x25A0u);
-  uint8 *v9 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__2336);
-  MemCpy(v8, v9, 0xA0u);
+  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  MemCpy(TILEMAP_ADDR(0x320), p + 288, 0x40);
+  MemCpy(TILEMAP_ADDR(0x3C0), p + 800, 0xA0);
+  MemCpy(TILEMAP_ADDR(0x460), p + 1312, 0xA0);
+  MemCpy(TILEMAP_ADDR(0x500), p + 1824, 0xA0);
+  MemCpy(TILEMAP_ADDR(0x5A0), p + 2336, 0xA0);
 }
 
 void Zoomer_CorpseRottingInitFunc_0(void) {  // 0xA9DF4F
-  uint8 *v0 = RomPtr_7E(0x2940u);
-  uint8 *v1 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__2656);
-  MemCpy(v0, v1, 0x60u);
-  uint8 *v2 = RomPtr_7E(0x29A0u);
-  uint8 *v3 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__3168);
-  MemCpy(v2, v3, 0x60u);
+  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  MemCpy(TILEMAP_ADDR(0x940), p + 2656, 0x60);
+  MemCpy(TILEMAP_ADDR(0x9A0), p + 3168, 0x60);
 }
 
 void Zoomer_CorpseRottingInitFunc_2(void) {  // 0xA9DF6C
-  uint8 *v0 = RomPtr_7E(0x2A00u);
-  uint8 *v1 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__2752);
-  MemCpy(v0, v1, 0x60u);
-  uint8 *v2 = RomPtr_7E(0x2A60u);
-  uint8 *v3 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__3264);
-  MemCpy(v2, v3, 0x60u);
+  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  MemCpy(TILEMAP_ADDR(0xA00), p + 2752, 0x60);
+  MemCpy(TILEMAP_ADDR(0xA60), p + 3264, 0x60);
 }
 
 void Zoomer_CorpseRottingInitFunc_4(void) {  // 0xA9DF89
-  uint8 *v0 = RomPtr_7E(0x2AC0u);
-  uint8 *v1 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__2848);
-  MemCpy(v0, v1, 0x60u);
-  uint8 *v2 = RomPtr_7E(0x2B20u);
-  uint8 *v3 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__3360);
-  MemCpy(v2, v3, 0x60u);
+  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  MemCpy(TILEMAP_ADDR(0xAC0), p + 2848, 0x60);
+  MemCpy(TILEMAP_ADDR(0xB20), p + 3360, 0x60);
 }
 
 void Ripper_CorpseRottingInitFunc_0(void) {  // 0xA9DFA6
-  uint8 *v0 = RomPtr_7E(0x2B80u);
-  uint8 *v1 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__2560);
-  MemCpy(v0, v1, 0x60u);
-  uint8 *v2 = RomPtr_7E(0x2BE0u);
-  uint8 *v3 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__3072);
-  MemCpy(v2, v3, 0x60u);
+  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  MemCpy(TILEMAP_ADDR(0xB80), p + 2560, 0x60);
+  MemCpy(TILEMAP_ADDR(0xBE0), p + 3072, 0x60);
 }
 
 void Ripper_CorpseRottingInitFunc_2(void) {  // 0xA9DFC3
-  uint8 *v0 = RomPtr_7E(0x2C40u);
-  uint8 *v1 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__2944);
-  MemCpy(v0, v1, 0x60u);
-  uint8 *v2 = RomPtr_7E(0x2CA0u);
-  uint8 *v3 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__3456);
-  MemCpy(v2, v3, 0x60u);
+  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  MemCpy(TILEMAP_ADDR(0xC40), p + 2944, 0x60);
+  MemCpy(TILEMAP_ADDR(0xCA0), p + 3456, 0x60);
 }
 
 void Skree_CorpseRottingInitFunc_0(void) {  // 0xA9DFE0
-  uint8 *v0 = RomPtr_7E(0x2640u);
-  uint8 *v1 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__672);
-  MemCpy(v0, v1, 0x40u);
-  uint8 *v2 = RomPtr_7E(0x2680u);
-  uint8 *v3 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__1184);
-  MemCpy(v2, v3, 0x40u);
-  uint8 *v4 = RomPtr_7E(0x26C0u);
-  uint8 *v5 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__1696);
-  MemCpy(v4, v5, 0x40u);
-  uint8 *v6 = RomPtr_7E(0x2700u);
-  uint8 *v7 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__2208);
-  MemCpy(v6, v7, 0x40u);
+  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  MemCpy(TILEMAP_ADDR(0x640), p + 672, 0x40);
+  MemCpy(TILEMAP_ADDR(0x680), p + 1184, 0x40);
+  MemCpy(TILEMAP_ADDR(0x6C0), p + 1696, 0x40);
+  MemCpy(TILEMAP_ADDR(0x700), p + 2208, 0x40);
 }
 
 void Skree_CorpseRottingInitFunc_2(void) {  // 0xA9E019
-  uint8 *v0 = RomPtr_7E(0x2740u);
-  uint8 *v1 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__224);
-  MemCpy(v0, v1, 0x40u);
-  uint8 *v2 = RomPtr_7E(0x2780u);
-  uint8 *v3 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__736);
-  MemCpy(v2, v3, 0x40u);
-  uint8 *v4 = RomPtr_7E(0x27C0u);
-  uint8 *v5 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__1248);
-  MemCpy(v4, v5, 0x40u);
-  uint8 *v6 = RomPtr_7E(0x2800u);
-  uint8 *v7 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__1760);
-  MemCpy(v6, v7, 0x40u);
+  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  MemCpy(TILEMAP_ADDR(0x740), p + 224, 0x40);
+  MemCpy(TILEMAP_ADDR(0x780), p + 736, 0x40);
+  MemCpy(TILEMAP_ADDR(0x7C0), p + 1248, 0x40);
+  MemCpy(TILEMAP_ADDR(0x800), p + 1760, 0x40);
 }
 
 void Skree_CorpseRottingInitFunc_4(void) {  // 0xA9E052
-  uint8 *v0 = RomPtr_7E(0x2840u);
-  uint8 *v1 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__448);
-  MemCpy(v0, v1, 0x40u);
-  uint8 *v2 = RomPtr_7E(0x2880u);
-  uint8 *v3 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__960);
-  MemCpy(v2, v3, 0x40u);
-  uint8 *v4 = RomPtr_7E(0x28C0u);
-  uint8 *v5 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__1472);
-  MemCpy(v4, v5, 0x40u);
-  uint8 *v6 = RomPtr_7E(0x2900u);
-  uint8 *v7 = RomPtr_B7(addr_kDeadMonsters_TileData__plus__1984);
-  MemCpy(v6, v7, 0x40u);
+  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  MemCpy(TILEMAP_ADDR(0x840), p + 448, 0x40);
+  MemCpy(TILEMAP_ADDR(0x880), p + 960, 0x40);
+  MemCpy(TILEMAP_ADDR(0x8C0), p + 1472, 0x40);
+  MemCpy(TILEMAP_ADDR(0x900), p + 1984, 0x40);
 }
 
 void MotherBrain_CorpseRottingInitFunc(void) {  // 0xA9E08B
-  uint8 *v0 = RomPtr_7E(0x9000u);
-  uint8 *v1 = RomPtr_B7(addr_kMotherBrain_Misc_TileData__plus__192);
-  MemCpy(v0, v1, 0xC0u);
-  uint8 *v2 = RomPtr_7E(0x90E0u);
-  uint8 *v3 = RomPtr_B7(addr_kMotherBrain_Misc_TileData__plus__704);
-  MemCpy(v2, v3, 0xC0u);
-  uint8 *v4 = RomPtr_7E(0x91C0u);
-  uint8 *v5 = RomPtr_B7(addr_kMotherBrain_Misc_TileData__plus__1216);
-  MemCpy(v4, v5, 0xC0u);
-  uint8 *v6 = RomPtr_7E(0x92A0u);
-  uint8 *v7 = RomPtr_B7(addr_kMotherBrain_Misc_TileData__plus__1728);
-  MemCpy(v6, v7, 0xC0u);
-  uint8 *v8 = RomPtr_7E(0x9380u);
-  uint8 *v9 = RomPtr_B7(addr_kMotherBrain_Misc_TileData__plus__2240);
-  MemCpy(v8, v9, 0xE0u);
-  uint8 *v10 = RomPtr_7E(0x9460u);
-  uint8 *v11 = RomPtr_B7(addr_kMotherBrain_Misc_TileData__plus__2752);
-  MemCpy(v10, v11, 0xE0u);
+  uint8 *v0 = RomPtr_7E(0x9000);
+  uint8 *v1 = RomPtr_B7(addr_kMotherBrain_Misc_TileData + 192);
+  MemCpy(v0, v1, 0xC0);
+  uint8 *v2 = RomPtr_7E(0x90E0);
+  uint8 *v3 = RomPtr_B7(addr_kMotherBrain_Misc_TileData + 704);
+  MemCpy(v2, v3, 0xC0);
+  uint8 *v4 = RomPtr_7E(0x91C0);
+  uint8 *v5 = RomPtr_B7(addr_kMotherBrain_Misc_TileData + 1216);
+  MemCpy(v4, v5, 0xC0);
+  uint8 *v6 = RomPtr_7E(0x92A0);
+  uint8 *v7 = RomPtr_B7(addr_kMotherBrain_Misc_TileData + 1728);
+  MemCpy(v6, v7, 0xC0);
+  uint8 *v8 = RomPtr_7E(0x9380);
+  uint8 *v9 = RomPtr_B7(addr_kMotherBrain_Misc_TileData + 2240);
+  MemCpy(v8, v9, 0xE0);
+  uint8 *v10 = RomPtr_7E(0x9460);
+  uint8 *v11 = RomPtr_B7(addr_kMotherBrain_Misc_TileData + 2752);
+  MemCpy(v10, v11, 0xE0);
 }
 
 void Torizo_CorpseRottingMoveFunc(uint16 j, uint16 k) {  // 0xA9E272
   Enemy_DeadMonsters *E = Get_DeadMonsters(0);
-  if (E->dms_var_41 >= 0x50u) {
+  if (E->dms_var_41 >= 0x50) {
     if (sign16(E->dms_var_41 - 94)) {
       int v3 = k >> 1;
       int v4 = j >> 1;
@@ -5362,7 +5287,7 @@ void Torizo_CorpseRottingMoveFunc(uint16 j, uint16 k) {  // 0xA9E272
     tilemap_stuff[v8 + 16] = 0;
     tilemap_stuff[v8 + 24] = 0;
   }
-  if (E->dms_var_41 >= 0x10u) {
+  if (E->dms_var_41 >= 0x10) {
     if (sign16(E->dms_var_41 - 94)) {
       int v9 = k >> 1;
       int v10 = j >> 1;
@@ -5417,7 +5342,7 @@ void Torizo_CorpseRottingMoveFunc(uint16 j, uint16 k) {  // 0xA9E272
   }
   tilemap_stuff[v14 + 128] = 0;
   tilemap_stuff[v14 + 136] = 0;
-  if (E->dms_var_41 >= 0x10u) {
+  if (E->dms_var_41 >= 0x10) {
     if (sign16(E->dms_var_41 - 94)) {
       int v20 = j >> 1;
       tilemap_stuff[v20 + 145] = tilemap_stuff[v14 + 144];
@@ -5484,7 +5409,7 @@ void Torizo_CorpseRottingCopyFunc(uint16 j, uint16 k) {  // 0xA9E38B
     tilemap_stuff[v20 + 129] = tilemap_stuff[v19 + 128];
     tilemap_stuff[v20 + 137] = tilemap_stuff[v19 + 136];
   }
-  if (E->dms_var_41 >= 0x10u) {
+  if (E->dms_var_41 >= 0x10) {
     if (sign16(E->dms_var_41 - 94)) {
       int v21 = k >> 1;
       int v22 = j >> 1;
@@ -6015,7 +5940,7 @@ void Skree_CorpseRottingCopyFunc_4(uint16 j, uint16 k) {  // 0xA9EA17
 
 void MotherBrain_CorpseRottingMoveFunc(uint16 j, uint16 k) {  // 0xA9EA40
   Enemy_DeadMonsters *E = Get_DeadMonsters(0);
-  if (E->dms_var_41 >= 0x10u) {
+  if (E->dms_var_41 >= 0x10) {
     if (sign16(E->dms_var_41 - 46)) {
       *(uint16 *)((char *)&g_word_7E9002 + j) = *(uint16 *)((char *)&kraid_unk9000 + k);
       *(uint16 *)((char *)&g_word_7E9012 + j) = *(uint16 *)((char *)&g_word_7E900F + k + 1);
@@ -6057,7 +5982,7 @@ void MotherBrain_CorpseRottingMoveFunc(uint16 j, uint16 k) {  // 0xA9EA40
     *(uint16 *)((char *)&g_word_7E90A0 + k) = 0;
     *(uint16 *)((char *)&g_word_7E90B0 + k) = 0;
   }
-  if (E->dms_var_41 >= 0x20u) {
+  if (E->dms_var_41 >= 0x20) {
     if (sign16(E->dms_var_41 - 46)) {
       *(uint16 *)((char *)&g_word_7E90C2 + j) = *(uint16 *)((char *)&g_word_7E90C0 + k);
       *(uint16 *)((char *)&g_word_7E90D2 + j) = *(uint16 *)((char *)&g_word_7E90D0 + k);
@@ -6093,7 +6018,7 @@ void MotherBrain_CorpseRottingCopyFunc(uint16 j, uint16 k) {  // 0xA9EB0B
     *(uint16 *)((char *)&g_word_7E90A2 + j) = *(uint16 *)((char *)&g_word_7E90A0 + k);
     *(uint16 *)((char *)&g_word_7E90B2 + j) = *(uint16 *)((char *)&g_word_7E90B0 + k);
   }
-  if (E->dms_var_41 >= 0x20u) {
+  if (E->dms_var_41 >= 0x20) {
     if (sign16(E->dms_var_41 - 46)) {
       *(uint16 *)((char *)&g_word_7E90C2 + j) = *(uint16 *)((char *)&g_word_7E90C0 + k);
       *(uint16 *)((char *)&g_word_7E90D2 + j) = *(uint16 *)((char *)&g_word_7E90D0 + k);
@@ -6145,7 +6070,7 @@ void Shitroid_Init(void) {  // 0xA9EF37
   E->base.instruction_timer = 1;
   E->base.timer = 0;
   uint16 v2 = FUNC16(Shitroid_Func_4);
-  if ((layer1_x_pos & 0x8000u) != 0) {
+  if ((layer1_x_pos & 0x8000) != 0) {
     E->base.properties |= kEnemyProps_Tangible | kEnemyProps_Invisible;
     v2 = FUNC16(Shitroid_Func_3);
   }
@@ -6154,9 +6079,9 @@ void Shitroid_Init(void) {  // 0xA9EF37
   E->shitr_var_C = 0;
   E->shitr_var_E = 10;
   E->shitr_parameter_2 = 0;
-  WriteColorsToTargetPalette(0xa9, 0x120u, addr_word_A9F8C6, 0x10u);
-  WriteColorsToTargetPalette(0xa9, 0x140u, addr_kShitroidInCutscene_Palette, 0x10u);
-  WriteColorsToTargetPalette(0xa9, 0x1E0u, addr_kDeadSidehopper_Palette_0, 0x10u);
+  WriteColorsToTargetPalette(0xa9, 0x120, addr_word_A9F8C6, 0x10);
+  WriteColorsToTargetPalette(0xa9, 0x140, addr_kShitroidInCutscene_Palette, 0x10);
+  WriteColorsToTargetPalette(0xa9, 0x1E0, addr_kDeadSidehopper_Palette_0, 0x10);
 }
 
 void Shitroid_Powerbomb(void) {  // 0xA9EFBA
@@ -6234,7 +6159,7 @@ void Shitroid_Func_5(uint16 k) {  // 0xA9F02B
 
 void Shitroid_Func_6(uint16 k) {  // 0xA9F037
   Enemy_Shitroid *E = Get_Shitroid(k);
-  if ((--E->shitr_var_F & 0x8000u) != 0) {
+  if ((--E->shitr_var_F & 0x8000) != 0) {
     QueueMusic_Delayed8(5u);
     E->shitr_var_A = FUNC16(Shitroid_Func_7);
     Shitroid_Func_7(k);
@@ -6244,7 +6169,7 @@ void Shitroid_Func_6(uint16 k) {  // 0xA9F037
 void Shitroid_Func_7(uint16 k) {  // 0xA9F049
   R18_ = 584;
   R20_ = 74;
-  Shitroid_Func_GraduallyAccelerateTowards0x400(k, 0xFu);
+  Shitroid_Func_GraduallyAccelerateTowards0x400(k, 0xF);
   R22_ = 1;
   R24_ = 1;
   if (!(Shitroid_Func_2(k) & 1))
@@ -6255,7 +6180,7 @@ void Shitroid_Func_8(uint16 k) {  // 0xA9F06D
   Enemy_Shitroid *E = Get_Shitroid(k + 64);
   R18_ = E->base.x_pos;
   R20_ = E->base.y_pos - 32;
-  Shitroid_Func_GraduallyAccelerateTowards0x400(k, 0xFu);
+  Shitroid_Func_GraduallyAccelerateTowards0x400(k, 0xF);
   if (!(Shitroid_Func_1(k, k + 64) & 1))
     Get_Shitroid(k)->shitr_var_A = FUNC16(Shitroid_Func_9);
 }
@@ -6264,7 +6189,7 @@ void Shitroid_Func_9(uint16 k) {  // 0xA9F094
   Enemy_Shitroid *E1 = Get_Shitroid(k + 64);
   R18_ = E1->base.x_pos;
   R20_ = E1->base.y_pos - 32;
-  if (Shitroid_AccelerateTowardsPoint(k, 0x200u) & 1) {
+  if (Shitroid_AccelerateTowardsPoint(k, 0x200) & 1) {
     Enemy_Shitroid *E = Get_Shitroid(k);
     E->shitr_var_B = 0;
     E->shitr_var_C = 0;
@@ -6296,7 +6221,7 @@ void Shitroid_Func_10(uint16 k) {  // 0xA9F0E6
 }
 
 void Shitroid_Func_11(uint16 k) {  // 0xA9F125
-  Get_Shitroid(0x40u)->shitr_var_08 = 1;
+  Get_Shitroid(0x40)->shitr_var_08 = 1;
   Enemy_Shitroid *E = Get_Shitroid(k);
   E->shitr_var_A = FUNC16(Shitroid_Func_12);
   E->shitr_var_F = 192;
@@ -6311,7 +6236,7 @@ void Shitroid_Func_12(uint16 k) {  // 0xA9F138
   R18_ = E->base.x_pos;
   R20_ = 104;
   Shitroid_Func_GraduallyAccelerateTowards0x400(k, 0);
-  if ((--E->shitr_var_F & 0x8000u) != 0) {
+  if ((--E->shitr_var_F & 0x8000) != 0) {
     E->shitr_var_A = FUNC16(Shitroid_Func_13);
     E->shitr_parameter_2 = 1;
     *(uint16 *)scrolls |= 0x100u;
@@ -6328,7 +6253,7 @@ void Shitroid_Func_13(uint16 k) {  // 0xA9F180
   if (v2 >= 8u) {
     shitro_var_02 = E->shitr_var_02;
     if (shitro_var_02) {
-      if ((--shitro_var_02 & 0x8000u) != 0)
+      if ((--shitro_var_02 & 0x8000) != 0)
         shitro_var_02 = 0;
     }
   } else {
@@ -6350,14 +6275,14 @@ void Shitroid_Func_13(uint16 k) {  // 0xA9F180
     }
     R20_ = v5;
     R18_ = samus_x_pos;
-    Shitroid_Func_GraduallyAccelerateTowards0x400(cur_enemy_index, 0xAu);
+    Shitroid_Func_GraduallyAccelerateTowards0x400(cur_enemy_index, 0xA);
   }
 }
 
 void Shitroid_Func_14(uint16 k) {  // 0xA9F1FA
   R18_ = samus_x_pos;
   R20_ = samus_y_pos - 32;
-  Shitroid_Func_GraduallyAccelerateTowards0x400(k, 0xFu);
+  Shitroid_Func_GraduallyAccelerateTowards0x400(k, 0xF);
 }
 
 void Shitroid_Func_15(uint16 k) {  // 0xA9F20E
@@ -6402,7 +6327,7 @@ void Shitroid_Func_17(uint16 k) {  // 0xA9F2A2
 
 void Shitroid_Func_18(uint16 k) {  // 0xA9F2AE
   Enemy_Shitroid *E = Get_Shitroid(k);
-  if ((--E->shitr_var_F & 0x8000u) != 0) {
+  if ((--E->shitr_var_F & 0x8000) != 0) {
     E->shitr_var_A = FUNC16(Shitroid_Func_19);
     E->shitr_var_F = 192;
     Shitroid_Func_19(k);
@@ -6414,7 +6339,7 @@ void Shitroid_Func_19(uint16 k) {  // 0xA9F2C0
   R20_ = 104;
   Shitroid_Func_GraduallyAccelerateTowards0x400(cur_enemy_index, 0);
   Enemy_Shitroid *E = Get_Shitroid(cur_enemy_index);
-  if ((--E->shitr_var_F & 0x8000u) != 0) {
+  if ((--E->shitr_var_F & 0x8000) != 0) {
     QueueSfx2_Max6(0x7Du);
     E->shitr_var_A = FUNC16(Shitroid_Func_20);
     E->shitr_var_F = 88;
@@ -6430,7 +6355,7 @@ void Shitroid_Func_20(void) {  // 0xA9F2FB
   R20_ = 100;
   Shitroid_Func_GraduallyAccelerateTowards0x400(cur_enemy_index, 0);
   Enemy_Shitroid *E = Get_Shitroid(cur_enemy_index);
-  if ((--E->shitr_var_F & 0x8000u) != 0) {
+  if ((--E->shitr_var_F & 0x8000) != 0) {
     E->shitr_var_A = FUNC16(Shitroid_Func_21);
     E->shitr_var_F = 88;
     Shitroid_Func_21();
@@ -6442,7 +6367,7 @@ void Shitroid_Func_21(void) {  // 0xA9F324
   R20_ = 104;
   Shitroid_Func_GraduallyAccelerateTowards0x400(cur_enemy_index, 0);
   Enemy_Shitroid *E = Get_Shitroid(cur_enemy_index);
-  if ((--E->shitr_var_F & 0x8000u) != 0) {
+  if ((--E->shitr_var_F & 0x8000) != 0) {
     E->shitr_var_A = FUNC16(Shitroid_Func_24);
     E->shitr_var_F = 256;
     E->base.current_instruction = addr_kShitroid_Ilist_F93A;
@@ -6474,7 +6399,7 @@ void Shitroid_Func_23(void) {  // 0xA9F36D
 
 void Shitroid_Func_24(uint16 k) {  // 0xA9F3A3
   Enemy_Shitroid *E = Get_Shitroid(k);
-  if ((--E->shitr_var_F & 0x8000u) != 0) {
+  if ((--E->shitr_var_F & 0x8000) != 0) {
     SomeMotherBrainScripts(2u);
     E->shitr_parameter_2 = 1;
     E->shitr_var_A = FUNC16(Shitroid_Func_25);
@@ -6505,7 +6430,7 @@ uint8 Shitroid_Func_27(uint16 k) {  // 0xA9F3D4
   if (v2 >= 2u) {
     shitro_var_02 = E->shitr_var_02;
     if (shitro_var_02) {
-      if ((--shitro_var_02 & 0x8000u) != 0)
+      if ((--shitro_var_02 & 0x8000) != 0)
         shitro_var_02 = 0;
     }
   } else {
@@ -6790,14 +6715,14 @@ void Shitroid_Touch(void) {  // 0xA9F789
       R18_ = samus_x_pos - E->base.x_pos;
       R20_ = samus_y_pos - E->base.y_pos;
       R18_ = (uint8)(0x80 - CalculateAngleFromXY() + 0x80);
-      uint16 v4 = Math_MultBySin(0x40u);
+      uint16 v4 = Math_MultBySin(0x40);
       E->shitr_var_B += v4;
-      uint16 v6 = Math_MultByCos(0x40u);
+      uint16 v6 = Math_MultByCos(0x40);
       E->shitr_var_C += v6;
     } else if (E->shitr_var_A == (uint16)FUNC16(Shitroid_Func_14)) {
       R18_ = samus_x_pos;
       R20_ = samus_y_pos - 32;
-      if (Shitroid_AccelerateTowardsPoint(cur_enemy_index, 0x200u) & 1) {
+      if (Shitroid_AccelerateTowardsPoint(cur_enemy_index, 0x200) & 1) {
         E->base.current_instruction = addr_kShitroid_Ilist_F924;
         E->base.instruction_timer = 1;
         E->base.timer = 0;
@@ -6821,7 +6746,7 @@ void Shitroid_Shot(void) {  // 0xA9F842
     R20_ = projectile_y_pos[0] - E->base.y_pos;
     R18_ = (uint8)-CalculateAngleFromXY();
     uint16 v1 = 8 * projectile_damage[collision_detection_index];
-    if (v1 >= 0xF0u)
+    if (v1 >= 0xF0)
       v1 = 240;
     uint16 a = v1;
     uint16 v2 = Math_MultBySin(v1);
@@ -6844,7 +6769,7 @@ uint16 Shitroid_Instr_6(uint16 k, uint16 j) {  // 0xA9F990
 }
 
 uint16 Shitroid_Instr_5(uint16 k, uint16 j) {  // 0xA9F994
-  if ((random_number & 0x8000u) == 0)
+  if ((random_number & 0x8000) == 0)
     return *(uint16 *)RomPtr_A9(j);
   QueueSfx2_Max6(0x52u);
   return j + 2;

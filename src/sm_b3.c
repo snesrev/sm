@@ -497,7 +497,7 @@ void BrinstarYellowPipeBug_Func_1(void) {  // 0xB38FB5
     v2 = GetSamusEnemyDelta_X(cur_enemy_index);
     if (v2 >= 0 && sign16(v2 - 192)) {
 LABEL_7:
-      if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x30u)) {
+      if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x30)) {
         E->base.properties &= ~kEnemyProps_Invisible;
         E->pbg_var_20 = 24;
         E->pbg_var_A = FUNC16(BrinstarYellowPipeBug_Func_2);
@@ -1071,7 +1071,7 @@ void Botwoon_Func_15(void) {  // 0xB39A5E
     E->botwoon_var_D = FUNC16(Botwoon_Func_16);
     R18_ = E->base.x_pos;
     R20_ = E->base.y_pos;
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x1Du);
+    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x1D);
     Botwoon_QueueExplosionSfx();
     E->base.properties |= 0x500u;
   }

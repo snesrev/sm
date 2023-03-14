@@ -52,7 +52,7 @@ void SetupPpuForTitleSequence(void) {  // 0x8B8000
   WriteReg(BG12NBA, 0);
   reg_BG34NBA = 0;
   WriteReg(BG34NBA, 0);
-  WriteReg(TM, 0x10u);
+  WriteReg(TM, 0x10);
   reg_TM = 16;
   WriteReg(TS, 0);
   reg_TS = 0;
@@ -63,10 +63,10 @@ void SetupPpuForTitleSequence(void) {  // 0x8B8000
   next_gameplay_CGWSEL = 0;
   WriteReg(CGADSUB, 0);
   next_gameplay_CGADSUB = 0;
-  WriteReg(COLDATA, 0xE0u);
+  WriteReg(COLDATA, 0xE0);
   WriteReg(SETINI, 0);
   reg_SETINI = 0;
-  memset7E(0x3000u, 0, 0x7FEu);
+  memset(g_ram + 0x3000u, 0, 0x7FE);
   oam_next_ptr = 0;
   menu_option_index = 0;
   screen_fade_delay = 0;
@@ -110,11 +110,11 @@ void SetupPpu_Intro(void) {  // 0x8B80DA
   WriteReg(M7SEL, 0);
   reg_M7SEL = 0;
   reg_BG1SC = 80;
-  WriteReg(BG1SC, 0x50u);
+  WriteReg(BG1SC, 0x50);
   reg_BG2SC = 72;
-  WriteReg(BG2SC, 0x48u);
+  WriteReg(BG2SC, 0x48);
   reg_BG3SC = 76;
-  WriteReg(BG3SC, 0x4Cu);
+  WriteReg(BG3SC, 0x4C);
   reg_BG4SC = 0;
   WriteReg(BG4SC, 0);
   reg_BG12NBA = 0;
@@ -132,7 +132,7 @@ void SetupPpu_Intro(void) {  // 0x8B80DA
   next_gameplay_CGWSEL = 0;
   WriteReg(CGADSUB, 0);
   next_gameplay_CGADSUB = 0;
-  WriteReg(COLDATA, 0xE0u);
+  WriteReg(COLDATA, 0xE0);
   WriteReg(SETINI, 0);
   reg_SETINI = 0;
   reg_CGWSEL = 0;
@@ -141,7 +141,7 @@ void SetupPpu_Intro(void) {  // 0x8B80DA
   reg_COLDATA[1] = 64;
   reg_COLDATA[2] = 0x80;
   reg_MOSAIC = 0;
-  memset7E(0x3000u, 0x2Fu, 0x7FEu);
+  memset7E((uint16*)(g_ram + 0x3000), 0x2F, 0x7FE);
   oam_next_ptr = 0;
   cinematic_var5 = 0;
   cinematic_var6 = 256;
@@ -181,7 +181,7 @@ void SetupPpu_3_Mode7(void) {  // 0x8B819B
   WriteReg(BG12NBA, 0);
   reg_BG34NBA = 0;
   WriteReg(BG34NBA, 0);
-  WriteReg(TM, 0x11u);
+  WriteReg(TM, 0x11);
   reg_TM = 17;
   WriteReg(TS, 0);
   reg_TS = 0;
@@ -192,7 +192,7 @@ void SetupPpu_3_Mode7(void) {  // 0x8B819B
   next_gameplay_CGWSEL = 0;
   WriteReg(CGADSUB, 0);
   next_gameplay_CGADSUB = 0;
-  WriteReg(COLDATA, 0xE0u);
+  WriteReg(COLDATA, 0xE0);
   reg_CGWSEL = 0;
   reg_CGADSUB = 0;
   reg_COLDATA[0] = 32;
@@ -220,7 +220,7 @@ void SetupPpu_4_Mode1(void) {  // 0x8B8230
   WriteReg(M7SEL, 0);
   reg_M7SEL = 0;
   reg_BG1SC = 92;
-  WriteReg(BG1SC, 0x5Cu);
+  WriteReg(BG1SC, 0x5C);
   reg_BG2SC = 0;
   WriteReg(BG2SC, 0);
   reg_BG3SC = 0;
@@ -231,7 +231,7 @@ void SetupPpu_4_Mode1(void) {  // 0x8B8230
   WriteReg(BG12NBA, 6u);
   reg_BG34NBA = 0;
   WriteReg(BG34NBA, 0);
-  WriteReg(TM, 0x11u);
+  WriteReg(TM, 0x11);
   reg_TM = 17;
   WriteReg(TS, 0);
   reg_TS = 0;
@@ -249,7 +249,7 @@ void SetupPpu_4_Mode1(void) {  // 0x8B8230
 void SetupPpu_5_Mode7(void) {  // 0x8B8293
   WriteReg(INIDISP, 0x80);
   reg_INIDISP = 0x80;
-  WriteReg(OBSEL, 0xA3u);
+  WriteReg(OBSEL, 0xA3);
   reg_OBSEL = -93;
   WriteReg(BGMODE, 7u);
   reg_BGMODE = 7;
@@ -267,7 +267,7 @@ void SetupPpu_5_Mode7(void) {  // 0x8B8293
   WriteReg(BG12NBA, 0);
   reg_BG34NBA = 0;
   WriteReg(BG34NBA, 0);
-  WriteReg(TM, 0x11u);
+  WriteReg(TM, 0x11);
   reg_TM = 17;
   WriteReg(TS, 0);
   reg_TS = 0;
@@ -280,7 +280,7 @@ void SetupPpu_5_Mode7(void) {  // 0x8B8293
   next_gameplay_CGADSUB = 0;
   reg_CGWSEL = 0;
   reg_CGADSUB = 0;
-  WriteReg(COLDATA, 0xE0u);
+  WriteReg(COLDATA, 0xE0);
   WriteReg(SETINI, 0);
   reg_SETINI = 0;
   reg_COLDATA[0] = 32;
@@ -311,18 +311,18 @@ void SetupPpu_6_Mode1(void) {  // 0x8B833A
   WriteReg(M7SEL, 0);
   reg_M7SEL = 0;
   reg_BG1SC = 112;
-  WriteReg(BG1SC, 0x70u);
+  WriteReg(BG1SC, 0x70);
   reg_BG2SC = 120;
-  WriteReg(BG2SC, 0x78u);
+  WriteReg(BG2SC, 0x78);
   reg_BG3SC = 0;
   WriteReg(BG3SC, 0);
   reg_BG4SC = 0;
   WriteReg(BG4SC, 0);
   reg_BG12NBA = 68;
-  WriteReg(BG12NBA, 0x44u);
+  WriteReg(BG12NBA, 0x44);
   reg_BG34NBA = 0;
   WriteReg(BG34NBA, 0);
-  WriteReg(TM, 0x10u);
+  WriteReg(TM, 0x10);
   reg_TM = 16;
   WriteReg(TS, 0);
   reg_TS = 0;
@@ -333,7 +333,7 @@ void SetupPpu_6_Mode1(void) {  // 0x8B833A
   next_gameplay_CGWSEL = 0;
   WriteReg(CGADSUB, 0);
   next_gameplay_CGADSUB = 0;
-  WriteReg(COLDATA, 0xE0u);
+  WriteReg(COLDATA, 0xE0);
   reg_CGWSEL = 0;
   reg_CGADSUB = 0;
   reg_COLDATA[0] = 32;
@@ -363,15 +363,15 @@ void SetupPpu_7_Mode1(void) {  // 0x8B83D3
   WriteReg(M7SEL, 0);
   reg_M7SEL = 0;
   reg_BG1SC = 72;
-  WriteReg(BG1SC, 0x48u);
+  WriteReg(BG1SC, 0x48);
   reg_BG2SC = 76;
-  WriteReg(BG2SC, 0x4Cu);
+  WriteReg(BG2SC, 0x4C);
   reg_BG3SC = 36;
-  WriteReg(BG3SC, 0x24u);
+  WriteReg(BG3SC, 0x24);
   reg_BG4SC = 0;
   WriteReg(BG4SC, 0);
   reg_BG12NBA = 84;
-  WriteReg(BG12NBA, 0x54u);
+  WriteReg(BG12NBA, 0x54);
   reg_BG34NBA = 2;
   WriteReg(BG34NBA, 2u);
   WriteReg(TM, 1u);
@@ -389,13 +389,13 @@ void SetupPpu_7_Mode1(void) {  // 0x8B83D3
   reg_COLDATA[1] = 64;
   reg_COLDATA[2] = 0x80;
   oam_next_ptr = 0;
-  WriteRegWord(M7A, 0x100u);
+  WriteRegWord(M7A, 0x100);
   reg_M7A = 256;
   WriteRegWord(M7B, 0);
   reg_M7B = 0;
   WriteRegWord(M7C, 0);
   reg_M7C = 0;
-  WriteRegWord(M7D, 0x100u);
+  WriteRegWord(M7D, 0x100);
   reg_M7D = 256;
   WriteRegWord(M7X, 0x80);
   reg_M7X = 128;
@@ -572,7 +572,7 @@ void ProcessCinematicBgObject_DrawChar(uint16 k, uint16 j) {  // 0x8B884D
   cinematicbg_arr8[15] = v3 - 8;
   if (*((uint16 *)v2 + 2) != 0xD67D && cinematicbg_var1)
     QueueSfx3_Max6(0xDu);
-  ProcessCinematicBgObject_DrawToTextTilemap(0x1Eu, j);
+  ProcessCinematicBgObject_DrawToTextTilemap(0x1E, j);
 }
 
 void ProcessCinematicBgObject_DrawToTextTilemap(uint16 k, uint16 j) {  // 0x8B88B7
@@ -1032,7 +1032,7 @@ uint8 AdvanceSlowScreenFadeIn(void) {  // 0x8B911B
 
 CoroutineRet InitializeIoDisplayLogo_Async(void) {  // 0x8B9146
   COROUTINE_BEGIN(coroutine_state_1, 0);
-  WriteReg(INIDISP, 0x8Fu);
+  WriteReg(INIDISP, 0x8F);
   reg_INIDISP = 0x8f;
   oam_next_ptr = 0;
   ClearOamExt();
@@ -1124,7 +1124,7 @@ CoroutineRet InitializeIoDisplayLogo_Async(void) {  // 0x8B9146
   reg_WBGLOG = 0;
   WriteReg(WOBJLOG, 0);
   reg_WOBJLOG = 0;
-  WriteReg(TM, 0x10u);
+  WriteReg(TM, 0x10);
   reg_TM = 16;
   WriteReg(TMW, 0);
   reg_TMW = 0;
@@ -1136,19 +1136,19 @@ CoroutineRet InitializeIoDisplayLogo_Async(void) {  // 0x8B9146
   next_gameplay_CGWSEL = 0;
   WriteReg(CGADSUB, 0);
   next_gameplay_CGADSUB = 0;
-  WriteReg(COLDATA, 0xE0u);
+  WriteReg(COLDATA, 0xE0);
   reg_COLDATA[0] = 32;
   reg_COLDATA[1] = 64;
   reg_COLDATA[2] = 0x80;
   WriteReg(SETINI, 0);
   reg_SETINI = 0;
-  mov24(&decompress_src, 0x9580D8u);
+  mov24(&decompress_src, 0x9580D8);
   {
     static const LongPtr unk_8B92A1 = LONGPTR(0x7f5000);
     DecompressToMem_IpArg(&unk_8B92A1);
   }
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x60u);
+  WriteReg(VMADDH, 0x60);
   WriteReg(VMAIN, 0x80);
   {
     static const StartDmaCopy unk_8B92B9 = { 1, 1, 0x18, LONGPTR(0x7f5000), 0x4000 };
@@ -1202,7 +1202,7 @@ CoroutineRet InitializeIoDisplayLogo_Async(void) {  // 0x8B9146
   }
   ClearUnusedOam();
   COROUTINE_AWAIT(6, WaitForNMI_Async());
-  WriteReg(INIDISP, 0x8Fu);
+  WriteReg(INIDISP, 0x8F);
   reg_INIDISP = 0x8f;
 
   COROUTINE_END(0);
@@ -1212,7 +1212,7 @@ void AddNintentoLogoToOam(void) {  // 0x8B936B
   R22_ = 0;
   R20_ = 128;
   R18_ = 112;
-  DrawSpritemap(0x8Cu, addr_kSpriteMap_NintendoLogo);
+  DrawSpritemap(0x8C, addr_kSpriteMap_NintendoLogo);
 }
 
 uint8 SpawnCinematicSpriteObject(uint16 j, uint16 a) {  // 0x8B938A
@@ -1836,7 +1836,7 @@ void DrawCinematicSpriteObjects_Intro(void) {  // 0x8B9746
         if ((uint16)(v3 + 128) < 0x1FFu)
           DrawSpritemapOffScreen(v2);
       } else if ((uint16)(v3 + 128) < 0x1FFu) {
-        DrawSpritemap(0x8Cu, v2);
+        DrawSpritemap(0x8C, v2);
       }
     }
   }
@@ -1855,7 +1855,7 @@ void DrawCinematicSpriteObjects_Ending(void) {  // 0x8B9799
         if ((uint16)(v3 + 128) < 0x1FFu)
           DrawSpritemapOffScreen(v2);
       } else if ((uint16)(v3 + 128) < 0x1FFu) {
-        DrawSpritemap(0x8Cu, v2);
+        DrawSpritemap(0x8C, v2);
       }
     }
   }
@@ -2273,17 +2273,17 @@ void LoadTitleSequenceGraphics(void) {  // 0x8B9B87
     palette_buffer[v0 >> 1] = g_word_8CE1E9[v0 >> 1];
     v0 += 2;
   } while ((int16)(v0 - 512) < 0);
-  mov24(&decompress_src, 0x94E000u);
+  mov24(&decompress_src, 0x94E000);
   static const LongPtr unk_8B9BB4 = LONGPTR(0x7f0000);
   static const LongPtr unk_8B9BC5 = LONGPTR(0x7f4000);
   static const LongPtr unk_8B9BD6 = LONGPTR(0x7f5000);
   static const LongPtr unk_8B9BE7 = LONGPTR(0x7f9000);
   DecompressToMem_IpArg(&unk_8B9BB4);
-  mov24(&decompress_src, 0x96FC04u);
+  mov24(&decompress_src, 0x96FC04);
   DecompressToMem_IpArg(&unk_8B9BC5);
-  mov24(&decompress_src, 0x9580D8u);
+  mov24(&decompress_src, 0x9580D8);
   DecompressToMem_IpArg(&unk_8B9BD6);
-  mov24(&decompress_src, 0x95A5E1u);
+  mov24(&decompress_src, 0x95A5E1);
   DecompressToMem_IpArg(&unk_8B9BE7);
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0);
@@ -2296,7 +2296,7 @@ void LoadTitleSequenceGraphics(void) {  // 0x8B9B87
   WriteReg(VMADDH, 0);
   v1 = 0x4000;
   do {
-    WriteReg(VMDATAL, 0xFFu);
+    WriteReg(VMDATAL, 0xFF);
     --v1;
   } while (v1);
   WriteReg(VMADDL, 0);
@@ -2306,18 +2306,18 @@ void LoadTitleSequenceGraphics(void) {  // 0x8B9B87
   SetupDmaTransfer(&unk_8B9C37);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x60u);
+  WriteReg(VMADDH, 0x60);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8B9C57 = { 1, 1, 0x18, LONGPTR(0x7f5000), 0x4000 };
   SetupDmaTransfer(&unk_8B9C57);
   WriteReg(MDMAEN, 2u);
-  WriteRegWord(M7A, 0x100u);
+  WriteRegWord(M7A, 0x100);
   reg_M7A = 256;
   WriteRegWord(M7B, 0);
   reg_M7B = 0;
   WriteRegWord(M7C, 0);
   reg_M7C = 0;
-  WriteRegWord(M7D, 0x100u);
+  WriteRegWord(M7D, 0x100);
   reg_M7D = 256;
   WriteRegWord(M7X, 0x80);
   reg_M7X = 128;
@@ -2716,42 +2716,42 @@ void CinematicFunction_Intro_Initial(void) {  // 0x8BA395
   SetupDmaTransfer(&unk_8BA469);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x40u);
+  WriteReg(VMADDH, 0x40);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BA489 = { 1, 1, 0x18, LONGPTR(0x7f8000), 0x0900 };
   SetupDmaTransfer(&unk_8BA489);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x48u);
+  WriteReg(VMADDH, 0x48);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BA4A9 = { 1, 1, 0x18, LONGPTR(0x7f9000), 0x0800 };
   SetupDmaTransfer(&unk_8BA4A9);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x4Cu);
+  WriteReg(VMADDH, 0x4C);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BA4C9 = { 1, 1, 0x18, LONGPTR(0x7fe000), 0x0800 };
   SetupDmaTransfer(&unk_8BA4C9);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x50u);
+  WriteReg(VMADDH, 0x50);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BA4E9 = { 1, 1, 0x18, LONGPTR(0x7f9800), 0x2000 };
   SetupDmaTransfer(&unk_8BA4E9);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x60u);
+  WriteReg(VMADDH, 0x60);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BA509 = { 1, 1, 0x18, LONGPTR(0x9ad200), 0x2000 };
   SetupDmaTransfer(&unk_8BA509);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x6Eu);
+  WriteReg(VMADDH, 0x6E);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BA529 = { 1, 1, 0x18, LONGPTR(0x7fb800), 0x2400 };
   SetupDmaTransfer(&unk_8BA529);
   WriteReg(MDMAEN, 2u);
-  mov24(&decompress_src, 0x95D713u);
+  mov24(&decompress_src, 0x95D713);
   static const LongPtr unk_8BA546 = LONGPTR(0x7fa000);
   DecompressToMem_IpArg(&unk_8BA546);
   EnableNMI();
@@ -2813,7 +2813,7 @@ void CinematicFunc_Intro_QueueGalaxyIsAtPeace(void) {  // 0x8BA613
   if (!cinematic_var4 || v0) {
     QueueMusic_Delayed8(0);
     QueueMusic_Delayed8(0xFF42u);
-    QueueMusic_DelayedY(5u, 0xEu);
+    QueueMusic_DelayedY(5u, 0xE);
     cinematic_function = FUNC16(CinematicFunc_Intro_WaitForQueueWait4secs);
   }
 }
@@ -2842,12 +2842,12 @@ void CinematicFunc_Intro_WaitForFadeOut(void) {  // 0x8BA663
 void CinematicFunc_Intro_SetupTextPage2(void) {  // 0x8BA66F
   ClearJapaneseTextTiles();
   WriteReg(VMADDL, 0x80);
-  WriteReg(VMADDH, 0x41u);
+  WriteReg(VMADDH, 0x41);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BA689 = { 1, 1, 0x18, LONGPTR(0x7e4000), 0x0600 };
   SetupDmaTransfer(&unk_8BA689);
   WriteReg(MDMAEN, 2u);
-  WriteReg(TM, 0x16u);
+  WriteReg(TM, 0x16);
   reg_TM = 22;
   ClearCinematicBgObjects(0x2F);
   EnableCinematicBgObjects();
@@ -2865,9 +2865,9 @@ void CinematicFunc_Intro_SetupTextPage2(void) {  // 0x8BA66F
     ++v1;
   } while ((int16)(v1 * 2 - 1792) < 0);
   *(uint32 *)&ram3000.menu.menu_tilemap[286] = 472456233;
-  SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCE6D, 0x1C29u);
+  SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCE6D, 0x1C29);
   cinematic_var4 = 127;
-  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF63, 0x4C00u);
+  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF63, 0x4C00);
   cinematic_var10 = 8;
   reg_BG2VOFS = 8;
   reg_BG3VOFS = 8;
@@ -2875,7 +2875,7 @@ void CinematicFunc_Intro_SetupTextPage2(void) {  // 0x8BA66F
   SetSomeStuffForSpriteObject_16();
   QueueMusic_Delayed8(0);
   QueueMusic_Delayed8(0xFF36u);
-  QueueMusic_DelayedY(5u, 0xEu);
+  QueueMusic_DelayedY(5u, 0xE);
   cinematic_function = FUNC16(CinematicFunc_Intro_WaitFadeinShowText);
 }
 
@@ -2884,7 +2884,7 @@ void CinematicFunc_Intro_WaitFadeinShowText(void) {  // 0x8BA82B
     cinematic_function = FUNC16(CinematicFunc_Intro_WaitForFadeinSleep);
     screen_fade_delay = 2;
     screen_fade_counter = 2;
-    SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF3F, 0x4C00u);
+    SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF3F, 0x4C00);
   }
 }
 
@@ -3216,7 +3216,7 @@ void CinematicFunction_Intro_WaitInputSetupMotherBrainFight(void) {  // 0x8BAEB8
     cinematic_var8 = 0;
     cinematic_var13 = 127;
     R18_ = 0;
-    SpawnCinematicSpriteObjectToR18(addr_kCinematicSpriteObjectDef_8BCE55, 0x7Fu);
+    SpawnCinematicSpriteObjectToR18(addr_kCinematicSpriteObjectDef_8BCE55, 0x7F);
     SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCF27, 0);
     uint16 v1 = 0;
     do {
@@ -3259,7 +3259,7 @@ void CinematicFunction_Intro_WaitInputSetupBabyMetroid(void) {  // 0x8BAF6C
     samus_prev_y_pos = 147;
     cinematic_var8 = 0;
     cinematic_var13 = 127;
-    SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCE5B, 0x7Fu);
+    SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCE5B, 0x7F);
     SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCE79, 0);
     cinematic_var11 = 0;
     uint16 v1 = 0;
@@ -3292,10 +3292,10 @@ void CinematicFunction_Intro_SetupTransitionToGameplay(void) {  // 0x8BB018
     v0 += 2;
   } while ((int16)(v0 - 512) < 0);
   DecomposePaletteDataForFading();
-  ClearYColorsFromIndexX(0x28u, 3u);
-  ClearYColorsFromIndexX(0xE0u, 0x10u);
-  ClearYColorsFromIndexX(0x180u, 0x20u);
-  ClearYColorsFromIndexX(0x1E0u, 0x10u);
+  ClearYColorsFromIndexX(0x28, 3u);
+  ClearYColorsFromIndexX(0xE0, 0x10);
+  ClearYColorsFromIndexX(0x180, 0x20);
+  ClearYColorsFromIndexX(0x1E0, 0x10);
   ComposeFadingPalettes();
 }
 
@@ -3343,7 +3343,7 @@ void CinematicFunction_Intro_Func11(void) {  // 0x8BB0F2
     cinematic_var8 = 32;
     cinematic_var10 = 8;
     cinematic_var13 = 127;
-    SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCE61, 0x7Fu);
+    SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCE61, 0x7F);
     CinematicFunction_Intro_Func13();
   }
 }
@@ -3356,7 +3356,7 @@ void CinematicFunction_Intro_Func12(void) {  // 0x8BB123
     cinematic_var8 = 0;
     cinematic_var10 = -24;
     cinematic_var13 = 127;
-    SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCE67, 0x7Fu);
+    SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCE67, 0x7F);
     CinematicFunction_Intro_Func13();
   }
 }
@@ -3375,8 +3375,8 @@ void CinematicFunction_Intro_Func13(void) {  // 0x8BB151
     v0 += 2;
   } while ((int16)(v0 - 512) < 0);
   DecomposePaletteDataForFading();
-  ClearYColorsFromIndexX(0x40u, 0x10u);
-  ClearYColorsFromIndexX(0x1C0u, 9u);
+  ClearYColorsFromIndexX(0x40, 0x10);
+  ClearYColorsFromIndexX(0x1C0, 9u);
   ComposeFadingPalettes();
 }
 
@@ -3417,7 +3417,7 @@ void CinematicFunction_Intro_Func15(void) {  // 0x8BB1DA
 void CinematicFunction_Intro_Func15b(void) {  // 0x8BB207
   EnableCinematicBgTilemapUpdates();
   ClearEnglishTextTilemap();
-  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF5D, 0x4C00u);
+  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF5D, 0x4C00);
   cinematic_function = FUNC16(nullsub_121);
   SetSomeStuffForSpriteObject_16();
   QueueMusic_Delayed8(0);
@@ -3439,13 +3439,13 @@ uint16 CinematicBgInstr_Func17(uint16 k, uint16 j) {  // 0x8BB240
 
 void CinematicFunction_Intro_XfadeGameplayFade(void) {  // 0x8BB250
   if ((cinematic_var4 & 3) == 0) {
-    FadeOutYColorsFromIndexX(0, 0x14u);
-    FadeOutYColorsFromIndexX(0x60u, 0x10u);
-    FadeOutYColorsFromIndexX(0x1D2u, 6u);
-    FadeInYColorsFromIndexX(0x28u, 3u);
-    FadeInYColorsFromIndexX(0xE0u, 0x10u);
-    FadeInYColorsFromIndexX(0x180u, 0x20u);
-    FadeInYColorsFromIndexX(0x1E0u, 0x10u);
+    FadeOutYColorsFromIndexX(0, 0x14);
+    FadeOutYColorsFromIndexX(0x60, 0x10);
+    FadeOutYColorsFromIndexX(0x1D2, 6u);
+    FadeInYColorsFromIndexX(0x28, 3u);
+    FadeInYColorsFromIndexX(0xE0, 0x10);
+    FadeInYColorsFromIndexX(0x180, 0x20);
+    FadeInYColorsFromIndexX(0x1E0, 0x10);
     ComposeFadingPalettes();
   }
   if ((--cinematic_var4 & 0x8000u) != 0) {
@@ -3465,11 +3465,11 @@ void CinematicFunction_Intro_XfadeGameplayFade(void) {  // 0x8BB250
 
 void CinematicFunction_Intro_XfadeScientistFade(void) {  // 0x8BB2D2
   if ((cinematic_var4 & 3) == 0) {
-    FadeOutYColorsFromIndexX(0, 0x14u);
-    FadeOutYColorsFromIndexX(0x60u, 0x10u);
-    FadeOutYColorsFromIndexX(0x1D2u, 6u);
-    FadeInYColorsFromIndexX(0x40u, 0x10u);
-    FadeInYColorsFromIndexX(0x1C0u, 9u);
+    FadeOutYColorsFromIndexX(0, 0x14);
+    FadeOutYColorsFromIndexX(0x60, 0x10);
+    FadeOutYColorsFromIndexX(0x1D2, 6u);
+    FadeInYColorsFromIndexX(0x40, 0x10);
+    FadeInYColorsFromIndexX(0x1C0, 9u);
     ComposeFadingPalettes();
   }
   if ((--cinematic_var4 & 0x8000u) != 0) {
@@ -3516,25 +3516,25 @@ void Instr_StartIntroPage_Common(void) {  // 0x8BB354
 }
 
 void CinematicFunction_Intro_Page2(void) {  // 0x8BB35F
-  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF45, 0x4C00u);
+  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF45, 0x4C00);
   cinematic_function = FUNC16(CinematicFunction_Intro_Fadestuff);
   CinematicFunction_Intro_SetupStuff();
 }
 
 void CinematicFunction_Intro_Page3(void) {  // 0x8BB370
-  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF4B, 0x4C00u);
+  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF4B, 0x4C00);
   cinematic_function = FUNC16(CinematicFunction_Intro_Fadestuff);
   CinematicFunction_Intro_SetupStuff();
 }
 
 void CinematicFunction_Intro_Page4(void) {  // 0x8BB381
-  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF51, 0x4C00u);
+  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF51, 0x4C00);
   cinematic_function = FUNC16(CinematicFunction_Intro_Fadestuff2);
   CinematicFunction_Intro_SetupStuff();
 }
 
 void CinematicFunction_Intro_Page5(void) {  // 0x8BB392
-  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF57, 0x4C00u);
+  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF57, 0x4C00);
   cinematic_function = FUNC16(CinematicFunction_Intro_Fadestuff2);
   CinematicFunction_Intro_SetupStuff();
 }
@@ -3550,9 +3550,9 @@ void CinematicFunction_Intro_SetupStuff(void) {  // 0x8BB3A1
     v0 += 2;
   } while ((int16)(v0 - 512) < 0);
   DecomposePaletteDataForFading();
-  ClearYColorsFromIndexX(0, 0x10u);
-  ClearYColorsFromIndexX(0x60u, 0x10u);
-  ClearYColorsFromIndexX(0x1D2u, 6u);
+  ClearYColorsFromIndexX(0, 0x10);
+  ClearYColorsFromIndexX(0x60, 0x10);
+  ClearYColorsFromIndexX(0x1D2, 6u);
   ComposeFadingPalettes();
   cinematic_var4 = 127;
   EnableCinematicBgTilemapUpdates();
@@ -3561,13 +3561,13 @@ void CinematicFunction_Intro_SetupStuff(void) {  // 0x8BB3A1
 
 void CinematicFunction_Intro_Fadestuff(void) {  // 0x8BB3F4
   if ((cinematic_var13 & 3) == 0) {
-    FadeInYColorsFromIndexX(0, 0x10u);
-    FadeInYColorsFromIndexX(0x60u, 0x10u);
-    FadeInYColorsFromIndexX(0x1D2u, 6u);
-    FadeOutYColorsFromIndexX(0x28u, 3u);
-    FadeOutYColorsFromIndexX(0xE0u, 0x10u);
-    FadeOutYColorsFromIndexX(0x180u, 0x20u);
-    FadeOutYColorsFromIndexX(0x1E0u, 0x10u);
+    FadeInYColorsFromIndexX(0, 0x10);
+    FadeInYColorsFromIndexX(0x60, 0x10);
+    FadeInYColorsFromIndexX(0x1D2, 6u);
+    FadeOutYColorsFromIndexX(0x28, 3u);
+    FadeOutYColorsFromIndexX(0xE0, 0x10);
+    FadeOutYColorsFromIndexX(0x180, 0x20);
+    FadeOutYColorsFromIndexX(0x1E0, 0x10);
     ComposeFadingPalettes();
   }
   if ((--cinematic_var13 & 0x8000u) != 0) {
@@ -3581,11 +3581,11 @@ void CinematicFunction_Intro_Fadestuff(void) {  // 0x8BB3F4
 
 void CinematicFunction_Intro_Fadestuff2(void) {  // 0x8BB458
   if ((cinematic_var13 & 3) == 0) {
-    FadeInYColorsFromIndexX(0, 0x10u);
-    FadeInYColorsFromIndexX(0x60u, 0x10u);
-    FadeInYColorsFromIndexX(0x1D2u, 6u);
-    FadeOutYColorsFromIndexX(0x40u, 0x10u);
-    FadeOutYColorsFromIndexX(0x1C0u, 9u);
+    FadeInYColorsFromIndexX(0, 0x10);
+    FadeInYColorsFromIndexX(0x60, 0x10);
+    FadeInYColorsFromIndexX(0x1D2, 6u);
+    FadeOutYColorsFromIndexX(0x40, 0x10);
+    FadeOutYColorsFromIndexX(0x1C0, 9u);
     ComposeFadingPalettes();
   }
   if ((--cinematic_var13 & 0x8000u) != 0) {
@@ -4171,9 +4171,9 @@ void CinematicFunction_Intro_Func54(void) {  // 0x8BBCA0
   static const DecompressToParams unk_8BBCEC = { LONGPTR(0x7f5000) };
   mov24(&decompress_src, 0x95A82F);
   DecompressToMem_IpArg(&unk_8BBCCA);
-  mov24(&decompress_src, 0x96FE69u);
+  mov24(&decompress_src, 0x96FE69);
   DecompressToMem_IpArg(&unk_8BBCDB);
-  mov24(&decompress_src, 0x96D10Au);
+  mov24(&decompress_src, 0x96D10A);
   DecompressToMem_IpArg(&unk_8BBCEC);
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0);
@@ -4186,7 +4186,7 @@ void CinematicFunction_Intro_Func54(void) {  // 0x8BBCA0
   WriteReg(VMADDH, 0);
   v1 = 0x4000;
   do {
-    WriteReg(VMDATAL, 0x8Cu);
+    WriteReg(VMDATAL, 0x8C);
     --v1;
   } while (v1);
   WriteReg(VMADDL, 0);
@@ -4196,22 +4196,22 @@ void CinematicFunction_Intro_Func54(void) {  // 0x8BBCA0
   SetupDmaTransfer(&unk_8BBD3C);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x60u);
+  WriteReg(VMADDH, 0x60);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BBD5C = { 1, 1, 0x18, LONGPTR(0x7f5000), 0x4000 };
   SetupDmaTransfer(&unk_8BBD5C);
   WriteReg(MDMAEN, 2u);
-  WriteRegWord(M7A, 0x100u);
+  WriteRegWord(M7A, 0x100);
   reg_M7A = 256;
   WriteRegWord(M7B, 0);
   reg_M7B = 0;
   WriteRegWord(M7C, 0);
   reg_M7C = 0;
-  WriteRegWord(M7D, 0x100u);
+  WriteRegWord(M7D, 0x100);
   reg_M7D = 256;
-  WriteRegWord(M7X, 0x38u);
+  WriteRegWord(M7X, 0x38);
   reg_M7X = 56;
-  WriteRegWord(M7Y, 0x18u);
+  WriteRegWord(M7Y, 0x18);
   reg_M7Y = 24;
   cinematic_var8 = -72;
   cinematic_var10 = -104;
@@ -4225,7 +4225,7 @@ void CinematicFunction_Intro_Func54(void) {  // 0x8BBCA0
   SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCF0F, 0);
   cinematic_function = FUNC16(CinematicFunction_Intro_Func55);
   QueueMusic_Delayed8(0xFF2Du);
-  QueueMusic_DelayedY(5u, 0xEu);
+  QueueMusic_DelayedY(5u, 0xE);
 }
 
 void CinematicFunction_Intro_Func55(void) {  // 0x8BBDE4
@@ -4392,7 +4392,7 @@ void CinematicFunction_Intro_Func67(void) {  // 0x8BBFDA
     cinematic_var10 = 0;
     EnableCinematicBgObjects();
     EnableCinematicBgTilemapUpdates();
-    SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF69, 0x5C00u);
+    SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF69, 0x5C00);
     cinematic_function = FUNC16(nullsub_120);
   }
 }
@@ -4484,7 +4484,7 @@ void CinematicFunctionBlackoutFromCeres(void) {  // 0x8BC11B
   WriteReg(VMADDH, 0);
   v3 = 0x4000;
   do {
-    WriteReg(VMDATAL, 0x8Cu);
+    WriteReg(VMDATAL, 0x8C);
     --v3;
   } while (v3);
   WriteReg(VMADDL, 0);
@@ -4494,28 +4494,28 @@ void CinematicFunctionBlackoutFromCeres(void) {  // 0x8BC11B
   SetupDmaTransfer(&unk_8BC1D4);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x60u);
+  WriteReg(VMADDH, 0x60);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BC1F4 = { 1, 1, 0x18, LONGPTR(0x7f5000), 0x4000 };
   SetupDmaTransfer(&unk_8BC1F4);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x60u);
+  WriteReg(VMADDH, 0x60);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BC214 = { 1, 1, 0x18, LONGPTR(0x9ad200), 0x1a00 };
   SetupDmaTransfer(&unk_8BC214);
   WriteReg(MDMAEN, 2u);
-  WriteRegWord(M7A, 0x100u);
+  WriteRegWord(M7A, 0x100);
   reg_M7A = 256;
   WriteRegWord(M7B, 0);
   reg_M7B = 0;
   WriteRegWord(M7C, 0);
   reg_M7C = 0;
-  WriteRegWord(M7D, 0x100u);
+  WriteRegWord(M7D, 0x100);
   reg_M7D = 256;
-  WriteRegWord(M7X, 0x34u);
+  WriteRegWord(M7X, 0x34);
   reg_M7X = 52;
-  WriteRegWord(M7Y, 0x30u);
+  WriteRegWord(M7Y, 0x30);
   reg_M7Y = 48;
   cinematic_var8 = -44;
   cinematic_var10 = -112;
@@ -4541,9 +4541,9 @@ void CinematicFunctionBlackoutFromCeres(void) {  // 0x8BC11B
   QueueMusic_Delayed8(0);
   QueueMusic_Delayed8(0xFF2Du);
   if (game_state == kGameState_37_CeresGoesBoomWithSamus)
-    QueueMusic_DelayedY(8u, 0xEu);
+    QueueMusic_DelayedY(8u, 0xE);
   else
-    QueueMusic_DelayedY(7u, 0xEu);
+    QueueMusic_DelayedY(7u, 0xE);
 }
 
 void CinematicFunction_Intro_Func74(void) {  // 0x8BC2E4
@@ -4755,28 +4755,28 @@ void CinematicFunction_Intro_Func86(void) {  // 0x8BC699
   SetupDmaTransfer(&unk_8BC6E4);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x5Cu);
+  WriteReg(VMADDH, 0x5C);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BC704 = { 1, 1, 0x18, LONGPTR(0x7f9000), 0x0800 };
   SetupDmaTransfer(&unk_8BC704);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x60u);
+  WriteReg(VMADDH, 0x60);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BC724 = { 1, 1, 0x18, LONGPTR(0x7f5000), 0x4000 };
   SetupDmaTransfer(&unk_8BC724);
   WriteReg(MDMAEN, 2u);
-  WriteRegWord(M7A, 0x100u);
+  WriteRegWord(M7A, 0x100);
   reg_M7A = 256;
   WriteRegWord(M7B, 0);
   reg_M7B = 0;
   WriteRegWord(M7C, 0);
   reg_M7C = 0;
-  WriteRegWord(M7D, 0x100u);
+  WriteRegWord(M7D, 0x100);
   reg_M7D = 256;
-  WriteRegWord(M7X, 0x38u);
+  WriteRegWord(M7X, 0x38);
   reg_M7X = 56;
-  WriteRegWord(M7Y, 0x18u);
+  WriteRegWord(M7Y, 0x18);
   reg_M7Y = 24;
   cinematic_var8 = 0;
   cinematic_var10 = 0;
@@ -5107,13 +5107,13 @@ void CinematicFunctionEscapeFromCebes(void) {  // 0x8BD480
   SetupDmaTransfer(&unk_8BD4FC);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x20u);
+  WriteReg(VMADDH, 0x20);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BD51C = { 1, 1, 0x18, LONGPTR(0x7f8000), 0x4000 };
   SetupDmaTransfer(&unk_8BD51C);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x60u);
+  WriteReg(VMADDH, 0x60);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BD53C = { 1, 1, 0x18, LONGPTR(0x7f4000), 0x4000 };
   SetupDmaTransfer(&unk_8BD53C);
@@ -5159,13 +5159,13 @@ void CinematicFunctionEscapeFromCebes(void) {  // 0x8BD480
   DecompressToMem_IpArg(&unk_8BD612);
   mov24(&decompress_src, 0x99d932);
   DecompressToMem_IpArg(&unk_8BD623);
-  WriteRegWord(M7A, 0x100u);
+  WriteRegWord(M7A, 0x100);
   reg_M7A = 256;
   WriteRegWord(M7B, 0);
   reg_M7B = 0;
   WriteRegWord(M7C, 0);
   reg_M7C = 0;
-  WriteRegWord(M7D, 0x100u);
+  WriteRegWord(M7D, 0x100);
   reg_M7D = 256;
   WriteRegWord(M7X, 0x80);
   reg_M7X = 128;
@@ -5195,7 +5195,7 @@ void CinematicFunctionEscapeFromCebes(void) {  // 0x8BD480
   cinematic_function = FUNC16(CinematicFunction_Intro_Func109);
   QueueMusic_Delayed8(0);
   QueueMusic_Delayed8(0xFF33u);
-  QueueMusic_DelayedY(5u, 0xEu);
+  QueueMusic_DelayedY(5u, 0xE);
 }
 
 void CinematicFunction_Intro_Func109(void) {  // 0x8BD6D7
@@ -5230,12 +5230,12 @@ void CinematicFunction_Intro_Func112(void) {  // 0x8BD731
   SetupDmaTransfer(&unk_8BD746);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x20u);
+  WriteReg(VMADDH, 0x20);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BD766 = { 1, 1, 0x18, LONGPTR(0x7e2000), 0x4000 };
   SetupDmaTransfer(&unk_8BD766);
   WriteReg(MDMAEN, 2u);
-  mov24(&decompress_src, 0x98ED4Fu);
+  mov24(&decompress_src, 0x98ED4F);
   static const DecompressToParams unk_8BD783 = { LONGPTR(0x7e2000) };
   DecompressToMem_IpArg(&unk_8BD783);
   WriteReg(VMADDL, 0);
@@ -5282,12 +5282,12 @@ void CinematicFunction_Intro_Func115(void) {  // 0x8BD837
   SetupDmaTransfer(&unk_8BD84C);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x20u);
+  WriteReg(VMADDH, 0x20);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BD86C = { 1, 1, 0x18, LONGPTR(0x7e6000), 0x4000 };
   SetupDmaTransfer(&unk_8BD86C);
   WriteReg(MDMAEN, 2u);
-  mov24(&decompress_src, 0x999101u);
+  mov24(&decompress_src, 0x999101);
   static const DecompressToParams unk_8BD889 = { LONGPTR(0x7e6000) };
   DecompressToMem_IpArg(&unk_8BD889);
   WriteReg(VMADDL, 0);
@@ -5297,37 +5297,37 @@ void CinematicFunction_Intro_Func115(void) {  // 0x8BD837
   SetupDmaTransfer(&unk_8BD8A1);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x40u);
+  WriteReg(VMADDH, 0x40);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BD8C1 = { 1, 1, 0x18, LONGPTR(0x7f8000), 0x6000 };
   SetupDmaTransfer(&unk_8BD8C1);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x70u);
+  WriteReg(VMADDH, 0x70);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BD8E1 = { 1, 1, 0x18, LONGPTR(0x7fe000), 0x0800 };
   SetupDmaTransfer(&unk_8BD8E1);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x74u);
+  WriteReg(VMADDH, 0x74);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BD901 = { 1, 1, 0x18, LONGPTR(0x7fe800), 0x0800 };
   SetupDmaTransfer(&unk_8BD901);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x78u);
+  WriteReg(VMADDH, 0x78);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BD921 = { 1, 1, 0x18, LONGPTR(0x7ff000), 0x0800 };
   SetupDmaTransfer(&unk_8BD921);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x7Cu);
+  WriteReg(VMADDH, 0x7C);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BD941 = { 1, 1, 0x18, LONGPTR(0x7ff800), 0x0800 };
   SetupDmaTransfer(&unk_8BD941);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x50u);
+  WriteReg(VMADDH, 0x50);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BD961 = { 1, 1, 0x18, LONGPTR(0x7ea000), 0x1000 };
   SetupDmaTransfer(&unk_8BD961);
@@ -5362,8 +5362,8 @@ void CinematicFunction_Intro_Func115(void) {  // 0x8BD837
   reg_CGADSUB = 33;
   CopyPalettesToFadingPalettes();
   DecomposePaletteDataForFading();
-  ClearYColorsFromIndexX(0x1A0u, 0x10u);
-  ClearYColorsFromIndexX(0x1E0u, 0x10u);
+  ClearYColorsFromIndexX(0x1A0, 0x10);
+  ClearYColorsFromIndexX(0x1E0, 0x10);
   ComposeFadingPalettes();
   cinematic_var4 = 63;
   cinematic_function = FUNC16(CinematicFunction_Intro_Func116);
@@ -5381,9 +5381,9 @@ void CinematicFunction_Intro_Func116(void) {  // 0x8BDA02
 void CinematicFunction_Intro_Func117(void) {  // 0x8BDA1A
   cinematic_var6 += 4;
   if ((cinematic_var4 & 1) == 0) {
-    FadeOutYColorsFromIndexX(0xE0u, 0x10u);
-    FadeInYColorsFromIndexX(0x1A0u, 0x10u);
-    FadeInYColorsFromIndexX(0x1E0u, 0x10u);
+    FadeOutYColorsFromIndexX(0xE0, 0x10);
+    FadeInYColorsFromIndexX(0x1A0, 0x10);
+    FadeInYColorsFromIndexX(0x1E0, 0x10);
     ComposeFadingPalettes();
   }
   if ((--cinematic_var4 & 0x8000u) != 0) {
@@ -5407,7 +5407,7 @@ void CinematicFunction_Intro_Func117(void) {  // 0x8BDA1A
     next_gameplay_CGADSUB = 0;
     reg_CGWSEL = 0;
     reg_CGADSUB = 0;
-    WriteReg(COLDATA, 0xE0u);
+    WriteReg(COLDATA, 0xE0);
     reg_COLDATA[0] = 32;
     reg_COLDATA[1] = 64;
     reg_COLDATA[2] = 0x80;
@@ -5477,7 +5477,7 @@ void CinematicFunction_Intro_Func119(void) {  // 0x8BDB9E
   if (!cinematic_var4 || v0) {
     QueueMusic_Delayed8(0);
     QueueMusic_Delayed8(0xFF3Cu);
-    QueueMusic_DelayedY(5u, 0xEu);
+    QueueMusic_DelayedY(5u, 0xE);
     cinematic_function = FUNC16(CinematicFunction_Intro_Func120);
   }
 }
@@ -5572,7 +5572,7 @@ void CinematicFunction_Intro_Func123(void) {  // 0x8BDD42
     cinematic_var13 = 0;
     if (CheckEventHappened(0xFu)) {
       R18_ = 4;
-      SpawnCinematicSpriteObjectToR18(0xEF21u, 4u);
+      SpawnCinematicSpriteObjectToR18(0xEF21, 4u);
     }
   }
 }
@@ -5627,63 +5627,63 @@ void CinematicFunction_Intro_Func126(void) {  // 0x8BDE80
   static const DecompressToParams unk_8BDEFF = { LONGPTR(0x7f4000) };
   static const DecompressToParams unk_8BDF10 = { LONGPTR(0x7fe800) };
   static const DecompressToParams unk_8BDF21 = { LONGPTR(0x7ff000) };
-  mov24(&decompress_src, 0x979803u);
+  mov24(&decompress_src, 0x979803);
   DecompressToMem_IpArg(&unk_8BDEAA);
-  mov24(&decompress_src, 0x97B957u);
+  mov24(&decompress_src, 0x97B957);
   DecompressToMem_IpArg(&unk_8BDEBB);
-  mov24(&decompress_src, 0x97D7FCu);
+  mov24(&decompress_src, 0x97D7FC);
   DecompressToMem_IpArg(&unk_8BDECC);
-  mov24(&decompress_src, 0x97E7DEu);
+  mov24(&decompress_src, 0x97E7DE);
   DecompressToMem_IpArg(&unk_8BDEDD);
-  mov24(&decompress_src, 0x9796F4u);
+  mov24(&decompress_src, 0x9796F4);
   DecompressToMem_IpArg(&unk_8BDEEE);
-  mov24(&decompress_src, 0x97F987u);
+  mov24(&decompress_src, 0x97F987);
   DecompressToMem_IpArg(&unk_8BDEFF);
-  mov24(&decompress_src, 0x99DA9Fu);
+  mov24(&decompress_src, 0x99DA9F);
   DecompressToMem_IpArg(&unk_8BDF10);
-  mov24(&decompress_src, 0x99DAB1u);
+  mov24(&decompress_src, 0x99DAB1);
   DecompressToMem_IpArg(&unk_8BDF21);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x20u);
+  WriteReg(VMADDH, 0x20);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BDF39 = { 1, 1, 0x18, LONGPTR(0x7fe800), 0x0100 };
   SetupDmaTransfer(&unk_8BDF39);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x24u);
+  WriteReg(VMADDH, 0x24);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BDF59 = { 1, 1, 0x18, LONGPTR(0x7ff000), 0x0800 };
   SetupDmaTransfer(&unk_8BDF59);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x40u);
+  WriteReg(VMADDH, 0x40);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BDF79 = { 1, 1, 0x18, LONGPTR(0x7fc000), 0x1000 };
   SetupDmaTransfer(&unk_8BDF79);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x60u);
+  WriteReg(VMADDH, 0x60);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BDF99 = { 1, 1, 0x18, LONGPTR(0x7e6000), 0x4000 };
   SetupDmaTransfer(&unk_8BDF99);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x50u);
+  WriteReg(VMADDH, 0x50);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BDFB9 = { 1, 1, 0x18, LONGPTR(0x7f0000), 0x2000 };
   SetupDmaTransfer(&unk_8BDFB9);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x4Cu);
+  WriteReg(VMADDH, 0x4C);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BDFD9 = { 1, 1, 0x18, LONGPTR(0x7fe000), 0x0800 };
   SetupDmaTransfer(&unk_8BDFD9);
   WriteReg(MDMAEN, 2u);
 
-  mov24(&decompress_src, 0x99E089u);
+  mov24(&decompress_src, 0x99E089);
   static const DecompressToParams unk_8BDFF6 = { LONGPTR(0x7e6000) };
   DecompressToMem_IpArg(&unk_8BDFF6);
-  mov24(&decompress_src, 0x99ECC4u);
+  mov24(&decompress_src, 0x99ECC4);
   static const DecompressToParams unk_8BE007 = { LONGPTR(0x7e8000) };
   DecompressToMem_IpArg(&unk_8BE007);
   if (sign16(game_time_hours - 3)) {
@@ -5701,17 +5701,17 @@ void CinematicFunction_Intro_Func126(void) {  // 0x8BDE80
     SetupDmaTransfer(&unk_8BE04B);
     WriteReg(MDMAEN, 2u);
   }
-  WriteRegWord(M7A, 0x100u);
+  WriteRegWord(M7A, 0x100);
   reg_M7A = 256;
   WriteRegWord(M7B, 0);
   reg_M7B = 0;
   WriteRegWord(M7C, 0);
   reg_M7C = 0;
-  WriteRegWord(M7D, 0x100u);
+  WriteRegWord(M7D, 0x100);
   reg_M7D = 256;
-  WriteRegWord(M7X, 0x68u);
+  WriteRegWord(M7X, 0x68);
   reg_M7X = 104;
-  WriteRegWord(M7Y, 0x70u);
+  WriteRegWord(M7Y, 0x70);
   reg_M7Y = 112;
   cinematic_var8 = -8;
   cinematic_var10 = -24;
@@ -5725,7 +5725,7 @@ void CinematicFunction_Intro_Func126(void) {  // 0x8BDE80
   for (int i = 510; i >= 0; i -= 2)
     hdma_table_1[i >> 1] = 0;
   CinematicFunction_Intro_Func127();
-  mov24(&decompress_src, 0x97EEFFu);
+  mov24(&decompress_src, 0x97EEFF);
   static const DecompressToParams unk_8BE0CB = { LONGPTR(0x7f0000) };
   DecompressToMem_IpArg(&unk_8BE0CB);
   ClearCinematicBgObjects(0x7F);
@@ -5757,7 +5757,7 @@ void CinematicFunction_Intro_Func130(void) {  // 0x8BE110
     screen_fade_counter = 0;
     CopyPalettesToFadingPalettes();
     DecomposePaletteDataForFading();
-    ClearYColorsFromIndexX(0x40u, 0x10u);
+    ClearYColorsFromIndexX(0x40, 0x10);
     ComposeFadingPalettes();
     cinematic_var4 = 32;
     cinematic_function = FUNC16(CinematicFunction_Intro_Func131);
@@ -5765,7 +5765,7 @@ void CinematicFunction_Intro_Func130(void) {  // 0x8BE110
 }
 
 void CinematicFunction_Intro_Func131(void) {  // 0x8BE158
-  FadeInYColorsFromIndexX(0x40u, 0x10u);
+  FadeInYColorsFromIndexX(0x40, 0x10);
   ComposeFadingPalettes();
   bool v0 = (--cinematic_var4 & 0x8000u) != 0;
   if (!cinematic_var4 || v0) {
@@ -5822,9 +5822,9 @@ void CinematicFunction_Intro_Func134(void) {  // 0x8BE1D2
       DecomposePaletteDataForFading();
       SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BEF51, 0);
       SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BEF45, 0);
-      ClearYColorsFromIndexX(0x1C0u, 0x10u);
+      ClearYColorsFromIndexX(0x1C0, 0x10);
     }
-    ClearYColorsFromIndexX(0x1A0u, 0x10u);
+    ClearYColorsFromIndexX(0x1A0, 0x10);
     ComposeFadingPalettes();
     reg_TM = 2;
     reg_TS = 16;
@@ -5838,10 +5838,10 @@ void CinematicFunction_Intro_Func136(void) {  // 0x8BE265
   if ((cinematic_var4 & 3) != 0) {
     CinematicFunction_Intro_Func135();
   } else {
-    FadeOutYColorsFromIndexX(0x40u, 0x10u);
+    FadeOutYColorsFromIndexX(0x40, 0x10);
     if (!sign16(game_time_hours - 3))
-      FadeInYColorsFromIndexX(0x1C0u, 0x10u);
-    FadeInYColorsFromIndexX(0x1A0u, 0x10u);
+      FadeInYColorsFromIndexX(0x1C0, 0x10);
+    FadeInYColorsFromIndexX(0x1A0, 0x10);
     ComposeFadingPalettes();
     CinematicFunction_Intro_Func135();
   }
@@ -5885,10 +5885,10 @@ void CinematicFunction_Intro_Func138(void) {  // 0x8BE314
   if ((cinematic_var4 & 3) != 0) {
     CinematicFunction_Intro_Func145();
   } else {
-    FadeOutYColorsFromIndexX(0x40u, 0x10u);
+    FadeOutYColorsFromIndexX(0x40, 0x10);
     if (!sign16(game_time_hours - 3))
-      FadeInYColorsFromIndexX(0x1C0u, 0x10u);
-    FadeInYColorsFromIndexX(0x1A0u, 0x10u);
+      FadeInYColorsFromIndexX(0x1C0, 0x10);
+    FadeInYColorsFromIndexX(0x1A0, 0x10);
     ComposeFadingPalettes();
     CinematicFunction_Intro_Func145();
   }
@@ -5923,7 +5923,7 @@ void CinematicFunction_Intro_Func145(void) {  // 0x8BE342
 void CinematicFunction_Intro_Func139(void) {  // 0x8BE3AE
   if (cinematic_var14) {
     --cinematic_var14;
-    FadeOutYColorsFromIndexX(0x180u, 0x10u);
+    FadeOutYColorsFromIndexX(0x180, 0x10);
     if (cinematic_var4)
       ComposeFadingPalettes();
   }
@@ -5944,7 +5944,7 @@ void CinematicFunction_Intro_Func139(void) {  // 0x8BE3AE
 void CinematicFunction_Intro_Func140(void) {  // 0x8BE409
   if (cinematic_var17) {
     --cinematic_var17;
-    FadeOutYColorsFromIndexX(0x1E0u, 0x10u);
+    FadeOutYColorsFromIndexX(0x1E0, 0x10);
     ComposeFadingPalettes();
   }
 }
@@ -6045,7 +6045,7 @@ void CinematicFunction_Intro_Func144(void) {  // 0x8BE58A
   if (!sign16(++cinematic_var4 - 16)) {
     cinematic_function = FUNC16(nullsub_127);
     ClearCinematicSprites();
-    SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BF74E, 0x4C00u);
+    SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BF74E, 0x4C00);
   }
 }
 
@@ -6113,7 +6113,7 @@ uint16 CinematicFunction_Intro_Func147(uint16 k, uint16 j) {  // 0x8BE780
 void CinematicFunction_Intro_Func148(void) {  // 0x8BE797
   cinematic_var10 -= 2;
   if (sign16(cinematic_var10 + 79)) {
-    SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BF748, 0x4C00u);
+    SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BF748, 0x4C00);
     cinematic_function = FUNC16(nullsub_127);
     CopySuperMetroidString();
   }

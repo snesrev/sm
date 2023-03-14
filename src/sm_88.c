@@ -334,7 +334,7 @@ void InitializeSpecialEffectsForNewRoom(void) {  // 0x8882C1
   debug_disable_minimap = 0;
   for (int i = 32; i != 0x80; i += 16) {
     WriteReg((SnesRegs)(i + 17152), 0);
-    WriteReg((SnesRegs)(i + 17153), 0x13u);
+    WriteReg((SnesRegs)(i + 17153), 0x13);
     WriteReg((SnesRegs)(i + 17154), 0);
     WriteReg((SnesRegs)(i + 17155), 0);
     WriteReg((SnesRegs)(i + 17156), 0);
@@ -382,7 +382,7 @@ void InitializeSpecialEffectsForNewRoom(void) {  // 0x8882C1
   pause_hook.addr = FUNC16(PauseHook_Empty);
   unpause_hook.addr = FUNC16(PauseHook_Empty);
   WriteReg(WMADDL, 0xF0);
-  WriteReg(WMADDM, 0xFFu);
+  WriteReg(WMADDM, 0xFF);
   WriteReg(WMADDH, 1u);
   reg_HDMAEN = 0;
   reg_COLDATA[0] = 32;
@@ -995,7 +995,7 @@ void HdmaobjPreInstr_XrayFunc5_DeactivateBeam(uint16 k) {  // 0x888A08
     R0_.bank = 126;
     R0_.addr = ADDR16_OF_RAM(*hdma_table_1);
     for (int i = 510; i >= 0; i -= 2)
-      IndirWriteWord(&R0_, i, 0xFFu);
+      IndirWriteWord(&R0_, i, 0xFF);
     if (samus_auto_cancel_hud_item_index) {
       hud_item_index = 0;
       samus_auto_cancel_hud_item_index = 0;
@@ -1811,7 +1811,7 @@ void HdmaobjPreInstr_SkyLandBG2XscrollInner(uint16 k) {  // 0x88ADC2
   uint16 v1 = 0;
   do {
     uint16 scroll_subspeed = kHdmaScrollEntrys[v1].scroll_subspeed;
-    uint8 *v3 = RomPtr_7E(kHdmaScrollEntrys[v1].hdma_data_table_entry);
+    uint8 *v3 = &g_ram[kHdmaScrollEntrys[v1].hdma_data_table_entry];
     bool v4 = __CFADD__uint16(*(uint16 *)v3, scroll_subspeed);
     *(uint16 *)v3 += scroll_subspeed;
     *((uint16 *)v3 + 1) += v4 + kHdmaScrollEntrys[v1++].scroll_speed;
@@ -1872,45 +1872,39 @@ void RoomMainAsm_ScrollingSkyOcean(void) {  // 0x88AF99
 }
 
 void RoomMainAsm_ScrollingSky(void) {  // 0x88AFA3
-  VramWriteEntry *v1;
-  int16 v2;
-  VoidP v3;
-  int16 v4;
-  VoidP v5;
-
   if (time_is_frozen_flag) {
     WORD(scrolling_sky_bg2_indirect_hdma[0]) = 0;
   } else {
     reg_BG2VOFS = layer1_y_pos;
     uint16 v0 = vram_write_queue_tail;
-    v1 = gVramWriteEntry(vram_write_queue_tail);
-    v1->size = 64;
+    VramWriteEntry *v1 = gVramWriteEntry(vram_write_queue_tail);
+    v1[0].size = 64;
     v1[1].size = 64;
     v1[2].size = 64;
     v1[3].size = 64;
-    v2 = 8 * (uint8)((layer1_y_pos & 0xF8) - 16);
-    v3 = *(uint16 *)IndirPtr(
-      &R0_,
-      2 * (uint8)((uint16)(((layer1_y_pos & 0x7F8) - 16) & 0xFF00) >> 8))
-      + v2;
-    v1->src.addr = v3;
+    int tt = (layer1_y_pos & 0x7F8) - 16;
+    // fixed: prevent out of bounds read when tt is negative.
+    if (sign16(tt))
+      tt = 0;
+    int v2 = 8 * (uint8)tt;
+    int y1 = (uint8)(tt >> 8);
+    int y2 = (uint8)((tt >> 8) + 1);
+    VoidP v3 = *(uint16 *)IndirPtr(&R0_, 2 * y1) + v2;
+    v1[0].src.addr = v3;
     v1[1].src.addr = v3 + 64;
-    v4 = 8 * (uint8)((layer1_y_pos & 0xF8) - 16);
-    v5 = *(uint16 *)IndirPtr(
-      &R0_,
-      2 * (uint8)((uint16)(((layer1_y_pos & 0x7F8) + 240) & 0xFF00) >> 8))
-      + v4;
+    VoidP v5 = *(uint16 *)IndirPtr(&R0_, 2 * y2) + v2;
     v1[2].src.addr = v5;
     v1[3].src.addr = v5 + 64;
-    v1->src.bank = -118;
-    v1[1].src.bank = -118;
-    v1[2].src.bank = -118;
-    v1[3].src.bank = -118;
-    R18_ = (reg_BG2SC & 0xFC) << 8;
-    uint16 v6 = R18_ + 4 * ((layer1_y_pos - 16) & 0x1F8);
-    v1->vram_dst = v6;
+    v1[0].src.bank = 0x8a;
+    v1[1].src.bank = 0x8a;
+    v1[2].src.bank = 0x8a;
+    v1[3].src.bank = 0x8a;
+    int t = (reg_BG2SC & 0xFC) << 8;
+    R18_ = t;
+    uint16 v6 = t + 4 * ((layer1_y_pos - 16) & 0x1F8);
+    v1[0].vram_dst = v6;
     v1[1].vram_dst = v6 + 32;
-    uint16 v7 = R18_ + 4 * ((layer1_y_pos + 240) & 0x1F8);
+    uint16 v7 = t + 4 * ((layer1_y_pos + 240) & 0x1F8);
     v1[2].vram_dst = v7;
     v1[3].vram_dst = v7 + 32;
     vram_write_queue_tail = v0 + 28;
@@ -2201,7 +2195,7 @@ void HdmaobjPreInstr_LavaAcidBG2YScroll(uint16 k) {  // 0x88B4D5
 }
 
 void Handle_LavaAcidBG2YScroll_Func1(uint16 v0) {  // 0x88B51D
-  WriteReg((SnesRegs)(*((uint8 *)hdma_object_bank_slot + v0) + 17153), 0x10u);
+  WriteReg((SnesRegs)(*((uint8 *)hdma_object_bank_slot + v0) + 17153), 0x10);
   uint8 v1 = 30;
   uint16 v2 = reg_BG2VOFS & 0x1FF;
   do {
@@ -2211,7 +2205,7 @@ void Handle_LavaAcidBG2YScroll_Func1(uint16 v0) {  // 0x88B51D
 }
 #define g_word_88B589 ((uint16*)RomPtr(0x88b589))
 void Handle_LavaAcidBG2YScroll_Func2(uint16 v0) {  // 0x88B53B
-  WriteReg((SnesRegs)(*((uint8 *)hdma_object_bank_slot + v0) + 17153), 0xFu);
+  WriteReg((SnesRegs)(*((uint8 *)hdma_object_bank_slot + v0) + 17153), 0xF);
   int v1 = v0 >> 1;
   if (hdma_object_B[v1]-- == 1) {
     hdma_object_B[v1] = 6;
@@ -2229,7 +2223,7 @@ void Handle_LavaAcidBG2YScroll_Func2(uint16 v0) {  // 0x88B53B
 }
 #define g_word_88B60A ((uint16*)RomPtr(0x88b60a))
 void Handle_LavaAcidBG2YScroll_Func3(uint16 v0) {  // 0x88B5A9
-  WriteReg((SnesRegs)(*((uint8 *)hdma_object_bank_slot + v0) + BBAD0), 0x10u);
+  WriteReg((SnesRegs)(*((uint8 *)hdma_object_bank_slot + v0) + BBAD0), 0x10);
   int v1 = v0 >> 1;
   if (hdma_object_B[v1]-- == 1) {
     hdma_object_B[v1] = 4;
@@ -2662,7 +2656,7 @@ void HdmaobjPreInstr_HazeColorMathSubscreen_CeresRidleyAlive(uint16 k) {  // 0x8
 }
 
 void HdmaobjPreInstr_HazeColorMathSubscreen_CeresRidleyDead(uint16 k) {  // 0x88DE15
-  sub_88DE18(k, 0x20u);
+  sub_88DE18(k, 0x20);
 }
 
 void sub_88DE18(uint16 k, uint16 a) {  // 0x88DE18

@@ -4799,7 +4799,7 @@ void ProjPreInstr_IceSba(uint16 k) {  // 0x90CF09
       k = projectile_index;
     }
     int v3 = k >> 1;
-    Projectile_SinLookup(projectile_variables[v3], 0x20u);
+    Projectile_SinLookup(projectile_variables[v3], 0x20);
     projectile_x_pos[v3] = R20_ + samus_x_pos;
     projectile_y_pos[v3] = R22_ + samus_y_pos;
     projectile_variables[v3] = (uint8)(used_for_sba_attacksB60 + projectile_variables[v3]);

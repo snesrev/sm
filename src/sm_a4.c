@@ -604,7 +604,7 @@ void Crocomire_Func_37(void) {  // 0xA48D5E
       kraid_unk9000 = 1;
       R18_ = 1536;
       R20_ = 176;
-      SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15u);
+      SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
     }
   } else if (sign16(E0->base.x_pos - 1552)) {
     g_word_7E9002 = 0;
@@ -616,7 +616,7 @@ void Crocomire_Func_37(void) {  // 0xA48D5E
       SpawnHardcodedPlm(&unk_A48DC2);
       R18_ = 1568;
       R20_ = 176;
-      SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15u);
+      SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
     }
   } else {
     uint16 x_pos = E0->base.x_pos;
@@ -630,7 +630,7 @@ void Crocomire_Func_37(void) {  // 0xA48D5E
         SpawnHardcodedPlm(&unk_A48E13);
         R18_ = 1584;
         R20_ = 176;
-        SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15u);
+        SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
       }
     } else if ((int16)(x_pos - g_word_A486A4) >= 0) {
       Crocomire_8EE5();
@@ -697,25 +697,25 @@ void Crocomire_8EE5(void) {  // 0xA48EE5
   SpawnHardcodedPlm(&unk_A48F31);
   R18_ = 1536;
   R20_ = 176;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   R18_ = 1552;
   R20_ = 192;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   R18_ = 1568;
   R20_ = 176;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   R18_ = 1584;
   R20_ = 192;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   R18_ = 1600;
   R20_ = 192;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   R18_ = 1616;
   R20_ = 192;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   R18_ = 1632;
   R20_ = 192;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
 }
 
 void Crocomire_Func_38(uint16 k) {  // 0xA48FC2
@@ -1508,7 +1508,7 @@ void Crocomire_Func_73(void) {  // 0xA49A38
 }
 
 uint16 Crocomire_Instr_8(uint16 k, uint16 j) {  // 0xA49A9B
-  return Crocomire_Func_87(j, 0xFFE0u);
+  return Crocomire_Func_87(j, 0xFFE0);
 }
 
 uint16 Crocomire_Instr_6(uint16 k, uint16 j) {  // 0xA49AA0
@@ -1516,11 +1516,11 @@ uint16 Crocomire_Instr_6(uint16 k, uint16 j) {  // 0xA49AA0
 }
 
 uint16 Crocomire_Instr_9(uint16 k, uint16 j) {  // 0xA49AA5
-  return Crocomire_Func_87(j, 0xFFF0u);
+  return Crocomire_Func_87(j, 0xFFF0);
 }
 
 uint16 Crocomire_Instr_5(uint16 k, uint16 j) {  // 0xA49AAA
-  return Crocomire_Func_87(j, 0x10u);
+  return Crocomire_Func_87(j, 0x10);
 }
 
 uint16 Crocomire_Instr_20(uint16 k, uint16 j) {  // 0xA49AAF
@@ -1532,31 +1532,31 @@ uint16 Crocomire_Instr_21(uint16 k, uint16 j) {  // 0xA49AB4
 }
 
 uint16 Crocomire_Instr_22(uint16 k, uint16 j) {  // 0xA49AB9
-  return Crocomire_Func_87(j, 0x10u);
+  return Crocomire_Func_87(j, 0x10);
 }
 
 uint16 Crocomire_Instr_23(uint16 k, uint16 j) {  // 0xA49ABE
-  return Crocomire_Func_87(j, 0x18u);
+  return Crocomire_Func_87(j, 0x18);
 }
 
 uint16 Crocomire_Instr_24(uint16 k, uint16 j) {  // 0xA49AC3
-  return Crocomire_Func_87(j, 0x20u);
+  return Crocomire_Func_87(j, 0x20);
 }
 
 uint16 Crocomire_Instr_10(uint16 k, uint16 j) {  // 0xA49AC8
-  return Crocomire_Func_87(j, 0x28u);
+  return Crocomire_Func_87(j, 0x28);
 }
 
 uint16 Crocomire_Instr_25(uint16 k, uint16 j) {  // 0xA49ACD
-  return Crocomire_Func_87(j, 0x30u);
+  return Crocomire_Func_87(j, 0x30);
 }
 
 uint16 Crocomire_Instr_26(uint16 k, uint16 j) {  // 0xA49AD2
-  return Crocomire_Func_87(j, 0x38u);
+  return Crocomire_Func_87(j, 0x38);
 }
 
 uint16 Crocomire_Instr_27(uint16 k, uint16 j) {  // 0xA49AD7
-  return Crocomire_Func_87(j, 0x40u);
+  return Crocomire_Func_87(j, 0x40);
 }
 
 uint16 Crocomire_Func_87(uint16 j, uint16 a) {  // 0xA49ADA
@@ -1564,7 +1564,7 @@ uint16 Crocomire_Func_87(uint16 j, uint16 a) {  // 0xA49ADA
   Enemy_Crocomire *E = Get_Crocomire(0);
   R18_ = a + E->base.x_pos + (random_number & 7);
   R20_ = E->base.y_height + E->base.y_pos - 16;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   return j;
 }
 
@@ -1619,8 +1619,8 @@ void Crocomire_9B86(void) {  // 0xA49B86
   camera_distance_index = 0;
   *(uint16 *)&boss_bits_for_area[area_index] |= 2u;
   QueueMusic_Delayed8(6u);
-  Crocomire_Func_87(0, 0xFFF0u);
-  Crocomire_Func_87(0, 0x10u);
+  Crocomire_Func_87(0, 0xFFF0);
+  Crocomire_Func_87(0, 0x10);
   Crocomire_9BB3();
 }
 

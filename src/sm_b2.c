@@ -298,7 +298,7 @@ void WallSpacePirates_Main(void) {  // 0xB2F02D
 }
 
 void SpacePirates_Func_1(uint16 k) {  // 0xB2F034
-  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x20u)) {
+  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x20)) {
     Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
     E->base.current_instruction = addr_kSpacePirates_Ilist_ED80;
     E->base.instruction_timer = 1;
@@ -326,7 +326,7 @@ void SpacePirates_Func_2(uint16 k) {  // 0xB2F050
 }
 
 void SpacePirates_Func_3(uint16 k) {  // 0xB2F0C8
-  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x20u)) {
+  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x20)) {
     Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
     E->base.current_instruction = addr_kSpacePirates_Ilist_ECC0;
     E->base.instruction_timer = 1;
@@ -768,7 +768,7 @@ uint16 SpacePirates_Instr_11(uint16 k, uint16 j) {  // 0xB2FCB8
 
 uint16 SpacePirates_Instr_13(uint16 k, uint16 j) {  // 0xB2FCC8
   uint16 result;
-  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x10u)) {
+  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x10)) {
     result = addr_kSpacePirates_Ilist_FB8C;
     if ((int16)(samus_x_pos - Get_SpacePirates(cur_enemy_index)->base.x_pos) >= 0)
       return addr_kSpacePirates_Ilist_FC0E;
@@ -801,7 +801,7 @@ void WalkingSpacePirates_Main(void) {  // 0xB2FD32
 void WalkingSpacePirates_FD44(void) {  // 0xB2FD44
   Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
 
-  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x10u)) {
+  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x10)) {
     uint16 v1 = addr_kSpacePirates_Ilist_FB8C;
     if ((int16)(samus_x_pos - E->base.x_pos) >= 0)
       v1 = addr_kSpacePirates_Ilist_FC0E;
@@ -831,7 +831,7 @@ void WalkingSpacePirates_FD44(void) {  // 0xB2FD44
 void WalkingSpacePirates_FDCE(void) {  // 0xB2FDCE
   Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
 
-  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x10u)) {
+  if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x10)) {
     uint16 v1 = addr_kSpacePirates_Ilist_FB8C;
     if ((int16)(samus_x_pos - E->base.x_pos) >= 0)
       v1 = addr_kSpacePirates_Ilist_FC0E;

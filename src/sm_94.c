@@ -368,7 +368,7 @@ void PostGrappleCollisionDetect_Right(void) {  // 0x94834F
       if (v3 >= distance_to_eject_samus_left)
         distance_to_eject_samus_left = v3;
     }
-    v1 += room_width_in_blocks + room_width_in_blocks;
+    v1 += room_width_in_blocks * 2;
     --R26_;
   } while ((R26_ & 0x8000u) == 0);
 }
@@ -394,7 +394,7 @@ void PostGrappleCollisionDetect_Left(void) {  // 0x9483B1
       if (v3 >= distance_to_eject_samus_right)
         distance_to_eject_samus_right = v3;
     }
-    v1 += room_width_in_blocks + room_width_in_blocks;
+    v1 += room_width_in_blocks * 2;
     --R26_;
   } while ((R26_ & 0x8000u) == 0);
 }
@@ -1089,7 +1089,7 @@ uint8 BlockColl_Handle_Horiz(void) {  // 0x949543
   R32 = v1;
   uint16 v2 = 2 * (prod + (v1 >> 4));
   while (!(BlockColl_Horiz_CheckColl(v2) & 1)) {
-    v2 += room_width_in_blocks + room_width_in_blocks;
+    v2 += room_width_in_blocks * 2;
     if ((--R26_ & 0x8000u) != 0)
       return 0;
   }
@@ -1678,7 +1678,7 @@ uint16 BlockColl_GetBlockIndexAbove(uint16 k) {  // 0x949D34
 }
 
 uint16 BlockColl_GetBlockIndexRight(uint16 k) {  // 0x949D3E
-  return room_width_in_blocks + room_width_in_blocks + k + 1 + 1;
+  return room_width_in_blocks * 2 + k + 1 + 1;
 }
 
 uint16 BlockColl_GetBlockIndexLeft(uint16 k) {  // 0x949D49
@@ -1686,7 +1686,7 @@ uint16 BlockColl_GetBlockIndexLeft(uint16 k) {  // 0x949D49
 }
 
 uint16 BlockColl_GetBlockIndexBelow(uint16 k) {  // 0x949D4E
-  return room_width_in_blocks + room_width_in_blocks + k + 1 + 1;
+  return room_width_in_blocks * 2 + k + 1 + 1;
 }
 
 uint8 ClearCarry_9(void) {  // 0x949D59
@@ -1847,7 +1847,7 @@ void BlockFunc_A11A(uint16 a) {  // 0x94A11A
   v4 = R28_ - R26_;
   do {
     BlockBombedReact(v3);
-    v3 += room_width_in_blocks + room_width_in_blocks;
+    v3 += room_width_in_blocks * 2;
     --v4;
   } while (v4 >= 0);
 }
@@ -1986,7 +1986,7 @@ uint8 BlockCollNoWaveBeamHoriz(uint16 k) {  // 0x94A23B
     return 0;
   do {
     BlockShotReactHoriz(v8);
-    v8 += room_width_in_blocks + room_width_in_blocks;
+    v8 += room_width_in_blocks * 2;
     --R38;
   } while ((R38 & 0x8000u) == 0);
   if ((R40 & 0x8000u) == 0)
@@ -2075,7 +2075,7 @@ uint8 BlockCollWaveBeamHoriz(uint16 k) {  // 0x94A352
       v10 = v8;
       do {
         BlockShotReactHoriz(v10);
-        v10 += room_width_in_blocks + room_width_in_blocks;
+        v10 += room_width_in_blocks * 2;
         --R38;
       } while ((R38 & 0x8000u) == 0);
     }

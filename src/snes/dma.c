@@ -239,6 +239,10 @@ void dma_initHdma(Dma* dma) {
       // load address, repCount, and indirect address if needed
       dma->channel[i].tableAdr = dma->channel[i].aAdr;
       dma->channel[i].repCount = snes_read(dma->snes, (dma->channel[i].aBank << 16) | dma->channel[i].tableAdr++);
+      if (dma->channel[i].repCount == 0) {
+        dma->channel[i].terminated = true;
+        continue;
+      }
       dma->hdmaTimer += 8; // 8 cycle overhead for each active channel
       if(dma->channel[i].indirect) {
         dma->channel[i].size = snes_read(dma->snes, (dma->channel[i].aBank << 16) | dma->channel[i].tableAdr++);

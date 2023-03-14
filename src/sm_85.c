@@ -62,10 +62,10 @@ CoroutineRet DisplayMessageBox_Async(uint16 a) {  // 0x858080
 void InitializePpuForMessageBoxes(void) {  // 0x858143
   save_confirmation_selection = 0;
   WriteReg(HDMAEN, 0);
-  WriteReg(CGADD, 0x19u);
-  WriteReg(CGDATA, 0xB1u);
-  WriteReg(CGDATA, 0xBu);
-  WriteReg(CGDATA, 0x1Fu);
+  WriteReg(CGADD, 0x19);
+  WriteReg(CGDATA, 0xB1);
+  WriteReg(CGDATA, 0xB);
+  WriteReg(CGDATA, 0x1F);
   WriteReg(CGDATA, 0);
   ram3000.msgbox.backup_of_enabled_hdma_channels = reg_HDMAEN;
   ram3000.misc.field_3E8[3] = gameplay_BG3SC;
@@ -73,8 +73,8 @@ void InitializePpuForMessageBoxes(void) {  // 0x858143
   gameplay_TM = 23;
   gameplay_CGWSEL = 0;
   gameplay_CGADSUB = 0;
-  WriteReg(COLDATA, 0x20u);
-  WriteReg(COLDATA, 0x40u);
+  WriteReg(COLDATA, 0x20);
+  WriteReg(COLDATA, 0x40);
   WriteReg(COLDATA, 0x80);
   ReadReg(BG3HOFS);
   WriteReg(BG3HOFS, 0);
@@ -86,10 +86,10 @@ void InitializePpuForMessageBoxes(void) {  // 0x858143
     *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + (uint16)i) = 0;
   WriteRegWord(VMADDL, addr_unk_605880);
   ReadRegWord(RDVRAML);
-  WriteRegWord(DMAP1, 0x3981u);
+  WriteRegWord(DMAP1, 0x3981);
   WriteRegWord(A1T1L, ADDR16_OF_RAM(ram4000) + 256);
-  WriteRegWord(A1B1, 0x7Eu);
-  WriteRegWord(DAS1L, 0x700u);
+  WriteRegWord(A1B1, 0x7E);
+  WriteRegWord(DAS1L, 0x700);
   WriteRegWord(DAS10, 0);
   WriteRegWord(A2A1H, 0);
   WriteReg(VMAIN, 0x80);
@@ -104,10 +104,10 @@ void ClearMessageBoxBg3Tilemap(void) {  // 0x8581F3
     v0 -= 2;
   } while (v0 >= 0);
   WriteRegWord(VMADDL, addr_unk_605880);
-  WriteRegWord(DMAP1, 0x1801u);
+  WriteRegWord(DMAP1, 0x1801);
   WriteRegWord(A1T1L, ADDR16_OF_RAM(ram3800));
-  WriteRegWord(A1B1, 0x7Eu);
-  WriteRegWord(DAS1L, 0x700u);
+  WriteRegWord(A1B1, 0x7E);
+  WriteRegWord(DAS1L, 0x700);
   WriteRegWord(DAS10, 0);
   WriteRegWord(A2A1H, 0);
   WriteReg(VMAIN, 0x80);
@@ -202,28 +202,28 @@ void SetupMessageBoxBg3YscrollHdma(void) {  // 0x858363
   *(uint32 *)&ram3000.menu.palette_backup_in_menu[64] = -516947713;
   ram3000.pause_menu_map_tilemap[450] = 12542;
   ram3000.msgbox.indirect_hdma[6] = 0;
-  WriteReg(DMAP6, 0x42u);
-  WriteReg(BBAD6, 0x12u);
+  WriteReg(DMAP6, 0x42);
+  WriteReg(BBAD6, 0x12);
   WriteReg(A1T6L, 0x80);
   WriteReg(DAS6L, 0x80);
-  WriteReg(A1T6H, 0x33u);
-  WriteReg(DAS6H, 0x33u);
-  WriteReg(A1B6, 0x7Eu);
-  WriteReg(DAS60, 0x7Eu);
+  WriteReg(A1T6H, 0x33);
+  WriteReg(DAS6H, 0x33);
+  WriteReg(A1B6, 0x7E);
+  WriteReg(DAS60, 0x7E);
   WriteReg(A2A6L, 0);
   WriteReg(A2A6H, 0);
   WriteReg(NTRL6, 0);
   MsgBoxMakeHdmaTable();
-  WriteReg(HDMAEN, 0x40u);
+  WriteReg(HDMAEN, 0x40);
 }
 
 void SetupPpuForActiveMessageBox(void) {  // 0x85831E
   SetupMessageBoxBg3YscrollHdma();
   bg3_tilemap_offset += 22528;
   WriteRegWord(VMADDL, bg3_tilemap_offset);
-  WriteRegWord(DMAP1, 0x1801u);
+  WriteRegWord(DMAP1, 0x1801);
   WriteRegWord(A1T1L, ADDR16_OF_RAM(ram3000) + 512);
-  WriteRegWord(A1B1, 0x7Eu);
+  WriteRegWord(A1B1, 0x7E);
   WriteRegWord(DAS1L, *(uint16 *)((char *)&R8_ + 1));
   WriteRegWord(DAS10, 0);
   WriteRegWord(A2A1H, 0);
@@ -374,10 +374,10 @@ void ToggleSaveConfirmationSelection(void) {
   } while (bg3_tilemap_offset);
   bg3_tilemap_offset = addr_unk_6059A0;
   WriteRegWord(VMADDL, addr_unk_6059A0);
-  WriteRegWord(DMAP1, 0x1801u);
+  WriteRegWord(DMAP1, 0x1801);
   WriteRegWord(A1T1L, ADDR16_OF_RAM(ram3000) + 512);
-  WriteRegWord(A1B1, 0x7Eu);
-  WriteRegWord(DAS1L, 0x180u);
+  WriteRegWord(A1B1, 0x7E);
+  WriteRegWord(DAS1L, 0x180);
   WriteRegWord(DAS10, 0);
   WriteRegWord(A2A1H, 0);
   WriteReg(VMAIN, 0x80);
@@ -413,10 +413,10 @@ void MsgBoxMakeHdmaTable(void) {
 
 void RestorePpuForMessageBox(void) {  // 0x85861A
   WriteRegWord(VMADDL, addr_unk_605880);
-  WriteRegWord(DMAP1, 0x1801u);
+  WriteRegWord(DMAP1, 0x1801);
   WriteRegWord(A1T1L, ADDR16_OF_RAM(ram4000) + 256);
-  WriteRegWord(A1B1, 0x7Eu);
-  WriteRegWord(DAS1L, 0x700u);
+  WriteRegWord(A1B1, 0x7E);
+  WriteRegWord(DAS1L, 0x700);
   WriteRegWord(DAS10, 0);
   WriteRegWord(A2A1H, 0);
   WriteReg(VMAIN, 0x80);
@@ -427,7 +427,7 @@ void RestorePpuForMessageBox(void) {  // 0x85861A
   gameplay_TM = reg_TM;
   gameplay_CGWSEL = next_gameplay_CGWSEL;
   gameplay_CGADSUB = next_gameplay_CGADSUB;
-  WriteReg(CGADD, 0x19u);
+  WriteReg(CGADD, 0x19);
   WriteReg(CGDATA, palette_buffer[25]);
   WriteReg(CGDATA, HIBYTE(palette_buffer[25]));
   WriteReg(CGDATA, palette_buffer[26]);

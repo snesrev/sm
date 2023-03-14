@@ -2073,7 +2073,7 @@ void Beetom_Main(void) {  // 0xA8B80D
 }
 
 void Beetom_Func_3(void) {  // 0xA8B814
-  if (IsSamusWithinEnemy_X(cur_enemy_index, 0x60u))
+  if (IsSamusWithinEnemy_X(cur_enemy_index, 0x60))
     Get_Beetom(cur_enemy_index)->beetom_var_C = FUNC16(Beetom_Func_12);
   else
     Get_Beetom(cur_enemy_index)->beetom_var_C = FUNC16(Beetom_Func_4);

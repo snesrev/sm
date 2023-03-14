@@ -176,11 +176,11 @@ void InitPpuForGameplay(void) {  // 0x8281DD
   reg_BG34NBA = 4;
   WriteReg(BG34NBA, 4u);
   reg_BG1SC = 81;
-  WriteReg(BG1SC, 0x51u);
+  WriteReg(BG1SC, 0x51);
   reg_BG2SC = 73;
-  WriteReg(BG2SC, 0x49u);
+  WriteReg(BG2SC, 0x49);
   reg_BG3SC = 90;
-  WriteReg(BG3SC, 0x5Au);
+  WriteReg(BG3SC, 0x5A);
   reg_BG4SC = 0;
   WriteReg(BG4SC, 0);
   WriteReg(VMAIN, 0);
@@ -204,7 +204,7 @@ void InitPpuForGameplay(void) {  // 0x8281DD
   reg_WBGLOG = 0;
   WriteReg(WOBJLOG, 0);
   reg_WOBJLOG = 0;
-  WriteReg(TM, 0x17u);
+  WriteReg(TM, 0x17);
   reg_TM = 23;
   WriteReg(TMW, 0);
   reg_TMW = 0;
@@ -216,13 +216,13 @@ void InitPpuForGameplay(void) {  // 0x8281DD
   next_gameplay_CGWSEL = 0;
   WriteReg(CGADSUB, 0);
   next_gameplay_CGADSUB = 0;
-  WriteReg(COLDATA, 0xE0u);
+  WriteReg(COLDATA, 0xE0);
   WriteReg(SETINI, 0);
   reg_SETINI = 0;
   oam_next_ptr = 0;
-  memset7E(ADDR16_OF_RAM(ram3000), 0, 0x7FEu);
-  memset7E(ADDR16_OF_RAM(ram4000), 0x6Fu, 0x7FEu);
-  memset7E(ADDR16_OF_RAM(ram4000.bg2_tilemap), 0x2C0Fu, 0xFEu);
+  memset7E((uint16*)&ram3000, 0, 0x7FE);
+  memset7E((uint16 *)&ram4000, 0x6F, 0x7FE);
+  memset7E(ram4000.bg2_tilemap, 0x2C0F, 0xFE);
 }
 
 #define kInitialPalette ((uint16*)RomPtr(0x9a8000))
@@ -241,26 +241,26 @@ void LoadInitialPalette(void) {  // 0x8282C5
 
 void LoadStdBG3andSpriteTilesClearTilemaps(void) {  // 0x8282E2
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x40u);
+  WriteReg(VMADDH, 0x40);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8282F8 = { 1, 1, 0x18, LONGPTR(0x9ab200), 0x2000 };
   SetupDmaTransfer(&unk_8282F8);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x60u);
+  WriteReg(VMADDH, 0x60);
   WriteReg(VMAIN, 0x80);
   // Bug fix: Asm code does DMA from RAM here.
   static const StartDmaCopy unk_828318 = { 1, 1, 0x18, LONGPTR(0x9ad200), 0x2e00 };
   SetupDmaTransfer(&unk_828318);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x50u);
+  WriteReg(VMADDH, 0x50);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_828338 = { 1, 1, 0x18, LONGPTR(0x7e4000), 0x1000 };
   SetupDmaTransfer(&unk_828338);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x58u);
+  WriteReg(VMADDH, 0x58);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_828358 = { 1, 1, 0x18, LONGPTR(0x7e4000), 0x0800 };
   SetupDmaTransfer(&unk_828358);
@@ -992,7 +992,7 @@ void DrawOptionsMenuSpritemaps(void) {  // 0x828CA1
       R22_ = optionsmenu_arr10[v1];
       R20_ = optionsmenu_arr8[v1];
       R18_ = optionsmenu_arr9[v1];
-      DrawSpritemap(0x82u, v2);
+      DrawSpritemap(0x82, v2);
     }
   }
 }
@@ -1049,25 +1049,22 @@ CoroutineRet GameState_13_Pausing_Async(void) {  // 0x828CEF
 }
 
 void BackupBG2TilemapForPauseMenu(void) {  // 0x828D51
-  WriteReg(VMADDL, 1u);
-  WriteReg(VMADDH, reg_BG2SC & 0xFC);
-  WriteReg(DMAP1, 0x81u);
-  WriteReg(BBAD1, 0x39u);
-  WriteReg(A1T1L, 0x5C);
-  WriteReg(A1T1H, 0xDFu);
-  WriteReg(A1B1, 0x7Eu);
-  WriteReg(DAS1L, 0);
-  WriteReg(DAS1H, 0x10u);
+  WriteRegWord(VMADDL, (reg_BG2SC & 0xFC) << 8 | 1);
+  // fixed: this was missing
+  WriteReg(VMAIN, 0x80);
+  WriteReg(DMAP1, 0x81);
+  WriteReg(BBAD1, 0x39);
+  WriteRegWord(A1T1L, 0xDF5C);
+  WriteReg(A1B1, 0x7E);
+  WriteRegWord(DAS1L, 0x1000);
   WriteReg(DAS10, 0);
-  WriteReg(A2A1L, 0);
-  WriteReg(A2A1H, 0);
+  WriteRegWord(A2A1L, 0);
   WriteReg(NTRL1, 0);
   WriteReg(MDMAEN, 2u);
 }
 
 void RestoreBG2TilemapFromPauseScreen(void) {  // 0x828D96
-  WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, reg_BG2SC & 0xFC);
+  WriteRegWord(VMADDL, (reg_BG2SC & 0xFC) << 8);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_828DAE = { 1, 1, 0x18, LONGPTR(0x7edf5c), 0x1000 };
   SetupDmaTransfer(&unk_828DAE);
@@ -1122,13 +1119,13 @@ void LoadPauseMenuTilesAndClearBG2(void) {  // 0x828E75
   SetupDmaTransfer(&unk_828E8B);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x20u);
+  WriteReg(VMADDH, 0x20);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_828EAB = { 1, 1, 0x18, LONGPTR(0xb6c000), 0x2000 };
   SetupDmaTransfer(&unk_828EAB);
   WriteReg(MDMAEN, 2u);
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x40u);
+  WriteReg(VMADDH, 0x40);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_828ECB = { 1, 1, 0x18, LONGPTR(0x9ab200), 0x2000 };
   SetupDmaTransfer(&unk_828ECB);
@@ -1137,20 +1134,20 @@ void LoadPauseMenuTilesAndClearBG2(void) {  // 0x828E75
 
 void LoadPauseScreenBaseTilemaps(void) {  // 0x828EDA
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x38u);
+  WriteReg(VMADDH, 0x38);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_828EF0 = { 1, 1, 0x18, LONGPTR(0xb6e000), 0x0800 };
   SetupDmaTransfer(&unk_828EF0);
   WriteReg(MDMAEN, 2u);
   WriteReg(WMADDL, 0);
-  WriteReg(WMADDM, 0x34u);
-  WriteReg(WMADDH, 0x7Eu);
+  WriteReg(WMADDM, 0x34);
+  WriteReg(WMADDH, 0x7E);
   static const StartDmaCopy unk_828F10 = { 1, 0, 0x80, LONGPTR(0xb6e400), 0x0400 };
   SetupDmaTransfer(&unk_828F10);
   WriteReg(MDMAEN, 2u);
   WriteReg(WMADDL, 0);
-  WriteReg(WMADDM, 0x38u);
-  WriteReg(WMADDH, 0x7Eu);
+  WriteReg(WMADDM, 0x38);
+  WriteReg(WMADDH, 0x7E);
   static const StartDmaCopy unk_828F30 = { 1, 0, 0x80, LONGPTR(0xb6e800), 0x0800 };
   SetupDmaTransfer(&unk_828F30);
   WriteReg(MDMAEN, 2u);
@@ -1502,24 +1499,24 @@ void LoadPauseMenuMapTilemapAndAreaLabel(void) {  // 0x8293C3
   reg_BG1HOFS = reg_BG4HOFS;
   reg_BG1VOFS = reg_BG4VOFS;
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x30u);
+  WriteReg(VMADDH, 0x30);
   WriteReg(VMAIN, 0x80);
   LoadPauseMenuMapTilemap();
   static const StartDmaCopy unk_8293E9 = { 1, 1, 0x18, LONGPTR(0x7e4000), 0x1000 };
   SetupDmaTransfer(&unk_8293E9);
   WriteReg(MDMAEN, 2u);
-  WriteReg(VMADDL, 0xAAu);
-  WriteReg(VMADDH, 0x38u);
+  WriteReg(VMADDL, 0xAA);
+  WriteReg(VMADDH, 0x38);
   WriteReg(VMAIN, 0x80);
   WriteReg(DMAP1, 1u);
-  WriteReg(BBAD1, 0x18u);
-  WriteReg(DAS1L, 0x18u);
+  WriteReg(BBAD1, 0x18);
+  WriteReg(DAS1L, 0x18);
   WriteReg(DAS1H, 0);
   uint16 v0 = area_index;
   if (!sign16(area_index - 7))
     v0 = 0;
   WriteRegWord(A1T1L, kPauseAreaLabelTilemap[v0]);
-  WriteReg(A1B1, 0x82u);
+  WriteReg(A1B1, 0x82);
   WriteReg(MDMAEN, 2u);
 }
 
@@ -1598,7 +1595,7 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
       uint8 t = map_tiles_explored[v2];
       map_tiles_explored[v2] <<= 1;
       if (!(t & 0x80)) {
-        IndirWriteWord(&R3_, v1, 0x1Fu);
+        IndirWriteWord(&R3_, v1, 0x1F);
       } else {
         ++map_tiles_explored[v2];
         uint8 *v3 = IndirPtr(&R0_, v1);
@@ -1693,7 +1690,7 @@ void DrawRoomSelectMap(void) {  // 0x829517
       uint8 what = map_tiles_explored[v2];
       map_tiles_explored[v2] <<= 1;
       if (!(what & 0x80)) {
-        IndirWriteWord(&R3_, v1, 0xFu);
+        IndirWriteWord(&R3_, v1, 0xF);
       } else {
         ++map_tiles_explored[v2];
         IndirWriteWord(&R3_, v1, *(uint16 *)IndirPtr(&R0_, v1) & ~0x400);
@@ -1882,14 +1879,14 @@ void SetupPpuForPauseMenu(void) {  // 0x82A09A
   reg_BG34NBA = 4;
   WriteReg(BG34NBA, 4u);
   reg_BG1SC = 49;
-  WriteReg(BG1SC, 0x31u);
+  WriteReg(BG1SC, 0x31);
   reg_BG2SC = 56;
-  WriteReg(BG2SC, 0x38u);
+  WriteReg(BG2SC, 0x38);
   reg_BG3SC = 88;
-  WriteReg(BG3SC, 0x58u);
+  WriteReg(BG3SC, 0x58);
   reg_BG4SC = 0;
   WriteReg(BG4SC, 0);
-  WriteReg(TM, 0x17u);
+  WriteReg(TM, 0x17);
   reg_TM = 23;
   WriteReg(MOSAIC, 0);
   reg_MOSAIC = 0;
@@ -2042,7 +2039,7 @@ void SetPaletteOfR22TilemapBytesToR18(void) {  // 0x82A29D
 
 void ClearSamusBeamTiles(void) {  // 0x82A2BE
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x60u);
+  WriteReg(VMADDH, 0x60);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_82A2D4 = { 1, 1, 0x18, LONGPTR(0x9ad200), 0x1000 };
   SetupDmaTransfer(&unk_82A2D4);
@@ -2076,11 +2073,11 @@ void SetupPpuForGameplayResume(void) {  // 0x82A313
   reg_BG34NBA = 4;
   WriteReg(BG34NBA, 4u);
   reg_BG1SC = 81;
-  WriteReg(BG1SC, 0x51u);
+  WriteReg(BG1SC, 0x51);
   reg_BG2SC = 73;
-  WriteReg(BG2SC, 0x49u);
+  WriteReg(BG2SC, 0x49);
   reg_BG3SC = 90;
-  WriteReg(BG3SC, 0x5Au);
+  WriteReg(BG3SC, 0x5A);
   reg_BG4SC = 0;
   WriteReg(BG4SC, 0);
 }
@@ -2216,8 +2213,8 @@ void HandlePauseMenuLRPressHighlight(void) {  // 0x82A56D
 }
 
 void DrawLrHighlight(void) {  // 0x82A59A
-  DrawPauseScreenSpriteAnim(2u, 0x18u, 0xD0u);
-  DrawPauseScreenSpriteAnim(2u, 0xE8u, 0xD0u);
+  DrawPauseScreenSpriteAnim(2u, 0x18, 0xD0);
+  DrawPauseScreenSpriteAnim(2u, 0xE8, 0xD0);
 }
 
 void HandlePauseScreenStart(void) {  // 0x82A5B7
@@ -2239,7 +2236,7 @@ void HighlightPauseScreenButton(void) {  // 0x82A5F1
   if (pausemenu_start_lr_pressed_highlight_timer) {
     --pausemenu_start_lr_pressed_highlight_timer;
     R3_.addr = 0;
-    DrawMenuSpritemap(0x2Bu, 0x90u, 0xD0u);
+    DrawMenuSpritemap(0x2B, 0x90, 0xD0);
   }
 }
 static Func_V *const kSetPauseScreenButtonLabelPalettes_Funcs[3] = {  // 0x82A615
@@ -2556,7 +2553,7 @@ LABEL_21:
 
 void EquipmentScreenTransferBG1Tilemap(void) {  // 0x82AC22
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x30u);
+  WriteReg(VMADDH, 0x30);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_82AC3B = { 1, 1, 0x18, LONGPTR(0x7e3800), 0x0800 };
   SetupDmaTransfer(&unk_82AC3B);
@@ -2989,7 +2986,7 @@ void EquipmentScreenDisplayReserveTankAmount_(void) {
       uint16 v0 = 0;
       do {
         a = v0;
-        DrawMenuSpritemap(0x1Bu, kEquipmentScreenReserveTank_X[v0 >> 1], kEquipmentScreenReserveTank_Y - 1);
+        DrawMenuSpritemap(0x1B, kEquipmentScreenReserveTank_X[v0 >> 1], kEquipmentScreenReserveTank_Y - 1);
         v0 += 2;
         --R46;
       } while (R46);
@@ -3210,9 +3207,9 @@ static const uint16 kMap_Criteria_SavePoints[16] = { 0xd8, 0x28, 0x90, 0x38, 0xf
 void DrawMapIcons(void) {  // 0x82B672
   DrawBossMapIcons(9u, addr_kMapIconDataPointers);
   R3_.addr = 3584;
-  DrawSimpleMapIcons(0xBu, addr_kMapIconDataPointers + 0x10);
-  DrawSimpleMapIcons(0xAu, addr_kMapIconDataPointers + 0x20);
-  DrawSimpleMapIcons(0x4Eu, addr_kMapIconDataPointers + 0x30);
+  DrawSimpleMapIcons(0xB, addr_kMapIconDataPointers + 0x10);
+  DrawSimpleMapIcons(0xA, addr_kMapIconDataPointers + 0x20);
+  DrawSimpleMapIcons(0x4E, addr_kMapIconDataPointers + 0x30);
   R3_.addr = 1024;
   DrawSaveStationMapIcon(8u, 0xC80B);
   if (enable_debug)
@@ -3230,11 +3227,11 @@ void DrawFileSelectMapIcons(void) {  // 0x82B6DD
   int16 v0;
 
   HandlePauseScreenPaletteAnimation();
-  DrawBossMapIcons(9u, 0xC7CBu);
+  DrawBossMapIcons(9u, 0xC7CB);
   R3_.addr = 3584;
-  DrawSimpleMapIcons(0xBu, 0xC7DBu);
-  DrawSimpleMapIcons(0xAu, 0xC7EBu);
-  DrawSimpleMapIcons(0x4Eu, 0xC7FBu);
+  DrawSimpleMapIcons(0xB, 0xC7DB);
+  DrawSimpleMapIcons(0xA, 0xC7EB);
+  DrawSimpleMapIcons(0x4E, 0xC7FB);
   R3_.addr = 3584;
   uint16 a = UpdateSamusPositionIndicatorAnimation();
   *(uint16 *)&R0_.bank = 130;
@@ -3243,13 +3240,13 @@ void DrawFileSelectMapIcons(void) {  // 0x82B6DD
   uint16 v1 = *(uint16 *)IndirPtr(&R0_, 4 * load_station_index) - reg_BG1HOFS;
   uint16 v2 = *(uint16 *)IndirPtr(&R0_, v0 + 2) - reg_BG1VOFS;
   if ((samus_position_indicator_animation_loop_counter & 1) == 0)
-    DrawMenuSpritemap(0x12u, v1, v2);
+    DrawMenuSpritemap(0x12, v1, v2);
   DrawMenuSpritemap(a, v1, v2);
   if (enable_debug) {
     R3_.addr = 1536;
-    DrawDebugSaveMapIcons(0xCu, 0xC80B);
-    DrawDebugElevatorMapIcons(0x17u, 0xC81B);
-    DrawSimpleMapIcons(0xCu, 0xC82B);
+    DrawDebugSaveMapIcons(0xC, 0xC80B);
+    DrawDebugElevatorMapIcons(0x17, 0xC81B);
+    DrawSimpleMapIcons(0xC, 0xC82B);
   }
   if (!area_index) {
     R3_.addr = 3584;
@@ -3359,7 +3356,7 @@ void DrawBossMapIcons(uint16 a, uint16 k) {  // 0x82B892
         if (v5) {
           {
             uint8 *v7 = RomPtr_82(i);
-            DrawMenuSpritemap(0x62u, *(uint16 *)v7 - reg_BG1HOFS, *((uint16 *)v7 + 1) - reg_BG1VOFS);
+            DrawMenuSpritemap(0x62, *(uint16 *)v7 - reg_BG1HOFS, *((uint16 *)v7 + 1) - reg_BG1VOFS);
             R3_.addr = 3072;
           }
 LABEL_7:;
@@ -3440,17 +3437,17 @@ uint16 UpdateSamusPositionIndicatorAnimation(void) {  // 0x82B9FC
 
 void DrawBorderAroundSamusData(void) {  // 0x82BA35
   R3_.addr = 3584;
-  DrawMenuSpritemap(0x48u, 0x80, 0x10u);
+  DrawMenuSpritemap(0x48, 0x80, 0x10);
 }
 
 void DrawBorderAroundDataCopyMode(void) {  // 0x82BA48
   R3_.addr = 3584;
-  DrawMenuSpritemap(0x49u, 0x80, 0x10u);
+  DrawMenuSpritemap(0x49, 0x80, 0x10);
 }
 
 void DrawBorderAroundDataClearMode(void) {  // 0x82BA5B
   R3_.addr = 3584;
-  DrawMenuSpritemap(0x4Au, 0x7Cu, 0x10u);
+  DrawMenuSpritemap(0x4A, 0x7C, 0x10);
 }
 static const uint16 kDrawMenuSelectionMissile_Enable[4] = { 8, 8, 8, 8 };
 static const uint16 kDrawMenuSelectionMissile_SpriteMap[4] = { 0x37, 0x36, 0x35, 0x34 };
@@ -3556,9 +3553,9 @@ void DrawBabyMetroid(uint16 k) {  // 0x82BB9E
   } while ((int16)(v2 - 32) < 0);
   R3_.addr = 2048;
   uint8 *v3 = RomPtr_82(k);
-  DrawMenuSpritemap(*((uint16 *)v3 + 1), 0x7Cu, 0x50u);
+  DrawMenuSpritemap(*((uint16 *)v3 + 1), 0x7C, 0x50);
   R3_.addr = 2560;
-  DrawMenuSpritemap(0x64u, 0x7Cu, 0x50u);
+  DrawMenuSpritemap(0x64, 0x7C, 0x50);
 }
 
 void FinishProcessingGameOverBabyMetroidAsm(void) {  // 0x82BBF0
@@ -3858,7 +3855,7 @@ CoroutineRet GameState_20_SamusNoHealth_BlackOut(void) {  // 0x82DCE0
     QueueSfx3_Max15(1u);
     QueueMusic_Delayed8(0);
     QueueMusic_Delayed8(0xFF39u);
-    QueueMusic_DelayedY(5u, 0xEu);
+    QueueMusic_DelayedY(5u, 0xE);
   }
   return kCoroutineNone;
 }
@@ -4553,7 +4550,7 @@ void LoadCRETilesTilesetTilesAndPalette(void) {  // 0x82E783
   WriteRegWord(VMAIN, 0x80);
   mov24(&decompress_src, 0xb98000);
   decompress_dst.addr = addr_unk_605000;
-  WriteRegWord(VMADDL, 0x2800u);
+  WriteRegWord(VMADDL, 0x2800);
   DecompressToVRAM();
   copy24(&decompress_src, &tileset_tiles_pointer);
   WriteRegWord(VMADDL, 0);
@@ -4710,9 +4707,9 @@ void LoadLibraryBackground(void) {
   if (fx_tilemap_ptr) {
     WriteRegWord(A1T1L, fx_tilemap_ptr);
     WriteRegWord(VMADDL, addr_unk_605BE0);
-    WriteRegWord(DMAP1, 0x1801u);
-    WriteRegWord(A1B1, 0x8Au);
-    WriteRegWord(DAS1L, 0x840u);
+    WriteRegWord(DMAP1, 0x1801);
+    WriteRegWord(A1B1, 0x8A);
+    WriteRegWord(DAS1L, 0x840);
     WriteReg(VMAIN, 0x80);
     WriteReg(MDMAEN, 2u);
   }
@@ -4740,7 +4737,7 @@ uint16 LoadLibraryBackgroundFunc_E_DoorDependentTransferToVram(uint16 j) {  // 0
 uint16 LoadLibraryBackgroundFunc_2_TransferToVram(uint16 j) {  // 0x82E9F9
   uint16 *LoadBg_28 = (uint16 *)get_LoadBg_28(j);
   WriteRegWord(VMADDL, *(uint16 *)((char *)LoadBg_28 + 3));
-  WriteRegWord(DMAP1, 0x1801u);
+  WriteRegWord(DMAP1, 0x1801);
   WriteRegWord(A1T1L, *LoadBg_28);
   WriteRegWord(A1B1, LoadBg_28[1]);
   WriteRegWord(DAS1L, *(uint16 *)((char *)LoadBg_28 + 5));
@@ -4931,7 +4928,7 @@ void GameOptionsMenu_1_LoadingOptionsScreen(void) {  // 0x82EC11
   reg_CGWSEL = 0;
   reg_CGADSUB = 0;
   WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x58u);
+  WriteReg(VMADDH, 0x58);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_82EC3D = { 1, 1, 0x18, LONGPTR(0x8edc00), 0x0800 };
   SetupDmaTransfer(&unk_82EC3D);
@@ -4943,15 +4940,15 @@ void GameOptionsMenu_1_LoadingOptionsScreen(void) {  // 0x82EC11
   debug_invincibility = 0;
   for (int i = 510; i >= 0; i -= 2)
     palette_buffer[i >> 1] = kMenuPalettes[i >> 1];
-  mov24(&decompress_src, 0x978DF4u);
+  mov24(&decompress_src, 0x978DF4);
   DecompressToMem_IpArg(&unk_82EC74);
-  mov24(&decompress_src, 0x978FCDu);
+  mov24(&decompress_src, 0x978FCD);
   DecompressToMem_IpArg(&unk_82EC85);
-  mov24(&decompress_src, 0x9791C4u);
+  mov24(&decompress_src, 0x9791C4);
   DecompressToMem_IpArg(&unk_82EC96);
-  mov24(&decompress_src, 0x97938Du);
+  mov24(&decompress_src, 0x97938D);
   DecompressToMem_IpArg(&unk_82ECA7);
-  mov24(&decompress_src, 0x97953Au);
+  mov24(&decompress_src, 0x97953A);
   DecompressToMem_IpArg(&unk_82ECB8);
   for (j = 1023; (j & 0x8000u) == 0; --j)
     ram3000.pause_menu_map_tilemap[j] = custom_background[j + 5375];
@@ -5035,15 +5032,15 @@ void GameOptionsMenuItemFunc_2_ToggleJapanese(void) {  // 0x82EDDA
 
 void OptionsMenuFunc4(void) {  // 0x82EDED
   if (japanese_text_flag) {
-    OptionsMenuFunc5(0x400u, 0x288u, 0x18u);
-    OptionsMenuFunc5(0x400u, 0x2C8u, 0x18u);
-    OptionsMenuFunc5(0, 0x348u, 0x32u);
-    OptionsMenuFunc5(0, 0x388u, 0x32u);
+    OptionsMenuFunc5(0x400, 0x288, 0x18);
+    OptionsMenuFunc5(0x400, 0x2C8, 0x18);
+    OptionsMenuFunc5(0, 0x348, 0x32);
+    OptionsMenuFunc5(0, 0x388, 0x32);
   } else {
-    OptionsMenuFunc5(0, 0x288u, 0x18u);
-    OptionsMenuFunc5(0, 0x2C8u, 0x18u);
-    OptionsMenuFunc5(0x400u, 0x348u, 0x32u);
-    OptionsMenuFunc5(0x400u, 0x388u, 0x32u);
+    OptionsMenuFunc5(0, 0x288, 0x18);
+    OptionsMenuFunc5(0, 0x2C8, 0x18);
+    OptionsMenuFunc5(0x400, 0x348, 0x32);
+    OptionsMenuFunc5(0x400, 0x388, 0x32);
   }
 }
 
@@ -5228,15 +5225,15 @@ void OptionsMenuFunc7(void) {
 
   uint16 v0 = 4 * menu_option_index;
   if (*(uint16 *)RomPtr_RAM(kOptionsMenuSpecialPtrs[menu_option_index])) {
-    OptionsMenuFunc5(0, g_word_82F149[(uint16)(4 * menu_option_index) >> 1], 0xCu);
-    OptionsMenuFunc5(0, g_word_82F149[(v0 >> 1) + 1], 0xCu);
-    OptionsMenuFunc5(0x400u, g_word_82F151[v0 >> 1], 0xCu);
-    OptionsMenuFunc5(0x400u, g_word_82F151[(v0 >> 1) + 1], 0xCu);
+    OptionsMenuFunc5(0, g_word_82F149[(uint16)(4 * menu_option_index) >> 1], 0xC);
+    OptionsMenuFunc5(0, g_word_82F149[(v0 >> 1) + 1], 0xC);
+    OptionsMenuFunc5(0x400, g_word_82F151[v0 >> 1], 0xC);
+    OptionsMenuFunc5(0x400, g_word_82F151[(v0 >> 1) + 1], 0xC);
   } else {
-    OptionsMenuFunc5(0x400u, g_word_82F149[(uint16)(4 * menu_option_index) >> 1], 0xCu);
-    OptionsMenuFunc5(0x400u, g_word_82F149[(v0 >> 1) + 1], 0xCu);
-    OptionsMenuFunc5(0, g_word_82F151[v0 >> 1], 0xCu);
-    OptionsMenuFunc5(0, g_word_82F151[(v0 >> 1) + 1], 0xCu);
+    OptionsMenuFunc5(0x400, g_word_82F149[(uint16)(4 * menu_option_index) >> 1], 0xC);
+    OptionsMenuFunc5(0x400, g_word_82F149[(v0 >> 1) + 1], 0xC);
+    OptionsMenuFunc5(0, g_word_82F151[v0 >> 1], 0xC);
+    OptionsMenuFunc5(0, g_word_82F151[(v0 >> 1) + 1], 0xC);
   }
 }
 
@@ -5446,7 +5443,7 @@ void LoadControllerOptionsFromControllerBindings(void) {  // 0x82F4DC
   uint16 v0 = 0;
   do {
     int v1 = v0 >> 1;
-    v2 = *(uint16 *)RomPtr_7E(off_82F54A[v1]);
+    v2 = *(uint16 *)&g_ram[off_82F54A[v1]];
     if ((v2 & kButton_X) != 0) {
 LABEL_9:
       enemy_projectile_F[v1 + 13] = 0;
@@ -5483,13 +5480,12 @@ static const Buttons word_82F575[9] = {  // 0x82F558
   kButton_Right,
 };
 uint8 OptionsMenuFunc8(void) {
-
-  uint16 v0 = 0, v2;
+  int v0 = 0, v2;
   do {
     v2 = v0;
-    *(uint16 *)RomPtr_7E(off_82F54A[v0 >> 1]) = word_82F575[(uint16)(2 * enemy_projectile_F[(v0 >> 1) + 13]) >> 1];
+    *(uint16 *)&g_ram[off_82F54A[v0 >> 1]] = word_82F575[(uint16)(2 * enemy_projectile_F[(v0 >> 1) + 13]) >> 1];
     v0 += 2;
-  } while ((int16)(v2 - 12) < 0);
+  } while (v2 < 12);
   return 0;
 }
 #define g_word_82F639 ((uint16*)RomPtr(0x82f639))

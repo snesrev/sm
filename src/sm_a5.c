@@ -1438,7 +1438,7 @@ void Draygon_Func_48(uint16 k) {  // 0xA5C48D
     Enemy_Draygon *E1 = Get_Draygon(0x40u);
     R18_ = E1->base.x_pos - 24;
     R20_ = E1->base.y_pos - 32;
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x18u);
+    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x18);
   }
   Enemy_Draygon *E0 = Get_Draygon(0);
   R18_ = E0->base.x_pos - 24;
@@ -1473,7 +1473,7 @@ void Draygon_Func_49(uint16 k) {  // 0xA5C513
   if ((Get_Draygon(k)->base.frame_counter & 0x7F) == 0) {
     R18_ = E0->base.x_pos + 24;
     R20_ = E0->base.y_pos - 32;
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x18u);
+    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x18);
   }
 
   R18_ = E0->base.x_pos + 24;
@@ -1654,7 +1654,7 @@ uint16 Draygon_Instr_28(uint16 k, uint16 j) {  // 0xA5E96E
   R18_ += E->base.x_pos;
   R20_ = ((uint16)(random_number & 0x7F00) >> 8) - 64;
   R20_ += E->base.y_pos;
-  SpawnEnemyProjectileWithRoomGfx(0xE509u, 0x15u);
+  SpawnEnemyProjectileWithRoomGfx(0xE509, 0x15);
   QueueSfx2_Max6(0x29u);
   return j;
 }

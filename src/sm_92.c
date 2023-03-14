@@ -34,7 +34,7 @@ uint8 PlaySamusFanfare(void) {  // 0x92ED24
     if (substate == 5)
       PlayRoomMusicTrackAfterAFrames(0x168u);
   } else {
-    QueueMusic_DelayedY(1u, 0xEu);
+    QueueMusic_DelayedY(1u, 0xE);
   }
   if (sign16(substate - 359)) {
     ++substate;
@@ -50,10 +50,10 @@ uint8 PlaySamusFanfare(void) {  // 0x92ED24
 }
 
 void Unused_SamusTileViewer(void) {  // 0x92ED7A
-  DrawSamusSpritemap(0x182u, 0x40u, 0x40u);
-  DrawSamusSpritemap(0x183u, 0xC0u, 0x40u);
-  DrawSamusSpritemap(0x184u, 0x80, 0x60u);
-  DrawSamusSpritemap(0x185u, 0x80, 0x50u);
+  DrawSamusSpritemap(0x182, 0x40, 0x40);
+  DrawSamusSpritemap(0x183, 0xC0, 0x40);
+  DrawSamusSpritemap(0x184, 0x80, 0x60);
+  DrawSamusSpritemap(0x185, 0x80, 0x50);
 }
 
 void DrawSamusSuitExploding(void) {  // 0x92EDBE

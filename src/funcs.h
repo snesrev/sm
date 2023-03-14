@@ -159,8 +159,7 @@ void VerifySRAM(void);
 CoroutineRet WaitForNMI_Async(void);
 CoroutineRet WaitForNMI_NoUpdate_Async(void);
 void WriteLotsOf0x1c2f(void);
-void memset7E(uint16 k, uint16 a, uint16 j);
-void memset7F(uint16 k, uint16 a, uint16 j);
+void memset7E(uint16 *k, uint16 a, uint16 j);
 void sub_8088EB(uint16 a);
 void sub_8088FE(uint16 a);
 void sub_808911(uint16 a);
@@ -8010,6 +8009,7 @@ void DecompressToMem_IpArg(const void* p);
 #define fnWreckedShipOrangeZoomer_Func_1 0xA3DFC2
 #define fnWreckedShipOrangeZoomer_Init 0xA3E043
 #define fnnullsub_343 0xA3E08A
+#define fnWreckedShipOrangeZoomer_Func_2 0xA3E091
 #define fnWreckedShipOrangeZoomer_Main 0xA3E08B
 #define fnsub_A3E168 0xA3E168
 #define fnBigEyeBugs_Init 0xA3E2D4
