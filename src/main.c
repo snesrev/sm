@@ -22,6 +22,10 @@
 #include "util.h"
 #include "spc_player.h"
 
+#ifdef __SWITCH__
+#include "switch_impl.h"
+#endif
+
 static void playAudio(Snes *snes, SDL_AudioDeviceID device, int16_t *audioBuffer);
 static void renderScreen(Snes *snes, SDL_Renderer *renderer, SDL_Texture *texture);
 static void SDLCALL AudioCallback(void *userdata, Uint8 *stream, int len);
@@ -309,6 +313,9 @@ static const struct RendererFuncs kSdlRendererFuncs = {
 
 #undef main
 int main(int argc, char** argv) {
+#ifdef __SWITCH__
+  SwitchImpl_Init();
+#endif
   argc--, argv++;
   const char *config_file = NULL;
   if (argc >= 2 && strcmp(argv[0], "--config") == 0) {
@@ -367,6 +374,20 @@ int main(int argc, char** argv) {
     g_renderer_funcs = kSdlRendererFuncs;
   }
 
+  // init snes, load rom
+  const char* filename = argv[0] ? argv[0] : "sm.smc";
+  Snes *snes = SnesInit(filename);
+
+  if(snes == NULL) {
+  #ifdef __SWITCH__
+    ThrowMissingROM();
+  #else
+    char buf[256];
+    snprintf(buf, sizeof(buf), "unable to load rom: %s", filename);
+    Die(buf);
+  #endif
+    return 1;
+  }
 
   SDL_Window *window = SDL_CreateWindow(kWindowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_width, window_height, g_win_flags);
   if(window == NULL) {
@@ -403,9 +424,6 @@ int main(int argc, char** argv) {
     g_audiobuffer = (uint8 *)malloc(g_frames_per_block * have.channels * sizeof(int16));
   }
 
-  // init snes, load rom
-  Snes *snes = SnesInit(argv[0] ? argv[0] : "sm.smc");
-  
   PpuBeginDrawing(snes->snes_ppu, g_pixels, 256 * 4, 0);
   PpuBeginDrawing(snes->my_ppu, g_my_pixels, 256 * 4, 0);
 
@@ -420,7 +438,7 @@ int main(int argc, char** argv) {
   for (int i = 0; i < SDL_NumJoysticks(); i++)
     OpenOneGamepad(i);
 
- 
+
   bool running = true;
   uint32 lastTick = SDL_GetTicks();
   uint32 curTick = 0;
@@ -539,6 +557,10 @@ int main(int argc, char** argv) {
 
   g_renderer_funcs.Destroy();
 
+#ifdef __SWITCH__
+  SwitchImpl_Exit();
+#endif
+
   SDL_DestroyWindow(window);
   SDL_Quit();
   return 0;
@@ -653,7 +675,7 @@ static void HandleCommand(uint32 j, bool pressed) {
     case kKeys_WindowBigger: ChangeWindowScale(1); break;
     case kKeys_WindowSmaller: ChangeWindowScale(-1); break;
     case kKeys_DisplayPerf: g_display_perf ^= 1; break;
-    case kKeys_ToggleRenderer: 
+    case kKeys_ToggleRenderer:
       g_ppu_render_flags ^= kPpuRenderFlags_NewRenderer;
       g_new_ppu = (g_ppu_render_flags & kPpuRenderFlags_NewRenderer) != 0;
       break;

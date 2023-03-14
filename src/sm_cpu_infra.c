@@ -388,7 +388,6 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
   memcpy(&a->ram[0x611], &b->ram[0x611], 6);  // coroutine_state (copy from mine to theirs)
   memcpy(&a->ram[0x77e], &b->ram[0x77e], 5);  // my counter
   memcpy(&a->ram[0xe20], &b->ram[0xe20], 2);  // enemy_population_ptr
-   
 
   if (memcmp(b->ram, a->ram, 0x20000)) {
     fprintf(stderr, "@%d: Memory compare failed (mine != theirs, prev):\n", snes_frame_counter);
@@ -502,7 +501,7 @@ int RunAsmCode(uint32 pc, uint16 a, uint16 x, uint16 y, int flags) {
 
   bool dc = g_snes->debug_cycles;
   g_cpu->db = pc >> 16;
-   
+
   g_cpu->a = a;
   g_cpu->x = x;
   g_cpu->y = y;
@@ -572,14 +571,12 @@ void RtlUpdateSnesPatchForBugfix() {
 
 Snes *SnesInit(const char *filename) {
   g_snes = snes_init(g_ram);
-  
+
   g_cpu = g_snes->cpu;
-  
+
   bool loaded = loadRom(filename, g_snes);
   if (!loaded) {
-    char buf[256];
-    snprintf(buf, sizeof(buf), "unable to load rom: %s", filename);
-    Die(buf);
+    return NULL;
   }
 
   g_sram = g_snes->cart->ram;
@@ -601,7 +598,7 @@ Snes *SnesInit(const char *filename) {
   { uint8 t[2] = { 0x0a, 0x0a }; PatchBytes(0x8584B2, t, 2); }  // HandleMessageBoxInteraction has a loop
 
   // LoadRoomPlmGfx passes bad value
-  { uint8 t[] = { 0xc0, 0x00, 0x00, 0xf0, 0x03, 0x20, 0x64, 0x87, 0x60}; PatchBytes(0x84efd3, t, sizeof(t)); } 
+  { uint8 t[] = { 0xc0, 0x00, 0x00, 0xf0, 0x03, 0x20, 0x64, 0x87, 0x60}; PatchBytes(0x84efd3, t, sizeof(t)); }
   { uint8 t[] = { 0xd3, 0xef }; PatchBytes(0x848243, t, sizeof(t)); }
 
   // EprojColl_8676 doesn't initialize Y
@@ -629,12 +626,12 @@ Snes *SnesInit(const char *filename) {
   { uint8 t[] = { 0x18, 0x18, 0x18 }; PatchBytes(0xA98C12, t, sizeof(t)); }
 
   { uint8 t[] = { 0x60 }; PatchBytes(0x8085F6, t, sizeof(t)); }
-  
+
   // Remove 4 frames of delay in reset routine
   { uint8 t[] = { 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18 }; PatchBytes(0x80843C, t, sizeof(t)); }
   { uint8 t[] = { 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18 }; PatchBytes(0x808475, t, sizeof(t)); }
   { uint8 t[] = { 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18 }; PatchBytes(0x808525, t, sizeof(t)); }
-  
+
   // Remove WaitUntilEndOfVblank in WaitUntilEndOfVblankAndClearHdma - We run frame by frame.
   { uint8 t[] = { 0x18, 0x18, 0x18, 0x18 }; PatchBytes(0x8882A1, t, sizeof(t)); }
 
@@ -677,7 +674,7 @@ Snes *SnesInit(const char *filename) {
   // Patch ClearMessageBoxBg3Tilemap
   { uint8 t[] = { 0x18, 0x18, 0x18 }; PatchBytes(0x858203, t, sizeof(t)); } // WaitForLagFrame
   { uint8 t[] = { 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18 }; PatchBytes(0x858236, t, sizeof(t)); } // HandleMusicQueue etc
-  
+
   // Patch WriteMessageTilemap
   { uint8 t[] = { 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18 }; PatchBytes(0x8582B8, t, sizeof(t)); }
 
@@ -834,7 +831,7 @@ again_theirs:
 again_mine:
   g_snes->ppu = g_snes->my_ppu;
   RestoreSnapshot(&g_snapshot_before);
-    
+
   g_snes->runningWhichVersion = 2;
   RunOneFrameOfGame();
   DrawFrameToPpu();
@@ -903,4 +900,4 @@ void RtlRunFrameCompare(uint16 input, int run_what) {
     g_use_my_apu_code = true;
     RunOneFrameOfGame_Both();
   }
-} 
+}
