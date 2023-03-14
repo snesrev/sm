@@ -1049,25 +1049,22 @@ CoroutineRet GameState_13_Pausing_Async(void) {  // 0x828CEF
 }
 
 void BackupBG2TilemapForPauseMenu(void) {  // 0x828D51
-  WriteReg(VMADDL, 1u);
-  WriteReg(VMADDH, reg_BG2SC & 0xFC);
+  WriteRegWord(VMADDL, (reg_BG2SC & 0xFC) << 8 | 1);
+  // fixed: this was missing
+  WriteReg(VMAIN, 0x80);
   WriteReg(DMAP1, 0x81u);
   WriteReg(BBAD1, 0x39u);
-  WriteReg(A1T1L, 0x5C);
-  WriteReg(A1T1H, 0xDFu);
+  WriteRegWord(A1T1L, 0xDF5C);
   WriteReg(A1B1, 0x7Eu);
-  WriteReg(DAS1L, 0);
-  WriteReg(DAS1H, 0x10u);
+  WriteRegWord(DAS1L, 0x1000);
   WriteReg(DAS10, 0);
-  WriteReg(A2A1L, 0);
-  WriteReg(A2A1H, 0);
+  WriteRegWord(A2A1L, 0);
   WriteReg(NTRL1, 0);
   WriteReg(MDMAEN, 2u);
 }
 
 void RestoreBG2TilemapFromPauseScreen(void) {  // 0x828D96
-  WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, reg_BG2SC & 0xFC);
+  WriteRegWord(VMADDL, (reg_BG2SC & 0xFC) << 8);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_828DAE = { 1, 1, 0x18, LONGPTR(0x7edf5c), 0x1000 };
   SetupDmaTransfer(&unk_828DAE);

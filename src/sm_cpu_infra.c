@@ -318,6 +318,8 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
     // Samus_HandleScrewAttackSpeedBoostingPals reads OOB
     if (special_samus_palette_frame > 6)
       special_samus_palette_frame = 6;
+  } else if (FixBugHook(0x828D56)) {
+    WriteReg(VMAIN, 0x80); // BackupBG2TilemapForPauseMenu lacks this
   }
 
   return 0;
