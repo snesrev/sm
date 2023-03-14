@@ -1,8 +1,19 @@
 @echo off
 
+set TCC=third_party\tcc
 set SDL2=third_party\SDL2-2.24.1
 
-IF NOT EXIST "third_party\tcc\tcc.exe" (
+IF NOT EXIST "sm.smc" (
+  ECHO:
+  ECHO ERROR: sm.smc doesn't exist. Please verify that you have put it in the right location.
+  ECHO:
+  PAUSE
+  EXIT /B 1
+) ELSE (
+  REM
+)
+
+IF NOT EXIST "%TCC%\tcc.exe" (
   ECHO:
   ECHO ERROR: src\third_party\tcc\tcc.exe doesn't exist. Please verify that you have put it in the right location.
   ECHO   Download it from https://github.com/FitzRoyX/tinycc/releases/download/tcc_20221020/tcc_20221020.zip
@@ -27,7 +38,7 @@ IF NOT EXIST "%SDL2%\lib\x64\SDL2.dll" (
 
 
 echo Building with TCC...
-third_party\tcc\tcc.exe -osm.exe -DCOMPILER_TCC=1 -DSTBI_NO_SIMD=1 -DHAVE_STDINT_H=1 -D_HAVE_STDINT_H=1 -DSYSTEM_VOLUME_MIXER_AVAILABLE=0 -I%SDL2%/include -L%SDL2%/lib/x64 -lSDL2 -I. src/*.c src/snes/*.c third_party/gl_core/gl_core_3_1.c
+"%TCC%\tcc.exe" -osm.exe -DCOMPILER_TCC=1 -DSTBI_NO_SIMD=1 -DHAVE_STDINT_H=1 -D_HAVE_STDINT_H=1 -DSYSTEM_VOLUME_MIXER_AVAILABLE=0 -I%SDL2%/include -L%SDL2%/lib/x64 -lSDL2 -I. src/*.c src/snes/*.c third_party/gl_core/gl_core_3_1.c
 IF ERRORLEVEL 1 goto GETOUT
 
 copy %SDL2%\lib\x64\SDL2.dll .
