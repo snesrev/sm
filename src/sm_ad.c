@@ -59,43 +59,38 @@ void MotherBrain_CalcHdma_BeamAimedRight(void) {  // 0xADDECE
   hdma_table_2[0] = 255;
   hdma_table_2[1] = 255;
   Enemy_MotherBrain *E = Get_MotherBrain(0);
-  R18_ = kTanTable[(uint16)(2 * LOBYTE(E->mbn_var_3A)) >> 1];
-  R20_ = kTanTable[(uint16)(2 * LOBYTE(E->mbn_var_3B)) >> 1];
+  R18_ = kTanTable[LOBYTE(E->mbn_var_3A)];
+  R20_ = kTanTable[LOBYTE(E->mbn_var_3B)];
   uint16 mbn_var_3F = E->mbn_var_3F;
-  uint16 v2 = 2 * (mbn_var_3F - 32) - 25342;
-  uint8 *v3 = RomPtr_7E(v2);
-  *((uint16 *)v3 + 1) = 255;
-  *((uint16 *)v3 + 2) = 255;
-  uint16 v8 = v2;
+  uint16 *v2 = hdma_table_2 + (mbn_var_3F - 32) + 1;
+  v2[1] = 255;
+  v2[2] = 255;
+  uint16 *v8 = v2;
   do {
     uint16 v4 = R20_ + R24_;
     if (__CFADD__uint16(R20_, R24_))
       break;
     R24_ += R20_;
-    *(uint16 *)RomPtr_7E(v2) = HIBYTE(v4) | 0xFF00;
-    v2 -= 2;
+    *v2-- = HIBYTE(v4) | 0xFF00;
     --mbn_var_3F;
   } while (mbn_var_3F != 32);
   do {
-    *(uint16 *)RomPtr_7E(v2) = 255;
-    v2 -= 2;
+    *v2-- = 255;
     --mbn_var_3F;
   } while (mbn_var_3F != 32);
-  uint16 v5 = v8 + 2;
+  uint16 *v5 = v8 + 1;
   uint16 var_3F = gRam8000_Default(0)->var_3F;
   while (1) {
     uint16 v7 = R18_ + R22_;
     if (__CFADD__uint16(R18_, R22_))
       break;
     R22_ += R18_;
-    *(uint16 *)RomPtr_7E(v5) = HIBYTE(v7) | 0xFF00;
-    v5 += 2;
+    *v5++ = HIBYTE(v7) | 0xFF00;
     if (++var_3F == 232)
       return;
   }
   do {
-    *(uint16 *)RomPtr_7E(v5) = 255;
-    v5 += 2;
+    *v5++ = 255;
     ++var_3F;
   } while (var_3F != 232);
 }
@@ -150,10 +145,9 @@ void MotherBrain_CalcHdma_Up_UpRight(void) {  // 0xADE02C
   R18_ = kTanTable[(uint16)(2 * LOBYTE(E->mbn_var_3B)) >> 1];
   R20_ = kTanTable[(uint16)(2 * LOBYTE(E->mbn_var_3A)) >> 1];
   uint16 mbn_var_3D = E->mbn_var_3D;
-  uint16 v2 = 2 * (mbn_var_3D - 32) - 25342;
-  uint8 *v3 = RomPtr_7E(v2);
-  *((uint16 *)v3 + 1) = 255;
-  *((uint16 *)v3 + 2) = 255;
+  uint16 *v2 = hdma_table_2 + (mbn_var_3D - 32) + 1;
+  v2[1] = 255;
+  v2[2] = 255;
   do {
     uint16 v4 = R18_ + R22_;
     if (__CFADD__uint16(R18_, R22_))
@@ -171,8 +165,7 @@ void MotherBrain_CalcHdma_Up_UpRight(void) {  // 0xADE02C
     v8 = R36 | v7 & 0xFF00;
     if (v8 == -1)
       v8 = 255;
-    *(uint16 *)RomPtr_7E(v2) = v8;
-    v2 -= 2;
+    *v2-- = v8;
     --mbn_var_3D;
   } while (mbn_var_3D != 32);
 }
@@ -187,10 +180,9 @@ void MotherBrain_CalcHdma_Up_Up(void) {  // 0xADE0A6
   R18_ = kTanTable[(uint8)-LOBYTE(E->mbn_var_3B)];
   R20_ = kTanTable[(uint16)(2 * LOBYTE(E->mbn_var_3A)) >> 1];
   uint16 mbn_var_3D = E->mbn_var_3D;
-  uint16 v2 = 2 * (mbn_var_3D - 32) - 25342;
-  uint8 *v3 = RomPtr_7E(v2);
-  *((uint16 *)v3 + 1) = 255;
-  *((uint16 *)v3 + 2) = 255;
+  uint16 *v2 = hdma_table_2 + (mbn_var_3D - 32) + 1;
+  v2[1] = 255;
+  v2[2] = 255;
   do {
     uint16 v4 = R22_ - R18_;
     if (R22_ < R18_)
@@ -208,8 +200,7 @@ void MotherBrain_CalcHdma_Up_Up(void) {  // 0xADE0A6
     v8 = R26_ | v7 & 0xFF00;
     if (v8 == -1)
       v8 = 255;
-    *(uint16 *)RomPtr_7E(v2) = v8;
-    v2 -= 2;
+    *v2-- = v8;
     --mbn_var_3D;
   } while (mbn_var_3D != 32);
 }
@@ -224,10 +215,9 @@ void MotherBrain_CalcHdma_Up_UpLeft(void) {  // 0xADE124
   R18_ = kTanTable[(uint8)-LOBYTE(E->mbn_var_3B)];
   R20_ = kTanTable[(uint8)-LOBYTE(E->mbn_var_3A)];
   uint16 mbn_var_3D = E->mbn_var_3D;
-  uint16 v2 = 2 * (mbn_var_3D - 32) - 25342;
-  uint8 *v3 = RomPtr_7E(v2);
-  *((uint16 *)v3 + 1) = 255;
-  *((uint16 *)v3 + 2) = 255;
+  uint16 *v2 = hdma_table_2 + (mbn_var_3D - 32) + 1;
+  v2[1] = 255;
+  v2[2] = 255;
   do {
     uint16 v4 = R22_ - R18_;
     if (R22_ < R18_)
@@ -245,8 +235,7 @@ void MotherBrain_CalcHdma_Up_UpLeft(void) {  // 0xADE124
     v8 = R36 | v7 & 0xFF00;
     if (v8 == -1)
       v8 = 255;
-    *(uint16 *)RomPtr_7E(v2) = v8;
-    v2 -= 2;
+    *v2-- = v8;
     --mbn_var_3D;
   } while (mbn_var_3D != 32);
 }
@@ -281,12 +270,10 @@ void MotherBrain_CalcHdma_Down_DownRight(void) {  // 0xADE216
   R18_ = kTanTable[(uint16)(2 * LOBYTE(E->mbn_var_3A)) >> 1];
   R20_ = kTanTable[(uint16)(2 * LOBYTE(E->mbn_var_3B)) >> 1];
   v1 = E->mbn_var_3D - 32;
-  uint16 v2 = 0x9D04;
+  uint16 *dst = hdma_table_2 + 1;
   do {
-    *(uint16 *)RomPtr_7E(v2) = 255;
-    v2 += 2;
-    --v1;
-  } while (v1);
+    *dst++ = 255;
+  } while (--v1);
   uint16 mbn_var_3D = Get_MotherBrain(0)->mbn_var_3D;
   do {
     uint16 v4 = R18_ + R22_;
@@ -305,8 +292,7 @@ void MotherBrain_CalcHdma_Down_DownRight(void) {  // 0xADE216
     v8 = R26_ | v7 & 0xFF00;
     if (v8 == -1)
       v8 = 255;
-    *(uint16 *)RomPtr_7E(v2) = v8;
-    v2 += 2;
+    *dst++ = v8;
     ++mbn_var_3D;
   } while (mbn_var_3D != 232);
 }
@@ -322,12 +308,10 @@ void MotherBrain_CalcHdma_Down_Down(void) {  // 0xADE293
   R18_ = kTanTable[(uint8)-LOBYTE(E->mbn_var_3A)];
   R20_ = kTanTable[(uint16)(2 * LOBYTE(E->mbn_var_3B)) >> 1];
   v1 = E->mbn_var_3D - 32;
-  uint16 v2 = -25340;
+  uint16 *dst = hdma_table_2 + 1;
   do {
-    *(uint16 *)RomPtr_7E(v2) = 255;
-    v2 += 2;
-    --v1;
-  } while (v1);
+    *dst++ = 255;
+  } while (--v1);
   uint16 mbn_var_3D = Get_MotherBrain(0)->mbn_var_3D;
   do {
     uint16 v4 = R22_ - R18_;
@@ -346,8 +330,7 @@ void MotherBrain_CalcHdma_Down_Down(void) {  // 0xADE293
     v8 = R26_ | v7 & 0xFF00;
     if (v8 == -1)
       v8 = 255;
-    *(uint16 *)RomPtr_7E(v2) = v8;
-    v2 += 2;
+    *dst++ = v8;
     ++mbn_var_3D;
   } while (mbn_var_3D != 232);
 }
@@ -363,12 +346,10 @@ void MotherBrain_CalcHdma_Down_DownLeft(void) {  // 0xADE314
   R18_ = kTanTable[(uint8)-LOBYTE(E->mbn_var_3A)];
   R20_ = kTanTable[(uint8)-LOBYTE(E->mbn_var_3B)];
   v1 = E->mbn_var_3D - 32;
-  uint16 v2 = -25340;
+  uint16 *dst = hdma_table_2 + 1;
   do {
-    *(uint16 *)RomPtr_7E(v2) = 255;
-    v2 += 2;
-    --v1;
-  } while (v1);
+    *dst++ = 255;
+  } while (--v1);
   uint16 mbn_var_3D = Get_MotherBrain(0)->mbn_var_3D;
   do {
     uint16 v4 = R22_ - R18_;
@@ -387,8 +368,7 @@ void MotherBrain_CalcHdma_Down_DownLeft(void) {  // 0xADE314
     v8 = R26_ | v7 & 0xFF00;
     if (!v8)
       v8 = 255;
-    *(uint16 *)RomPtr_7E(v2) = v8;
-    v2 += 2;
+    *dst++ = v8;
     ++mbn_var_3D;
   } while (mbn_var_3D != 232);
 }

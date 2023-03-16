@@ -2818,7 +2818,8 @@ void MaridiaFloater_Func_13(uint16 k) {  // 0xA8C59F
     enemy_drawing_queue[v4 + 100] = 0;
     enemy_drawing_queue[v4 + 97] |= 0x200u;
     MaridiaFloater_Func_1(k);
-    printf("A undefined!\n"); v5 = 0;
+    //printf("A undefined!\n");
+    v5 = 0;
     EnemyDeathAnimation(k, v5);
   } else {
     MaridiaFloater_Func_2(k);

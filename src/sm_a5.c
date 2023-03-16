@@ -1019,22 +1019,11 @@ const uint16 *Draygon_Instr_1(uint16 k, const uint16 *jp) {  // 0xA594DD
 }
 
 void Draygon_Hurt(void) {  // 0xA5954D
-  int16 v2;
-  int16 v7;
-  int16 v9;
-
   uint16 v0 = addr_kDraygon_MorePalettes2;
   if ((Get_Draygon(cur_enemy_index)->base.flash_timer & 2) != 0)
     v0 = addr_word_A5A297;
-  uint16 v1 = addr_kDraygon_BigSprmap_C08F__plus__17;
-  remaining_enemy_spritemap_entries = 16;
-  do {
-    v2 = *(uint16 *)RomPtr_A5(v0);
-    *(uint16 *)RomPtr_7E(v1) = v2;
-    v1 += 2;
-    v0 += 2;
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+  memcpy(RomPtr_7E(addr_kDraygon_BigSprmap_C08F__plus__17), RomPtr_A5(v0), 32);
+
   if ((Get_Draygon(cur_enemy_index)->base.flash_timer & 2) == 0) {
     uint16 v3 = 4 * Get_Draygon(0)->draygon_var_0E;
     for (int i = 0; i != 8; i += 2) {
@@ -1045,19 +1034,12 @@ void Draygon_Hurt(void) {  // 0xA5954D
   uint16 v5 = addr_kDraygon_Palette;
   if ((Get_Draygon(cur_enemy_index)->base.flash_timer & 2) != 0)
     v5 = addr_word_A5A297;
-  uint16 v6 = addr_kDraygon_BigSprmap_C11B__plus__197;
-  remaining_enemy_spritemap_entries = 16;
-  do {
-    v7 = *(uint16 *)RomPtr_A5(v5);
-    *(uint16 *)RomPtr_7E(v6) = v7;
-    v6 += 2;
-    v5 += 2;
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+  memcpy(RomPtr_7E(addr_kDraygon_BigSprmap_C11B__plus__197), RomPtr_A5(v5), 32);
+
   if ((samus_grapple_flags & 1) != 0) {
     Enemy_Draygon *E = Get_Draygon(0);
     if ((E->base.frame_counter & 7) == 0) {
-      v9 = E->base.health - 256;
+      int16 v9 = E->base.health - 256;
       if (v9 < 0)
         v9 = 0;
       E->base.health = v9;

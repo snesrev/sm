@@ -282,7 +282,7 @@ const uint16 *Torizo_Instr_30(uint16 k, const uint16 *jp) {  // 0xAAC303
 }
 
 const uint16 *Torizo_Instr_34(uint16 k, const uint16 *jp) {  // 0xAAC32F
-  printf("A undefined\n");
+  //printf("A undefined\n");
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_BombTorizoDeathExplosion, 0);
   Enemy_Torizo *E = Get_Torizo(k);
   E->base.current_instruction = INSTR_ADDR_TO_PTR(k, jp);
@@ -292,7 +292,7 @@ const uint16 *Torizo_Instr_34(uint16 k, const uint16 *jp) {  // 0xAAC32F
 }
 
 const uint16 *Torizo_Instr_24(uint16 k, const uint16 *jp) {  // 0xAAC34A
-  printf("A undefined\n");
+  //printf("A undefined\n");
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianLandingDustCloudsRightFoot, 0);
   SpawnEnemyProjectileWithRoomGfx(addr_stru_86AFF3, 0);
   return jp;

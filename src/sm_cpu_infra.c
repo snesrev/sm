@@ -394,7 +394,9 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
 
   memcpy(&a->ram[0x1784], &b->ram[0x1784], 3);  // enemy_ai_pointer
   memcpy(&a->ram[0x3c], &b->ram[0x3c], 2);  // nmicopy1_var_d
-
+  memcpy(&a->ram[0x17aa], &b->ram[0x17aa], 2);  // interactive_enemy_indexes_index
+  memcpy(&a->ram[0x60B], &b->ram[0x60B], 2);  // remaining_enemy_spritemap_entries
+  
 
   
   if (memcmp(b->ram, a->ram, 0x20000)) {

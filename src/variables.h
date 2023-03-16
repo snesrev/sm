@@ -805,7 +805,7 @@ extern uint8 g_ram[0x20000];
 #define active_enemy_indexes_write_ptr (*(uint16*)(g_ram+0x17A4))
 #define interactive_enemy_indexes_write_ptr (*(uint16*)(g_ram+0x17A6))
 #define active_enemy_indexes_index (*(uint16*)(g_ram+0x17A8))
-#define interactive_enemy_indexes_index (*(uint16*)(g_ram+0x17AA))
+#define REMOVED_interactive_enemy_indexes_index (*(uint16*)(g_ram+0x17AA))
 #define active_enemy_indexes ((uint16*)(g_ram+0x17AC))
 #define interactive_enemy_indexes ((uint16*)(g_ram+0x17EC))
 #define enemy_index_colliding_dirs ((uint16*)(g_ram+0x182C))

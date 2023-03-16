@@ -1802,7 +1802,6 @@ void EnemyMain(void) {  // 0xA08FD4
       gEnemyData(enemy_index_to_shake)->shake_timer = 64;
       enemy_index_to_shake = -1;
     }
-    interactive_enemy_indexes_index = 0;
     for (active_enemy_indexes_index = 0; ; ++active_enemy_indexes_index) {
       int v0 = active_enemy_indexes_index >> 1;
       uint16 v1 = active_enemy_indexes[v0];
@@ -2641,36 +2640,34 @@ LABEL_25:
 
 uint16 GrappleBeam_CollDetect_Enemy(void) {  // 0xA09E9A
   VoidP grapple_ai;
-  EnemyData *v4;
+  EnemyData *ED;
 
   CallSomeSamusCode(0xDu);
   collision_detection_index = 0;
-  for (interactive_enemy_indexes_index = 0; ; ++interactive_enemy_indexes_index) {
-    uint16 v2 = interactive_enemy_indexes[interactive_enemy_indexes_index >> 1];
-    cur_enemy_index = v2;
-    if (v2 == 0xFFFF) {
+  for (int i = 0; ; i++) {
+    cur_enemy_index = interactive_enemy_indexes[i];
+    if (cur_enemy_index == 0xFFFF) {
       R18_ = 0;
       return 0;
     }
-    v4 = gEnemyData(v2);
-    if (!v4->invincibility_timer) {
-      uint16 v5 = abs16(v4->x_pos - grapple_beam_end_x_pos);
-      bool v6 = v5 < v4->x_width;
-      uint16 v7 = v5 - v4->x_width;
+    ED = gEnemyData(cur_enemy_index);
+    if (!ED->invincibility_timer) {
+      uint16 v5 = abs16(ED->x_pos - grapple_beam_end_x_pos);
+      bool v6 = v5 < ED->x_width;
+      uint16 v7 = v5 - ED->x_width;
       if (v6 || v7 < 8u) {
-        uint16 v8 = abs16(v4->y_pos - grapple_beam_end_y_pos);
-        v6 = v8 < v4->y_height;
-        uint16 v9 = v8 - v4->y_height;
+        uint16 v8 = abs16(ED->y_pos - grapple_beam_end_y_pos);
+        v6 = v8 < ED->y_height;
+        uint16 v9 = v8 - ED->y_height;
         if (v6 || v9 < 8u)
           break;
       }
     }
-    ++interactive_enemy_indexes_index;
   }
-  v4->ai_handler_bits = 1;
+  ED->ai_handler_bits = 1;
   uint16 v0 = 0;
-  uint16 enemy_ptr = v4->enemy_ptr;
-  grapple_ai = get_EnemyDef_A2(v4->enemy_ptr)->grapple_ai;
+  uint16 enemy_ptr = ED->enemy_ptr;
+  grapple_ai = get_EnemyDef_A2(ED->enemy_ptr)->grapple_ai;
   if (grapple_ai + (uint16)FUNC16(Enemy_GrappleReact_NoInteract_A0)) {
     v0 = 1;
     if (grapple_ai != (uint16)FUNC16(Enemy_GrappleReact_SamusLatchesOn_A0)) {
@@ -3321,47 +3318,8 @@ uint16 Samus_CheckSolidEnemyColl(void) {  // 0xA0A8F0
   if (!interactive_enemy_indexes_write_ptr)
     return 0;
   v1 = 2 * (samus_collision_direction & 3);
-  if (v1) {
-    switch (v1) {
-    case 2: {
-      samus_target_x_pos = samus_x_pos + R18_;
-      bool v3 = samus_x_subpos + R20_ == 0;
-      if (__CFADD__uint16(samus_x_subpos, R20_))
-        v3 = samus_target_x_pos++ == 0xFFFF;
-      if (!v3)
-        ++samus_target_x_pos;
-      samus_target_y_pos = samus_y_pos;
-      samus_target_y_subpos = samus_y_subpos;
-      break;
-    }
-    case 4: {
-      samus_target_y_pos = samus_y_pos - R18_;
-      bool v4 = samus_y_subpos == R20_;
-      if (samus_y_subpos < R20_)
-        v4 = samus_target_y_pos-- == 1;
-      if (!v4)
-        --samus_target_y_pos;
-      samus_target_x_pos = samus_x_pos;
-      samus_target_x_subpos = samus_x_subpos;
-      break;
-    }
-    case 6: {
-      samus_target_y_pos = samus_y_pos + R18_;
-      bool v5 = samus_y_subpos + R20_ == 0;
-      if (__CFADD__uint16(samus_y_subpos, R20_))
-        v5 = samus_target_y_pos++ == 0xFFFF;
-      if (!v5)
-        ++samus_target_y_pos;
-      samus_target_x_pos = samus_x_pos;
-      samus_target_x_subpos = samus_x_subpos;
-      break;
-    }
-    default:
-      Unreachable();
-      while (1)
-        ;
-    }
-  } else {
+  switch (v1) {
+  case 0: {
     samus_target_x_pos = samus_x_pos - R18_;
     bool v2 = samus_x_subpos == R20_;
     if (samus_x_subpos < R20_)
@@ -3370,117 +3328,147 @@ uint16 Samus_CheckSolidEnemyColl(void) {  // 0xA0A8F0
       --samus_target_x_pos;
     samus_target_y_pos = samus_y_pos;
     samus_target_y_subpos = samus_y_subpos;
+    break;
+  }
+  case 2: {
+    samus_target_x_pos = samus_x_pos + R18_;
+    bool v3 = samus_x_subpos + R20_ == 0;
+    if (__CFADD__uint16(samus_x_subpos, R20_))
+      v3 = samus_target_x_pos++ == 0xFFFF;
+    if (!v3)
+      ++samus_target_x_pos;
+    samus_target_y_pos = samus_y_pos;
+    samus_target_y_subpos = samus_y_subpos;
+    break;
+  }
+  case 4: {
+    samus_target_y_pos = samus_y_pos - R18_;
+    bool v4 = samus_y_subpos == R20_;
+    if (samus_y_subpos < R20_)
+      v4 = samus_target_y_pos-- == 1;
+    if (!v4)
+      --samus_target_y_pos;
+    samus_target_x_pos = samus_x_pos;
+    samus_target_x_subpos = samus_x_subpos;
+    break;
+  }
+  case 6: {
+    samus_target_y_pos = samus_y_pos + R18_;
+    bool v5 = samus_y_subpos + R20_ == 0;
+    if (__CFADD__uint16(samus_y_subpos, R20_))
+      v5 = samus_target_y_pos++ == 0xFFFF;
+    if (!v5)
+      ++samus_target_y_pos;
+    samus_target_x_pos = samus_x_pos;
+    samus_target_x_subpos = samus_x_subpos;
+    break;
+  }
+  default:
+    Unreachable();
+    while (1)
+      ;
   }
   samus_x_radius_mirror = samus_x_radius;
   samus_y_radius_mirror = samus_y_radius;
   collision_detection_index = 0;
-  for (interactive_enemy_indexes_index = 0; ; ++interactive_enemy_indexes_index) {
-    int v6 = interactive_enemy_indexes_index >> 1;
-    uint16 v7 = interactive_enemy_indexes[v6];
+  for (int i = 0; ;i++) {
+    uint16 v7 = interactive_enemy_indexes[i];
     if (v7 == 0xFFFF)
       break;
-    collision_detection_index = interactive_enemy_indexes[v6];
-    EnemyData *v8 = gEnemyData(v7);
-    if (v8->frozen_timer || (v8->properties & 0x8000u) != 0) {
-      uint8 *v9 = RomPtr_7E(v7 + 3962);
-      uint8 *v10 = (uint8*)&samus_target_x_pos;
-      uint16 v11 = abs16(*(uint16 *)v9 - *(uint16 *)v10);
-      bool v12 = v11 < *((uint16 *)v9 + 4);
-      uint16 v13 = v11 - *((uint16 *)v9 + 4);
-      if (v12 || v13 < *((uint16 *)v10 + 4)) {
-        uint16 v14 = abs16(*((uint16 *)v9 + 2) - *((uint16 *)v10 + 2));
-        v12 = v14 < *((uint16 *)v9 + 5);
-        uint16 v15 = v14 - *((uint16 *)v9 + 5);
-        if (v12 || v15 < *((uint16 *)v10 + 5)) {
-          v16 = 2 * (samus_collision_direction & 3);
-          if (v16) {
-            switch (v16) {
-            case 2: {
-              draw_enemy_layer = samus_x_radius + samus_x_pos;
-              EnemyData *v19 = gEnemyData(collision_detection_index);
-              v18 = v19->x_pos - v19->x_width - (samus_x_radius + samus_x_pos);
-              if (!v18)
-                goto LABEL_57;
-              if (v18 >= 0)
-                goto LABEL_58;
-              break;
-            }
-            case 4: {
-              EnemyData *v20 = gEnemyData(collision_detection_index);
-              draw_enemy_layer = v20->y_height + v20->y_pos;
-              v18 = samus_y_pos - samus_y_radius - draw_enemy_layer;
-              if (samus_y_pos - samus_y_radius == draw_enemy_layer)
-                goto LABEL_57;
-              if ((int16)(samus_y_pos - samus_y_radius - draw_enemy_layer) >= 0)
-                goto LABEL_58;
-              break;
-            }
-            case 6: {
-              draw_enemy_layer = samus_y_radius + samus_y_pos;
-              EnemyData *v21;
-              v21 = gEnemyData(collision_detection_index);
-              v18 = v21->y_pos - v21->y_height - (samus_y_radius + samus_y_pos);
-              if (!v18) {
+    collision_detection_index = v7;
+    EnemyData *ED = gEnemyData(v7);
+    if (!ED->frozen_timer && (ED->properties & 0x8000u) == 0)
+      continue;
+    uint16 *v9 = &ED->x_pos;
+    uint16 *v10 = &samus_target_x_pos;
+    uint16 v11 = abs16(*v9 - *v10);
+    bool v12 = v11 < *(v9 + 4);
+    uint16 v13 = v11 - *(v9 + 4);
+    if (v12 || v13 < *(v10 + 4)) {
+      uint16 v14 = abs16(*(v9 + 2) - *(v10 + 2));
+      v12 = v14 < *(v9 + 5);
+      uint16 v15 = v14 - *(v9 + 5);
+      if (v12 || v15 < *(v10 + 5)) {
+        v16 = 2 * (samus_collision_direction & 3);
+        switch (v16) {
+        case 0: {
+          draw_enemy_layer = ED->x_width + ED->x_pos;
+          v18 = samus_x_pos - samus_x_radius - draw_enemy_layer;
+          if (samus_x_pos - samus_x_radius == draw_enemy_layer)
+            goto LABEL_57;
+          if ((int16)(samus_x_pos - samus_x_radius - draw_enemy_layer) >= 0)
+            goto LABEL_58;
+          break;
+        }
+        case 2: {
+          draw_enemy_layer = samus_x_radius + samus_x_pos;
+          v18 = ED->x_pos - ED->x_width - (samus_x_radius + samus_x_pos);
+          if (!v18)
+            goto LABEL_57;
+          if (v18 >= 0)
+            goto LABEL_58;
+          break;
+        }
+        case 4: {
+          draw_enemy_layer = ED->y_height + ED->y_pos;
+          v18 = samus_y_pos - samus_y_radius - draw_enemy_layer;
+          if (samus_y_pos - samus_y_radius == draw_enemy_layer)
+            goto LABEL_57;
+          if ((int16)(samus_y_pos - samus_y_radius - draw_enemy_layer) >= 0)
+            goto LABEL_58;
+          break;
+        }
+        case 6: {
+          draw_enemy_layer = samus_y_radius + samus_y_pos;
+          v18 = ED->y_pos - ED->y_height - (samus_y_radius + samus_y_pos);
+          if (!v18) {
 LABEL_57:
-                samus_y_subpos = 0;
-                samus_x_pos_colliding_solid = samus_x_pos;
-                samus_x_subpos_colliding_solid = samus_x_subpos;
-                EnemyData *v22 = gEnemyData(collision_detection_index);
-                enemy_x_pos_colliding_solid = v22->x_pos;
-                enemy_x_subpos_colliding_solid = v22->x_subpos;
-                samus_pos_delta_colliding_solid = R18_;
-                samus_subpos_delta_colliding_solid = R20_;
-                samus_y_pos_colliding_solid = samus_y_pos;
-                samus_y_subpos_colliding_solid = 0;
-                solid_enemy_collision_type = 1;
-                R18_ = 0;
-                R20_ = 0;
-                R22_ = collision_detection_index;
-                int v23 = samus_collision_direction & 3;
-                enemy_index_colliding_dirs[v23] = collision_detection_index;
-                distance_to_enemy_colliding_dirs[v23] = 0;
-                return -1;
-              }
-              if (v18 >= 0) {
-LABEL_58:
-                samus_x_pos_colliding_solid = samus_x_pos;
-                samus_x_subpos_colliding_solid = samus_x_subpos;
-                EnemyData *v24 = gEnemyData(collision_detection_index);
-                enemy_x_pos_colliding_solid = v24->x_pos;
-                enemy_x_subpos_colliding_solid = v24->x_subpos;
-                samus_pos_delta_colliding_solid = R18_;
-                samus_subpos_delta_colliding_solid = R20_;
-                samus_y_pos_colliding_solid = samus_y_pos;
-                samus_y_subpos_colliding_solid = samus_y_subpos;
-                solid_enemy_collision_type = 2;
-                R18_ = v18;
-                int v25 = samus_collision_direction & 3;
-                distance_to_enemy_colliding_dirs[v25] = v18;
-                R20_ = 0;
-                R22_ = collision_detection_index;
-                enemy_index_colliding_dirs[v25] = collision_detection_index;
-                return -1;
-              }
-              break;
-            }
-            default:
-              Unreachable();
-              while (1)
-                ;
-            }
-          } else {
-            EnemyData *v17 = gEnemyData(collision_detection_index);
-            draw_enemy_layer = v17->x_width + v17->x_pos;
-            v18 = samus_x_pos - samus_x_radius - draw_enemy_layer;
-            if (samus_x_pos - samus_x_radius == draw_enemy_layer)
-              goto LABEL_57;
-            if ((int16)(samus_x_pos - samus_x_radius - draw_enemy_layer) >= 0)
-              goto LABEL_58;
+            samus_y_subpos = 0;
+            samus_x_pos_colliding_solid = samus_x_pos;
+            samus_x_subpos_colliding_solid = samus_x_subpos;
+            enemy_x_pos_colliding_solid = ED->x_pos;
+            enemy_x_subpos_colliding_solid = ED->x_subpos;
+            samus_pos_delta_colliding_solid = R18_;
+            samus_subpos_delta_colliding_solid = R20_;
+            samus_y_pos_colliding_solid = samus_y_pos;
+            samus_y_subpos_colliding_solid = 0;
+            solid_enemy_collision_type = 1;
+            R18_ = 0;
+            R20_ = 0;
+            R22_ = collision_detection_index;
+            int v23 = samus_collision_direction & 3;
+            enemy_index_colliding_dirs[v23] = collision_detection_index;
+            distance_to_enemy_colliding_dirs[v23] = 0;
+            return -1;
           }
+          if (v18 >= 0) {
+LABEL_58:
+            samus_x_pos_colliding_solid = samus_x_pos;
+            samus_x_subpos_colliding_solid = samus_x_subpos;
+            enemy_x_pos_colliding_solid = ED->x_pos;
+            enemy_x_subpos_colliding_solid = ED->x_subpos;
+            samus_pos_delta_colliding_solid = R18_;
+            samus_subpos_delta_colliding_solid = R20_;
+            samus_y_pos_colliding_solid = samus_y_pos;
+            samus_y_subpos_colliding_solid = samus_y_subpos;
+            solid_enemy_collision_type = 2;
+            R18_ = v18;
+            int v25 = samus_collision_direction & 3;
+            distance_to_enemy_colliding_dirs[v25] = v18;
+            R20_ = 0;
+            R22_ = collision_detection_index;
+            enemy_index_colliding_dirs[v25] = collision_detection_index;
+            return -1;
+          }
+          break;
+        }
+        default:
+          Unreachable();
+          while (1)
+            ;
         }
       }
     }
-    ++interactive_enemy_indexes_index;
   }
   return 0;
 }

@@ -1083,7 +1083,6 @@ void Crocomire_Func_59(void) {  // 0xA493ED
 
 void Crocomire_Func_60(void) {  // 0xA4943D
   int i;
-  int16 v4;
   int16 j;
 
   Enemy_Crocomire *E = Get_Crocomire(cur_enemy_index);
@@ -1104,14 +1103,11 @@ void Crocomire_Func_60(void) {  // 0xA4943D
       break;
     v6 = i;
     uint16 v3 = *(uint16 *)((char *)&g_word_A49BC7 + i);
-    R18_ = g_word_7E068E;
+    int n = g_word_7E068E;
     do {
-      v4 = *(uint16 *)IndirPtr(&R0_, v2);
-      *(uint16 *)RomPtr_7E(v3) = v4;
-      v3 += 2;
-      v2 += 2;
-      --R18_;
-    } while ((R18_ & 0x8000u) == 0);
+      *(uint16 *)RomPtr_7E(v3) = *(uint16 *)IndirPtr(&R0_, v2);
+      v3 += 2, v2 += 2;
+    } while (--n >= 0);
   }
   croco_word_7E069A = i + 2;
   g_word_7E068A = i + 2;

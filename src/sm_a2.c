@@ -2313,7 +2313,7 @@ void Rinka_Frozen(uint16 k) {  // 0xA2B929
   if (Get_Rinka(0)->rinka_var_1D) {
     Rinka_6(k);
     Rinka_8(k);
-    printf("A undefined!\n");
+//    printf("A undefined!\n");
     uint16 v1 = 0;
     RinkasDeathAnimation(v1);
   }

@@ -1529,7 +1529,8 @@ const uint16 *MotherBrain_Instr_SpawnEprojToOffset(uint16 k, const uint16 *jp) {
 
 const uint16 *MotherBrain_Instr_SpawnDeathBeamEproj(uint16 k, const uint16 *jp) {  // 0xA99AEF
   uint16 v2;
-  printf("A undefined\n"); v2 = 0;
+  //printf("A undefined\n");
+  v2 = 0;
   QueueSfx2_Max6(0x63u);
   SpawnEnemyProjectileWithGfx(v2, 0x40, addr_kEproj_MotherBrainDeathBeamCharging);
   return jp;
@@ -1584,7 +1585,8 @@ uint16 MotherBrain_Instr_SpawnDroolEproj(uint16 k) {  // 0xA99B3C
 
 uint16 MotherBrain_Instr_SpawnPurpleBreath(uint16 k) {  // 0xA99B6D
   uint16 v2;
-  printf("A undefined\n"); v2 = 0;
+  //printf("A undefined\n");
+  v2 = 0;
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_MotherBrainPurpleBreathBig, v2);
   return k;
 }
@@ -1695,7 +1697,8 @@ uint16 MotherBrain_Instr_SpawnLaserEproj(uint16 k) {  // 0xA99F46
 
 uint16 MotherBrain_Instr_SpawnRainbowEproj(uint16 k) {  // 0xA99F84
   uint16 v2;
-  printf("A undefined\n"); v2 = 0;
+  //printf("A undefined\n");
+  v2 = 0;
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_MotherBrainRainbowBeamCharging, v2);
   return k;
 }
@@ -5000,17 +5003,16 @@ LABEL_12:
   R22_ = 169;
   uint16 *v11 = (uint16 *)RomPtr_7E(dms_var_52);
   CopyMoveCorpseRottingRotEntry(*v11);
-  uint16 v12 = *(uint16 *)RomPtr_7E(dms_var_52) + 2;
+  uint16 v12 = *v11 + 2;
   if (v12 < E->dms_var_46) {
-LABEL_11:
-    *(uint16 *)RomPtr_7E(dms_var_52) = v12;
+    *(uint16 *)v11 = v12;
     goto LABEL_12;
   }
   R18_ = E->dms_var_49;
   CallCorpseRottingFinish(R18_ | 0xA90000);
   if (v15 < Get_DeadMonsters(0)->dms_var_46) {
-    v12 = -1;
-    goto LABEL_11;
+    *(uint16 *)v11 = -1;
+    goto LABEL_12;
   }
   return 0;
 }
@@ -5041,14 +5043,12 @@ void CorpseRottingRotEntryFinishedHook(void) {  // 0xA9DC08
 
 void InitializeCorpseRottingDataTable(uint16 k, uint16 a) {  // 0xA9DC40
   int16 v2;
-
   v2 = a - 1;
   R18_ = 0;
   do {
     *(uint16 *)RomPtr_7E(k) = v2;
-    uint16 v3 = k + 2;
-    *(uint16 *)RomPtr_7E(v3) = R18_;
-    k = v3 + 2;
+    *(uint16 *)RomPtr_7E(k + 2) = R18_;
+    k += 4;
     R18_ += 2;
     --v2;
   } while (v2 >= 0);
@@ -5238,24 +5238,13 @@ void Skree_CorpseRottingInitFunc_4(void) {  // 0xA9E052
 }
 
 void MotherBrain_CorpseRottingInitFunc(void) {  // 0xA9E08B
-  uint8 *v0 = RomPtr_7E(0x9000);
-  uint8 *v1 = RomPtr_B7(addr_kMotherBrain_Misc_TileData + 192);
-  MemCpy(v0, v1, 0xC0);
-  uint8 *v2 = RomPtr_7E(0x90E0);
-  uint8 *v3 = RomPtr_B7(addr_kMotherBrain_Misc_TileData + 704);
-  MemCpy(v2, v3, 0xC0);
-  uint8 *v4 = RomPtr_7E(0x91C0);
-  uint8 *v5 = RomPtr_B7(addr_kMotherBrain_Misc_TileData + 1216);
-  MemCpy(v4, v5, 0xC0);
-  uint8 *v6 = RomPtr_7E(0x92A0);
-  uint8 *v7 = RomPtr_B7(addr_kMotherBrain_Misc_TileData + 1728);
-  MemCpy(v6, v7, 0xC0);
-  uint8 *v8 = RomPtr_7E(0x9380);
-  uint8 *v9 = RomPtr_B7(addr_kMotherBrain_Misc_TileData + 2240);
-  MemCpy(v8, v9, 0xE0);
-  uint8 *v10 = RomPtr_7E(0x9460);
-  uint8 *v11 = RomPtr_B7(addr_kMotherBrain_Misc_TileData + 2752);
-  MemCpy(v10, v11, 0xE0);
+  uint8 *base = RomPtr_7E(0x9000);
+  MemCpy(base, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 192), 0xC0);
+  MemCpy(base + 0xe0, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 704), 0xC0);
+  MemCpy(base + 0x1C0, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 1216), 0xC0);
+  MemCpy(base + 0x2a0, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 1728), 0xC0);
+  MemCpy(base + 0x380, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 2240), 0xE0);
+  MemCpy(base + 0x460, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 2752), 0xE0);
 }
 
 void Torizo_CorpseRottingMoveFunc(uint16 j, uint16 k) {  // 0xA9E272
