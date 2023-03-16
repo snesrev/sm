@@ -4971,7 +4971,7 @@ uint8 ProcessCorpseRotting(uint16 k) {  // 0xA9DB12
   uint16 *v6;
   while (1) {
     v15 = v4;
-    v5 = (int16 *)RomPtr_7E(dms_var_52);
+    v5 = (int16 *)(g_ram + dms_var_52);
     v6 = (uint16 *)v5;
     if (*v5 >= 0)
       break;
@@ -5001,7 +5001,7 @@ LABEL_12:
   R18_ = E->dms_var_43;
   R20_ = E->dms_var_44;
   R22_ = 169;
-  uint16 *v11 = (uint16 *)RomPtr_7E(dms_var_52);
+  uint16 *v11 = (uint16 *)(g_ram + dms_var_52);
   CopyMoveCorpseRottingRotEntry(*v11);
   uint16 v12 = *v11 + 2;
   if (v12 < E->dms_var_46) {
@@ -5041,14 +5041,14 @@ void CorpseRottingRotEntryFinishedHook(void) {  // 0xA9DC08
     QueueSfx2_Max3(0x10);
 }
 
-void InitializeCorpseRottingDataTable(uint16 k, uint16 a) {  // 0xA9DC40
+void InitializeCorpseRottingDataTable(uint16 *table, uint16 a) {  // 0xA9DC40
   int16 v2;
   v2 = a - 1;
   R18_ = 0;
   do {
-    *(uint16 *)RomPtr_7E(k) = v2;
-    *(uint16 *)RomPtr_7E(k + 2) = R18_;
-    k += 4;
+    table[0] = v2;
+    table[1] = R18_;
+    table += 2;
     R18_ += 2;
     --v2;
   } while (v2 >= 0);
@@ -5070,7 +5070,7 @@ void InitializeEnemyCorpseRotting(uint16 k, uint16 j) {  // 0xA9DC5F
   E->dms_var_57 = v6--;
   E->dms_var_58 = v6;
   E->dms_var_59 = v6 - 1;
-  InitializeCorpseRottingDataTable(*v5, v5[4]);
+  InitializeCorpseRottingDataTable((uint16*)(g_ram + *v5), v5[4]);
   R18_ = v5[5];
   CallCorpseRottingInit(R18_ | 0xA90000);
 }
@@ -5147,7 +5147,7 @@ void DeadSidehopper_Touch(void) {  // 0xA9DD44
     DeadSidehopper_DD31();
 }
 
-#define TILEMAP_ADDR(x) RomPtr_7E(0x2000 + x)
+#define TILEMAP_ADDR(x) &g_ram[0x2000 + x]
 
 void Torizo_CorpseRottingInitFunc(void) {  // 0xA9DE18
   uint8 *p = RomPtr_B7(addr_kDeadTorizo_TileData);
@@ -5238,7 +5238,7 @@ void Skree_CorpseRottingInitFunc_4(void) {  // 0xA9E052
 }
 
 void MotherBrain_CorpseRottingInitFunc(void) {  // 0xA9E08B
-  uint8 *base = RomPtr_7E(0x9000);
+  uint8 *base = &g_ram[0x9000];
   MemCpy(base, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 192), 0xC0);
   MemCpy(base + 0xe0, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 704), 0xC0);
   MemCpy(base + 0x1C0, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 1216), 0xC0);

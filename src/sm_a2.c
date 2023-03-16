@@ -2182,7 +2182,8 @@ void Rinka_Main(void) {  // 0xA2B7C4
   if (E->rinka_parameter_1 && Get_Rinka(0)->rinka_var_1D) {
     Rinka_6(cur_enemy_index);
     Rinka_8(cur_enemy_index);
-    printf("A unknown\n"); v2 = 0;
+    //printf("A unknown\n");
+    v2 = 0;
     RinkasDeathAnimation(v2);
   } else {
     CallRinkaFunc(E->rinka_var_A | 0xA20000, cur_enemy_index);

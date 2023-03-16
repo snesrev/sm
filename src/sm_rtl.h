@@ -52,7 +52,6 @@ void Call(uint32 addr);
 
 static inline uint8_t *RomPtr_RAM(uint16_t addr) { assert(addr < 0x2000); return g_ram + addr; }
 
-static inline uint8_t *RomPtr_7E(uint16_t addr) { return g_ram + addr; }
 static inline uint8_t *RomPtr_7F(uint16_t addr) { return g_ram + 0x10000 + addr; }
 static inline uint8_t *RomPtr_80(uint16_t addr) { return RomPtr(0x800000 | addr); }
 static inline uint8_t *RomPtr_81(uint16_t addr) { return RomPtr(0x810000 | addr); }

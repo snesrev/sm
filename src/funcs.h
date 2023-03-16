@@ -5269,7 +5269,7 @@ void Enemy_IncreaseYpos(uint16 k, uint16 a);
 void Enemy_NormalFrozenAI_A9(void);
 void Enemy_SetInstrList(uint16 k, uint16 a);
 void HandleSamusRainbowPaletteAnimation(uint16 k);
-void InitializeCorpseRottingDataTable(uint16 k, uint16 a);
+void InitializeCorpseRottingDataTable(uint16 *table, uint16 a);
 void InitializeEnemyCorpseRotting(uint16 k, uint16 j);
 void MotherBomb_FiringDeathBeam(void);
 void MotherBomb_FiringDeathBeam_0(void);

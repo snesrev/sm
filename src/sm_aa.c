@@ -435,7 +435,7 @@ const uint16 *Torizo_Instr_26(uint16 k, const uint16 *jp) {  // 0xAAC5A4
 }
 
 const uint16 *Torizo_Instr_18(uint16 k, const uint16 *jp) {  // 0xAAC5CB
-  printf("A unknown\n");
+  //printf("A unknown\n");
   SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_BombTorizosChozoOrbs);
   SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_BombTorizosChozoOrbs);
   SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_BombTorizosChozoOrbs);
@@ -789,7 +789,7 @@ const uint16 *Torizo_Instr_48(uint16 k, const uint16 *jp) {  // 0xAACDD7
 }
 
 const uint16 *Torizo_Instr_57(uint16 k, const uint16 *jp) {  // 0xAAD0E9
-  printf("A unknown\n");
+  //printf("A unknown\n");
   SpawnEnemyProjectileWithRoomGfx(addr_stru_86B1C0, 0);
   return jp;
 }
@@ -876,7 +876,7 @@ void GoldTorizo_Hurt(void) {  // 0xAAD3BA
 
 const uint16 *Torizo_Instr_47(uint16 k, const uint16 *jp) {  // 0xAAD3E0
   uint16 v2 = 0;
-  printf("A unknown\n");
+  //printf("A unknown\n");
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_GoldenTorizoSuperMissile, v2);
   return jp;
 }
@@ -945,8 +945,8 @@ const uint16 *Torizo_Instr_50(uint16 k, const uint16 *jp) {  // 0xAAD4BA
 }
 
 const uint16 *Torizo_Instr_43(uint16 k, const uint16 *jp) {  // 0xAAD4F3
-  uint16 v2;
-  printf("A unknown\n"); v2 = 0;
+  uint16 v2 = 0;
+  //printf("A unknown\n"); v2 = 0;
   SpawnEnemyProjectileWithGfx(v2, k, addr_kEproj_GoldenTorizosChozoOrbs);
   return jp;
 }
@@ -1141,7 +1141,7 @@ void TourianEntranceStatue_Init(void) {  // 0xAAD7C8
   uint16 v1 = g_off_AAD810[v0->parameter_1 >> 1];
   v0->current_instruction = v1;
   if (!v0->parameter_1) {
-    printf("A unknown\n");
+//    printf("A unknown\n");
     SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueBaseDecoration, 0);
     SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueRidley, 0);
     SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatuePhantoon, 0);
@@ -1209,7 +1209,7 @@ const uint16 *Shaktool_Instr_6(uint16 k, const uint16 *jp) {  // 0xAAD99F
 }
 
 void Shaktool_Func_2(uint16 k) {  // 0xAAD9A0
-  printf("A unknown!\n");
+//  printf("A unknown!\n");
   SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_ShaktoolAttackFrontCircle);
   SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_ShaktoolAttackMiddleCircle);
   SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_ShaktoolAttackBackCircle);

@@ -1022,7 +1022,7 @@ void Draygon_Hurt(void) {  // 0xA5954D
   uint16 v0 = addr_kDraygon_MorePalettes2;
   if ((Get_Draygon(cur_enemy_index)->base.flash_timer & 2) != 0)
     v0 = addr_word_A5A297;
-  memcpy(RomPtr_7E(addr_kDraygon_BigSprmap_C08F__plus__17), RomPtr_A5(v0), 32);
+  memcpy(g_ram + addr_kDraygon_BigSprmap_C08F__plus__17, RomPtr_A5(v0), 32);
 
   if ((Get_Draygon(cur_enemy_index)->base.flash_timer & 2) == 0) {
     uint16 v3 = 4 * Get_Draygon(0)->draygon_var_0E;
@@ -1034,7 +1034,7 @@ void Draygon_Hurt(void) {  // 0xA5954D
   uint16 v5 = addr_kDraygon_Palette;
   if ((Get_Draygon(cur_enemy_index)->base.flash_timer & 2) != 0)
     v5 = addr_word_A5A297;
-  memcpy(RomPtr_7E(addr_kDraygon_BigSprmap_C11B__plus__197), RomPtr_A5(v5), 32);
+  memcpy(g_ram + addr_kDraygon_BigSprmap_C11B__plus__197, RomPtr_A5(v5), 32);
 
   if ((samus_grapple_flags & 1) != 0) {
     Enemy_Draygon *E = Get_Draygon(0);
