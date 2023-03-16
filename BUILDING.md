@@ -64,3 +64,27 @@ make -j$(nproc) # run on all core
 make clean all  # clear gen+obj and rebuild
 CC=clang make   # specify compiler
 ```
+
+# Nintendo Switch
+
+Dependencies and requirements:
+
+  * The `switch-sdl2` library
+  * MSYS2
+  * [DevKitPro](https://devkitpro.org/wiki/Getting_Started)
+  * [Atmosphere](https://github.com/Atmosphere-NX/Atmosphere)
+  
+ Note: *You must have MINGW64 open and affirm you're in the `sm` root folder.*
+
+1. Make sure you've installed DevKitPro and Atmosphere.
+2. Type `(dkp-)pacman -S git switch-dev switch-sdl2 switch-tools` to install the Switch SDL2 deps.
+3. Now go to the `switch` folder inside MSYS2 `cd platform/switch/` 
+4. Type `make` to build the game.
+5. Copy the `.ini`, `nro` and the `smc` file and put them in your Switch.
+
+**OPTIONAL STEPS**
+
+```sh
+make -j$(nproc) # To build using all cores
+nxlink -s zelda3.nro # To test the build directly onto the Switch
+```
