@@ -58,6 +58,7 @@ static void cpu_write(Cpu* cpu, uint32_t adr, uint8_t val) {
 
 Cpu* cpu_init(void* mem, int memType) {
   Cpu* cpu = malloc(sizeof(Cpu));
+  memset(cpu, 0, sizeof(Cpu));
   cpu->mem = mem;
   cpu->memType = memType;
   return cpu;
