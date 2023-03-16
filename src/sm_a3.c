@@ -326,7 +326,7 @@ void Fireflea_Func_3(uint16 k) {  // 0xA38D75
 
 void Fireflea_Func_4(uint16 k) {  // 0xA38D9C
   Enemy_Fireflea *E = Get_Fireflea(k);
-  E->firefl_var_C = LOBYTE(g_word_A38D1D[(uint16)(2 * HIBYTE(E->firefl_parameter_2)) >> 1]);
+  E->firefl_var_C = LOBYTE(g_word_A38D1D[HIBYTE(E->firefl_parameter_2)]);
 }
 
 void Fireflea_Func_5(uint16 k) {  // 0xA38DAE
@@ -967,7 +967,7 @@ void Roach_Func_9(void) {  // 0xA3A2D7
   Enemy_Roach *E = Get_Roach(cur_enemy_index);
   if (IsSamusWithinEnemy_X(cur_enemy_index, LOBYTE(E->roach_parameter_2))) {
     if (IsSamusWithinEnemy_Y(cur_enemy_index, LOBYTE(E->roach_parameter_2)))
-      E->roach_var_B = g_off_A3A121[(uint16)(2 * HIBYTE(E->roach_parameter_2)) >> 1];
+      E->roach_var_B = g_off_A3A121[HIBYTE(E->roach_parameter_2)];
   }
 }
 
@@ -2028,7 +2028,7 @@ void Bang_Func_14(void) {  // 0xA3BDB9
 void Bang_Func_15(void) {  // 0xA3BE1C
   char v2; // t0
 
-  R18_ = kSine16bit[(uint16)(2 * (uint8)Get_Bang(cur_enemy_index)->bang_var_01) >> 1];
+  R18_ = kSine16bit[(uint8)Get_Bang(cur_enemy_index)->bang_var_01];
   if ((R18_ & 0x8000u) != 0)
     Get_Bang(cur_enemy_index)->bang_var_08 = 1;
   uint16 v1 = Abs16(R18_) & 0xFF00;
@@ -3092,7 +3092,7 @@ void BigEyeBugs_Init(void) {  // 0xA3E2D4
 
 void FireZoomer_Init(void) {  // 0xA3E59C
   Enemy_FireZoomer *E = Get_FireZoomer(cur_enemy_index);
-  E->base.current_instruction = g_off_A3E2CC[(uint16)(2 * (E->base.current_instruction & 3)) >> 1];
+  E->base.current_instruction = g_off_A3E2CC[(E->base.current_instruction & 3)];
   StoneZoomer_E67A(cur_enemy_index);
 }
 
@@ -3103,7 +3103,7 @@ const uint16 *Zoomer_Instr_SetPreinstr(uint16 k, const uint16 *jp) {  // 0xA3E66
 
 void StoneZoomer_Init(void) {  // 0xA3E669
   Enemy_StoneZoomer *E = Get_StoneZoomer(cur_enemy_index);
-  E->base.current_instruction = g_off_A3E2CC[(uint16)(2 * (E->base.current_instruction & 3)) >> 1];
+  E->base.current_instruction = g_off_A3E2CC[(E->base.current_instruction & 3)];
   StoneZoomer_E67A(cur_enemy_index);
 }
 

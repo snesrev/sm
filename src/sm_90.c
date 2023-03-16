@@ -359,7 +359,7 @@ void Samus_HandleNormalAnimDelay(uint16 j) {  // 0x9084E3
     uint16 *kDefaultAnimFramePtr = (uint16 *)RomPtr(0x91B5D1);
 
     if ((equipped_items & 0x2000) != 0)
-      R0_.addr = kSpeedBoostToAnimFramePtr[(uint16)(2 * HIBYTE(speed_boost_counter)) >> 1];
+      R0_.addr = kSpeedBoostToAnimFramePtr[HIBYTE(speed_boost_counter)];
     else
       R0_.addr = *kDefaultAnimFramePtr;
   }
@@ -5064,7 +5064,7 @@ static Func_V *const kSamus_MoveHandler_ShinesparkCrash[3] = {  // 0x90D346
 void Samus_MoveHandler_ShinesparkCrash(void) {
 
   samus_shine_timer = 15;
-  kSamus_MoveHandler_ShinesparkCrash[(uint16)(2 * HIBYTE(speed_echoes_index)) >> 1]();
+  kSamus_MoveHandler_ShinesparkCrash[HIBYTE(speed_echoes_index)]();
   for (int i = 2; i >= 0; i -= 2) {
     int v1 = i >> 1;
     Projectile_SinLookup(speed_echo_xspeed[v1], (uint8)speed_echoes_index);
@@ -6061,7 +6061,7 @@ static Func_V *const kSamus_MoveHandler_BombJumpMain[4] = {  // 0x90E032
 
 void Samus_MoveHandler_BombJumpMain(void) {
   if (bomb_jump_dir)
-    kSamus_MoveHandler_BombJumpMain[(uint16)(2 * (uint8)bomb_jump_dir) >> 1]();
+    kSamus_MoveHandler_BombJumpMain[(uint8)bomb_jump_dir]();
   else
     Samus_MoveHandler_BombJumpFunc1();
 }

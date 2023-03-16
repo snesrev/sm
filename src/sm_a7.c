@@ -3938,7 +3938,7 @@ void Dachora_Func_6(uint16 k) {  // 0xA7F6D5
     uint16 v2 = E->dachor_var_E - 1;
     E->dachor_var_E = v2;
     if (!(uint8)v2) {
-      Dachora_Func_1(g_off_A7F787[(uint16)(2 * HIBYTE(E->dachor_var_E)) >> 1], k);
+      Dachora_Func_1(g_off_A7F787[HIBYTE(E->dachor_var_E)], k);
       uint16 v3 = E->dachor_var_E + 272;
       E->dachor_var_E = v3;
       if (!sign16(v3 - 1040))
@@ -4092,7 +4092,7 @@ void Dachora_Func_9(uint16 k) {  // 0xA7F89A
 
 void Dachora_Func_10(uint16 k) {  // 0xA7F90A
   Enemy_Dachora *E = Get_Dachora(k);
-  Dachora_Func_1(g_off_A7F92D[(uint16)(2 * HIBYTE(E->dachor_var_E)) >> 1], k);
+  Dachora_Func_1(g_off_A7F92D[HIBYTE(E->dachor_var_E)], k);
   uint16 v2 = E->dachor_var_E + 256;
   E->dachor_var_E = v2;
   if (!sign16(v2 - 1024))

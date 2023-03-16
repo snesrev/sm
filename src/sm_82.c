@@ -2943,7 +2943,7 @@ void WriteSamusWireframeTilemap(void) {  // 0x82B20C
 
 void EquipmentScreenDrawItemSelector(void) {  // 0x82B267
   if (samus_max_reserve_health | (uint16)(collected_items | collected_beams)) {
-    R18_ = kEquipmentScreenPtrsToItemXYpos[(uint16)(2 * (uint8)pausemenu_equipment_category_item) >> 1];
+    R18_ = kEquipmentScreenPtrsToItemXYpos[(uint8)pausemenu_equipment_category_item];
     uint16 v0 = *(uint16 *)RomPtr_82(R18_ + 4 * HIBYTE(pausemenu_equipment_category_item)) - 1;
     uint16 v1 = *(uint16 *)RomPtr_82(R18_ + 4 * HIBYTE(pausemenu_equipment_category_item) + 2);
     DrawPauseScreenSpriteAnim(3u, v0, v1);
@@ -4650,15 +4650,9 @@ void SpawnDoorClosingPLM(void) {  // 0x82E8EB
 }
 
 uint8 CheckIfColoredDoorCapSpawned(void) {  // 0x82E91C
-  DoorDef *DoorDef;
-  int16 x_pos_plm;
-  int16 v2;
-  int16 v6;
-
-  DoorDef = get_DoorDef(door_def_ptr);
-  uint16 prod = Mult8x8(DoorDef->y_pos_plm, room_width_in_blocks);
-  x_pos_plm = DoorDef->x_pos_plm;
-  v2 = 2 * (prod + x_pos_plm);
+  DoorDef *DD = get_DoorDef(door_def_ptr);
+  uint16 prod = Mult8x8(DD->y_pos_plm, room_width_in_blocks);
+  uint16 v2 = 2 * (prod + DD->x_pos_plm);
   uint16 v3 = 78;
   while (v2 != plm_block_indices[v3 >> 1]) {
     v3 -= 2;
@@ -4668,18 +4662,17 @@ uint8 CheckIfColoredDoorCapSpawned(void) {  // 0x82E91C
   int v5 = v3 >> 1;
   if (!plm_header_ptr[v5])
     return 0;
-  v6 = plm_room_arguments[v5];
+  int16 v6 = plm_room_arguments[v5];
   if (v6 >= 0) {
     int idx = PrepareBitAccess(v6);
     if ((bitmask & opened_door_bit_array[idx]) != 0)
       return 0;
   }
-  int v7 = v3 >> 1;
-  plm_instruction_timer[v7] = 1;
-  uint16 v8 = plm_header_ptr[v7];
+  plm_instruction_timer[v5] = 1;
+  uint16 v8 = plm_header_ptr[v5];
   if (!v8)
     return 0;
-  plm_instr_list_ptrs[v3 >> 1] = get_PlmHeader_Size4(v8)[1].func_ptr;
+  plm_instr_list_ptrs[v5] = get_PlmHeader_Size6(v8)->instr_list_2_ptr;
   return 1;
 }
 

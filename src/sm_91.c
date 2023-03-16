@@ -3515,7 +3515,7 @@ static Func_V *const kSamus_HandleTransFromBlockColl[6] = {  // 0x91E8B6
 
 void Samus_HandleTransFromBlockColl(void) {
   if (input_to_pose_calc)
-    kSamus_HandleTransFromBlockColl[(uint16)(2 * (uint8)input_to_pose_calc) >> 1]();
+    kSamus_HandleTransFromBlockColl[(uint8)input_to_pose_calc]();
 }
 void Samus_HandleTransFromBlockColl_3(void) {  // 0x91E8D8
   samus_new_pose = samus_pose;
@@ -3556,7 +3556,7 @@ void Samus_HandleTransFromBlockColl_2(void) {
 
 void Samus_HandleTransFromBlockColl_1(void) {  // 0x91E931
   if (HIBYTE(input_to_pose_calc) != 4) {
-    if (off_91E951[(uint16)(2 * HIBYTE(input_to_pose_calc)) >> 1]() & 1)
+    if (off_91E951[HIBYTE(input_to_pose_calc)]() & 1)
       samus_momentum_routine_index = 0;
     else
       samus_momentum_routine_index = 5;
@@ -4105,7 +4105,7 @@ static Func_V *const kSamus_HandleTransitionsA_5[7] = {  // 0x91EFC4
   Samus_HandleTransitionsA_5_6,
 };
 void Samus_HandleTransitionsA_5(void) {
-  kSamus_HandleTransitionsA_5[(uint16)(2 * (uint8)input_to_pose_calc) >> 1]();
+  kSamus_HandleTransitionsA_5[(uint8)input_to_pose_calc]();
 }
 
 void Samus_HandleTransitionsA_5_4(void) {  // 0x91EFDF
@@ -4142,7 +4142,7 @@ void Samus_HandleTransitionsA_5_1(void) {
   HandleLandingSoundEffectsAndGfx();
   if (HIBYTE(input_to_pose_calc) == 4) {
     SamusFunc_F1D3();
-  } else if (!(kSamus_HandleTransitionsA_5_1[(uint16)(2 * HIBYTE(input_to_pose_calc)) >> 1]() & 1)) {
+  } else if (!(kSamus_HandleTransitionsA_5_1[HIBYTE(input_to_pose_calc)]() & 1)) {
     UNUSED_word_7E0A18 = 0;
     samus_x_accel_mode = 0;
     samus_x_base_speed = 0;

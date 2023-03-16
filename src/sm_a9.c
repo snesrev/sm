@@ -3449,7 +3449,7 @@ uint16 ComputeCosMult(uint16 a) {  // 0xA9C465
 }
 
 uint16 sub_A9C46C(uint16 a, uint16 j) {  // 0xA9C46C
-  uint16 v2 = kSinCosTable8bit_Sext[((uint16)((2 * a) & 0x1FE) >> 1) + 64];
+  uint16 v2 = kSinCosTable8bit_Sext[(a & 0xff) + 64];
   WriteReg(M7A, v2);
   WriteReg(M7A, HIBYTE(v2));
   WriteReg(M7B, j);

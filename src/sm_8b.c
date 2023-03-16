@@ -426,14 +426,14 @@ void HandleMode7TransformationMatrix(void) {  // 0x8B8532
   uint16 v0;
   uint16 v1;
 
-  R38 = kSinCosTable8bit_Sext[((uint16)(2 * (uint8)(cinematic_var5 + 64)) >> 1) + 64];
+  R38 = kSinCosTable8bit_Sext[((uint8)(cinematic_var5 + 64)) + 64];
   R40 = cinematic_var6;
   Smult16x16Shr16();
   HIBYTE(v0) = R42;
   LOBYTE(v0) = HIBYTE(R44);
   reg_M7A = v0;
   reg_M7D = v0;
-  R38 = kSinCosTable8bit_Sext[((uint16)(2 * (uint8)cinematic_var5) >> 1) + 64];
+  R38 = kSinCosTable8bit_Sext[((uint8)cinematic_var5) + 64];
   R40 = cinematic_var6;
   Smult16x16Shr16();
   HIBYTE(v1) = R42;

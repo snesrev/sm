@@ -1279,7 +1279,7 @@ void MaridiaSpikeyShell_Init(void) {
   int v4 = (uint16)(2 * HIBYTE(E->mssl_parameter_2)) >> 1;
   E->mssl_var_02 = g_word_A2A3DD[v4] + E->base.x_pos;
   E->mssl_var_01 = E->base.x_pos - g_word_A2A3DD[v4];
-  E->mssl_var_00 = g_word_A2A3ED[(uint16)(2 * HIBYTE(E->mssl_parameter_1)) >> 1];
+  E->mssl_var_00 = g_word_A2A3ED[HIBYTE(E->mssl_parameter_1)];
   E->mssl_var_F = 0;
   if (E->mssl_var_E == 2) {
     E->mssl_var_F = 16;
@@ -1349,7 +1349,7 @@ void MaridiaSpikeyShell_6(void) {  // 0xA2A517
   ++E->base.y_pos;
   if (!sign16(++E->mssl_var_F - 16)) {
     E->mssl_var_E = 2;
-    E->mssl_var_00 = g_word_A2A3ED[(uint16)(2 * HIBYTE(E->mssl_parameter_1)) >> 1];
+    E->mssl_var_00 = g_word_A2A3ED[HIBYTE(E->mssl_parameter_1)];
   }
 }
 

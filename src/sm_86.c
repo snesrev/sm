@@ -3826,7 +3826,7 @@ uint16 Math_MultByCos(uint16 a) {  // 0x86C272
 }
 
 uint16 Math_MultBySinCos(uint16 a) {  // 0x86C27A
-  R46 = kSinCosTable8bit_Sext[((uint16)((2 * a) & 0x1FE) >> 1) + 64];
+  R46 = kSinCosTable8bit_Sext[(a & 0xff) + 64];
   R40 = abs16(R46);
   Math_Mult16U();
   uint16 r = *(uint16 *)((char *)&R42 + 1);
@@ -5220,7 +5220,7 @@ void EprojInst_DustCloudOrExplosion(uint16 v0) {  // 0x86E468
 
 void EprojInit_EyeDoorSmoke(uint16 j) {  // 0x86E4A6
   int v1 = j >> 1;
-  enemy_projectile_instr_list_ptr[v1] = off_86E42C[(uint16)(2 * (uint8)enemy_projectile_init_param) >> 1];
+  enemy_projectile_instr_list_ptr[v1] = off_86E42C[(uint8)enemy_projectile_init_param];
   int v2 = (uint16)(8 * HIBYTE(enemy_projectile_init_param)) >> 1;
   R18_ = word_86E47E[v2 + 2] + (word_86E47E[v2] & random_number);
   R20_ = word_86E47E[v2 + 3] + (word_86E47E[v2 + 1] & *(uint16 *)((char *)&random_number + 1));

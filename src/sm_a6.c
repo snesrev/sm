@@ -2027,7 +2027,7 @@ void Ridley_Func_6(void) {  // 0xA6B3F8
 
 uint16 Ridley_Func_7(void) {  // 0xA6B42E
   static const uint16 g_word_A6B439[4] = { 4, 8, 0xa, 0xc };
-  return g_word_A6B439[(uint16)(2 * Get_Ridley(0)->ridley_var_12) >> 1];
+  return g_word_A6B439[Get_Ridley(0)->ridley_var_12];
 }
 
 void Ridley_Func_8(void) {  // 0xA6B441

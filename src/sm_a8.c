@@ -1361,7 +1361,7 @@ uint16 YappingMaw_Func_17(uint16 a) {  // 0xA8A742
   R18_ = a;
   R20_ = 0;
   R22_ = 0;
-  v1 = kSine16bit[(uint16)(2 * (uint8)-(int8)a) >> 1];
+  v1 = kSine16bit[(uint8)-(int8)a];
   if (v1 < 0) {
     v1 = -v1;
     ++R20_;
@@ -3406,7 +3406,7 @@ void MaridiaPuffer_Func_7(void) {  // 0xA8DA28
   char v2; // t0
 
   R26_ = 0;
-  R18_ = kSine16bit[(uint16)(2 * (uint8)Get_MaridiaPuffer(cur_enemy_index)->mpr_var_02) >> 1];
+  R18_ = kSine16bit[(uint8)Get_MaridiaPuffer(cur_enemy_index)->mpr_var_02];
   if ((R18_ & 0x8000u) != 0)
     ++R26_;
   uint16 v1 = Abs16(R18_) & 0xFF00;

@@ -1501,7 +1501,7 @@ static Func_U8 *const kTimerProcessFuncs[7] = {  // 0x809DE7
 };
 
 uint8 ProcessTimer(void) {
-  return kTimerProcessFuncs[(uint16)(2 * (uint8)timer_status) >> 1]();
+  return kTimerProcessFuncs[(uint8)timer_status]();
 }
 
 uint8 ProcessTimer_CeresStart(void) {  // 0x809E09
@@ -2535,9 +2535,9 @@ uint8 DoorTransition_Up(void) {  // 0x80AF89
 void ConfigureMode7RotationMatrix(void) {  // 0x80B0C2
   if (irq_enable_mode7) {
     if ((nmi_frame_counter_word & 7) == 0) {
-      reg_M7B = kSinCosTable8bit_Sext[((uint16)(2 * (uint8)mode7_rotation_angle) >> 1) + 64];
+      reg_M7B = kSinCosTable8bit_Sext[((uint8)mode7_rotation_angle) + 64];
       reg_M7C = -reg_M7B;
-      reg_M7A = kSinCosTable8bit_Sext[((uint16)(2 * (uint8)(mode7_rotation_angle + 64)) >> 1) + 64];
+      reg_M7A = kSinCosTable8bit_Sext[((uint8)(mode7_rotation_angle + 64)) + 64];
       reg_M7D = reg_M7A;
       ++mode7_rotation_angle;
     }
