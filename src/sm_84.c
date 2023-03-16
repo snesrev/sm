@@ -2625,8 +2625,8 @@ uint8 PlmSetup_Door_Colored(uint16 j) {  // 0x84C7B1
 }
 
 uint8 PlmSetup_Door_Blue(uint16 j) {  // 0x84C7BB
-  if (sign16(projectile_index))
-    printf("BUG: projectile_index invalid\n");
+//  if (sign16(projectile_index))
+//    printf("BUG: projectile_index invalid\n");
   if (!sign16(projectile_index) && (projectile_type[projectile_index >> 1] & 0xF00) == 768) {
     plm_header_ptr[j >> 1] = 0;
   } else {
