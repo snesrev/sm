@@ -1190,16 +1190,19 @@ typedef struct DemoRoomData {
 } DemoRoomData;
 
 /* 118 */
-typedef struct PauseScreenSpriteAnimationData {
-  VoidP unused;
-  VoidP lr_highlight;
-  VoidP item_selector;
-  VoidP unused2;
-  VoidP unused3;
-  VoidP map_scroll_arrow_up;
-  VoidP map_scroll_arrow_down;
-  VoidP map_scroll_arrow_right;
-  VoidP map_scroll_arrow_left;
+typedef union PauseScreenSpriteAnimationData {
+  struct {
+    VoidP unused;
+    VoidP lr_highlight;
+    VoidP item_selector;
+    VoidP unused2;
+    VoidP unused3;
+    VoidP map_scroll_arrow_up;
+    VoidP map_scroll_arrow_down;
+    VoidP map_scroll_arrow_right;
+    VoidP map_scroll_arrow_left;
+  };
+  VoidP arr[9];
 } PauseScreenSpriteAnimationData;
 
 /* 119 */
@@ -2744,6 +2747,6 @@ struct LoadBg_28; static inline LoadBg_28 *get_LoadBg_28(uint16 a) { return (Loa
 struct PalFxDef; static inline PalFxDef *get_PalFxDef(uint16 a) { return (PalFxDef *)RomPtr(0x8D0000 | a); }
 struct Mode7ObjectDef; static inline Mode7ObjectDef *get_Mode7ObjectDef(uint16 a) { return (Mode7ObjectDef *)RomPtr(0x8B0000 | a); }
 static inline Ram7800_Default *gRam7800_Default(uint16 a) { return (Ram7800_Default *)&g_ram[0x7800 + a]; }
-
+static inline Mode7CgvmWriteQueue *get_Mode7CgvmWriteQueue_RAM(uint16 a) { return (Mode7CgvmWriteQueue *)RomPtr_RAM(a); }
 
 #pragma pack(pop)

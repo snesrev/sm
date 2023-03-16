@@ -308,40 +308,31 @@ void SetXCoordToInvalidPos(uint16 k) {  // 0x818907
 #define g_off_82C569 ((uint16*)RomPtr(0x82c569))
 
 void DrawMenuSpritemap(uint16 a, uint16 k, uint16 j) {  // 0x81891F
-  int16 v8;
-  OamEnt *v9;
-
-  R18_ = j;
-  R20_ = k;
-  uint16 v3 = g_off_82C569[a];
-  uint16 *v4 = (uint16 *)RomPtr_82(v3);
-  if (*v4) {
-    R24_ = *v4;
-    uint16 v5 = v3 + 2;
-    uint16 v6 = oam_next_ptr;
+  uint8 *pp = RomPtr_82(g_off_82C569[a]);
+  if (GET_WORD(pp + 0)) {
+    int n = GET_WORD(pp + 0);
+    pp += 2;
+    int v6 = oam_next_ptr;
     do {
-      uint8 *v7 = RomPtr_82(v5);
-      v8 = R20_ + *(uint16 *)v7;
-      v9 = gOamEnt(v6);
-      *(uint16 *)&v9->xcoord = v8;
+      int v10 = v6 >> 1;
+      uint16 *dst = (uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v10]);
+      uint16 v8 = k + GET_WORD(pp + 0);
+      OamEnt *v9 = gOamEnt(v6);
+      v9->xcoord = v8;
       if ((v8 & 0x100) != 0) {
-        int v10 = v6 >> 1;
-        if (*(int16 *)v7 >= 0) {
-          *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v10]) |= kOamExtra_X8Small_And_Large[v10];
+        if (*(int16 *)pp >= 0) {
+          *dst |= kOamExtra_X8Small_And_Large[v10];
         } else {
-          *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v10]) |= kOamExtra_Address_And_X8Large[v10 + 1];
+          *dst |= kOamExtra_Address_And_X8Large[v10 + 1];
         }
-        
-      } else if (*(int16 *)v7 < 0) {
-        int v12 = v6 >> 1;
-        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v12]) |= kOamExtra_X8Small_And_Large[v12 + 1];
+      } else if (*(int16 *)pp < 0) {
+        *dst |= kOamExtra_X8Small_And_Large[v10 + 1];
       }
-      *(uint16 *)&v9->ycoord = R18_ + *((uint16 *)v7 + 1);
-      *(uint16 *)&v9->charnum = R3_.addr | *(uint16 *)(v7 + 3) & 0xF1FF;
-      v5 += 5;
+      v9->ycoord = j + GET_BYTE(pp + 2);
+      *(uint16 *)&v9->charnum = R3_.addr | GET_WORD(pp + 3) & 0xF1FF;
+      pp += 5;
       v6 = (v6 + 4) & 0x1FF;
-      --R24_;
-    } while (R24_);
+    } while (--n);
     oam_next_ptr = v6;
   }
 }
@@ -349,92 +340,69 @@ void DrawMenuSpritemap(uint16 a, uint16 k, uint16 j) {  // 0x81891F
 #define kSamusSpritemapTable ((uint16*)RomPtr(0x92808d))
 
 void DrawSamusSpritemap(uint16 a, uint16 k, uint16 j) {  // 0x8189AE
-  int16 v8;
-  OamEnt *v9;
-  uint16 v15;
-
-  R18_ = j;
-  R20_ = k;
   uint16 v3 = kSamusSpritemapTable[a];
   if (v3 == 0)
     return;
-  uint16 *v4 = (uint16 *)RomPtr_92(v3);
-  if (*v4) {
-    R24_ = *v4;
-    uint16 v5 = v3 + 2;
+  uint8 *pp = RomPtr_92(v3);
+  if (GET_WORD(pp + 0)) {
+    int n = GET_WORD(pp + 0);
+    pp += 2;
     uint16 v6 = oam_next_ptr;
     do {
-      uint8 *v7 = RomPtr_92(v5);
-      v8 = R20_ + *(uint16 *)v7;
-      v9 = gOamEnt(v6);
-      *(uint16 *)&v9->xcoord = v8;
+      int v10 = v6 >> 1;
+      uint16 *dst = (uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v10]);
+      uint16 v8 = k + GET_WORD(pp + 0);
+      OamEnt *v9 = gOamEnt(v6);
+      v9->xcoord = v8;
       if ((v8 & 0x100) != 0) {
-        int v10 = v6 >> 1;
-        if (*(int16 *)v7 >= 0) {
-          *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v10]) |= kOamExtra_X8Small_And_Large[v10];
+        if (*(int16 *)pp >= 0) {
+          *dst |= kOamExtra_X8Small_And_Large[v10];
         } else {
-          *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v10]) |= kOamExtra_Address_And_X8Large[v10 + 1];
+          *dst |= kOamExtra_Address_And_X8Large[v10 + 1];
         }
-      } else if (*(int16 *)v7 < 0) {
-        int v12 = v6 >> 1;
-        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v12]) |= kOamExtra_X8Small_And_Large[v12 + 1];
+      } else if (*(int16 *)pp < 0) {
+        *dst |= kOamExtra_X8Small_And_Large[v10 + 1];
       }
-      *(uint16 *)&v9->ycoord = R18_ + *((uint16 *)v7 + 1);
-      *(uint16 *)&v9->charnum = *(uint16 *)(v7 + 3);
-      v5 += 5;
-      v15 = (v6 + 4) & 0x1FF;
-      v6 = v15;
-      --R24_;
-    } while (R24_);
-    oam_next_ptr = v15;
+      v9->ycoord = j + GET_BYTE(pp + 2);
+      *(uint16 *)&v9->charnum = GET_WORD(pp + 3);
+      pp += 5;
+      v6 = (v6 + 4) & 0x1FF;
+    } while (--n);
+    oam_next_ptr = v6;
   }
 }
 
 #define g_off_93A1A1 ((uint16*)RomPtr(0x93a1a1))
 
 void DrawBeamGrappleSpritemap(uint16 a) {  // 0x818A37
-  uint16 v1 = g_off_93A1A1[a];
-  R24_ = *(uint16 *)RomPtr_93(v1);
-  sub_818A5F(v1 + 2);
+  sub_818A5F(RomPtr_93(g_off_93A1A1[a]));
 }
 
 void DrawProjectileSpritemap(uint16 k) {  // 0x818A4B
-  uint16 v1 = projectile_spritemap_pointers[k >> 1];
-  uint16 *v2 = (uint16 *)RomPtr_93(v1);
-  if (*v2) {
-    R24_ = *v2;
-    sub_818A5F(v1 + 2);
-  }
+  sub_818A5F(RomPtr_93(projectile_spritemap_pointers[k >> 1]));
 }
 
-void sub_818A5F(uint16 j) {  // 0x818A5F
-  uint16 v0 = j;
-  int16 v3;
-  OamEnt *v4;
-  uint16 v10;
-
-  uint16 v1 = oam_next_ptr;
+void sub_818A5F(const uint8 *pp) {  // 0x818A5F
+  int n = GET_WORD(pp);
+  if (!n)
+    return;
+  pp += 2;
+  uint16 idx = oam_next_ptr;
   do {
-    uint8 *v2 = RomPtr_93(v0);
-    v3 = R20_ + *(uint16 *)v2;
-    v4 = gOamEnt(v1);
-    *(uint16 *)&v4->xcoord = v3;
-    if ((v3 & 0x100) != 0) {
-      int v5 = v1 >> 1;
+    int v5 = idx >> 1;
+    uint16 v3 = R20_ + GET_WORD(pp);
+    OamEnt *v4 = gOamEnt(idx);
+    v4->xcoord = v3;
+    if ((v3 & 0x100) != 0)
       *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v5]) |= kOamExtra_X8Small_And_Large[v5];
-    }
-    if (*(int16 *)v2 < 0) {
-      int v7 = v1 >> 1;
-      *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v7]) |= kOamExtra_X8Small_And_Large[v7 + 1];
-    }
-    *(uint16 *)&v4->ycoord = R18_ + *((uint16 *)v2 + 1);
-    *(uint16 *)&v4->charnum = *(uint16 *)(v2 + 3);
-    v0 += 5;
-    v10 = (v1 + 4) & 0x1FF;
-    v1 = v10;
-    --R24_;
-  } while (R24_);
-  oam_next_ptr = v10;
+    if (*(int16 *)pp < 0)
+      *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v5]) |= kOamExtra_X8Small_And_Large[v5 + 1];
+    v4->ycoord = R18_ + GET_BYTE(pp + 2);
+    *(uint16 *)&v4->charnum = GET_WORD(pp + 3);
+    pp += 5;
+    idx = (idx + 4) & 0x1FF;
+  } while (--n);
+  oam_next_ptr = idx;
 }
 
 void DrawSpritemapWithBaseTile(uint8 db, uint16 j) {  // 0x818AB8
@@ -475,85 +443,58 @@ void DrawSpritemapWithBaseTile(uint8 db, uint16 j) {  // 0x818AB8
 }
 
 void DrawSpritemapWithBaseTile2(uint8 db, uint16 j) {  // 0x818B22
-  int16 v6;
-  OamEnt *v7;
-
-  uint16 *v2 = (uint16 *)RomPtrWithBank(db, j);
-  if (*v2) {
-    uint16 v3 = j + 2;
-    R24_ = *v2;
-    uint16 v4 = oam_next_ptr;
-    while (1) {
-      uint8 *v5 = RomPtrWithBank(db, v3);
-      v6 = R20_ + *(uint16 *)v5;
-      v7 = gOamEnt(v4);
-      *(uint16 *)&v7->xcoord = v6;
-      if ((v6 & 0x100) != 0) {
-        int v8 = v4 >> 1;
-        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v8]) |= kOamExtra_X8Small_And_Large[v8];
-      }
-      if (*(int16 *)v5 < 0) {
-        int v10 = v4 >> 1;
-        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v10]) |= kOamExtra_X8Small_And_Large[v10 + 1];
-      }
-      int y = v5[2] + LOBYTE(R18_);
-      if ((v5[2] & 0x80) ? (y & 0x100) == 0 : (y & 0x100) != 0)
-        y = 0xf0;
-      v7->ycoord = y;
-      *(uint16 *)&v7->charnum = R3_.addr | (R0_.addr + *(uint16 *)(v5 + 3));
-      v3 += 5;
-      uint16 v16 = (v4 + 4) & 0x1FF;
-      v4 = v16;
-      if (!--R24_) {
-        oam_next_ptr = v16;
-        return;
-      }
+  uint8 *pp = RomPtrWithBank(db, j);
+  uint16 v4 = oam_next_ptr;
+  int n = GET_WORD(pp);
+  pp += 2;
+  for (; n != 0; n--) {
+    int v8 = v4 >> 1;
+    OamEnt *v7 = gOamEnt(v4);
+    uint16 v6 = R20_ + GET_WORD(pp + 0);
+    v7->xcoord = v6;
+    if ((v6 & 0x100) != 0) {
+      *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v8]) |= kOamExtra_X8Small_And_Large[v8];
     }
+    if (*(int16 *)pp < 0) {
+      *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v8]) |= kOamExtra_X8Small_And_Large[v8 + 1];
+    }
+    int y = pp[2] + LOBYTE(R18_);
+    if ((pp[2] & 0x80) ? (y & 0x100) == 0 : (y & 0x100) != 0)
+      y = 0xf0;
+    v7->ycoord = y;
+    *(uint16 *)&v7->charnum = R3_.addr | (R0_.addr + GET_WORD(pp + 3));
+    pp += 5;
+    v4 = (v4 + 4) & 0x1FF;
   }
+  oam_next_ptr = v4;
 }
 
-void DrawSpritemapWithBaseTileOffscreen(uint8 db, uint16 j) {  // 0x818B96
-  int16 v6;
-  OamEnt *v7;
-  char v12;
-
-  uint16 *v2 = (uint16 *)RomPtrWithBank(db, j);
-  if (*v2) {
-    uint16 v3 = j + 2;
-    R24_ = *v2;
-    uint16 v4 = oam_next_ptr;
-    while (1) {
-      uint8 *v5 = RomPtrWithBank(db, v3);
-      v6 = R20_ + *(uint16 *)v5;
-      v7 = gOamEnt(v4);
-      *(uint16 *)&v7->xcoord = v6;
-      if ((v6 & 0x100) != 0) {
-        int v8 = v4 >> 1;
-        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v8]) |= kOamExtra_X8Small_And_Large[v8];
-      }
-      if (*(int16 *)v5 < 0) {
-        int v10 = v4 >> 1;
-        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v10]) |= kOamExtra_X8Small_And_Large[v10 + 1];
-      }
-      v12 = v5[2];
-
-      bool v13 = __CFADD__uint8((uint8)R18_, v12);
-      v12 += R18_;
-
-      if (!!sign8(v5[2]) == (v13 != 0))
-        v12 = -16;
-
-      v7->ycoord = v12;
-      *(uint16 *)&v7->charnum = R3_.addr | (R0_.addr + *(uint16 *)(v5 + 3));
-      v3 += 5;
-      uint16 v16 = (v4 + 4) & 0x1FF;
-      v4 = v16;
-      if (!--R24_) {
-        oam_next_ptr = v16;
-        return;
-      }
+void DrawSpritemapWithBaseTileOffscreen(uint8 db, uint16 j, uint16 r20_x, uint16 r18_y) {  // 0x818B96
+  uint8 *pp = RomPtrWithBank(db, j);
+  uint16 v4 = oam_next_ptr;
+  int n = GET_WORD(pp); pp += 2;
+  for (; n; n--) {
+    int v8 = v4 >> 1;
+    int v6 = r20_x + GET_WORD(pp + 0);
+    OamEnt *v7 = gOamEnt(v4);
+    v7->xcoord = v6;
+    if ((v6 & 0x100) != 0) {
+      *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v8]) |= kOamExtra_X8Small_And_Large[v8];
     }
+    if (*(int16 *)pp < 0) {
+      *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v8]) |= kOamExtra_X8Small_And_Large[v8 + 1];
+    }
+    uint8 v12 = pp[2];
+    bool v13 = __CFADD__uint8((uint8)R18_, v12);
+    v12 += r18_y;
+    if (!!sign8(pp[2]) == v13)
+      v12 = 0xf0;
+    v7->ycoord = v12;
+    *(uint16 *)&v7->charnum = R3_.addr | (R0_.addr + GET_WORD(pp + 3));
+    pp += 5;
+    v4 = (v4 + 4) & 0x1FF;
   }
+  oam_next_ptr = v4;
 }
 
 void DrawEnemyProjectileSpritemapWithBaseTile(uint8 db, uint16 j) {  // 0x818C0A
@@ -2409,47 +2350,34 @@ static const uint16 kAreaSelectMapLabelPositions[12] = {  // 0x81A97E
   0x87, 0x8b,
 };
 void DrawAreaSelectMapLabels(void) {
-  VoidP v0;
-  int16 v3;
-  char v4; // cf
-  int v5;
-
   R3_.addr = 0;
   DrawMenuSpritemap(g_word_82C749[0], 0x80, 0x10);
-  R28_ = 0;
-  do {
-    v0 = 512;
-    if (R28_ == file_select_map_area_index)
-      v0 = 0;
-    R3_.addr = v0;
-    uint16 v1 = 2 * kFileSelectMap_AreaIndexes[R28_];
+  for(int i = 0; i < 6; i++) {
+    R3_.addr = (i == file_select_map_area_index) ? 0 : 512;
+    uint16 v1 = 2 * kFileSelectMap_AreaIndexes[i];
     R36 = *(uint16 *)&used_save_stations_and_elevators[v1];
-    uint16 v2 = *(VoidP *)((char *)&kMapIconDataPointers[4].crateria + v1);
+    uint16 *v2 = (uint16 *)RomPtr_82(*(VoidP *)((char *)&kMapIconDataPointers[4].crateria + v1));
     g_word_7E001E = 16;
-    while (1) {
-      v3 = *(uint16 *)RomPtr_82(v2);
-      if (v3 == -1)
-        break;
-      v4 = R36 & 1;
+    while (*v2 != 0xffff) {
+      int v4 = R36 & 1;
       R36 >>= 1;
-      if (v4 && v3 != -2)
+      if (v4 && *v2 != 0xfffe)
         goto LABEL_11;
-      v2 += 4;
+      v2 += 2;
       if (!--g_word_7E001E) {
-        if (enable_debug && *(uint16 *)RomPtr_82(v2) != 0xFFFF) {
-LABEL_11:
-          v5 = (uint16)(4 * kFileSelectMap_AreaIndexes[R28_]) >> 1;
+        if (enable_debug && *v2 != 0xFFFF) {
+LABEL_11:;
+          int j = 4 * kFileSelectMap_AreaIndexes[i] >> 1;
           DrawMenuSpritemap(
-            g_word_82C749[0] + kFileSelectMap_AreaIndexes[R28_] + 1,
-            kAreaSelectMapLabelPositions[v5],
-            kAreaSelectMapLabelPositions[v5 + 1]);
+            g_word_82C749[0] + kFileSelectMap_AreaIndexes[i] + 1,
+            kAreaSelectMapLabelPositions[j],
+            kAreaSelectMapLabelPositions[j + 1]);
           break;
         }
         break;
       }
     }
-    ++R28_;
-  } while (sign16(R28_ - 6));
+  }
 }
 
 

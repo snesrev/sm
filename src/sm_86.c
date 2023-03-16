@@ -5847,7 +5847,7 @@ void RespawnEnemy(uint16 v0) {  // 0x86F264
   v2->x_width = EnemyDef_A2->x_radius;
   v2->y_height = EnemyDef_A2->y_radius;
   v2->health = EnemyDef_A2->health;
-  v2->layer = RomPtr_A0(enemy_ptr)[57];
+  v2->layer = EnemyDef_A2->layer;
   v7 = *(uint16 *)&EnemyDef_A2->bank;
   *(uint16 *)&v2->bank = v7;
   enemy_ai_pointer.bank = v7;

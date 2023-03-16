@@ -7,6 +7,7 @@
 #include "enemy_types.h"
 #include "spc_player.h"
 
+#define kMusicPointers (*(LongPtr*)RomPtr(0x8fe7e1))
 
 void APU_UploadBank(void) {  // 0x808028
   if (!g_use_my_apu_code)
@@ -156,8 +157,7 @@ CoroutineRet Vector_RESET_Async(void) {  // 0x80841C
   WriteReg(MEMSEL, 1u);
   reg_MEMSEL = 1;
   // Removed code to wait 4 frames
-  for (int i = 8190; i >= 0; i -= 2)
-    *(uint16 *)RomPtr_RAM(i) = 0;
+  memset(g_ram, 0, 8192);
   COROUTINE_AWAIT(2, InitializeIoDisplayLogo_Async());
   COROUTINE_MANUAL_POS(3); // Soft reset position
   mov24(&R0_, 0xCF8000);
@@ -413,83 +413,69 @@ void ClearOamExt(void) {  // 0x808B1A
 }
 
 void QueueMode7Transfers(uint8 db, uint16 k) {  // 0x808B4F
-  int16 v4; // dx
-
+  uint8 *p = RomPtrWithBank(db, k);
   uint16 v2 = mode7_vram_write_queue_tail;
-  for (int i = k - 1; ; i += 7) {
-    while (1) {
-      v4 = *(uint16 *)RomPtrWithBank(db, i);
-      if (v4 >= 0)
-        break;
-      uint8 *v6 = RomPtrWithBank(db, i);
-      *(uint16 *)(&mode7_write_queue[0].field_0 + v2) = *(uint16 *)(v6 + 1);
-      *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v2 + 1) = *(uint16 *)(v6 + 3);
-      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 1] = *(uint16 *)(v6 + 5);
-      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 3] = *(uint16 *)(v6 + 7);
-      *(uint16 *)((char *)&mode7_write_queue[1].field_1 + v2) = v6[9];
-      i += 9;
-      v2 += 9;
-    }
-    if ((v4 & 0x4000) == 0)
+  for (;;) {
+    int f = GET_BYTE(p);
+    if (f & 0x80) {
+      *(uint16 *)(&mode7_write_queue[0].field_0 + v2) = GET_WORD(p);
+      *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v2 + 1) = GET_WORD(p + 2);
+      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 1] = GET_WORD(p + 4);
+      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 3] = GET_WORD(p + 6);
+      *(uint16 *)((char *)&mode7_write_queue[1].field_1 + v2) = p[8];
+      p += 9, v2 += 9;
+    } else if (f & 0x40) {
+      *(uint16 *)(&mode7_write_queue[0].field_0 + v2) = GET_WORD(p);
+      *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v2 + 1) = GET_WORD(p + 2);
+      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 1] = GET_WORD(p + 4);
+      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 3] = p[6];
+      p += 7, v2 += 7;
+    } else {
       break;
-    uint8 *v5 = RomPtrWithBank(db, i);
-    *(uint16 *)(&mode7_write_queue[0].field_0 + v2) = *(uint16 *)(v5 + 1);
-    *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v2 + 1) = *(uint16 *)(v5 + 3);
-    *(uint16 *)&mode7_write_queue[0].gap3[v2 + 1] = *(uint16 *)(v5 + 5);
-    *(uint16 *)&mode7_write_queue[0].gap3[v2 + 3] = v5[7];
-    v2 += 7;
+    }
   }
   mode7_vram_write_queue_tail = v2;
 }
 
 void NMI_ProcessMode7Queue(void) {  // 0x808BBA
   if (mode7_vram_write_queue_tail) {
-    NMI_ProcessMode7QueueInner(0x2D0u);
+    NMI_ProcessMode7QueueInner(&g_ram[0x2D0]);
     *(uint16 *)&mode7_write_queue[0].field_0 = 0;
     mode7_vram_write_queue_tail = 0;
   }
 }
 
-static inline Mode7CgvmWriteQueue *get_Mode7CgvmWriteQueue_RAM(uint16 a) { return (Mode7CgvmWriteQueue *)RomPtr_RAM(a); }
-void NMI_ProcessMode7QueueInner(uint16 k) {  // 0x808BD3
-  char v2;
-  char v3;
-  char v4;
-  Mode7CgvmWriteQueue *v5;
-  uint8 *v1;
-
+void NMI_ProcessMode7QueueInner(const uint8 *p) {  // 0x808BD3
   while (1) {
+    uint8 v2;
     while (1) {
-      v1 = RomPtr_RAM(k);
-      v2 = *v1;
-      if ((*v1 & 0x80) == 0)
+      v2 = *p;
+      if ((v2 & 0x80) == 0)
         break;
-      v4 = 2 * v2;
-      WriteReg(DMAP1, ((uint8)v4 >> 1) & 0x1F);
-      v5 = get_Mode7CgvmWriteQueue_RAM(k);
+      WriteReg(DMAP1, v2 & 0x1F);
+      Mode7CgvmWriteQueue *v5 = (Mode7CgvmWriteQueue *)p;
       WriteRegWord(A1T1L, v5->src_addr.addr);
       WriteReg(A1B1, v5->src_addr.bank);
       WriteRegWord(DAS1L, v5->count);
-      if (v4 < 0)
+      if (v2 & 0x40)
         WriteReg(BBAD1, 0x19);
       else
         WriteReg(BBAD1, 0x18);
       WriteRegWord(VMADDL, v5->vram_addr);
       WriteReg(VMAIN, v5->vmain);
       WriteReg(MDMAEN, 2u);
-      k += 9;
+      p += sizeof(Mode7CgvmWriteQueue);
     }
-    v3 = 2 * v2;
-    if (v3 >= 0)
+    if (!(v2 & 0x40))
       break;
-    WriteReg(DMAP1, ((uint8)v3 >> 1) & 0x1F);
-    WriteRegWord(A1T1L, *(uint16 *)(v1 + 1));
-    WriteReg(A1B1, v1[3]);
-    WriteRegWord(DAS1L, *((uint16 *)v1 + 2));
+    WriteReg(DMAP1, v2 & 0x1F);
+    WriteRegWord(A1T1L, *(uint16 *)(p + 1));
+    WriteReg(A1B1, p[3]);
+    WriteRegWord(DAS1L, *((uint16 *)p + 2));
     WriteReg(BBAD1, 0x22);
-    WriteReg(CGADD, v1[6]);
+    WriteReg(CGADD, p[6]);
     WriteReg(MDMAEN, 2u);
-    k += 7;
+    p += 7;
   }
 }
 
@@ -660,7 +646,7 @@ uint8 HasQueuedMusic(void) {  // 0x808EF4
   }
   return 1;
 }
-#define kMusicPointers (*(LongPtr*)RomPtr(0x8fe7e1))
+
 void HandleMusicQueue(void) {  // 0x808F0C
   bool v0 = music_timer-- == 1;
   if ((music_timer & 0x8000u) == 0) {
@@ -949,44 +935,36 @@ void NmiUpdatePalettesAndOam(void) {  // 0x80933A
 void NmiTransferSamusToVram(void) {  // 0x809376
   WriteReg(VMAIN, 0x80);
   if ((uint8)nmi_copy_samus_halves) {
-    nmicopy1_var_d = nmi_copy_samus_top_half_src;
+    const uint8 *rp = RomPtr_92(nmi_copy_samus_top_half_src);
     WriteRegWord(VMADDL, 0x6000);
     WriteRegWord(DMAP1, 0x1801);
-    uint16 v0 = *(uint16 *)RomPtr_92(nmicopy1_var_d);
+    uint16 v0 = GET_WORD(rp + 0);
     WriteRegWord(A1T1L, v0);
-    R20_ = v0;
-    uint8 *v1 = RomPtr_92(nmicopy1_var_d);
-    WriteRegWord(A1B1, *((uint16 *)v1 + 1));
-    uint16 v2 = *(uint16 *)(RomPtr_92(nmicopy1_var_d) + 3);
+    WriteRegWord(A1B1, GET_WORD(rp + 2));
+    uint16 v2 = GET_WORD(rp + 3);
     WriteRegWord(DAS1L, v2);
-    R20_ += v2;
     WriteReg(MDMAEN, 2u);
     WriteRegWord(VMADDL, 0x6100);
-    WriteRegWord(A1T1L, R20_);
-    uint8 *v3 = RomPtr_92(nmicopy1_var_d);
-    if (*(uint16 *)(v3 + 5)) {
-      WriteRegWord(DAS1L, *(uint16 *)(v3 + 5));
+    WriteRegWord(A1T1L, v0 + v2);
+    if (GET_WORD(rp + 5)) {
+      WriteRegWord(DAS1L, GET_WORD(rp + 5));
       WriteReg(MDMAEN, 2u);
     }
   }
   if (HIBYTE(nmi_copy_samus_halves)) {
-    nmicopy1_var_d = nmi_copy_samus_bottom_half_src;
+    const uint8 *rp = RomPtr_92(nmi_copy_samus_bottom_half_src);
     WriteRegWord(VMADDL, 0x6080);
     WriteRegWord(DMAP1, 0x1801);
-    uint16 v4 = *(uint16 *)RomPtr_92(nmicopy1_var_d);
+    uint16 v4 = GET_WORD(rp + 0);
     WriteRegWord(A1T1L, v4);
-    R20_ = v4;
-    uint8 *v5 = RomPtr_92(nmicopy1_var_d);
-    WriteRegWord(A1B1, *((uint16 *)v5 + 1));
-    uint16 v6 = *(uint16 *)(RomPtr_92(nmicopy1_var_d) + 3);
+    WriteRegWord(A1B1, GET_WORD(rp + 2));
+    uint16 v6 = GET_WORD(rp + 3);
     WriteRegWord(DAS1L, v6);
-    R20_ += v6;
     WriteReg(MDMAEN, 2u);
     WriteRegWord(VMADDL, 0x6180);
-    WriteRegWord(A1T1L, R20_);
-    uint8 *v7 = RomPtr_92(nmicopy1_var_d);
-    if (*(uint16 *)(v7 + 5)) {
-      WriteRegWord(DAS1L, *(uint16 *)(v7 + 5));
+    WriteRegWord(A1T1L, v4 + v6);
+    if (GET_WORD(rp + 5)) {
+      WriteRegWord(DAS1L, GET_WORD(rp + 5));
       WriteReg(MDMAEN, 2u);
     }
   }
@@ -1331,29 +1309,28 @@ void AddMissilesToHudTilemap(void) {
 }
 
 void AddSuperMissilesToHudTilemap(void) {  // 0x809A0E
-  AddToTilemapInner(0x1C, addr_kHudTilemaps_Missiles + 12);
+  AddToTilemapInner(0x1C, (const uint16*)RomPtr_80(addr_kHudTilemaps_Missiles + 12));
 }
 
 void AddPowerBombsToHudTilemap(void) {  // 0x809A1E
-  AddToTilemapInner(0x22, addr_kHudTilemaps_Missiles + 20);
+  AddToTilemapInner(0x22, (const uint16 *)RomPtr_80(addr_kHudTilemaps_Missiles + 20));
 }
 
 void AddGrappleToHudTilemap(void) {  // 0x809A2E
-  AddToTilemapInner(0x28, addr_kHudTilemaps_Missiles + 28);
+  AddToTilemapInner(0x28, (const uint16 *)RomPtr_80(addr_kHudTilemaps_Missiles + 28));
 }
 
 void AddXrayToHudTilemap(void) {  // 0x809A3E
-  AddToTilemapInner(0x2E, addr_kHudTilemaps_Missiles + 36);
+  AddToTilemapInner(0x2E, (const uint16 *)RomPtr_80(addr_kHudTilemaps_Missiles + 36));
 }
 
-void AddToTilemapInner(uint16 k, uint16 j) {  // 0x809A4C
+void AddToTilemapInner(uint16 k, const uint16 *j) {  // 0x809A4C
   int v2 = k >> 1;
   if ((hud_tilemap[v2] & 0x3FF) == 15) {
-    uint16 *v3 = (uint16 *)RomPtr_80(j);
-    hud_tilemap[v2] = *v3;
-    hud_tilemap[v2 + 1] = v3[1];
-    hud_tilemap[v2 + 32] = v3[2];
-    hud_tilemap[v2 + 33] = v3[3];
+    hud_tilemap[v2] = j[0];
+    hud_tilemap[v2 + 1] = j[1];
+    hud_tilemap[v2 + 32] = j[2];
+    hud_tilemap[v2 + 33] = j[3];
   }
 }
 

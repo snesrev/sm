@@ -2095,7 +2095,7 @@ void WriteEnemyOams(void) {  // 0xA0944A
           R18_ = enemy_population_ptr + ypos;
           if (((R18_ + 128) & 0xFE00) == 0) {
             if (HIBYTE(R18_))
-              DrawSpritemapWithBaseTileOffscreen(db, R22_);
+              DrawSpritemapWithBaseTileOffscreen(db, R22_, R20_, R18_);
             else
               DrawSpritemapWithBaseTile2(db, R22_);
           }

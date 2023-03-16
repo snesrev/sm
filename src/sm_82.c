@@ -2430,38 +2430,24 @@ void UpdatePauseMenuLRStartVramTilemap(void) {  // 0x82A84D
 #define kPAuseSpritePaletteIndexValues ((uint16*)RomPtr(0x82c0fa))
 #define kPausePtsToAnimationSpritemapBaseIds ((uint16*)RomPtr(0x82c1e4))
 
-void DrawPauseScreenSpriteAnim(uint16 a, uint16 k, uint16 j) {  // 0x82A881
-  int16 v9;
-  int16 v10;
-  int16 v12;
-
-  R18_ = k;
-  R20_ = j;
-  uint16 v3 = 2 * (a - 1);
-  uint16 v4 = *(VoidP *)((char *)&kPauseScreenSpriteAnimationData_0.unused + v3);
-  uint8 *v5 = RomPtr_RAM(v4);
-  bool v6 = *(uint16 *)v5 == 1;
-  bool v7 = (int16)-- * (uint16 *)v5 < 0;
-  if (v6 || v7) {
-    R24_ = v4;
-    uint8 *v8 = RomPtr_RAM(*(VoidP *)((char *)&kPauseScreenSpriteAnimationData_1.unused + v3));
-    v9 = *(uint16 *)v8 + 1;
-    *(uint16 *)v8 = v9;
-    R22_ = *(uint16 *)v8 + 2 * v9;
-    v10 = *RomPtr_82(R22_ + *(VoidP *)((char *)&kPauseScreenSpriteAnimationData_3.unused + v3));
+void DrawPauseScreenSpriteAnim(uint16 a, uint16 input_k, uint16 input_j) {  // 0x82A881
+  int t = a - 1;
+  uint16 *v8 = (uint16*)RomPtr_RAM(kPauseScreenSpriteAnimationData_1.arr[t]);
+  uint16 *v5 = (uint16*)RomPtr_RAM(kPauseScreenSpriteAnimationData_0.arr[t]);
+  uint8 *v3 = RomPtr_82(kPauseScreenSpriteAnimationData_3.arr[t]);
+  if ((int16)--(*v5) <= 0) {
+    uint16 v10 = v3[3 * ++(*v8)];
     if (v10 == 255) {
-      *(uint16 *)RomPtr_RAM(*(VoidP *)((char *)&kPauseScreenSpriteAnimationData_1.unused + v3)) = 0;
-      v10 = *RomPtr_82(*(VoidP *)((char *)&kPauseScreenSpriteAnimationData_3.unused + v3));
+      *v8 = 0;
+      v10 = v3[0];
     }
-    *(uint16 *)RomPtr_RAM(R24_) = v10;
+    *v5 = v10;
   }
-  R24_ = 3 * *(uint16 *)RomPtr_RAM(*(VoidP *)((char *)&kPauseScreenSpriteAnimationData_1.unused + v3));
-  v12 = R24_ + *(VoidP *)((char *)&kPauseScreenSpriteAnimationData_3.unused + v3) + 1;
   R3_.addr = kPAuseSpritePaletteIndexValues[3];
-  R24_ = *RomPtr_82(v12 + 1);
-  R26_ = 2 * *RomPtr_RAM(*(VoidP *)((char *)&kPauseScreenSpriteAnimationData_2.unused + v3));
-  uint8 *v11 = RomPtr_82(R26_ + kPausePtsToAnimationSpritemapBaseIds[v3 >> 1]);
-  DrawMenuSpritemap(R24_ + *(uint16 *)v11, R18_, R20_ - 1);
+  int r24 = v3[3 * *v8 + 2];
+  int r26 = 2 * *RomPtr_RAM(kPauseScreenSpriteAnimationData_2.arr[t]);
+  uint8 *v11 = RomPtr_82(r26 + kPausePtsToAnimationSpritemapBaseIds[t]);
+  DrawMenuSpritemap(r24 + *(uint16 *)v11, input_k, input_j - 1);
 }
 #define kPauseAnimatedPalette ((uint16*)RomPtr(0x82a987))
 void HandlePauseScreenPaletteAnimation(void) {  // 0x82A92B
