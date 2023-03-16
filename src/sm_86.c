@@ -2678,14 +2678,10 @@ void EprojPreInstr_AB07(uint16 k) {  // 0x86AA8C
 
 uint16 EprojInstr_SpawnEnemyDrops(uint16 k, uint16 j) {  // 0x86AB8A
   int v2 = k >> 1;
-  uint16 v3;
   R18_ = enemy_projectile_x_pos[v2];
   R20_ = enemy_projectile_y_pos[v2];
-  if (area_index)
-    v3 = *((uint16 *)RomPtr_86(j) + 1);
-  else
-    v3 = *(uint16 *)RomPtr_86(j);
-  SpawnEnemyDrops(v3, k);
+  uint16 *p = (uint16 *)RomPtr_86(j);
+  SpawnEnemyDrops(area_index ? p[1] : p[0], k);
   return j + 4;
 }
 
@@ -2783,10 +2779,11 @@ uint16 EprojInstr_GotoDependingOnXDirection(uint16 k, uint16 j) {  // 0x86AD92
   bool v5 = __CFADD__uint16(R18_, v4);
   enemy_projectile_1A27[v2] = R18_ + v4;
   enemy_projectile_x_pos[v2] += R20_ + v5;
+  uint16 *t = (uint16 *)RomPtr_86(j);
   if ((enemy_projectile_x_vel[v2] & 0x8000u) == 0)
-    return *((uint16 *)RomPtr_86(j) + 1);
+    return t[1];
   else
-    return *(uint16 *)RomPtr_86(j);
+    return t[0];
 }
 
 void EprojInit_TorizoSonicBoom(uint16 j) {  // 0x86AE15

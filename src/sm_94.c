@@ -838,9 +838,8 @@ uint8 BlockColl_Horiz_SpecialAir(void) {  // 0x94906F
 
   v0 = BTS[cur_block_index];
   if ((v0 & 0x80) != 0) {
-    R34 = off_9492D9[area_index];
-    uint8 *v2 = RomPtr_94(R34);
-    return SpawnPLM(*(uint16 *)&v2[(uint16)(2 * (v0 & 0x7F))]) & 1;
+    uint16 *v2 = (uint16 *)RomPtr_94(off_9492D9[area_index]);
+    return SpawnPLM(v2[v0 & 0x7f]) & 1;
   } else {
     SpawnPLM(kPlmHeaderDefPtrs[v0]);
     return 0;
@@ -852,9 +851,8 @@ uint8 BlockColl_Vert_SpecialAir(void) {  // 0x94909D
 
   v0 = BTS[cur_block_index];
   if ((v0 & 0x80) != 0) {
-    R34 = off_9492D9[area_index];
-    uint8 *v2 = RomPtr_94(R34);
-    return SpawnPLM(*(uint16 *)&v2[(uint16)(2 * (v0 & 0x7F))]) & 1;
+    uint16 *v2 = (uint16 *)RomPtr_94(off_9492D9[area_index]);
+    return SpawnPLM(v2[v0 & 0x7f]) & 1;
   } else {
     SpawnPLM(kPlmHeaderDefPtrs[v0]);
     return 0;
@@ -866,15 +864,14 @@ uint8 BlockColl_Horiz_SpecialBlock(void) {  // 0x9490CB
 
   v0 = BTS[cur_block_index];
   if ((v0 & 0x80) != 0) {
-    R34 = off_9492E9[area_index];
-    uint8 *v3 = RomPtr_94(R34);
-    uint8 v4 = SpawnPLM(*(uint16 *)&v3[(uint16)(2 * (v0 & 0x7F))]) & 1;
+    uint16 *v2 = (uint16 *)RomPtr_94(off_9492E9[area_index]);
+    uint8 v4 = SpawnPLM(v2[v0 & 0x7f]) & 1;
     if (v4)
       return BlockColl_Horiz_SolidShootGrappleBlock();
     return v4;
   } else {
     uint8 v1 = SpawnPLM(kPlmHeaderDefPtrs[v0]) & 1;
-    if (v1 & 1)
+    if (v1)
       return BlockColl_Horiz_SolidShootGrappleBlock();
     return v1;
   }
@@ -885,8 +882,7 @@ uint8 BlockColl_Vert_SpecialBlock(void) {  // 0x949102
 
   v0 = BTS[cur_block_index];
   if ((v0 & 0x80) != 0) {
-    R34 = off_9492E9[area_index];
-    uint16 *v3 = (uint16*)RomPtr_94(R34);
+    uint16 *v3 = (uint16*)RomPtr_94(off_9492E9[area_index]);
     uint8 v4 = SpawnPLM(v3[v0 & 0x7F]) & 1;
     if (v4)
       return BlockColl_Vert_SolidShootGrappleBlock();
@@ -948,7 +944,7 @@ uint8 BlockColl_Vert_BombBlock(void) {  // 0x94934C
 uint8 BlockColl_Horiz_Door(void) {  // 0x94938B
   door_transition_function = FUNC16(DoorTransitionFunction_HandleElevator);
   door_bts = BTS[cur_block_index];
-  uint16 v0 = *(uint16 *)RomPtr_8F(door_list_pointer + 2 * ((uint8)door_bts & 0x7Fu));
+  uint16 v0 = *(uint16 *)RomPtr_8F(door_list_pointer + 2 * (door_bts & 0x7Fu));
   if ((get_DoorDef(v0)->room_definition_ptr & 0x8000u) == 0) {
     if (samus_pose < kGameState_9_HitDoorBlock)
       elevator_flags = 1;
@@ -964,7 +960,7 @@ uint8 BlockColl_Vert_Door(void) {  // 0x9493CE
   door_transition_function = FUNC16(DoorTransitionFunction_HandleElevator);
   door_bts = BTS[cur_block_index];
   uint16 v0 = *(uint16 *)RomPtr_8F(door_list_pointer + 2 * (door_bts & 0x7Fu));
-  if (*(int16 *)RomPtr_83(v0) >= 0) {
+  if ((get_DoorDef(v0)->room_definition_ptr & 0x8000u) == 0) {
     if (samus_pose < kPose_09_MoveR_NoAim)
       elevator_flags = 1;
     return BlockColl_Vert_SolidShootGrappleBlock();

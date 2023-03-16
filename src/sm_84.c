@@ -833,8 +833,7 @@ uint16 PlmInstr_PickupBeamAndShowMessage(uint16 j, uint16 k) {  // 0x8488B0
   equipped_beams &= ~((*(uint16 *)v2 >> 1) & 4);
   UpdateBeamTilesAndPalette();
   PlayRoomMusicTrackAfterAFrames(0x168u);
-  uint8 *v3 = RomPtr_84(j);
-  DisplayMessageBox(v3[2]);
+  DisplayMessageBox(v2[2]);
   return j + 3;
 }
 

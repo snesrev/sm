@@ -837,7 +837,7 @@ again_theirs:
   MakeSnapshot(&g_snapshot_theirs);
 
   // Run my version and snapshot
-again_mine:
+//again_mine:
   g_snes->ppu = g_snes->my_ppu;
   RestoreSnapshot(&g_snapshot_before);
 

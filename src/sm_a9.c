@@ -4561,28 +4561,29 @@ uint8 DeadTorizo_Func_0(void) {  // 0xA9D443
   uint16 *v1 = (uint16 *)RomPtr_A9(addr_kDeadTorizo_Hitbox_D77C);
   if (!*v1)
     return 0;
-  R22_ = *v1;
-  for (int i = 0xd77c + 2; ; i += 8) {
+  int R22 = *v1;
+  for (int i = addr_kDeadTorizo_Hitbox_D77C + 2; ; i += 8) {
+    uint8 *t = RomPtr_A9(i);
     if ((int16)(samus_y_pos - R20_) >= 0) {
       R24_ = samus_y_pos - R20_;
-      v3 = *((uint16 *)RomPtr_A9(i) + 3);
+      v3 = *((uint16 *)t + 3);
     } else {
       R24_ = R20_ - samus_y_pos;
-      v3 = *((uint16 *)RomPtr_A9(i) + 1);
+      v3 = *((uint16 *)t + 1);
     }
     if ((int16)(samus_y_radius + abs16(v3) - R24_) >= 0) {
       if ((int16)(samus_x_pos - R18_) >= 0) {
         R24_ = samus_x_pos - R18_;
-        v4 = *((uint16 *)RomPtr_A9(i) + 2);
+        v4 = *((uint16 *)t + 2);
       } else {
         R24_ = R18_ - samus_x_pos;
-        v4 = *(uint16 *)RomPtr_A9(i);
+        v4 = *(uint16 *)t;
       }
       v5 = samus_x_radius + abs16(v4) - R24_;
       if (v5 >= 0)
         break;
     }
-    if (!--R22_)
+    if (!--R22)
       return 0;
   }
   if (sign16(v5 - 4))
@@ -5065,7 +5066,7 @@ void InitializeEnemyCorpseRotting(uint16 k, uint16 j) {  // 0xA9DC5F
   uint16 v4 = *((uint16 *)v2 + 6);
   E->dms_var_56 = v4;
   E->dms_var_5A = *((uint16 *)RomPtr_A9(v4) + 1) - 12;
-  uint16 *v5 = (uint16 *)RomPtr_A9(j);
+  uint16 *v5 = (uint16 *)v2;
   uint16 v6 = v5[4];
   E->dms_var_57 = v6--;
   E->dms_var_58 = v6;
@@ -5076,20 +5077,18 @@ void InitializeEnemyCorpseRotting(uint16 k, uint16 j) {  // 0xA9DC5F
 }
 
 void ProcessCorpseRottingVramTransfers(uint16 k) {  // 0xA9DCB9
-  VramWriteEntry *v3;
-
+  uint8 *p = RomPtr_A9(k);
   uint16 v1 = vram_write_queue_tail;
-  uint16 v2 = *(uint16 *)RomPtr_A9(k);
+  uint16 v2 = *(uint16 *)p;
   do {
-    v3 = gVramWriteEntry(v1);
+    VramWriteEntry *v3 = gVramWriteEntry(v1);
     v3->size = v2;
-    uint8 *v4 = RomPtr_A9(k);
-    *(VoidP *)((char *)&v3->src.addr + 1) = *((uint16 *)v4 + 1);
-    v3->src.addr = *((uint16 *)v4 + 2);
-    v3->vram_dst = *((uint16 *)v4 + 3);
+    *(VoidP *)((char *)&v3->src.addr + 1) = *((uint16 *)p + 1);
+    v3->src.addr = *((uint16 *)p + 2);
+    v3->vram_dst = *((uint16 *)p + 3);
     v1 += 7;
-    k += 8;
-    v2 = *(uint16 *)RomPtr_A9(k);
+    p += 8;
+    v2 = *(uint16 *)p;
   } while (v2);
   Get_DeadEnemy(0)->dey_var_22 = 0;
   vram_write_queue_tail = v1;
@@ -5150,7 +5149,7 @@ void DeadSidehopper_Touch(void) {  // 0xA9DD44
 #define TILEMAP_ADDR(x) &g_ram[0x2000 + x]
 
 void Torizo_CorpseRottingInitFunc(void) {  // 0xA9DE18
-  uint8 *p = RomPtr_B7(addr_kDeadTorizo_TileData);
+  const uint8 *p = RomPtr_B7(addr_kDeadTorizo_TileData);
   MemCpy(TILEMAP_ADDR(0x060), p + 288, 0xC0);
   MemCpy(TILEMAP_ADDR(0x1A0), p + 800, 0xC0);
   MemCpy(TILEMAP_ADDR(0x2C0), p + 1280, 0x100);
@@ -5166,7 +5165,7 @@ void Torizo_CorpseRottingInitFunc(void) {  // 0xA9DE18
 }
 
 void Sidehopper_CorpseRottingInitFunc_0(void) {  // 0xA9DEC1
-  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
   MemCpy(TILEMAP_ADDR(0x040), p + 64, 0x60);
   MemCpy(TILEMAP_ADDR(0x0A0), p + 512, 0xA0);
   MemCpy(TILEMAP_ADDR(0x140), p + 1024, 0xA0);
@@ -5175,7 +5174,7 @@ void Sidehopper_CorpseRottingInitFunc_0(void) {  // 0xA9DEC1
 }
 
 void Sidehopper_CorpseRottingInitFunc_2(void) {  // 0xA9DF08
-  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
   MemCpy(TILEMAP_ADDR(0x320), p + 288, 0x40);
   MemCpy(TILEMAP_ADDR(0x3C0), p + 800, 0xA0);
   MemCpy(TILEMAP_ADDR(0x460), p + 1312, 0xA0);
@@ -5184,37 +5183,37 @@ void Sidehopper_CorpseRottingInitFunc_2(void) {  // 0xA9DF08
 }
 
 void Zoomer_CorpseRottingInitFunc_0(void) {  // 0xA9DF4F
-  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
   MemCpy(TILEMAP_ADDR(0x940), p + 2656, 0x60);
   MemCpy(TILEMAP_ADDR(0x9A0), p + 3168, 0x60);
 }
 
 void Zoomer_CorpseRottingInitFunc_2(void) {  // 0xA9DF6C
-  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
   MemCpy(TILEMAP_ADDR(0xA00), p + 2752, 0x60);
   MemCpy(TILEMAP_ADDR(0xA60), p + 3264, 0x60);
 }
 
 void Zoomer_CorpseRottingInitFunc_4(void) {  // 0xA9DF89
-  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
   MemCpy(TILEMAP_ADDR(0xAC0), p + 2848, 0x60);
   MemCpy(TILEMAP_ADDR(0xB20), p + 3360, 0x60);
 }
 
 void Ripper_CorpseRottingInitFunc_0(void) {  // 0xA9DFA6
-  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
   MemCpy(TILEMAP_ADDR(0xB80), p + 2560, 0x60);
   MemCpy(TILEMAP_ADDR(0xBE0), p + 3072, 0x60);
 }
 
 void Ripper_CorpseRottingInitFunc_2(void) {  // 0xA9DFC3
-  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
   MemCpy(TILEMAP_ADDR(0xC40), p + 2944, 0x60);
   MemCpy(TILEMAP_ADDR(0xCA0), p + 3456, 0x60);
 }
 
 void Skree_CorpseRottingInitFunc_0(void) {  // 0xA9DFE0
-  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
   MemCpy(TILEMAP_ADDR(0x640), p + 672, 0x40);
   MemCpy(TILEMAP_ADDR(0x680), p + 1184, 0x40);
   MemCpy(TILEMAP_ADDR(0x6C0), p + 1696, 0x40);
@@ -5222,7 +5221,7 @@ void Skree_CorpseRottingInitFunc_0(void) {  // 0xA9DFE0
 }
 
 void Skree_CorpseRottingInitFunc_2(void) {  // 0xA9E019
-  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
   MemCpy(TILEMAP_ADDR(0x740), p + 224, 0x40);
   MemCpy(TILEMAP_ADDR(0x780), p + 736, 0x40);
   MemCpy(TILEMAP_ADDR(0x7C0), p + 1248, 0x40);
@@ -5230,7 +5229,7 @@ void Skree_CorpseRottingInitFunc_2(void) {  // 0xA9E019
 }
 
 void Skree_CorpseRottingInitFunc_4(void) {  // 0xA9E052
-  uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
   MemCpy(TILEMAP_ADDR(0x840), p + 448, 0x40);
   MemCpy(TILEMAP_ADDR(0x880), p + 960, 0x40);
   MemCpy(TILEMAP_ADDR(0x8C0), p + 1472, 0x40);
@@ -5239,12 +5238,13 @@ void Skree_CorpseRottingInitFunc_4(void) {  // 0xA9E052
 
 void MotherBrain_CorpseRottingInitFunc(void) {  // 0xA9E08B
   uint8 *base = &g_ram[0x9000];
-  MemCpy(base, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 192), 0xC0);
-  MemCpy(base + 0xe0, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 704), 0xC0);
-  MemCpy(base + 0x1C0, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 1216), 0xC0);
-  MemCpy(base + 0x2a0, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 1728), 0xC0);
-  MemCpy(base + 0x380, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 2240), 0xE0);
-  MemCpy(base + 0x460, RomPtr_B7(addr_kMotherBrain_Misc_TileData + 2752), 0xE0);
+  const uint8 *src = RomPtr_B7(addr_kMotherBrain_Misc_TileData);
+  MemCpy(base, src + 192, 0xC0);
+  MemCpy(base + 0xe0, src + 704, 0xC0);
+  MemCpy(base + 0x1C0, src + 1216, 0xC0);
+  MemCpy(base + 0x2a0, src + 1728, 0xC0);
+  MemCpy(base + 0x380, src + 2240, 0xE0);
+  MemCpy(base + 0x460, src + 2752, 0xE0);
 }
 
 void Torizo_CorpseRottingMoveFunc(uint16 j, uint16 k) {  // 0xA9E272

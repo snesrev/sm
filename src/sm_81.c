@@ -241,7 +241,6 @@ void DrawSpritemapOffScreen(uint16 j) {  // 0x818853
     uint16 v2 = j + 2;
     uint16 v3 = oam_next_ptr;
     if ((oam_next_ptr & 0xFE00) != 0) {
-LABEL_25:
       oam_next_ptr = v3;
       return;
     }
@@ -287,8 +286,10 @@ LABEL_22:
       v7->ycoord = v14;
       *(uint16 *)&v7->charnum = R22_ | *(uint16 *)(v5 + 3) & 0xF1FF;
       v3 = v4 + 4;
-      if (((v4 + 4) & 0xFE00) != 0)
-        goto LABEL_25;
+      if (((v4 + 4) & 0xFE00) != 0) {
+        oam_next_ptr = v3;
+        return;
+      }
       v4 += 4;
       v2 += 5;
       if (!--R24_) {
@@ -344,32 +345,30 @@ void DrawSamusSpritemap(uint16 a, uint16 k, uint16 j) {  // 0x8189AE
   if (v3 == 0)
     return;
   uint8 *pp = RomPtr_92(v3);
-  if (GET_WORD(pp + 0)) {
-    int n = GET_WORD(pp + 0);
-    pp += 2;
-    uint16 v6 = oam_next_ptr;
-    do {
-      int v10 = v6 >> 1;
-      uint16 *dst = (uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v10]);
-      uint16 v8 = k + GET_WORD(pp + 0);
-      OamEnt *v9 = gOamEnt(v6);
-      v9->xcoord = v8;
-      if ((v8 & 0x100) != 0) {
-        if (*(int16 *)pp >= 0) {
-          *dst |= kOamExtra_X8Small_And_Large[v10];
-        } else {
-          *dst |= kOamExtra_Address_And_X8Large[v10 + 1];
-        }
-      } else if (*(int16 *)pp < 0) {
-        *dst |= kOamExtra_X8Small_And_Large[v10 + 1];
+  int n = GET_WORD(pp + 0);
+  pp += 2;
+  uint16 v6 = oam_next_ptr;
+  for(; n; n--) {
+    int v10 = v6 >> 1;
+    uint16 *dst = (uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v10]);
+    uint16 v8 = k + GET_WORD(pp + 0);
+    OamEnt *v9 = gOamEnt(v6);
+    v9->xcoord = v8;
+    if ((v8 & 0x100) != 0) {
+      if (*(int16 *)pp >= 0) {
+        *dst |= kOamExtra_X8Small_And_Large[v10];
+      } else {
+        *dst |= kOamExtra_Address_And_X8Large[v10 + 1];
       }
-      v9->ycoord = j + GET_BYTE(pp + 2);
-      *(uint16 *)&v9->charnum = GET_WORD(pp + 3);
-      pp += 5;
-      v6 = (v6 + 4) & 0x1FF;
-    } while (--n);
-    oam_next_ptr = v6;
+    } else if (*(int16 *)pp < 0) {
+      *dst |= kOamExtra_X8Small_And_Large[v10 + 1];
+    }
+    v9->ycoord = j + GET_BYTE(pp + 2);
+    *(uint16 *)&v9->charnum = GET_WORD(pp + 3);
+    pp += 5;
+    v6 = (v6 + 4) & 0x1FF;
   }
+  oam_next_ptr = v6;
 }
 
 #define g_off_93A1A1 ((uint16*)RomPtr(0x93a1a1))
@@ -393,10 +392,11 @@ void sub_818A5F(const uint8 *pp) {  // 0x818A5F
     uint16 v3 = R20_ + GET_WORD(pp);
     OamEnt *v4 = gOamEnt(idx);
     v4->xcoord = v3;
+    uint16 *dst = (uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v5]);
     if ((v3 & 0x100) != 0)
-      *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v5]) |= kOamExtra_X8Small_And_Large[v5];
+      *dst |= kOamExtra_X8Small_And_Large[v5];
     if (*(int16 *)pp < 0)
-      *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v5]) |= kOamExtra_X8Small_And_Large[v5 + 1];
+      *dst |= kOamExtra_X8Small_And_Large[v5 + 1];
     v4->ycoord = R18_ + GET_BYTE(pp + 2);
     *(uint16 *)&v4->charnum = GET_WORD(pp + 3);
     pp += 5;
@@ -406,40 +406,28 @@ void sub_818A5F(const uint8 *pp) {  // 0x818A5F
 }
 
 void DrawSpritemapWithBaseTile(uint8 db, uint16 j) {  // 0x818AB8
-  int16 v5;
-  OamEnt *v6;
-  uint16 v12;
-
   if (j == 0)
     return; // bug fix
-  uint16 *v1 = (uint16 *)RomPtrWithBank(db, j);
-  if (*v1) {
-    uint16 v2 = j + 2;
-    R24_ = *v1;
-    uint16 v3 = oam_next_ptr;
-    do {
-      uint8 *v4 = RomPtrWithBank(db, v2);
-      v5 = R20_ + *(uint16 *)v4;
-      v6 = gOamEnt(v3);
-      *(uint16 *)&v6->xcoord = v5;
-      if ((v5 & 0x100) != 0) {
-        int v7 = v3 >> 1;
-        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v7]) |= kOamExtra_X8Small_And_Large[v7];
-      }
-      if (*(int16 *)v4 < 0) {
-        int v9 = v3 >> 1;
-        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v9]) |= kOamExtra_X8Small_And_Large[v9 + 1];
-      }
-      v6->ycoord = R18_ + v4[2];
-      *(uint16 *)&v6->charnum = R3_.addr | (R0_.addr + *(uint16 *)(v4 + 3));
-      bool v11 = 0;// __CFADD__(v2, 5);
-      v2 += 5;
-      v12 = (v11 + v3 + 4) & 0x1FF;
-      v3 = v12;
-      --R24_;
-    } while (R24_);
-    oam_next_ptr = v12;
+  uint8 *pp = (uint8 *)RomPtrWithBank(db, j);
+  int n = GET_WORD(pp);
+  uint16 v3 = oam_next_ptr;
+  pp += 2;
+  for(; n != 0; n--) {
+    int v7 = v3 >> 1;
+    OamEnt *oam = gOamEnt(v3);
+    uint16 v5 = R20_ + GET_WORD(pp + 0);
+    oam->xcoord = v5;
+    uint16 *dst = (uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v7]);
+    if ((v5 & 0x100) != 0)
+      *dst |= kOamExtra_X8Small_And_Large[v7];
+    if (*(int16 *)pp < 0)
+      *dst |= kOamExtra_X8Small_And_Large[v7 + 1];
+    oam->ycoord = R18_ + pp[2];
+    *(uint16 *)&oam->charnum = R3_.addr | (R0_.addr + GET_WORD(pp + 3));
+    pp += 5;
+    v3 = (v3 + 4) & 0x1FF;
   }
+  oam_next_ptr = v3;
 }
 
 void DrawSpritemapWithBaseTile2(uint8 db, uint16 j) {  // 0x818B22
@@ -449,20 +437,19 @@ void DrawSpritemapWithBaseTile2(uint8 db, uint16 j) {  // 0x818B22
   pp += 2;
   for (; n != 0; n--) {
     int v8 = v4 >> 1;
-    OamEnt *v7 = gOamEnt(v4);
+    OamEnt *oam = gOamEnt(v4);
     uint16 v6 = R20_ + GET_WORD(pp + 0);
-    v7->xcoord = v6;
-    if ((v6 & 0x100) != 0) {
-      *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v8]) |= kOamExtra_X8Small_And_Large[v8];
-    }
-    if (*(int16 *)pp < 0) {
-      *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v8]) |= kOamExtra_X8Small_And_Large[v8 + 1];
-    }
+    oam->xcoord = v6;
+    uint16 *dst = (uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v8]);
+    if ((v6 & 0x100) != 0)
+      *dst |= kOamExtra_X8Small_And_Large[v8];
+    if (*(int16 *)pp < 0)
+      *dst |= kOamExtra_X8Small_And_Large[v8 + 1];
     int y = pp[2] + LOBYTE(R18_);
     if ((pp[2] & 0x80) ? (y & 0x100) == 0 : (y & 0x100) != 0)
       y = 0xf0;
-    v7->ycoord = y;
-    *(uint16 *)&v7->charnum = R3_.addr | (R0_.addr + GET_WORD(pp + 3));
+    oam->ycoord = y;
+    *(uint16 *)&oam->charnum = R3_.addr | (R0_.addr + GET_WORD(pp + 3));
     pp += 5;
     v4 = (v4 + 4) & 0x1FF;
   }
@@ -478,12 +465,11 @@ void DrawSpritemapWithBaseTileOffscreen(uint8 db, uint16 j, uint16 r20_x, uint16
     int v6 = r20_x + GET_WORD(pp + 0);
     OamEnt *v7 = gOamEnt(v4);
     v7->xcoord = v6;
-    if ((v6 & 0x100) != 0) {
-      *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v8]) |= kOamExtra_X8Small_And_Large[v8];
-    }
-    if (*(int16 *)pp < 0) {
-      *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v8]) |= kOamExtra_X8Small_And_Large[v8 + 1];
-    }
+    uint16 *dst = (uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v8]);
+    if ((v6 & 0x100) != 0)
+      *dst |= kOamExtra_X8Small_And_Large[v8];
+    if (*(int16 *)pp < 0)
+      *dst |= kOamExtra_X8Small_And_Large[v8 + 1];
     uint8 v12 = pp[2];
     bool v13 = __CFADD__uint8((uint8)R18_, v12);
     v12 += r18_y;

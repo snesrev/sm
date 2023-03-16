@@ -2880,43 +2880,11 @@ uint8 nullsub_164(void) {  // 0x91DD31
 }
 
 void CopyToSamusSuitPalette(uint16 k) {  // 0x91DD5B
-  uint16 *v1 = (uint16 *)RomPtr_9B(k);
-  palette_buffer[192] = *v1;
-  palette_buffer[193] = v1[1];
-  palette_buffer[194] = v1[2];
-  palette_buffer[195] = v1[3];
-  palette_buffer[196] = v1[4];
-  palette_buffer[197] = v1[5];
-  palette_buffer[198] = v1[6];
-  palette_buffer[199] = v1[7];
-  palette_buffer[200] = v1[8];
-  palette_buffer[201] = v1[9];
-  palette_buffer[202] = v1[10];
-  palette_buffer[203] = v1[11];
-  palette_buffer[204] = v1[12];
-  palette_buffer[205] = v1[13];
-  palette_buffer[206] = v1[14];
-  palette_buffer[207] = v1[15];
+  memcpy(&palette_buffer[192], (uint16 *)RomPtr_9B(k), 32);
 }
 
 void CopyToSamusSuitTargetPalette(uint16 k) {  // 0x91DDD7
-  uint16 *v1 = (uint16 *)RomPtr_9B(k);
-  target_palettes[192] = *v1;
-  target_palettes[193] = v1[1];
-  target_palettes[194] = v1[2];
-  target_palettes[195] = v1[3];
-  target_palettes[196] = v1[4];
-  target_palettes[197] = v1[5];
-  target_palettes[198] = v1[6];
-  target_palettes[199] = v1[7];
-  target_palettes[200] = v1[8];
-  target_palettes[201] = v1[9];
-  target_palettes[202] = v1[10];
-  target_palettes[203] = v1[11];
-  target_palettes[204] = v1[12];
-  target_palettes[205] = v1[13];
-  target_palettes[206] = v1[14];
-  target_palettes[207] = v1[15];
+  memcpy(&target_palettes[192], (uint16 *)RomPtr_9B(k), 32);
 }
 
 void Samus_CancelSpeedBoost(void) {  // 0x91DE53

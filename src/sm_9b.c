@@ -149,39 +149,9 @@ uint16 HandleSamusDeathSequence(void) {  // 0x9BB441
 void HandleSamusDeathSequence_Helper2(void) {  // 0x9BB4B6
   uint16 *v0 = (uint16 *)RomPtr_9B(g_off_9BB5C8[samus_suit_palette_index >> 1]);
   uint16 *v1 = (uint16 *)RomPtr_9B(*v0);
-  palette_buffer[192] = *v1;
-  palette_buffer[193] = v1[1];
-  palette_buffer[194] = v1[2];
-  palette_buffer[195] = v1[3];
-  palette_buffer[196] = v1[4];
-  palette_buffer[197] = v1[5];
-  palette_buffer[198] = v1[6];
-  palette_buffer[199] = v1[7];
-  palette_buffer[200] = v1[8];
-  palette_buffer[201] = v1[9];
-  palette_buffer[202] = v1[10];
-  palette_buffer[203] = v1[11];
-  palette_buffer[204] = v1[12];
-  palette_buffer[205] = v1[13];
-  palette_buffer[206] = v1[14];
-  palette_buffer[207] = v1[15];
+  memcpy(&palette_buffer[192], v1, 32);
   uint16 *v2 = (uint16 *)RomPtr_9B(0xA120);
-  palette_buffer[240] = *v2;
-  palette_buffer[241] = v2[1];
-  palette_buffer[242] = v2[2];
-  palette_buffer[243] = v2[3];
-  palette_buffer[244] = v2[4];
-  palette_buffer[245] = v2[5];
-  palette_buffer[246] = v2[6];
-  palette_buffer[247] = v2[7];
-  palette_buffer[248] = v2[8];
-  palette_buffer[249] = v2[9];
-  palette_buffer[250] = v2[10];
-  palette_buffer[251] = v2[11];
-  palette_buffer[252] = v2[12];
-  palette_buffer[253] = v2[13];
-  palette_buffer[254] = v2[14];
-  palette_buffer[255] = v2[15];
+  memcpy(&palette_buffer[240], v2, 32);
   QueueTransferOfSamusDeathSequence(8);
   game_options_screen_index = g_byte_9BB823[0];
   g_word_7E0DE4 = 0;
@@ -190,43 +160,13 @@ void HandleSamusDeathSequence_Helper2(void) {  // 0x9BB4B6
 }
 
 void CopyPalettesForSamusDeath(uint16 v0) {  // 0x9BB5CE
-  R20_ = g_off_9BB6D2[samus_suit_palette_index >> 1];
-  R18_ = kDeathSequencePals_Suitless[v0 >> 1];
-  uint16 *v1 = (uint16 *)RomPtr_9B(R20_ + v0);
+  int R20 = g_off_9BB6D2[samus_suit_palette_index >> 1];
+  int R18 = kDeathSequencePals_Suitless[v0 >> 1];
+  uint16 *v1 = (uint16 *)RomPtr_9B(R20 + v0);
   uint16 *v2 = (uint16 *)RomPtr_9B(*v1);
-  palette_buffer[192] = *v2;
-  palette_buffer[193] = v2[1];
-  palette_buffer[194] = v2[2];
-  palette_buffer[195] = v2[3];
-  palette_buffer[196] = v2[4];
-  palette_buffer[197] = v2[5];
-  palette_buffer[198] = v2[6];
-  palette_buffer[199] = v2[7];
-  palette_buffer[200] = v2[8];
-  palette_buffer[201] = v2[9];
-  palette_buffer[202] = v2[10];
-  palette_buffer[203] = v2[11];
-  palette_buffer[204] = v2[12];
-  palette_buffer[205] = v2[13];
-  palette_buffer[206] = v2[14];
-  palette_buffer[207] = v2[15];
-  uint16 *v3 = (uint16 *)RomPtr_9B(R18_);
-  palette_buffer[240] = *v3;
-  palette_buffer[241] = v3[1];
-  palette_buffer[242] = v3[2];
-  palette_buffer[243] = v3[3];
-  palette_buffer[244] = v3[4];
-  palette_buffer[245] = v3[5];
-  palette_buffer[246] = v3[6];
-  palette_buffer[247] = v3[7];
-  palette_buffer[248] = v3[8];
-  palette_buffer[249] = v3[9];
-  palette_buffer[250] = v3[10];
-  palette_buffer[251] = v3[11];
-  palette_buffer[252] = v3[12];
-  palette_buffer[253] = v3[13];
-  palette_buffer[254] = v3[14];
-  palette_buffer[255] = v3[15];
+  memcpy(&palette_buffer[192], v2, 32);
+  uint16 *v3 = (uint16 *)RomPtr_9B(R18);
+  memcpy(&palette_buffer[240], v3, 32);
 }
 
 void QueueTransferOfSamusDeathSequence(uint16 v0) {  // 0x9BB6D8

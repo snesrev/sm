@@ -1376,11 +1376,10 @@ static const uint16 kEnergyTankIconTilemapOffsets[14] = { 0x42, 0x44, 0x46, 0x48
 void HandleHudTilemap(void) {  // 0x809B44
   R0_.bank = 0;
   if (reserve_health_mode == 1) {
-    uint16 v0 = addr_kHudTilemaps_AutoReserve;
+    uint16 *v1 = (uint16 *)RomPtr_80(addr_kHudTilemaps_AutoReserve);
     if (!samus_reserve_health)
-      v0 = addr_kHudTilemaps_AutoReserve + 12;
-    uint16 *v1 = (uint16 *)RomPtr_80(v0);
-    hud_tilemap[8] = *v1;
+      v1 += 6;
+    hud_tilemap[8] = v1[0];
     hud_tilemap[9] = v1[1];
     hud_tilemap[40] = v1[2];
     hud_tilemap[41] = v1[3];
@@ -2779,11 +2778,7 @@ void DecompressToVRAM(void) {  // 0x80B271
 void LoadFromLoadStation(void) {  // 0x80C437
   save_station_lockout_flag = 1;
   R18_ = 2 * load_station_index;
-  uint16 *v0 = (uint16 *)RomPtr_80(
-    kLoadStationLists[area_index]
-    + 2
-    * (load_station_index
-       + 6 * load_station_index));
+  uint16 *v0 = (uint16 *)RomPtr_80(kLoadStationLists[area_index] + 14 * load_station_index);
   room_ptr = *v0;
   door_def_ptr = v0[1];
   door_bts = v0[2];
@@ -2797,16 +2792,14 @@ void LoadFromLoadStation(void) {  // 0x80C437
   samus_prev_x_pos = samus_x_pos;
   reg_BG1HOFS = 0;
   reg_BG1VOFS = 0;
-  LOBYTE(area_index) = RomPtr_8F(room_ptr)[1];
+  LOBYTE(area_index) = get_RoomDefHeader(room_ptr)->area_index_;
   LOBYTE(debug_disable_minimap) = 0;
 }
 
 #define off_80CD46 ((uint16*)RomPtr(0x80cd46))
 
 void SetElevatorsAsUsed(void) {  // 0x80CD07
-  uint8 *v0 = RomPtr_80(
-    off_80CD46[area_index]
-    + 4 * (((uint8)elevator_door_properties_orientation & 0xFu) - 1));
-  used_save_stations_and_elevators[*v0] |= v0[1];
+  uint8 *v0 = RomPtr_80(off_80CD46[area_index] + 4 * (((uint8)elevator_door_properties_orientation & 0xF) - 1));
+  used_save_stations_and_elevators[v0[0]] |= v0[1];
   used_save_stations_and_elevators[v0[2]] |= v0[3];
 }

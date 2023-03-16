@@ -1082,9 +1082,9 @@ void HdmaobjPreInstr_PowerBombExplode_Stage5_Afterglow(uint16 k) {  // 0x888B98
   }
 }
 
-void CalculatePowerBombHdma_LeftOfScreen(uint16 k, uint16 j) {  // 0x888BEA
+void CalculatePowerBombHdma_LeftOfScreen(uint16 k, uint8 *j) {  // 0x888BEA
   do {
-    uint8 w = *RomPtr_88(j);
+    uint8 w = *j;
     uint8 c = power_bomb_explosion_x_pos_plus_0x100;
     if (__CFADD__uint8(w, c)) {
       power_bomb_explosion_right_hdma[k] = w + c;
@@ -1098,9 +1098,9 @@ void CalculatePowerBombHdma_LeftOfScreen(uint16 k, uint16 j) {  // 0x888BEA
   } while (k != 192);
 }
 
-void CalculatePowerBombHdma_OnScreen(uint16 k, uint16 j) {  // 0x888C12
+void CalculatePowerBombHdma_OnScreen(uint16 k, uint8 *j) {  // 0x888C12
   do {
-    uint8 w = *RomPtr_88(j);
+    uint8 w = *j;
     if (!w)
       break;
     uint8 c = power_bomb_explosion_x_pos_plus_0x100;
@@ -1113,9 +1113,9 @@ void CalculatePowerBombHdma_OnScreen(uint16 k, uint16 j) {  // 0x888C12
   } while (k != 192);
 }
 
-void CalculatePowerBombHdma_RightOfScreen(uint16 k, uint16 j) {  // 0x888C3A
+void CalculatePowerBombHdma_RightOfScreen(uint16 k, uint8 *j) {  // 0x888C3A
   do {
-    uint8 w = *RomPtr_88(j);
+    uint8 w = *j;
     if ((uint8)power_bomb_explosion_x_pos_plus_0x100 < w) {
       power_bomb_explosion_left_hdma[k] = power_bomb_explosion_x_pos_plus_0x100 - w;
       power_bomb_explosion_right_hdma[k] = -1;
@@ -1296,7 +1296,7 @@ void HdmaobjPreInstr_PowerBombExplode_ExplosionWhite(uint16 k) {  // 0x888EB2
     return;
 
   CalculatePowerBombHdmaObjectTablePtrs(k);
-  uint16 v1 = pre_scaled_power_bomb_explosion_shape_def_ptr;
+  uint8 *v1 = RomPtr_88(pre_scaled_power_bomb_explosion_shape_def_ptr);
   if (HIBYTE(power_bomb_explosion_x_pos_plus_0x100)) {
     if (HIBYTE(power_bomb_explosion_x_pos_plus_0x100) == 1)
       CalculatePowerBombHdma_OnScreen(0, v1);
@@ -1390,7 +1390,7 @@ void HdmaobjPreInstr_PowerBombExplode_PreExplosionYellow(uint16 k) {  // 0x8891A
   if ((power_bomb_explosion_status & 0x8000u) == 0)
     return;
   CalculatePowerBombHdmaTablePointers(k);
-  uint16 v1 = pre_scaled_power_bomb_explosion_shape_def_ptr;
+  uint8 *v1 = RomPtr_88(pre_scaled_power_bomb_explosion_shape_def_ptr);
   if (HIBYTE(power_bomb_explosion_x_pos_plus_0x100)) {
     if (HIBYTE(power_bomb_explosion_x_pos_plus_0x100) == 1)
       CalculatePowerBombHdma_OnScreen(0, v1);

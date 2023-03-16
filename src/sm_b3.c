@@ -1379,7 +1379,7 @@ void Botwoon_Func_32(void) {  // 0xB3E250
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->botwoon_var_E = addr_loc_B3E28C;
   E->botwoon_var_3C = 0;
-  uint8 *v1 = RomPtr_B3(E->botwoon_var_40 - 7856);
+  uint8 *v1 = RomPtr_B3(E->botwoon_var_40 + addr_stru_B3E150);
   E->botwoon_var_42 = *(uint16 *)v1;
   E->botwoon_var_37 = *((uint16 *)v1 + 2);
   int16 v2 = *((uint16 *)v1 + 1);

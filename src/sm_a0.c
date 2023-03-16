@@ -326,47 +326,7 @@ void RecordEnemySpawnData(uint16 j) {  // 0xA088D0
   *(uint16 *)&v5->name[10] = R28_;
 }
 
-void DebugLoadEnemySetData(void) {  // 0xA0896F
-  int16 v1;
-
-  uint16 v0 = 0;
-  v1 = 160;
-  do {
-    *(uint16 *)&debug_enemy_set_name[v0] = 0;
-    v0 += 2;
-    v1 -= 2;
-  } while (v1);
-  uint8 *v2 = RomPtr_B4(room_enemy_tilesets_ptr - 7);
-  *(uint16 *)debug_enemy_set_name = *(uint16 *)v2;
-  *(uint16 *)&debug_enemy_set_name[2] = *((uint16 *)v2 + 1);
-  *(uint16 *)&debug_enemy_set_name[4] = *((uint16 *)v2 + 2);
-  *(uint16 *)&debug_enemy_set_name[6] = *((uint16 *)v2 + 3);
-  uint16 v3 = 7;
-  for (int i = room_enemy_tilesets_ptr; ; i += 4) {
-    uint16 v5 = *(uint16 *)RomPtr_B4(i);
-    if (v5 == 0xFFFF)
-      break;
-    uint16 v6 = *((uint16 *)RomPtr_A0(v5) + 31);
-    if (!v6)
-      v6 = addr_asc_B4DD89;
-    uint16 *v7 = (uint16 *)RomPtr_B4(v6);
-    R18_ = *v7;
-    R20_ = v7[1];
-    R22_ = v7[2];
-    R24_ = v7[3];
-    R26_ = v7[4];
-    *(uint16 *)&debug_enemy_set_name[v3] = R18_;
-    *(uint16 *)&debug_enemy_set_name[v3 + 2] = R20_;
-    *(uint16 *)&debug_enemy_set_name[v3 + 4] = R22_;
-    *(uint16 *)&debug_enemy_set_name[v3 + 6] = R24_;
-    *(uint16 *)&debug_enemy_set_data[v3] = R26_;
-    *(uint16 *)&debug_enemy_set_data[v3 + 2] = *((uint16 *)RomPtr_B4(i) + 1);
-    v3 += 12;
-  }
-}
-
 void LoadEnemies(void) {  // 0xA08A1E
-  //  DebugLoadEnemySetData();
   debug_time_frozen_for_enemies = 0;
   *(uint16 *)&enemy_gfx_drawn_hook.bank = 160;
   enemy_gfx_drawn_hook.addr = FUNC16(nullsub_170);

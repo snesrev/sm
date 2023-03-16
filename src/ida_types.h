@@ -2689,6 +2689,7 @@ enum Consts_B3 {
   addr_kBrinstarYellowPipeBug_Ilist_8F24 = 0x8F24,
   addr_kBrinstarYellowPipeBug_Ilist_8F38 = 0x8F38,
   addr_kBotwoon_Ilist_9389 = 0x9389,
+  addr_stru_B3E150 = 0xE150,
   addr_loc_B3E28C = 0xE28C,
   addr_kEscapeEtecoon_Ilist_E556 = 0xE556,
   addr_kEscapeEtecoon_Ilist_E582 = 0xE582,
