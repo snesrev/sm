@@ -4847,7 +4847,7 @@ void CreatePlmsExecuteDoorAsmRoomSetup(void) {  // 0x82EB6C
   RoomDefRoomstate *RoomDefRoomstate;
   RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
   if (RoomDefRoomstate->room_plm_header_ptr) {
-    for (int i = RoomDefRoomstate->room_plm_header_ptr; get_PlmHeader_Size6(i)->func_ptr; i += 6)
+    for (int i = RoomDefRoomstate->room_plm_header_ptr; get_RoomPlmEntry(i)->plm_header_ptr_; i += 6)
       SpawnRoomPLM(i);
   }
   RunDoorSetupCode();

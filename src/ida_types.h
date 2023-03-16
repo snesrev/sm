@@ -2722,7 +2722,6 @@ struct StateHeaderTiles; static inline StateHeaderTiles *get_StateHeaderTiles(ui
 struct EnemyDef_A2; static inline EnemyDef_A2 *get_EnemyDef_A2(uint16 a) { return (EnemyDef_A2 *)RomPtr(0xA00000 | a); }
 struct EnemyTileset; static inline EnemyTileset *get_EnemyTileset(uint16 a) { return (EnemyTileset *)RomPtr(0xB40000 | a); }
 struct RoomPlmEntry; static inline RoomPlmEntry *get_RoomPlmEntry(uint16 a) { return (RoomPlmEntry *)RomPtr(0x8F0000 | a); }
-struct PlmHeader_Size6; static inline PlmHeader_Size6 *get_PlmHeader_Size6(uint16 a) { return (PlmHeader_Size6 *)RomPtr(0x8F0000 | a); }
 struct EnemyProjectileDef; static inline EnemyProjectileDef *get_EnemyProjectileDef(uint16 a) { return (EnemyProjectileDef *)RomPtr(0x860000 | a); }
 struct Vulnerability; static inline Vulnerability *get_Vulnerability(uint16 a) { return (Vulnerability *)RomPtr(0xB40000 | a); }
 struct ExtendedSpriteMap; static inline ExtendedSpriteMap *get_ExtendedSpriteMap(uint8 db, uint16 a) { return (ExtendedSpriteMap *)RomPtr(db << 16 | a); }
@@ -2739,6 +2738,7 @@ struct LoadBg_E; static inline LoadBg_E *get_LoadBg_E(uint16 a) { return (LoadBg
 struct Mode7VramWriteQueue; static inline Mode7VramWriteQueue *get_Mode7VramWriteQueue(uint16 a) { return (Mode7VramWriteQueue *)RomPtr(0xA60000 | a); }
 struct ProjectileInstr; static inline ProjectileInstr *get_ProjectileInstr(uint16 a) { return (ProjectileInstr *)RomPtr(0x930000 | a); }
 struct PlmHeader_Size4; static inline PlmHeader_Size4 *get_PlmHeader_Size4(uint16 a) { return (PlmHeader_Size4 *)RomPtr(0x840000 | a); }
+struct PlmHeader_Size6; static inline PlmHeader_Size6 *get_PlmHeader_Size6(uint16 a) { return (PlmHeader_Size6 *)RomPtr(0x840000 | a); }
 struct RoomDefStateSelect_E6E5_Finish; static inline RoomDefStateSelect_E6E5_Finish *get_RoomDefStateSelect_E6E5_Finish(uint16 a) { return (RoomDefStateSelect_E6E5_Finish *)RomPtr(0x8F0000 | a); }
 struct SamusSpeedTableEntry; static inline SamusSpeedTableEntry *get_SamusSpeedTableEntry(uint16 a) { return (SamusSpeedTableEntry *)RomPtr(0x900000 | a); }
 struct SpriteDrawEnt; static inline SpriteDrawEnt *get_SpriteDrawEnt(uint16 a) { return (SpriteDrawEnt *)RomPtr(0xA60000 | a); }
