@@ -1643,7 +1643,7 @@ void Kraid_ClearSomeSpikes(void) {  // 0xA7C171
   SpawnHardcodedPlm(&unk_A7C175);
 }
 
-void UnpauseHook_Kraid_IsDead(void) {  // 0xA7C1FB
+CoroutineRet UnpauseHook_Kraid_IsDead(void) {  // 0xA7C1FB
   static const StartDmaCopy unk_A7C21E = { 1, 1, 0x18, LONGPTR(0xa7a716), 0x0200 };
   static const StartDmaCopy unk_A7C23E = { 1, 1, 0x18, LONGPTR(0x9ab200), 0x0800 };
   ScreenOff();
@@ -1658,12 +1658,13 @@ void UnpauseHook_Kraid_IsDead(void) {  // 0xA7C1FB
   SetupDmaTransfer(&unk_A7C23E);
   WriteReg(MDMAEN, 2u);
   Kraid_TransferTopHalfToVram();
+  return kCoroutineNone;
 }
 
 static const StartDmaCopy unk_A7C26B = { 1, 1, 0x18, LONGPTR(0x7e5000), 0x0400 };
 static const StartDmaCopy unk_A7C28D = { 1, 1, 0x18, LONGPTR(0x7e2000), 0x0800 };
 
-void UnpauseHook_Kraid_IsAlive(void) {  // 0xA7C24E
+CoroutineRet UnpauseHook_Kraid_IsAlive(void) {  // 0xA7C24E
   ScreenOff();
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, reg_BG12NBA + 62);
@@ -1671,6 +1672,7 @@ void UnpauseHook_Kraid_IsAlive(void) {  // 0xA7C24E
   SetupDmaTransfer(&unk_A7C26B);
   WriteReg(MDMAEN, 2u);
   Kraid_TransferTopHalfToVram();
+  return kCoroutineNone;
 }
 
 void Kraid_TransferTopHalfToVram(void) {  // 0xA7C278
@@ -1684,13 +1686,8 @@ void Kraid_TransferTopHalfToVram(void) {  // 0xA7C278
 
 static const StartDmaCopy unk_A7C2BD = { 1, 1, 0x18, LONGPTR(0x7e5000), 0x0400 };
 
-void WaitForNMI_Kraid(void) {
-  printf("WaitForNMI_Kraid Unimpl!\n");
-}
-
-void Kraid_UnpauseHook_IsSinking(void) {  // 0xA7C2A0
-  VramWriteEntry *v2;
-
+CoroutineRet Kraid_UnpauseHook_IsSinking(void) {  // 0xA7C2A0
+  COROUTINE_BEGIN(coroutine_state_2, 0);
   ScreenOff();
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, reg_BG12NBA + 62);
@@ -1698,21 +1695,22 @@ void Kraid_UnpauseHook_IsSinking(void) {  // 0xA7C2A0
   SetupDmaTransfer(&unk_A7C2BD);
   WriteReg(MDMAEN, 2u);
   if ((int16)(Get_Kraid(0)->base.y_pos - kKraidSinkEntry[0].field_0) >= 0) {
-    uint16 v0 = 0;
-    uint16 v1 = vram_write_queue_tail;
-    while (kKraidSinkEntry[v0].field_0 != 0xFFFF
-           && (int16)(Get_Kraid(0)->base.y_pos - kKraidSinkEntry[v0].field_0) >= 0) {
-      v2 = gVramWriteEntry(v1);
+    my_counter = 0;
+    my_counter2 = vram_write_queue_tail;
+    while (kKraidSinkEntry[my_counter].field_0 != 0xFFFF
+           && (int16)(Get_Kraid(0)->base.y_pos - kKraidSinkEntry[my_counter].field_0) >= 0) {
+      VramWriteEntry *v2;
+      v2 = gVramWriteEntry(my_counter2);
       v2->size = 64;
-      v2->src.addr = 12224;
-      *(uint16 *)&v2->src.bank = 126;
-      v2->vram_dst = kKraidSinkEntry[v0].field_2 + ((reg_BG2SC & 0xFC) << 8);
-      vram_write_queue_tail = v1 + 7;
-      WaitForNMI_Kraid();
-      ++v0;
+      v2->src.addr = 0x2FC0;
+      v2->src.bank = 0x7E;
+      v2->vram_dst = kKraidSinkEntry[my_counter].field_2 + ((reg_BG2SC & 0xFC) << 8);
+      vram_write_queue_tail = my_counter2 + 7;
+      COROUTINE_AWAIT(1, WaitForNMI_Async());
+      my_counter++;
     }
   }
-  ScreenOff();
+  COROUTINE_END(0);
 }
 
 void PauseHook_Kraid(void) {  // 0xA7C325

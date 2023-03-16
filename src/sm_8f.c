@@ -408,9 +408,10 @@ void PauseHook_DraygonRoom(void) {  // 0x8FC8F6
   irqhandler_next_handler = 4;
 }
 
-void UnpauseHook_DraygonRoom(void) {  // 0x8FC8FC
+CoroutineRet UnpauseHook_DraygonRoom(void) {  // 0x8FC8FC
   if (hdma_object_channels_bitmask[1] == 8)
     irqhandler_next_handler = 12;
+  return kCoroutineNone;
 }
 
 void RoomCode_SetCollectedMap(void) {  // 0x8FC90A

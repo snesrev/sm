@@ -132,6 +132,7 @@ extern uint8 g_ram[0x20000];
 #define coroutine_state_4 (*(uint8*)(g_ram+0x615))
 #define coroutine_completion_flags (*(uint8*)(g_ram+0x782))
 #define my_counter (*(uint16*)(g_ram+0x77E))
+#define my_counter2 (*(uint16*)(g_ram+0x780))
 
 // Keep track of which bug fixes have been made to prevent
 // replays from desyncing.

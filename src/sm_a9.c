@@ -325,7 +325,7 @@ void MotherBrainsBody_Hurt(void) {  // 0xA9873E
     mov24(&unpause_hook, fnMotherBrainsBody_UnpauseHook);
 }
 
-void MotherBrainsBody_UnpauseHook(void) {  // 0xA98763
+CoroutineRet MotherBrainsBody_UnpauseHook(void) {  // 0xA98763
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   if (E->mbn_var_16)
     QueueSfx1_Max6(0x40);
@@ -333,6 +333,7 @@ void MotherBrainsBody_UnpauseHook(void) {  // 0xA98763
     enemy_bg2_tilemap_size = 2048;
     nmi_flag_bg2_enemy_vram_transfer = 1;
   }
+  return kCoroutineNone;
 }
 
 void MotherBrainsBody_Powerbomb(void) {  // 0xA98787

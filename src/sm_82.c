@@ -1013,13 +1013,20 @@ void CallPauseHook(uint32 ea) {
   switch (ea) {
   case fnPauseHook_Empty: return;
   case fnPauseHook_DraygonRoom: PauseHook_DraygonRoom(); return;
-  case fnUnpauseHook_DraygonRoom: UnpauseHook_DraygonRoom(); return;
-  case fnUnpauseHook_Kraid_IsDead: UnpauseHook_Kraid_IsDead(); return;
-  case fnUnpauseHook_Kraid_IsAlive: UnpauseHook_Kraid_IsAlive(); return;
-  case fnKraid_UnpauseHook_IsSinking: Kraid_UnpauseHook_IsSinking(); return;
   case fnPauseHook_Kraid: PauseHook_Kraid(); return;
-  case fnMotherBrainsBody_UnpauseHook: MotherBrainsBody_UnpauseHook(); return;
   default: Unreachable();
+  }
+}
+
+CoroutineRet CallUnpauseHook_Async(uint32 ea) {
+  switch (ea) {
+  case fnPauseHook_Empty: return kCoroutineNone;
+  case fnUnpauseHook_DraygonRoom: return UnpauseHook_DraygonRoom();
+  case fnUnpauseHook_Kraid_IsDead: return UnpauseHook_Kraid_IsDead();
+  case fnUnpauseHook_Kraid_IsAlive: return UnpauseHook_Kraid_IsAlive();
+  case fnKraid_UnpauseHook_IsSinking: return Kraid_UnpauseHook_IsSinking();
+  case fnMotherBrainsBody_UnpauseHook: return MotherBrainsBody_UnpauseHook();
+  default: Unreachable(); return kCoroutineNone;
   }
 }
 
@@ -1468,6 +1475,7 @@ void DrawPauseMenuDuringFadeout(void) {  // 0x82934B
 }
 
 CoroutineRet GameState_17_Unpausing_Async(void) {  // 0x829367
+  COROUTINE_BEGIN(coroutine_state_1, 0); 
   ClearSamusBeamTiles();
   ContinueInitGameplayResume();
   ResumeGameplay();
@@ -1475,12 +1483,12 @@ CoroutineRet GameState_17_Unpausing_Async(void) {  // 0x829367
   RestoreBG2TilemapFromPauseScreen();
   screen_fade_delay = 1;
   screen_fade_counter = 1;
-  CallPauseHook(Load24(&unpause_hook));
+  COROUTINE_AWAIT(1, CallUnpauseHook_Async(Load24(&unpause_hook)));
   EnableHdmaObjects();
   EnableAnimtiles();
   QueueSamusMovementSfx();
   ++game_state;
-  return kCoroutineNone;
+  COROUTINE_END(0);
 }
 
 CoroutineRet GameState_18_Unpausing(void) {  // 0x8293A1

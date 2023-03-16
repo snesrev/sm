@@ -2245,7 +2245,7 @@ void RoomSetup_TurnWallIntoShotblocks(void);
 void RunDoorSetupCode(void);
 void RunRoomMainCode(void);
 void RunRoomSetupCode(void);
-void UnpauseHook_DraygonRoom(void);
+CoroutineRet UnpauseHook_DraygonRoom(void);
 
 // Bank 90
 PairU16 Samus_CalcSpritemapPos(uint16 k);
@@ -4743,7 +4743,7 @@ void Kraid_SpawnRandomQuakeProjs(void);
 void Kraid_Touch(void);
 void Kraid_Touch_ArmFoot(void);
 void Kraid_TransferTopHalfToVram(void);
-void Kraid_UnpauseHook_IsSinking(void);
+CoroutineRet Kraid_UnpauseHook_IsSinking(void);
 void Kraid_UpdateBG2TilemapBottomHalf(void);
 void Kraid_UpdateBg2TilemapTopHalf(void);
 void KraidsArm_Init(void);
@@ -4830,8 +4830,8 @@ void Phantoon_WaitAfterFadeOut(uint16 k);
 void Phantoon_WaitBetweenSpawningAndSpinningFireballs(uint16 k);
 void Phantoon_WavyDyingPhantoonAndCry(uint16 k);
 void Phantoon_WavyFadeIn(uint16 k);
-void UnpauseHook_Kraid_IsAlive(void);
-void UnpauseHook_Kraid_IsDead(void);
+CoroutineRet UnpauseHook_Kraid_IsAlive(void);
+CoroutineRet UnpauseHook_Kraid_IsDead(void);
 void sub_A7A92A(void);
 
 // Bank A8
@@ -5522,7 +5522,7 @@ void MotherBrainsBody_Hurt(void);
 void MotherBrainsBody_Init(void);
 void MotherBrainsBody_Powerbomb(void);
 void MotherBrainsBody_Shot(void);
-void MotherBrainsBody_UnpauseHook(void);
+CoroutineRet MotherBrainsBody_UnpauseHook(void);
 void MotherBrainsBrain_GfxDrawHook(void);
 void MotherBrainsBrain_Hurt(void);
 void MotherBrainsBrain_Init(void);
