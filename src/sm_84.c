@@ -312,7 +312,7 @@ void SpawnRoomPLM(uint16 k) {  // 0x84846A
     if ((v1 & 0x8000u) != 0)
       return;
   }
-  rpe = get_RoomPlmEntry(k);
+  rpe = (k == 0x12) ? (RoomPlmEntry *)&R18_ : get_RoomPlmEntry(k);
   uint16 prod = Mult8x8(rpe->y_block, room_width_in_blocks);
   x_block = rpe->x_block;
   int v4 = v1 >> 1;

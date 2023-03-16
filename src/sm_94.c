@@ -1735,9 +1735,8 @@ uint8 BlockReact_Shootable(void) {  // 0x949E73
   v0 = BTS[cur_block_index];
   if ((v0 & 0x80) != 0) {
     uint16 *kBlockShotBombGrappleReaction_ShootableBlock_RegionPlm = (uint16 *)RomPtr_94(0x9FC6);
-    R18_ = kBlockShotBombGrappleReaction_ShootableBlock_RegionPlm[area_index];
-    uint8 *v2 = RomPtr_94(R18_);
-    SpawnPLM(*(uint16 *)&v2[(uint16)(2 * (v0 & 0x7F))]);
+    uint16 *v2 = (uint16*)RomPtr_94(kBlockShotBombGrappleReaction_ShootableBlock_RegionPlm[area_index]);
+    SpawnPLM(v2[v0 & 0x7f]);
   } else {
     uint16 *kBlockShotBombedReactionShootablePlm = (uint16 *)RomPtr_94(0x9ea6);
     SpawnPLM(kBlockShotBombedReactionShootablePlm[v0]);

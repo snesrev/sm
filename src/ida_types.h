@@ -2004,6 +2004,7 @@ enum Consts_8F {
   addr_kRoom_cefb = 0xCEFB,
   addr_kRoom_dd58 = 0xDD58,
   addr_kRoom_dede = 0xDEDE,
+  addr_kDoorClosingPlmIds = 0xE68A,
 };
 enum Consts_90 {
   addr_loc_908029 = 0x8029,

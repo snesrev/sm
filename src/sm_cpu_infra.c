@@ -594,7 +594,6 @@ Snes *SnesInit(const char *filename) {
   { uint8 t[] = { 0x5f, 0xf7 }; PatchBytes(0x8BA362, t, sizeof(t)); }
   { uint8 t[] = { 0xc2, 0x20, 0x4c, 0x67, 0xa3 }; PatchBytes(0x8BF760, t, sizeof(t)); }
   //{ uint8 t[3] = { 0x60 }; PatchBytes(0x808028, t, 1); }  // Apu_UploadBank hangs
-  { uint8 t[4] = { 0x0a, 0x0a, 0x0a, 0x0a }; PatchBytes(0x82E915, t, 4); }  // SpawnDoorClosingPLM reads from 0x12
   { uint8 t[2] = { 0x0a, 0x0a }; PatchBytes(0x8584B2, t, 2); }  // HandleMessageBoxInteraction has a loop
 
   // LoadRoomPlmGfx passes bad value

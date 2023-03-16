@@ -4646,11 +4646,11 @@ void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
 
 void SpawnDoorClosingPLM(void) {  // 0x82E8EB
   if (!CheckIfColoredDoorCapSpawned()) {
-    uint16 *v0 = (uint16 *)RomPtr_8F(2 * door_direction - 6518);
+    uint16 *v0 = (uint16 *)RomPtr_8F(2 * door_direction + addr_kDoorClosingPlmIds);
     if (*v0) {
       R18_ = *v0;
       R20_ = *(uint16 *)&get_DoorDef(door_def_ptr)->x_pos_plm;
-      //SpawnRoomPLM(0x12u); // WTF?
+      SpawnRoomPLM(0x12u); // This reads from R18
     }
   }
 }
