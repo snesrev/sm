@@ -61,28 +61,6 @@ static const int16 g_word_A3A775[4] = { 0, -2, 0, 2 };
 #define g_word_A3EAD6 ((uint16*)RomPtr(0xa3ead6))
 #define g_word_A3EA3F ((uint16*)RomPtr(0xa3ea3f))
 
-uint16 EnemyInstr_EnableOffScreenProcessing_A3(uint16 k, uint16 j) {  // 0xA38173
-  EnemyData *v2 = gEnemyData(k);
-  v2->properties |= kEnemyProps_ProcessedOffscreen;
-  return j;
-}
-
-uint16 EnemyInstr_DisableOffScreenProcessing_A3(uint16 k, uint16 j) {  // 0xA3817D
-  EnemyData *v2 = gEnemyData(k);
-  v2->properties &= ~kEnemyProps_ProcessedOffscreen;
-  return j;
-}
-
-uint16 EnemyInstr_Goto_A3(uint16 k, uint16 j) {  // 0xA380ED
-  return *(uint16 *)RomPtr_A3(j);
-}
-
-
-uint16 EnemyInstr_Sleep_A3(uint16 k, uint16 j) {  // 0xA3812F
-  gEnemyData(k)->current_instruction = j - 2;
-  return 0;
-}
-
 void Enemy_GrappleReact_NoInteract_A3(void) {  // 0xA38000
   SwitchEnemyAiToMainAi();
 }
@@ -115,9 +93,9 @@ void Enemy_NormalFrozenAI_A3(void) {  // 0xA38041
   NormalEnemyFrozenAI();
 }
 
-uint16 Waver_Instr_1(uint16 k, uint16 j) {  // 0xA386E3
+const uint16 *Waver_Instr_1(uint16 k, const uint16 *jp) {  // 0xA386E3
   Get_Waver(cur_enemy_index)->waver_var_E = 1;
-  return j;
+  return jp;
 }
 
 void Waver_Init(void) {  // 0xA386ED
@@ -182,9 +160,9 @@ void Waver_Func_1(void) {  // 0xA387FE
   }
 }
 
-uint16 Metalee_Instr_1(uint16 k, uint16 j) {  // 0xA38956
+const uint16 *Metalee_Instr_1(uint16 k, const uint16 *jp) {  // 0xA38956
   Get_Metalee(cur_enemy_index)->metalee_var_E = 1;
-  return j;
+  return jp;
 }
 
 void Metalee_Init(void) {  // 0xA38960
@@ -412,19 +390,19 @@ void Fireflea_Common(void) {  // 0xA38E8D
   }
 }
 
-uint16 MaridiaFish_Instr_3(uint16 k, uint16 j) {  // 0xA39096
+const uint16 *MaridiaFish_Instr_3(uint16 k, const uint16 *jp) {  // 0xA39096
   Get_MaridiaFish(cur_enemy_index)->base.layer = 6;
-  return j;
+  return jp;
 }
 
-uint16 MaridiaFish_Instr_1(uint16 k, uint16 j) {  // 0xA390A0
+const uint16 *MaridiaFish_Instr_1(uint16 k, const uint16 *jp) {  // 0xA390A0
   Get_MaridiaFish(cur_enemy_index)->base.layer = 2;
-  return j;
+  return jp;
 }
 
-uint16 MaridiaFish_Instr_2(uint16 k, uint16 j) {  // 0xA390AA
+const uint16 *MaridiaFish_Instr_2(uint16 k, const uint16 *jp) {  // 0xA390AA
   Get_MaridiaFish(cur_enemy_index)->mfh_var_01 = 1;
-  return j;
+  return jp;
 }
 
 void MaridiaFish_Init(void) {  // 0xA390B5
@@ -663,24 +641,24 @@ void Slug_Func_1(void) {  // 0xA39955
   ;
 }
 
-uint16 PlatformThatFallsWithSamus_Instr_3(uint16 k, uint16 j) {  // 0xA39C6B
+const uint16 *PlatformThatFallsWithSamus_Instr_3(uint16 k, const uint16 *jp) {  // 0xA39C6B
   Get_PlatformThatFallsWithSamus(cur_enemy_index)->ptfwss_var_02 = 0;
-  return j;
+  return jp;
 }
 
-uint16 PlatformThatFallsWithSamus_Instr_4(uint16 k, uint16 j) {  // 0xA39C76
+const uint16 *PlatformThatFallsWithSamus_Instr_4(uint16 k, const uint16 *jp) {  // 0xA39C76
   Get_PlatformThatFallsWithSamus(cur_enemy_index)->ptfwss_var_02 = 1;
-  return j;
+  return jp;
 }
 
-uint16 PlatformThatFallsWithSamus_Instr_1(uint16 k, uint16 j) {  // 0xA39C81
+const uint16 *PlatformThatFallsWithSamus_Instr_1(uint16 k, const uint16 *jp) {  // 0xA39C81
   Get_PlatformThatFallsWithSamus(cur_enemy_index)->ptfwss_var_02 = 0;
-  return j;
+  return jp;
 }
 
-uint16 PlatformThatFallsWithSamus_Instr_2(uint16 k, uint16 j) {  // 0xA39C8C
+const uint16 *PlatformThatFallsWithSamus_Instr_2(uint16 k, const uint16 *jp) {  // 0xA39C8C
   Get_PlatformThatFallsWithSamus(cur_enemy_index)->ptfwss_var_02 = 1;
-  return j;
+  return jp;
 }
 
 void PlatformThatFallsWithSamus_Init(void) {  // 0xA39C9F
@@ -1397,15 +1375,14 @@ void Mochtroid_Shot(void) {  // 0xA3A9A8
   Enemy_NormalShotAI_A3();
 }
 
-uint16 Sidehopper_Func_1(uint16 k, uint16 j) {  // 0xA3AA68
-  uint16 *v2 = (uint16 *)RomPtr_A3(j);
-  QueueSfx2_Max3(*v2);
-  return j + 2;
+const uint16 *Sidehopper_Func_1(uint16 k, const uint16 *jp) {  // 0xA3AA68
+  QueueSfx2_Max3(*jp);
+  return jp + 1;
 }
 
-uint16 Sidehopper_Instr_1(uint16 k, uint16 j) {  // 0xA3AAFE
+const uint16 *Sidehopper_Instr_1(uint16 k, const uint16 *jp) {  // 0xA3AAFE
   Get_Sidehopper(cur_enemy_index)->sideh_var_04 = 1;
-  return j;
+  return jp;
 }
 
 void Sidehopper_Init(void) {  // 0xA3AB09
@@ -1694,19 +1671,19 @@ void Sidehopper_Func_22(void) {  // 0xA3AE8E
   }
 }
 
-uint16 MaridiaRefillCandy_Instr_1(uint16 k, uint16 j) {  // 0xA3B429
+const uint16 *MaridiaRefillCandy_Instr_1(uint16 k, const uint16 *jp) {  // 0xA3B429
   Get_MaridiaRefillCandy(cur_enemy_index)->mrcy_var_00 = 4;
-  return j;
+  return jp;
 }
 
-uint16 MaridiaRefillCandy_Instr_2(uint16 k, uint16 j) {  // 0xA3B434
+const uint16 *MaridiaRefillCandy_Instr_2(uint16 k, const uint16 *jp) {  // 0xA3B434
   Get_MaridiaRefillCandy(cur_enemy_index)->mrcy_var_00 = 8;
-  return j;
+  return jp;
 }
 
-uint16 MaridiaRefillCandy_Instr_3(uint16 k, uint16 j) {  // 0xA3B43F
+const uint16 *MaridiaRefillCandy_Instr_3(uint16 k, const uint16 *jp) {  // 0xA3B43F
   Get_MaridiaRefillCandy(cur_enemy_index)->mrcy_var_00 = 12;
-  return j;
+  return jp;
 }
 
 void MaridiaRefillCandy_Init(void) {  // 0xA3B44A
@@ -1825,14 +1802,14 @@ void NorfairSlowFireball_Func_1(void) {  // 0xA3B6F9
     ;
 }
 
-uint16 Bang_Instr_1(uint16 k, uint16 j) {  // 0xA3BA78
+const uint16 *Bang_Instr_1(uint16 k, const uint16 *jp) {  // 0xA3BA78
   QueueSfx2_Max6(0x56u);
-  return j;
+  return jp;
 }
 
-uint16 Bang_Instr_2(uint16 k, uint16 j) {  // 0xA3BAA8
+const uint16 *Bang_Instr_2(uint16 k, const uint16 *jp) {  // 0xA3BAA8
   Get_Bang(cur_enemy_index)->bang_var_22 = 1;
-  return j;
+  return jp;
 }
 
 void Bang_Init(void) {  // 0xA3BAB3
@@ -2130,9 +2107,9 @@ void Bang_Shot(void) {  // 0xA3BEFD
   }
 }
 
-uint16 Skree_Instr_1(uint16 k, uint16 j) {  // 0xA3C6A4
+const uint16 *Skree_Instr_1(uint16 k, const uint16 *jp) {  // 0xA3C6A4
   Get_Skree(cur_enemy_index)->skree_var_E = 1;
-  return j;
+  return jp;
 }
 
 void Skree_Init(void) {  // 0xA3C6AE
@@ -2245,38 +2222,34 @@ void Skree_Shot(void) {  // 0xA3C7F5
   }
 }
 
-uint16 MaridiaSnail_Instr_1(uint16 k, uint16 j) {  // 0xA3CC36
-  uint16 v2 = *(uint16 *)RomPtr_A3(j);
-  Get_MaridiaSnail(k)->msl_var_F = v2;
-  return j + 2;
+const uint16 *MaridiaSnail_Instr_1(uint16 k, const uint16 *jp) {  // 0xA3CC36
+  Get_MaridiaSnail(k)->msl_var_F = *jp;
+  return jp + 1;
 }
 
-uint16 MaridiaSnail_Instr_2(uint16 k, uint16 j) {  // 0xA3CC3F
-  uint16 v2 = *(uint16 *)RomPtr_A3(j);
-  Get_MaridiaSnail(k)->msl_var_D = v2;
-  return j + 2;
+const uint16 *MaridiaSnail_Instr_2(uint16 k, const uint16 *jp) {  // 0xA3CC3F
+  Get_MaridiaSnail(k)->msl_var_D = *jp;
+  return jp + 1;
 }
 
-uint16 MaridiaSnail_Instr_4(uint16 k, uint16 j) {  // 0xA3CC48
-  uint16 v2 = *(uint16 *)RomPtr_A3(j);
+const uint16 *MaridiaSnail_Instr_4(uint16 k, const uint16 *jp) {  // 0xA3CC48
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
-  E->msl_var_07 = v2;
-  E->msl_var_C = *(uint16 *)((char *)&g_stru_A3CD42[0].field_6 + (uint16)(8 * v2));
-  return j + 2;
+  E->msl_var_07 = jp[0];
+  E->msl_var_C = *(uint16 *)((char *)&g_stru_A3CD42[0].field_6 + 8 * E->msl_var_07);
+  return jp + 1;
 }
 
-uint16 MaridiaSnail_Instr_3(uint16 k, uint16 j) {  // 0xA3CC5F
-  uint8 *v2 = RomPtr_A3(j);
+const uint16 *MaridiaSnail_Instr_3(uint16 k, const uint16 *jp) {  // 0xA3CC5F
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
-  E->base.x_pos += *(uint16 *)v2;
-  E->base.y_pos += *((uint16 *)v2 + 1);
-  return j + 4;
+  E->base.x_pos += jp[0];
+  E->base.y_pos += jp[1];
+  return jp + 2;
 }
 
-uint16 MaridiaSnail_Instr_5(uint16 k, uint16 j) {  // 0xA3CC78
+const uint16 *MaridiaSnail_Instr_5(uint16 k, const uint16 *jp) {  // 0xA3CC78
   if (Get_MaridiaSnail(k)->msl_var_08 == 2 || (NextRandom() & 1) != 0)
-    j -= 6;
-  return j;
+    jp -= 3;
+  return jp;
 }
 
 void MaridiaSnail_Func_1(uint16 k) {  // 0xA3CC92
@@ -2837,10 +2810,9 @@ void Reflec_Func_1(void) {  // 0xA3DB0C
   }
 }
 
-uint16 Reflec_Instr_1(uint16 k, uint16 j) {  // 0xA3DBC8
-  uint16 v2 = *(uint16 *)RomPtr_A3(j);
-  Get_Reflec(k)->reflec_parameter_2 = v2;
-  return j + 2;
+const uint16 *Reflec_Instr_1(uint16 k, const uint16 *jp) {  // 0xA3DBC8
+  Get_Reflec(k)->reflec_parameter_2 = jp[0];
+  return jp + 1;
 }
 
 void Reflec_Init(void) {  // 0xA3DBD3
@@ -2945,10 +2917,9 @@ void Reflec_Func_13(void) {  // 0xA3DEFD
   loop_index_end = Get_Reflec(cur_enemy_index)->base.y_pos;
 }
 
-uint16 WreckedShipOrangeZoomer_Func_1(uint16 k, uint16 j) {  // 0xA3DFC2
-  uint16 v2 = *(uint16 *)RomPtr_A3(j);
-  Get_WreckedShipOrangeZoomer(k)->wsozr_var_F = v2;
-  return j + 2;
+const uint16 *WreckedShipOrangeZoomer_Func_1(uint16 k, const uint16 *jp) {  // 0xA3DFC2
+  Get_WreckedShipOrangeZoomer(k)->wsozr_var_F = jp[0];
+  return jp + 1;
 }
 
 void WreckedShipOrangeZoomer_Init(void) {  // 0xA3E043
@@ -3125,10 +3096,9 @@ void FireZoomer_Init(void) {  // 0xA3E59C
   StoneZoomer_E67A(cur_enemy_index);
 }
 
-uint16 Zoomer_Instr_SetPreinstr(uint16 k, uint16 j) {  // 0xA3E660
-  uint16 v2 = *(uint16 *)RomPtr_A3(j);
-  gEnemyData(k)->ai_preinstr = v2;
-  return j + 2;
+const uint16 *Zoomer_Instr_SetPreinstr(uint16 k, const uint16 *jp) {  // 0xA3E660
+  gEnemyData(k)->ai_preinstr = jp[0];
+  return jp + 1;
 }
 
 void StoneZoomer_Init(void) {  // 0xA3E669
@@ -3350,15 +3320,15 @@ void Metroid_Init(void) {  // 0xA3EA4F
   E->metroid_var_02 = 0;
 }
 
-uint16 Metroid_Instr_2(uint16 k, uint16 j) {  // 0xA3EAA5
+const uint16 *Metroid_Instr_2(uint16 k, const uint16 *jp) {  // 0xA3EAA5
   QueueSfx2_Max6(0x50u);
-  return j;
+  return jp;
 }
 
-uint16 Metroid_Instr_1(uint16 k, uint16 j) {  // 0xA3EAB1
+const uint16 *Metroid_Instr_1(uint16 k, const uint16 *jp) {  // 0xA3EAB1
   int v2 = (uint16)(2 * (NextRandom() & 7)) >> 1;
   QueueSfx2_Max6(g_word_A3EAD6[v2]);
-  return j;
+  return jp;
 }
 
 void Metroid_Frozen(void) {  // 0xA3EAE6

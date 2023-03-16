@@ -75,106 +75,98 @@ void func_nullsub_170(void) {
   ;
 }
 
-uint16 EnemyInstr_SetAiPreInstr(uint16 k, uint16 j) {  // 0xA0806B
-  uint16 v2 = *(uint16 *)RomPtr_A0(j);
-  gEnemyData(k)->ai_preinstr = v2;
-  return j + 2;
+const uint16 *EnemyInstr_SetAiPreInstr(uint16 k, const uint16 *jp) {  // 0xA0806B
+  gEnemyData(k)->ai_preinstr = jp[0];
+  return jp + 1;
 }
 
-uint16 EnemyInstr_ClearAiPreInstr(uint16 k, uint16 j) {  // 0xA08074
+const uint16 *EnemyInstr_ClearAiPreInstr(uint16 k, const uint16 *jp) {  // 0xA08074
   gEnemyData(k)->ai_preinstr = FUNC16(nullsub_171);
-  return j;
+  return jp;
 }
 
 void func_nullsub_171(void) {
   ;
 }
 
-uint16 EnemyInstr_StopScript(uint16 k, uint16 j) {  // 0xA0807C
+const uint16 *EnemyInstr_StopScript(uint16 k, const uint16 *jp) {  // 0xA0807C
   EnemyData *v2 = gEnemyData(k);
   v2->properties |= kEnemyProps_Deleted;
   return 0;
 }
 
-uint16 EnemyInstr_Goto(uint16 k, uint16 j) {  // 0xA080ED
-  return *(uint16 *)RomPtr_A0(j);
+const uint16 *EnemyInstr_Goto(uint16 k, const uint16 *jp) {  // 0xA280ED
+  return INSTR_RETURN_ADDR(*jp);
 }
 
-uint16 EnemyInstr_GotoRel(uint16 k, uint16 j) {  // 0xA080F2
-  return j + (int8)*RomPtr_A0(j);
+const uint16 *EnemyInstr_GotoRel(uint16 k, const uint16 *jp) {  // 0xA080F2
+  return (const uint16 * )((uint8*)jp + *(int8*)jp);
 }
 
-uint16 EnemyInstr_DecTimerAndGoto(uint16 k, uint16 j) {  // 0xA08108
+const uint16 *EnemyInstr_DecTimerAndGoto(uint16 k, const uint16 *jp) {  // 0xA08108
   EnemyData *v2 = gEnemyData(k);
   if (v2->timer-- == 1)
-    return j + 2;
+    return jp + 1;
   else
-    return EnemyInstr_Goto(k, j);
+    return EnemyInstr_Goto(k, jp);
 }
 
-uint16 EnemyInstr_DecTimerAndGoto2(uint16 k, uint16 j) {  // 0xA08110
-  EnemyData *v2 = gEnemyData(k);
-  if (v2->timer-- == 1)
-    return j + 2;
-  else
-    return EnemyInstr_Goto(k, j);
-}
-
-uint16 EnemyInstr_DecTimerAndGotoRel(uint16 k, uint16 j) {  // 0xA08118
+const uint16 *EnemyInstr_DecTimerAndGotoRel(uint16 k, const uint16 *jp) {  // 0xA08118
   EnemyData *v2 = gEnemyData(k);
   if (LOBYTE(v2->timer)-- == 1)
-    return j + 1;
+    return (const uint16 *)((uint8 *)jp + 1);
   else
-    return EnemyInstr_GotoRel(k, j);
+    return EnemyInstr_GotoRel(k, jp);
 }
 
-uint16 EnemyInstr_SetTimer(uint16 k, uint16 j) {  // 0xA08123
-  uint16 v2 = *(uint16 *)RomPtr_A0(j);
-  gEnemyData(k)->timer = v2;
-  return j + 2;
+const uint16 *EnemyInstr_SetTimer(uint16 k, const uint16 *jp) {  // 0xA08123
+  gEnemyData(k)->timer = *jp;
+  return jp + 1;
 }
 
-uint16 EnemyInstr_Skip2bytes(uint16 k, uint16 j) {  // 0xA0812C
-  return j + 2;
+const uint16 *EnemyInstr_Skip2bytes(uint16 k, const uint16 *jp) {  // 0xA0812C
+  return jp + 1;
 }
 
-uint16 EnemyInstr_Sleep(uint16 k, uint16 j) {  // 0xA0812F
-  gEnemyData(k)->current_instruction = j - 2;
+const uint16 *EnemyInstr_Sleep(uint16 k, const uint16 *jp) {  // 0xA2812F
+  EnemyData *ED = gEnemyData(k);
+  uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
+  ED->current_instruction = (const uint8 *)jp - 2 - base_ptr;
   return 0;
 }
 
-uint16 EnemyInstr_WaitNframes(uint16 k, uint16 j) {  // 0xA0813A
-  uint16 v2 = *(uint16 *)RomPtr_A0(j);
-  EnemyData *v3 = gEnemyData(k);
-  v3->instruction_timer = v2;
-  v3->current_instruction = j + 2;
+const uint16 *EnemyInstr_WaitNframes(uint16 k, const uint16 *jp) {  // 0xA0813A
+  EnemyData *ED = gEnemyData(k);
+  uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
+  ED->instruction_timer = jp[0];
+  ED->current_instruction = (const uint8 *)jp + 2 - base_ptr;
   return 0;
 }
 
-uint16 EnemyInstr_CopyToVram(uint16 k, uint16 j) {  // 0xA0814B
+const uint16 *EnemyInstr_CopyToVram(uint16 k, const uint16 *jp) {  // 0xA0814B
   VramWriteEntry *v4;
 
   uint16 v2 = vram_write_queue_tail;
-  uint8 *v3 = RomPtr_A0(j);
+  uint8 *v3 = (uint8*)jp;
   v4 = gVramWriteEntry(vram_write_queue_tail);
   v4->size = *(uint16 *)v3;
   v4->src.addr = *((uint16 *)v3 + 1);
   *(VoidP *)((char *)&v4->src.addr + 1) = *(uint16 *)(v3 + 3);
   v4->vram_dst = *(uint16 *)(v3 + 5);
   vram_write_queue_tail = v2 + 7;
-  return j + 7;
+  return INSTR_INCR_BYTES(jp, 7);
 }
 
-uint16 EnemyInstr_EnableOffScreenProcessing(uint16 k, uint16 j) {  // 0xA08173
+const uint16 *EnemyInstr_EnableOffScreenProcessing(uint16 k, const uint16 *jp) {  // 0xA08173
   EnemyData *v2 = gEnemyData(k);
   v2->properties |= 0x800u;
-  return j;
+  return jp;
 }
 
-uint16 EnemyInstr_DisableOffScreenProcessing(uint16 k, uint16 j) {  // 0xA0817D
+const uint16 *EnemyInstr_DisableOffScreenProcessing(uint16 k, const uint16 *jp) {  // 0xA0817D
   EnemyData *v2 = gEnemyData(k);
   v2->properties &= ~0x800u;
-  return j;
+  return jp;
 }
 
 static const uint16 kRoomShakes[144] = {  // 0xA08687
@@ -1327,14 +1319,14 @@ void CallEnemyPreInstr(uint32 ea) {
   }
 }
 
-uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
+const uint16 *CallEnemyInstr(uint32 ea, uint16 k, const uint16 *j) {
   switch (ea) {
-  case fnEnemyInstr_Goto_A2: return EnemyInstr_Goto_A2(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_A2: return EnemyInstr_DecTimerAndGoto2_A2(k, j);
-  case fnEnemyInstr_SetTimer_A2: return EnemyInstr_SetTimer_A2(k, j);
-  case fnEnemyInstr_Sleep_A2: return EnemyInstr_Sleep_A2(k, j);
-  case fnEnemyInstr_EnableOffScreenProcessing_A2: return EnemyInstr_EnableOffScreenProcessing_A2(k, j);
-  case fnEnemyInstr_DisableOffScreenProcessing_A2: return EnemyInstr_DisableOffScreenProcessing_A2(k, j);
+  case fnEnemyInstr_Goto_A2: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_A2: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_A2: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_A2: return EnemyInstr_Sleep(k, j);
+  case fnEnemyInstr_EnableOffScreenProcessing_A2: return EnemyInstr_EnableOffScreenProcessing(k, j);
+  case fnEnemyInstr_DisableOffScreenProcessing_A2: return EnemyInstr_DisableOffScreenProcessing(k, j);
   case fnBouncingGoofball_Instr_88C5: return BouncingGoofball_Instr_88C5(k, j);
   case fnBouncingGoofball_Instr_88C6: return BouncingGoofball_Instr_88C6(k, j);
   case fnMiniCrocomire_Instr_897E: return MiniCrocomire_Instr_897E(k, j);
@@ -1378,10 +1370,10 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnMaridiaLargeSnail_Instr_CCBE: return MaridiaLargeSnail_Instr_CCBE(k, j);
   case fnMaridiaLargeSnail_Instr_CCC9: return MaridiaLargeSnail_Instr_CCC9(k, j);
   case fnLavaSeahorse_Instr_E5FB: return LavaSeahorse_Instr_E5FB(k, j);
-  case fnEnemyInstr_Goto_A3: return EnemyInstr_Goto_A3(k, j);
-  case fnEnemyInstr_Sleep_A3: return EnemyInstr_Sleep_A3(k, j);
-  case fnEnemyInstr_EnableOffScreenProcessing_A3: return EnemyInstr_EnableOffScreenProcessing_A3(k, j);
-  case fnEnemyInstr_DisableOffScreenProcessing_A3: return EnemyInstr_DisableOffScreenProcessing_A3(k, j);
+  case fnEnemyInstr_Goto_A3: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_Sleep_A3: return EnemyInstr_Sleep(k, j);
+  case fnEnemyInstr_EnableOffScreenProcessing_A3: return EnemyInstr_EnableOffScreenProcessing(k, j);
+  case fnEnemyInstr_DisableOffScreenProcessing_A3: return EnemyInstr_DisableOffScreenProcessing(k, j);
   case fnWaver_Instr_1: return Waver_Instr_1(k, j);
   case fnMetalee_Instr_1: return Metalee_Instr_1(k, j);
   case fnMaridiaFish_Instr_3: return MaridiaFish_Instr_3(k, j);
@@ -1409,8 +1401,8 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnZoomer_Instr_SetPreinstr: return Zoomer_Instr_SetPreinstr(k, j);
   case fnMetroid_Instr_2: return Metroid_Instr_2(k, j);
   case fnMetroid_Instr_1: return Metroid_Instr_1(k, j);
-  case fnEnemyInstr_Goto_A4: return EnemyInstr_Goto_A4(k, j);
-  case fnEnemyInstr_Sleep_A4: return EnemyInstr_Sleep_A4(k, j);
+  case fnEnemyInstr_Goto_A4: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_Sleep_A4: return EnemyInstr_Sleep(k, j);
   case fnCrocomire_Instr_1: return Crocomire_Instr_1(k, j);
   case fnCrocomire_Instr_14: return Crocomire_Instr_14(k, j);
   case fnCrocomire_Instr_11: return Crocomire_Instr_11(k, j);
@@ -1438,12 +1430,12 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnCrocomire_Instr_25: return Crocomire_Instr_25(k, j);
   case fnCrocomire_Instr_26: return Crocomire_Instr_26(k, j);
   case fnCrocomire_Instr_27: return Crocomire_Instr_27(k, j);
-  case fnEnemyInstr_StopScript_A5: return EnemyInstr_StopScript_A5(k, j);
-  case fnEnemyInstr_Goto_A5: return EnemyInstr_Goto_A5(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_A5: return EnemyInstr_DecTimerAndGoto2_A5(k, j);
-  case fnEnemyInstr_SetTimer_A5: return EnemyInstr_SetTimer_A5(k, j);
-  case fnEnemyInstr_Sleep_A5: return EnemyInstr_Sleep_A5(k, j);
-  case fnEnemyInstr_WaitNframes_A5: return EnemyInstr_WaitNframes_A5(k, j);
+  case fnEnemyInstr_StopScript_A5: return EnemyInstr_StopScript(k, j);
+  case fnEnemyInstr_Goto_A5: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_A5: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_A5: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_A5: return EnemyInstr_Sleep(k, j);
+  case fnEnemyInstr_WaitNframes_A5: return EnemyInstr_WaitNframes(k, j);
   case fnDraygon_Instr_1: return Draygon_Instr_1(k, j);
   case fnDraygon_Instr_13: return Draygon_Instr_13(k, j);
   case fnDraygon_Instr_8: return Draygon_Instr_8(k, j);
@@ -1474,8 +1466,8 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnDraygon_Instr_19: return Draygon_Instr_19(k, j);
   case fnDraygon_Instr_28: return Draygon_Instr_28(k, j);
   case fnDraygon_Instr_26: return Draygon_Instr_26(k, j);
-  case fnEnemyInstr_Goto_A6: return EnemyInstr_Goto_A6(k, j);
-  case fnEnemyInstr_Sleep_A6: return EnemyInstr_Sleep_A6(k, j);
+  case fnEnemyInstr_Goto_A6: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_Sleep_A6: return EnemyInstr_Sleep(k, j);
   case fnFireGeyser_Instr_1: return FireGeyser_Instr_1(k, j);
   case fnFireGeyser_Instr_2: return FireGeyser_Instr_2(k, j);
   case fnFireGeyser_Instr_3: return FireGeyser_Instr_3(k, j);
@@ -1535,10 +1527,10 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnCeresDoor_Instr_2: return CeresDoor_Instr_2(k, j);
   case fnCeresDoor_Instr_7: return CeresDoor_Instr_7(k, j);
   case fnEnemyInstr_Call_A7: return EnemyInstr_Call_A7(k, j);
-  case fnEnemyInstr_Goto_A7: return EnemyInstr_Goto_A7(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_A7: return EnemyInstr_DecTimerAndGoto2_A7(k, j);
-  case fnEnemyInstr_SetTimer_A7: return EnemyInstr_SetTimer_A7(k, j);
-  case fnEnemyInstr_Sleep_A7: return EnemyInstr_Sleep_A7(k, j);
+  case fnEnemyInstr_Goto_A7: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_A7: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_A7: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_A7: return EnemyInstr_Sleep(k, j);
   case fnKraid_Instr_9: return Kraid_Instr_9(k, j);
   case fnKraid_Instr_1: return Kraid_Instr_1(k, j);
   case fnKraid_Instr_DecYpos: return Kraid_Instr_DecYpos(k, j);
@@ -1548,12 +1540,12 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnKraid_Instr_XposMinus3b: return Kraid_Instr_XposMinus3b(k, j);
   case fnKraid_Instr_XposPlus3: return Kraid_Instr_XposPlus3(k, j);
   case fnKraid_Instr_MoveHimRight: return Kraid_Instr_MoveHimRight(k, j);
-  case fnEnemyInstr_Goto_A8: return EnemyInstr_Goto_A8(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_A8: return EnemyInstr_DecTimerAndGoto2_A8(k, j);
-  case fnEnemyInstr_SetTimer_A8: return EnemyInstr_SetTimer_A8(k, j);
-  case fnEnemyInstr_Sleep_A8: return EnemyInstr_Sleep_A8(k, j);
-  case fnEnemyInstr_EnableOffScreenProcessing_A8: return EnemyInstr_EnableOffScreenProcessing_A8(k, j);
-  case fnEnemyInstr_DisableOffScreenProcessing_A8: return EnemyInstr_DisableOffScreenProcessing_A8(k, j);
+  case fnEnemyInstr_Goto_A8: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_A8: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_A8: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_A8: return EnemyInstr_Sleep(k, j);
+  case fnEnemyInstr_EnableOffScreenProcessing_A8: return EnemyInstr_EnableOffScreenProcessing(k, j);
+  case fnEnemyInstr_DisableOffScreenProcessing_A8: return EnemyInstr_DisableOffScreenProcessing(k, j);
   case fnMiniDraygon_Instr_2: return MiniDraygon_Instr_2(k, j);
   case fnMiniDraygon_Instr_1: return MiniDraygon_Instr_1(k, j);
   case fnMiniDraygon_Instr_3: return MiniDraygon_Instr_3(k, j);
@@ -1620,7 +1612,7 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnKiHunter_Instr_3: return KiHunter_Instr_3(k, j);
   case fnKiHunter_Instr_4: return KiHunter_Instr_4(k, j);
   case fnKiHunter_Instr_5: return KiHunter_Instr_5(k, j);
-  case fnEnemyInstr_Sleep_A9: return EnemyInstr_Sleep_A9(k, j);
+  case fnEnemyInstr_Sleep_A9: return EnemyInstr_Sleep(k, j);
   case fnShitroid_Instr_1: return Shitroid_Instr_1(k, j);
   case fnShitroid_Instr_2: return Shitroid_Instr_2(k, j);
   case fnsub_A9ECD0: return sub_A9ECD0(k, j);
@@ -1630,13 +1622,13 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnShitroid_Instr_5: return Shitroid_Instr_5(k, j);
   case fnEnemy_SetAiPreInstr_AA: return Enemy_SetAiPreInstr_AA(k, j);
   case fnEnemy_ClearAiPreInstr_AA: return Enemy_ClearAiPreInstr_AA(k, j);
-  case fnEnemyInstr_StopScript_AA: return EnemyInstr_StopScript_AA(k, j);
-  case fnEnemyInstr_Goto_AA: return EnemyInstr_Goto_AA(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_AA: return EnemyInstr_DecTimerAndGoto2_AA(k, j);
-  case fnEnemyInstr_SetTimer_AA: return EnemyInstr_SetTimer_AA(k, j);
-  case fnEnemyInstr_Sleep_AA: return EnemyInstr_Sleep_AA(k, j);
-  case fnEnemyInstr_WaitNframes_AA: return EnemyInstr_WaitNframes_AA(k, j);
-  case fnEnemyInstr_CopyToVram_AA: return EnemyInstr_CopyToVram_AA(k, j);
+  case fnEnemyInstr_StopScript_AA: return EnemyInstr_StopScript(k, j);
+  case fnEnemyInstr_Goto_AA: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_AA: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_AA: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_AA: return EnemyInstr_Sleep(k, j);
+  case fnEnemyInstr_WaitNframes_AA: return EnemyInstr_WaitNframes(k, j);
+  case fnEnemyInstr_CopyToVram_AA: return EnemyInstr_CopyToVram(k, j);
   case fnTorizo_Instr_3: return Torizo_Instr_3(k, j);
   case fnTorizo_Instr_31: return Torizo_Instr_31(k, j);
   case fnTorizo_Instr_33: return Torizo_Instr_33(k, j);
@@ -1714,11 +1706,11 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnShaktool_Instr_12: return Shaktool_Instr_12(k, j);
   case fnShaktool_Instr_7: return Shaktool_Instr_7(k, j);
   case fnShaktool_Instr_14: return Shaktool_Instr_14(k, j);
-  case fnEnemyInstr_Goto_B2: return EnemyInstr_Goto_B2(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_B2: return EnemyInstr_DecTimerAndGoto2_B2(k, j);
-  case fnEnemyInstr_SetTimer_B2: return EnemyInstr_SetTimer_B2(k, j);
-  case fnEnemyInstr_Sleep_B2: return EnemyInstr_Sleep_B2(k, j);
-  case fnEnemyInstr_WaitNframes_B2: return EnemyInstr_WaitNframes_B2(k, j);
+  case fnEnemyInstr_Goto_B2: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_B2: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_B2: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_B2: return EnemyInstr_Sleep(k, j);
+  case fnEnemyInstr_WaitNframes_B2: return EnemyInstr_WaitNframes(k, j);
   case fnSpacePirates_Instr_MovePixelsDownAndChangeDirFaceRight: return SpacePirates_Instr_MovePixelsDownAndChangeDirFaceRight(k, j);
   case fnSpacePirates_Instr_MovePixelsDownAndChangeDirFaceLeft: return SpacePirates_Instr_MovePixelsDownAndChangeDirFaceLeft(k, j);
   case fnSpacePirates_Instr_RandomNewDirFaceR: return SpacePirates_Instr_RandomNewDirFaceR(k, j);
@@ -1742,10 +1734,10 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnSpacePirates_Instr_13: return SpacePirates_Instr_13(k, j);
   case fnEnemy_SetAiPreInstr_B3: return Enemy_SetAiPreInstr_B3(k, j);
   case fnEnemy_ClearAiPreInstr_B3: return Enemy_ClearAiPreInstr_B3(k, j);
-  case fnEnemyInstr_Goto_B3: return EnemyInstr_Goto_B3(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_B3: return EnemyInstr_DecTimerAndGoto2_B3(k, j);
-  case fnEnemyInstr_SetTimer_B3: return EnemyInstr_SetTimer_B3(k, j);
-  case fnEnemyInstr_Sleep_B3: return EnemyInstr_Sleep_B3(k, j);
+  case fnEnemyInstr_Goto_B3: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_B3: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_B3: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_B3: return EnemyInstr_Sleep(k, j);
   case fnBotwoon_Instr_1: return Botwoon_Instr_1(k, j);
   case fnBotwoon_Instr_2: return Botwoon_Instr_2(k, j);
   case fnBotwoon_Instr_3: return Botwoon_Instr_3(k, j);
@@ -1796,7 +1788,7 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnMotherBrain_Instr_SpawnDeathBeamEproj: return MotherBrain_Instr_SpawnDeathBeamEproj(k, j);
   case fnMotherBrain_Instr_IncrBeamAttackPhase: return MotherBrain_Instr_IncrBeamAttackPhase(k, j);
 
-  default: return Unreachable();
+  default: Unreachable(); return NULL;
   }
 }
 
@@ -4189,32 +4181,26 @@ uint8 IsEnemyLeavingScreen(uint16 k) {  // 0xA0C18E
 }
 
 void ProcessEnemyInstructions(void) {  // 0xA0C26A
-  VoidP *v4;
-  int16 v5;
-
-  EnemyData *v1 = gEnemyData(cur_enemy_index);
-  if ((v1->ai_handler_bits & 4) == 0) {
-    if (v1->instruction_timer-- == 1) {
-      uint8 bank = v1->bank;
-      uint16 current_instruction = v1->current_instruction;
-      while (1) {
-        v4 = (VoidP *)RomPtrWithBank(bank, current_instruction);
-        v5 = *v4;
-        if ((*v4 & 0x8000u) == 0)
-          break;
-        enemy_ai_pointer.addr = *v4;
-        current_instruction = CallEnemyInstr(Load24(&enemy_ai_pointer), cur_enemy_index, current_instruction + 2);
-        if (!current_instruction)
+  EnemyData *ED = gEnemyData(cur_enemy_index);
+  if ((ED->ai_handler_bits & 4) == 0) {
+    if (ED->instruction_timer-- == 1) {
+      assert(ED->current_instruction & 0x8000);
+      uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
+      const uint16 *pc = (const uint16 *)(base_ptr + ED->current_instruction);
+      while ((*pc & 0x8000u) != 0) {
+        enemy_ai_pointer.addr = *pc;
+        pc = CallEnemyInstr(Load24(&enemy_ai_pointer), cur_enemy_index, pc + 1);
+        if (!pc)
           return;
+        if ((uintptr_t)pc < 0x10000)
+          pc = (const uint16*)(base_ptr + (uintptr_t)pc);
       }
-      EnemyData *v6 = gEnemyData(cur_enemy_index);
-      v6->instruction_timer = v5;
-      v6->spritemap_pointer = *((uint16 *)RomPtrWithBank(bank, current_instruction) + 1);
-      v6->current_instruction = current_instruction + 4;
-      v6->extra_properties |= 0x8000u;
+      ED->instruction_timer = pc[0];
+      ED->spritemap_pointer = pc[1];
+      ED->current_instruction = (uint8 *)pc + 4 - base_ptr;
+      ED->extra_properties |= 0x8000;
     } else {
-      EnemyData *v7 = gEnemyData(cur_enemy_index);
-      v7->extra_properties &= ~0x8000u;
+      ED->extra_properties &= ~0x8000;
     }
   }
 }

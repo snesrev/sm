@@ -392,6 +392,10 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
   memcpy(&a->ram[0x77e], &b->ram[0x77e], 5);  // my counter
   memcpy(&a->ram[0xe20], &b->ram[0xe20], 2);  // enemy_population_ptr
 
+  memcpy(&a->ram[0x1784], &b->ram[0x1784], 3);  // enemy_ai_pointer
+
+
+  
   if (memcmp(b->ram, a->ram, 0x20000)) {
     fprintf(stderr, "@%d: Memory compare failed (mine != theirs, prev):\n", snes_frame_counter);
     int j = 0;

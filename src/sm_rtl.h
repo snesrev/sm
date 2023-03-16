@@ -43,6 +43,10 @@ uint32 Load24(void *a);
 void MemCpy(void *dst, const void *src, int size);
 void Call(uint32 addr);
 
+#define INSTR_RETURN_ADDR(x) ((const uint16*)(uintptr_t)(x))
+#define INSTR_INCR_BYTES(x, n) ((const uint16*)((uintptr_t)(x) + n))
+#define INSTR_ADDR_TO_PTR(k, jp) ((uint8*)(jp) - (RomPtrWithBank(gEnemyData(k)->bank, 0x8000) - 0x8000))
+
 static inline uint8_t *RomPtr_RAM(uint16_t addr) { assert(addr < 0x2000); return g_ram + addr; }
 
 static inline uint8_t *RomPtr_7E(uint16_t addr) { return g_ram + addr; }
@@ -245,7 +249,7 @@ bool Unreachable();
 
 void CallEnemyAi(uint32 ea);
 void CallEnemyPreInstr(uint32 ea);
-uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j);
+const uint16 *CallEnemyInstr(uint32 ea, uint16 k, const uint16 *jp);
 
 void CalculateBlockContainingPixelPos(uint16 xpos, uint16 ypos);
 
@@ -460,4 +464,3 @@ typedef enum SnesRegs {
   UNUSED7 = 0x437B,
   MIRR7 = 0x437F,
 } SnesRegs;
-

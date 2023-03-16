@@ -95,18 +95,6 @@ static const uint16 g_word_A7F4DB = 0x1000;
 #define g_word_A7CA41 ((uint16*)RomPtr(0xa7ca41))
 #define g_word_A7CA61 ((uint16*)RomPtr(0xa7ca61))
 
-uint16 EnemyInstr_Goto_A7(uint16 k, uint16 j) {  // 0xA780ED
-  return *(uint16 *)RomPtr_A7(j);
-}
-
-uint16 EnemyInstr_DecTimerAndGoto2_A7(uint16 k, uint16 j) {  // 0xA78110
-  EnemyData *v2 = gEnemyData(k);
-  if (v2->timer-- == 1)
-    return j + 2;
-  else
-    return EnemyInstr_Goto_A7(k, j);
-}
-
 void CallEnemyInstrExtFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnPhantoon_Func_1: Phantoon_Func_1(); return;
@@ -117,19 +105,9 @@ void CallEnemyInstrExtFunc(uint32 ea, uint16 k) {
   }
 }
 
-uint16 EnemyInstr_Call_A7(uint16 k, uint16 j) {  // 0xA7808A
-  R18_ = *(uint16 *)RomPtr_A7(j);
-  CallEnemyInstrExtFunc(R18_ | 0xA70000, k);
-  return j + 2;
-}
-uint16 EnemyInstr_SetTimer_A7(uint16 k, uint16 j) {  // 0xA78123
-  uint16 v2 = *(uint16 *)RomPtr_A7(j);
-  gEnemyData(k)->timer = v2;
-  return j + 2;
-}
-uint16 EnemyInstr_Sleep_A7(uint16 k, uint16 j) {  // 0xA7812F
-  gEnemyData(k)->current_instruction = j - 2;
-  return 0;
+const uint16 *EnemyInstr_Call_A7(uint16 k, const uint16 *jp) {  // 0xA7808A
+  CallEnemyInstrExtFunc(jp[0] | 0xA70000, k);
+  return jp + 1;
 }
 
 
@@ -153,14 +131,14 @@ void Enemy_NormalFrozenAI_A7(void) {  // 0xA78041
   NormalEnemyFrozenAI();
 }
 
-uint16 Kraid_Instr_9(uint16 k, uint16 j) {  // 0xA78A8F
+const uint16 *Kraid_Instr_9(uint16 k, const uint16 *jp) {  // 0xA78A8F
   Enemy_Kraid *E = Get_Kraid(0);
   if ((int16)(E->base.health - E->kraid_healths_8ths[3]) < 0) {
     Enemy_Kraid *E1 = Get_Kraid(0x40u);
     if (sign16(E1->base.current_instruction + 0x75BF))
-      return addr_kKraid_Ilist_8A41;
+      return INSTR_RETURN_ADDR(addr_kKraid_Ilist_8A41);
   }
-  return j;
+  return jp;
 }
 
 void Kraid_Touch_ArmFoot(void) {  // 0xA7948B
@@ -951,48 +929,48 @@ void Kraid_HealthBasedPaletteHandling(void) {  // 0xA7B394
   } while ((int16)(v4 - 32) < 0);
 }
 
-uint16 Kraid_Instr_1(uint16 k, uint16 j) {  // 0xA7B633
-  return j;
+const uint16 *Kraid_Instr_1(uint16 k, const uint16 *jp) {  // 0xA7B633
+  return jp;
 }
 
-uint16 Kraid_Instr_DecYpos(uint16 k, uint16 j) {  // 0xA7B636
+const uint16 *Kraid_Instr_DecYpos(uint16 k, const uint16 *jp) {  // 0xA7B636
   Enemy_Kraid *E = Get_Kraid(0);
   --E->base.y_pos;
-  return j;
+  return jp;
 }
 
-uint16 Kraid_Instr_IncrYpos_Shake(uint16 k, uint16 j) {  // 0xA7B63C
+const uint16 *Kraid_Instr_IncrYpos_Shake(uint16 k, const uint16 *jp) {  // 0xA7B63C
   Enemy_Kraid *E = Get_Kraid(0);
   ++E->base.y_pos;
   earthquake_type = 1;
   earthquake_timer = 10;
-  return j;
+  return jp;
 }
 
-uint16 Kraid_Instr_PlaySound_0x76(uint16 k, uint16 j) {  // 0xA7B64E
+const uint16 *Kraid_Instr_PlaySound_0x76(uint16 k, const uint16 *jp) {  // 0xA7B64E
   QueueSfx2_Max6(0x76u);
-  return j;
+  return jp;
 }
 
-uint16 Kraid_Instr_XposMinus3(uint16 k, uint16 j) {  // 0xA7B65A
+const uint16 *Kraid_Instr_XposMinus3(uint16 k, const uint16 *jp) {  // 0xA7B65A
   Enemy_Kraid *E = Get_Kraid(0);
   E->base.x_pos -= g_word_A7A91C;
-  return j;
+  return jp;
 }
 
-uint16 Kraid_Instr_XposMinus3b(uint16 k, uint16 j) {  // 0xA7B667
+const uint16 *Kraid_Instr_XposMinus3b(uint16 k, const uint16 *jp) {  // 0xA7B667
   Enemy_Kraid *E = Get_Kraid(0);
   E->base.x_pos -= g_word_A7A91C;
-  return j;
+  return jp;
 }
 
-uint16 Kraid_Instr_XposPlus3(uint16 k, uint16 j) {  // 0xA7B674
+const uint16 *Kraid_Instr_XposPlus3(uint16 k, const uint16 *jp) {  // 0xA7B674
   Enemy_Kraid *E = Get_Kraid(0);
   E->base.x_pos += g_word_A7A920;
-  return j;
+  return jp;
 }
 
-uint16 Kraid_Instr_MoveHimRight(uint16 k, uint16 j) {  // 0xA7B683
+const uint16 *Kraid_Instr_MoveHimRight(uint16 k, const uint16 *jp) {  // 0xA7B683
   uint16 v3;
 
   Enemy_Kraid *E = Get_Kraid(0);
@@ -1006,7 +984,7 @@ uint16 Kraid_Instr_MoveHimRight(uint16 k, uint16 j) {  // 0xA7B683
       Get_Kraid(0x140u)->base.x_pos = x_pos;
     }
   }
-  return j;
+  return jp;
 }
 
 void Kraid_InitEyeGlowing(void) {  // 0xA7B6BF

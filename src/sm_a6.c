@@ -124,11 +124,6 @@ static const uint16 g_word_A6D9ED[8] = { 0xc, 0xe, 0x10, 0x12, 0x1c, 0x20, 0x28,
 #define g_off_A6FD4A ((uint16*)RomPtr(0xa6fd4a))
 #define g_off_A6FD54 ((uint16*)RomPtr(0xa6fd54))
 
-uint16 EnemyInstr_Sleep_A6(uint16 k, uint16 j) {  // 0xA6812F
-  gEnemyData(k)->current_instruction = j - 2;
-  return 0;
-}
-
 void Enemy_GrappleReact_NoInteract_A6(void) {  // 0xA68000
   SwitchEnemyAiToMainAi();
 }
@@ -148,11 +143,6 @@ void Enemy_NormalShotAI_A6(void) {  // 0xA6802D
 void Enemy_NormalFrozenAI_A6(void) {  // 0xA68041
   NormalEnemyFrozenAI();
 }
-
-uint16 EnemyInstr_Goto_A6(uint16 k, uint16 j) {  // 0xA680ED
-  return *(uint16 *)RomPtr_A6(j);
-}
-
 
 void Boulder_Init(void) {  // 0xA686F5
   int16 boulder_parameter_2_high;
@@ -496,189 +486,189 @@ uint16 SpikeyPlatform_Func_5(uint16 k) {  // 0xA68CA1
   return 0;
 }
 
-uint16 FireGeyser_Instr_1(uint16 k, uint16 j) {  // 0xA68DAF
+const uint16 *FireGeyser_Instr_1(uint16 k, const uint16 *jp) {  // 0xA68DAF
   QueueSfx2_Max6(0x61u);
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_2(uint16 k, uint16 j) {  // 0xA68E13
+const uint16 *FireGeyser_Instr_2(uint16 k, const uint16 *jp) {  // 0xA68E13
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DBB;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DE7;
   E->base.x_width = 8;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_3(uint16 k, uint16 j) {  // 0xA68E2D
+const uint16 *FireGeyser_Instr_3(uint16 k, const uint16 *jp) {  // 0xA68E2D
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DBD;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DE9;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_4(uint16 k, uint16 j) {  // 0xA68E41
+const uint16 *FireGeyser_Instr_4(uint16 k, const uint16 *jp) {  // 0xA68E41
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DBF;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DEB;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_5(uint16 k, uint16 j) {  // 0xA68E55
+const uint16 *FireGeyser_Instr_5(uint16 k, const uint16 *jp) {  // 0xA68E55
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DC1;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DED;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_6(uint16 k, uint16 j) {  // 0xA68E69
+const uint16 *FireGeyser_Instr_6(uint16 k, const uint16 *jp) {  // 0xA68E69
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DC3;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DEF;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_7(uint16 k, uint16 j) {  // 0xA68E7D
+const uint16 *FireGeyser_Instr_7(uint16 k, const uint16 *jp) {  // 0xA68E7D
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DC5;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DF1;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_8(uint16 k, uint16 j) {  // 0xA68E91
+const uint16 *FireGeyser_Instr_8(uint16 k, const uint16 *jp) {  // 0xA68E91
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DC7;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DF3;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_9(uint16 k, uint16 j) {  // 0xA68EA5
+const uint16 *FireGeyser_Instr_9(uint16 k, const uint16 *jp) {  // 0xA68EA5
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DC9;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DF5;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_10(uint16 k, uint16 j) {  // 0xA68EB9
+const uint16 *FireGeyser_Instr_10(uint16 k, const uint16 *jp) {  // 0xA68EB9
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DCB;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DF7;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_11(uint16 k, uint16 j) {  // 0xA68ECD
+const uint16 *FireGeyser_Instr_11(uint16 k, const uint16 *jp) {  // 0xA68ECD
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DCD;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DF9;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_12(uint16 k, uint16 j) {  // 0xA68EE1
+const uint16 *FireGeyser_Instr_12(uint16 k, const uint16 *jp) {  // 0xA68EE1
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DCF;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DFB;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_13(uint16 k, uint16 j) {  // 0xA68EF5
+const uint16 *FireGeyser_Instr_13(uint16 k, const uint16 *jp) {  // 0xA68EF5
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DD1;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DFD;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_14(uint16 k, uint16 j) {  // 0xA68F09
+const uint16 *FireGeyser_Instr_14(uint16 k, const uint16 *jp) {  // 0xA68F09
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DD3;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DFF;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_15(uint16 k, uint16 j) {  // 0xA68F1D
+const uint16 *FireGeyser_Instr_15(uint16 k, const uint16 *jp) {  // 0xA68F1D
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DD5;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E01;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_16(uint16 k, uint16 j) {  // 0xA68F31
+const uint16 *FireGeyser_Instr_16(uint16 k, const uint16 *jp) {  // 0xA68F31
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DD7;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E03;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_17(uint16 k, uint16 j) {  // 0xA68F45
+const uint16 *FireGeyser_Instr_17(uint16 k, const uint16 *jp) {  // 0xA68F45
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DD9;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E05;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_18(uint16 k, uint16 j) {  // 0xA68F59
+const uint16 *FireGeyser_Instr_18(uint16 k, const uint16 *jp) {  // 0xA68F59
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DDB;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E07;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_19(uint16 k, uint16 j) {  // 0xA68F6D
+const uint16 *FireGeyser_Instr_19(uint16 k, const uint16 *jp) {  // 0xA68F6D
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DDD;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E09;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_20(uint16 k, uint16 j) {  // 0xA68F81
+const uint16 *FireGeyser_Instr_20(uint16 k, const uint16 *jp) {  // 0xA68F81
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DDF;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E0B;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_21(uint16 k, uint16 j) {  // 0xA68F95
+const uint16 *FireGeyser_Instr_21(uint16 k, const uint16 *jp) {  // 0xA68F95
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DE1;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E0D;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_22(uint16 k, uint16 j) {  // 0xA68FA9
+const uint16 *FireGeyser_Instr_22(uint16 k, const uint16 *jp) {  // 0xA68FA9
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DE3;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E0F;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_23(uint16 k, uint16 j) {  // 0xA68FBD
+const uint16 *FireGeyser_Instr_23(uint16 k, const uint16 *jp) {  // 0xA68FBD
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DE5;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E11;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_24(uint16 k, uint16 j) {  // 0xA68FD1
+const uint16 *FireGeyser_Instr_24(uint16 k, const uint16 *jp) {  // 0xA68FD1
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index);
   E->fgr_var_C = 1;
   Enemy_FireGeyser *E1 = Get_FireGeyser(cur_enemy_index + 64);
@@ -687,7 +677,7 @@ uint16 FireGeyser_Instr_24(uint16 k, uint16 j) {  // 0xA68FD1
   E->base.y_pos = E->fgr_var_D;
   E->base.properties |= kEnemyProps_Invisible;
   E1->base.properties |= 0x400u;
-  return j;
+  return jp;
 }
 
 void FireGeyser_Init(void) {  // 0xA68FFC
@@ -1050,7 +1040,7 @@ void FakeKraid_Func_1(uint16 k, uint16 j) {  // 0xA69ADC
   }
 }
 
-uint16 FakeKraid_Instr_2(uint16 k, uint16 j) {  // 0xA69B26
+const uint16 *FakeKraid_Instr_2(uint16 k, const uint16 *jp) {  // 0xA69B26
   Enemy_FakeKraid *E = Get_FakeKraid(cur_enemy_index);
   if (E->fkd_var_E)
     --E->fkd_var_E;
@@ -1067,40 +1057,38 @@ LABEL_7:
   E->fkd_var_C = -4;
   if ((int16)(E->base.x_pos - samus_x_pos) < 0)
     E->fkd_var_C = 4;
-  return j;
+  return jp;
 }
 
-uint16 FakeKraid_Instr_1(uint16 k, uint16 j) {  // 0xA69B74
+const uint16 *FakeKraid_Instr_1(uint16 k, const uint16 *jp) {  // 0xA69B74
   Enemy_FakeKraid *E = Get_FakeKraid(cur_enemy_index);
-  uint16 result;
   if (E->fkd_var_E) {
     if ((E->fkd_var_C & 0x8000u) != 0) {
-      result = addr_stru_A699AE;
       if ((Get_FakeKraid(cur_enemy_index)->fkd_var_B & 0x8000u) == 0)
-        return addr_stru_A699C6;
+        return INSTR_RETURN_ADDR(addr_stru_A699C6);
+      return INSTR_RETURN_ADDR(addr_stru_A699AE);
     } else {
-      result = addr_stru_A699FC;
       if ((E->fkd_var_B & 0x8000u) != 0)
-        return addr_stru_A69A14;
+        return INSTR_RETURN_ADDR(addr_stru_A69A14);
+      return INSTR_RETURN_ADDR(addr_stru_A699FC);
     }
   } else {
     E->fkd_var_E = (random_number & 3) + 3;
-    result = addr_kFakeKraid_Ilist_9A2A;
     if ((E->fkd_var_C & 0x8000u) != 0)
-      return addr_kFakeKraid_Ilist_99DC;
+      return INSTR_RETURN_ADDR(addr_kFakeKraid_Ilist_99DC);
+    return INSTR_RETURN_ADDR(addr_kFakeKraid_Ilist_9A2A);
   }
-  return result;
 }
 
-uint16 FakeKraid_Instr_3(uint16 k, uint16 j) {  // 0xA69BB2
+const uint16 *FakeKraid_Instr_3(uint16 k, const uint16 *jp) {  // 0xA69BB2
   if (CheckIfEnemyIsOnScreen() == 0)
     QueueSfx2_Max6(0x16u);
-  return j;
+  return jp;
 }
 
-uint16 FakeKraid_Instr_4(uint16 k, uint16 j) {  // 0xA69BC4
+const uint16 *FakeKraid_Instr_4(uint16 k, const uint16 *jp) {  // 0xA69BC4
   FakeKraid_InstrHelper_45(k, 0, 0xFFFC);
-  return j;
+  return jp;
 }
 
 void FakeKraid_InstrHelper_45(uint16 k, uint16 j, uint16 a) {  // 0xA69BCB
@@ -1118,9 +1106,9 @@ void FakeKraid_InstrHelper_45(uint16 k, uint16 j, uint16 a) {  // 0xA69BCB
   SpawnEnemyProjectileWithGfx(v8, ka, addr_kEproj_MiniKraidSpit);
 }
 
-uint16 FakeKraid_Instr_5(uint16 k, uint16 j) {  // 0xA69C02
+const uint16 *FakeKraid_Instr_5(uint16 k, const uint16 *jp) {  // 0xA69C02
   FakeKraid_InstrHelper_45(k, 8u, 4u);
-  return j;
+  return jp;
 }
 
 void sub_A69C0B(void) {  // 0xA69C0B
@@ -4795,84 +4783,74 @@ void Ridley_Func_129(void) {  // 0xA6E088
   }
 }
 
-uint16 Ridley_Instr_5(uint16 k, uint16 j) {  // 0xA6E4BE
+const uint16 *Ridley_Instr_5(uint16 k, const uint16 *jp) {  // 0xA6E4BE
   Get_Ridley(0)->ridley_var_0F = 89;
   QueueSfx2_Max6(0x59u);
-  return j;
+  return jp;
 }
 
-uint16 Ridley_Instr_6(uint16 k, uint16 j) {  // 0xA6E4CA
+const uint16 *Ridley_Instr_6(uint16 k, const uint16 *jp) {  // 0xA6E4CA
   Get_Ridley(0)->ridley_var_0F = 0;
-  return j;
+  return jp;
 }
 
-uint16 Ridley_Instr_10(uint16 k, uint16 j) {  // 0xA6E4D2
+const uint16 *Ridley_Instr_10(uint16 k, const uint16 *jp) {  // 0xA6E4D2
   if (area_index == 2 || !sign16(samus_health - 30))
-    return sub_A6E514(j);
+    return jp + 1;
   Get_Ridley(0)->ridley_var_00 = 8;
-  return sub_A6E4E9(j);
+  return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 sub_A6E4E9(uint16 j) {  // 0xA6E4E9
-  return *(uint16 *)RomPtr_A6(j);
-}
-
-uint16 Ridley_Instr_4(uint16 k, uint16 j) {  // 0xA6E4EE
+const uint16 *Ridley_Instr_4(uint16 k, const uint16 *jp) {  // 0xA6E4EE
   if (Get_Ridley(0)->ridley_var_1B)
-    return sub_A6E4E9(j);
+    return INSTR_RETURN_ADDR(jp[0]);
   else
-    return sub_A6E4E9(j + 2);
+    return INSTR_RETURN_ADDR(jp[1]);
 }
 
-uint16 Ridley_Instr_3(uint16 k, uint16 j) {  // 0xA6E4F8
+const uint16 *Ridley_Instr_3(uint16 k, const uint16 *jp) {  // 0xA6E4F8
   if (Get_Ridley(0)->ridley_var_1B)
-    return j + 2;
+    return jp + 1;
   else
-    return sub_A6E4E9(j);
+    return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 Ridley_Instr_2(uint16 k, uint16 j) {  // 0xA6E501
+const uint16 *Ridley_Instr_2(uint16 k, const uint16 *jp) {  // 0xA6E501
   samus_prev_x_pos = samus_x_pos;
   samus_prev_y_pos = samus_y_pos;
-  uint16 v2 = *(uint16 *)RomPtr_A6(j);
-  Get_Ridley(0)->ridley_var_1D = v2;
-  return sub_A6E514(j);
+  Get_Ridley(0)->ridley_var_1D = jp[0];
+  return jp + 1;
 }
 
-uint16 sub_A6E514(uint16 j) {  // 0xA6E514
-  return j + 2;
-}
-
-uint16 Ridley_Instr_1(uint16 k, uint16 j) {  // 0xA6E517
+const uint16 *Ridley_Instr_1(uint16 k, const uint16 *jp) {  // 0xA6E517
   if (Get_Ridley(0)->ridley_var_10)
-    return sub_A6E4E9(j);
+    return INSTR_RETURN_ADDR(jp[0]);
   else
-    return sub_A6E514(j);
+    return jp + 1;
 }
 
-uint16 Ridley_Instr_14(uint16 k, uint16 j) {  // 0xA6E51F
-  uint8 *v2 = RomPtr_A6(j);
+const uint16 *Ridley_Instr_14(uint16 k, const uint16 *jp) {  // 0xA6E51F
   Enemy_Ridley *E = Get_Ridley(0);
-  E->base.x_pos += *(uint16 *)v2;
-  E->base.y_pos += *((uint16 *)v2 + 1);
-  return j + 4;
+  E->base.x_pos += jp[0];
+  E->base.y_pos += jp[1];
+  return jp + 2;
 }
 
-uint16 Ridley_Instr_9(uint16 k, uint16 j) {  // 0xA6E71C
+const uint16 *Ridley_Instr_9(uint16 k, const uint16 *jp) {  // 0xA6E71C
   Get_Ridley(0)->ridley_var_10 = 0;
   Ridley_Func_96();
-  return j;
+  return jp;
 }
 
-uint16 Ridley_Instr_7(uint16 k, uint16 j) {  // 0xA6E727
+const uint16 *Ridley_Instr_7(uint16 k, const uint16 *jp) {  // 0xA6E727
   Get_Ridley(0)->ridley_var_10 = 1;
-  return j;
+  return jp;
 }
 
-uint16 Ridley_Instr_8(uint16 k, uint16 j) {  // 0xA6E72F
+const uint16 *Ridley_Instr_8(uint16 k, const uint16 *jp) {  // 0xA6E72F
   Get_Ridley(0)->ridley_var_10 = 2;
   Ridley_Func_96();
-  return j;
+  return jp;
 }
 
 void Ridley_Func_131(uint16 k) {  // 0xA6E828
@@ -4887,7 +4865,7 @@ void Ridley_Func_132(uint16 k, uint16 a) {  // 0xA6E840
   SpawnEnemyProjectileWithGfx(a, k, addr_stru_869634);
 }
 
-uint16 Ridley_Instr_11(uint16 k, uint16 j) {  // 0xA6E84D
+const uint16 *Ridley_Instr_11(uint16 k, const uint16 *jp) {  // 0xA6E84D
   Enemy_Ridley *E = Get_Ridley(0);
   if (E->ridley_var_10) {
     R18_ = E->base.x_pos + 25;
@@ -4928,37 +4906,37 @@ LABEL_7:
 LABEL_14:
   E->ridley_var_19 = Math_MultBySin(0x500u);
   E->ridley_var_1A = Math_MultByCos(0x500u);
-  return j;
+  return jp;
 }
 
-uint16 Ridley_Instr_12(uint16 k, uint16 j) {  // 0xA6E904
-  return Ridley_E90C(k, j, 0);
+const uint16 *Ridley_Instr_12(uint16 k, const uint16 *jp) {  // 0xA6E904
+  return Ridley_E90C(k, jp, 0);
 }
 
-uint16 Ridley_Instr_13(uint16 k, uint16 j) {  // 0xA6E909
-  return Ridley_E90C(k, j, 0xe);
+const uint16 *Ridley_Instr_13(uint16 k, const uint16 *jp) {  // 0xA6E909
+  return Ridley_E90C(k, jp, 0xe);
 }
 
-uint16 Ridley_E90C(uint16 k, uint16 j, uint16 a) {  // 0xA6E90C
+const uint16 *Ridley_E90C(uint16 k, const uint16 *jp, uint16 a) {  // 0xA6E90C
   enemy_projectile_unk1995 = a;
   Enemy_Ridley *E = Get_Ridley(0);
   SpawnEnemyProjectileWithRoomGfx(0x9642, E->ridley_var_10);
-  return j;
+  return jp;
 }
 
 
-uint16 Ridley_Instr_15(uint16 k, uint16 j) {  // 0xA6E969
+const uint16 *Ridley_Instr_15(uint16 k, const uint16 *jp) {  // 0xA6E969
   Enemy_Ridley *E = Get_Ridley(0);
   E->ridley_var_A = FUNC16(CeresRidley_Func_9);
   E->ridley_var_C = -352;
-  return j;
+  return jp;
 }
 
-uint16 Ridley_Instr_16(uint16 k, uint16 j) {  // 0xA6E976
+const uint16 *Ridley_Instr_16(uint16 k, const uint16 *jp) {  // 0xA6E976
   Enemy_Ridley *E = Get_Ridley(0);
   E->ridley_var_A = FUNC16(Ridley_Func_3);
   E->ridley_var_C = -352;
-  return j;
+  return jp;
 }
 
 void CeresSteam_Init(void) {  // 0xA6EFB1
@@ -5006,54 +4984,45 @@ void CeresSteam_Touch(void) {  // 0xA6F03F
   NormalEnemyTouchAi();
 }
 
-uint16 CeresSteam_Instr_1(uint16 k, uint16 j) {  // 0xA6F11D
+const uint16 *CeresSteam_Instr_1(uint16 k, const uint16 *jp) {  // 0xA6F11D
   Enemy_CeresSteam *E = Get_CeresSteam(k);
   E->base.properties |= kEnemyProps_Tangible | kEnemyProps_Invisible;
-  return j;
+  return jp;
 }
 
-uint16 CeresSteam_Instr_2(uint16 k, uint16 j) {  // 0xA6F127
+const uint16 *CeresSteam_Instr_2(uint16 k, const uint16 *jp) {  // 0xA6F127
   Enemy_CeresSteam *E = Get_CeresSteam(k);
   if (E->csm_var_D-- != 1)
-    return *(uint16 *)RomPtr_A6(j);
-  uint8 *v5 = RomPtr_A6(j);
-  return CeresSteam_Instr_3(k, *((uint16 *)v5 + 1));
+    return INSTR_RETURN_ADDR(jp[0]);
+  return CeresSteam_Instr_3(k, (uint16 *)RomPtr_A6(jp[1]));
 }
 
-uint16 CeresSteam_Instr_3(uint16 k, uint16 j) {  // 0xA6F135
+const uint16 *CeresSteam_Instr_3(uint16 k, const uint16 *jp) {  // 0xA6F135
   Enemy_CeresSteam *E = Get_CeresSteam(k);
   E->base.properties &= 0xFAFFu;
-  return j;
+  return jp;
 }
 
-uint16 CeresDoor_Instr_6(uint16 k, uint16 j) {  // 0xA6F63E
+const uint16 *CeresDoor_Instr_6(uint16 k, const uint16 *jp) {  // 0xA6F63E
   Enemy_CeresDoor *E = Get_CeresDoor(k);
   if (abs16(E->base.x_pos - samus_x_pos) >= 0x30u || abs16(E->base.y_pos - samus_y_pos) >= 0x30u)
-    return CeresDoor_Goto(j);
+    return INSTR_RETURN_ADDR(*jp);
   else
-    return CeresDoor_Incr(j);
+    return jp + 1;
 }
 
-uint16 CeresDoor_Incr(uint16 j) {  // 0xA6F662
-  return j + 2;
-}
-
-uint16 CeresDoor_Goto(uint16 j) {  // 0xA6F665
-  return *(uint16 *)RomPtr_A6(j);
-}
-
-uint16 CeresDoor_Instr_4(uint16 k, uint16 j) {  // 0xA6F66A
+const uint16 *CeresDoor_Instr_4(uint16 k, const uint16 *jp) {  // 0xA6F66A
   if (*(uint16 *)&boss_bits_for_area[area_index] & 1)
-    return CeresDoor_Incr(j);
+    return jp + 1;
   else
-    return CeresDoor_Goto(j);
+    return INSTR_RETURN_ADDR(*jp);
 }
 
-uint16 CeresDoor_Instr_8(uint16 k, uint16 j) {  // 0xA6F678
+const uint16 *CeresDoor_Instr_8(uint16 k, const uint16 *jp) {  // 0xA6F678
   if (ceres_status)
-    return CeresDoor_Incr(j);
+    return jp + 1;
   else
-    return CeresDoor_Goto(j);
+    return INSTR_RETURN_ADDR(*jp);
 }
 
 void CeresDoor_Func_6b(void) {  // 0xA6F67F
@@ -5061,43 +5030,43 @@ void CeresDoor_Func_6b(void) {  // 0xA6F67F
     ceres_status = FUNC16(Enemy_GrappleReact_NoInteract_A6);
 }
 
-uint16 CeresSteam_Instr_4(uint16 k, uint16 j) {  // 0xA6F68B
+const uint16 *CeresSteam_Instr_4(uint16 k, const uint16 *jp) {  // 0xA6F68B
   Enemy_CeresSteam *E = Get_CeresSteam(k);
   E->base.properties |= kEnemyProps_Tangible;
-  return j;
+  return jp;
 }
 
-uint16 CeresDoor_Instr_1(uint16 k, uint16 j) {  // 0xA6F695
+const uint16 *CeresDoor_Instr_1(uint16 k, const uint16 *jp) {  // 0xA6F695
   Enemy_CeresDoor *E = Get_CeresDoor(k);
   E->base.properties &= ~kEnemyProps_Tangible;
-  return j;
+  return jp;
 }
 
-uint16 CeresDoor_Instr_3(uint16 k, uint16 j) {  // 0xA6F69F
+const uint16 *CeresDoor_Instr_3(uint16 k, const uint16 *jp) {  // 0xA6F69F
   Get_CeresDoor(k)->cdr_var_B = 1;
-  return j;
+  return jp;
 }
 
-uint16 CeresSteam_Instr_5(uint16 k, uint16 j) {  // 0xA6F6A6
+const uint16 *CeresSteam_Instr_5(uint16 k, const uint16 *jp) {  // 0xA6F6A6
   Enemy_CeresSteam *E = Get_CeresSteam(k);
   E->base.properties |= kEnemyProps_Invisible;
-  return j;
+  return jp;
 }
 
-uint16 CeresDoor_Instr_5(uint16 k, uint16 j) {  // 0xA6F6B0
+const uint16 *CeresDoor_Instr_5(uint16 k, const uint16 *jp) {  // 0xA6F6B0
   Get_CeresDoor(k)->cdr_var_B = 0;
-  return CeresDoor_Instr_2(k, j);
+  return CeresDoor_Instr_2(k, jp);
 }
 
-uint16 CeresDoor_Instr_2(uint16 k, uint16 j) {  // 0xA6F6B3
+const uint16 *CeresDoor_Instr_2(uint16 k, const uint16 *jp) {  // 0xA6F6B3
   Enemy_CeresDoor *E = Get_CeresDoor(k);
   E->base.properties &= ~kEnemyProps_Invisible;
-  return j;
+  return jp;
 }
 
-uint16 CeresDoor_Instr_7(uint16 k, uint16 j) {  // 0xA6F6BD
+const uint16 *CeresDoor_Instr_7(uint16 k, const uint16 *jp) {  // 0xA6F6BD
   QueueSfx3_Max6(0x2Cu);
-  return j;
+  return jp;
 }
 
 void CeresDoor_Init(void) {  // 0xA6F6C5

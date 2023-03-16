@@ -2208,6 +2208,7 @@ enum Consts_A4 {
   addr_kCrocomire_Ilist_BCD8 = 0xBCD8,
   addr_kCrocomire_Ilist_BD2A = 0xBD2A,
   addr_kCrocomire_Ilist_BD8E = 0xBD8E,
+  addr_kCrocomire_Ilist_BDA2 = 0xBDA2,
   addr_kCrocomire_Ilist_BDAE = 0xBDAE,
   addr_kCrocomire_Ilist_BDB2 = 0xBDB2,
   addr_kCrocomire_Ilist_BDB6 = 0xBDB6,
