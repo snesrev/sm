@@ -32,6 +32,8 @@ static void SDLCALL AudioCallback(void *userdata, Uint8 *stream, int len);
 static void SwitchDirectory();
 static void RenderNumber(uint8 *dst, size_t pitch, int n, uint8 big);
 static void OpenOneGamepad(int i);
+static void SetVolumeLevel(int new_volume);
+static int GetVolumeLevel();
 static void HandleVolumeAdjustment(int volume_adjustment);
 static void HandleGamepadAxisInput(int gamepad_id, int axis, int value);
 static int RemapSdlButton(int button);
@@ -358,7 +360,7 @@ int main(int argc, char** argv) {
     g_config.audio_samples = kDefaultSamples;
 
   // Load the volume level from the config file
-  g_sdl_audio_mixer_volume = g_config.volume;
+  SetVolumeLevel(g_config.volume);
 
   // set up SDL
   if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0) {
@@ -736,16 +738,33 @@ static void HandleGamepadInput(int button, bool pressed) {
     HandleCommand(g_gamepad_last_cmd[button], pressed);
 }
 
-static void HandleVolumeAdjustment(int volume_adjustment) {
+static int GetVolumeLevel() {
 #if SYSTEM_VOLUME_MIXER_AVAILABLE
-  int current_volume = GetApplicationVolume();
-  int new_volume = IntMin(IntMax(0, current_volume + volume_adjustment * 5), 100);
+  return GetApplicationVolume();
+#else
+  return g_sdl_audio_mixer_volume;
+#endif
+}
+
+static void SetVolumeLevel(int new_volume) {
+#if SYSTEM_VOLUME_MIXER_AVAILABLE
+  int new_volume = IntMin(IntMax(0, new_volume), 100);
   SetApplicationVolume(new_volume);
   printf("[System Volume]=%i\n", new_volume);
 #else
-  g_sdl_audio_mixer_volume = IntMin(IntMax(0, g_sdl_audio_mixer_volume + volume_adjustment * (SDL_MIX_MAXVOLUME >> 4)), SDL_MIX_MAXVOLUME);
+  g_sdl_audio_mixer_volume = IntMin(IntMax(0, new_volume), SDL_MIX_MAXVOLUME);
   printf("[SDL mixer volume]=%i\n", g_sdl_audio_mixer_volume);
 #endif
+}
+
+static void HandleVolumeAdjustment(int volume_adjustment) {
+  int current_volume = GetVolumeLevel();
+#if SYSTEM_VOLUME_MIXER_AVAILABLE
+  int new_volume = current_volume + volume_adjustment * 5;
+#else
+  int new_volume = current_volume + volume_adjustment * (SDL_MIX_MAXVOLUME >> 4);
+#endif
+  SetVolumeLevel(new_volume);
 }
 
 // Approximates atan2(y, x) normalized to the [0,4) range
