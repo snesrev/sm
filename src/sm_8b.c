@@ -886,16 +886,14 @@ void ComposeFadingPalettes(void) {  // 0x8B8CEA
 void CinematicFunction_Intro_Func20(uint16 j) {  // 0x8B8D23
   uint16 *tt = (uint16 *)RomPtr_8B(j);
   uint16 v2 = tt[0];
-  R18_ = tt[1];
+  int R18 = tt[1];
   uint16 *dst = ram4000.intro_japanese_text_tiles;
   do {
-    R22_ = tt[2];
-    memcpy(dst + (v2 >> 1), (uint16 *)RomPtr_7F(R22_ + 0xa000), 16);
-    R22_ = tt[3];
-    memcpy(dst + ((v2 + 768) >> 1), (uint16 *)RomPtr_7F(R22_ + 0xa000), 16);
+    memcpy(dst + (v2 >> 1), (uint16 *)&g_ram[tt[2] + 0x1a000], 16);
+    memcpy(dst + ((v2 + 768) >> 1), (uint16 *)&g_ram[tt[3] + 0x1a000], 16);
     v2 += 16;
     tt += 2;
-  } while (--R18_);
+  } while (--R18);
 }
 
 void TransferJapaneseTextTilesToVram(void) {  // 0x8B8DE6

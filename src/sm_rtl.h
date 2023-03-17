@@ -53,8 +53,6 @@ void Call(uint32 addr);
 #define GET_BYTE(p) (*(uint8*)(p))
 
 static inline uint8_t *RomPtr_RAM(uint16_t addr) { assert(addr < 0x2000); return g_ram + addr; }
-
-static inline uint8_t *RomPtr_7F(uint16_t addr) { return g_ram + 0x10000 + addr; }
 static inline uint8_t *RomPtr_80(uint16_t addr) { return RomPtr(0x800000 | addr); }
 static inline uint8_t *RomPtr_81(uint16_t addr) { return RomPtr(0x810000 | addr); }
 static inline uint8_t *RomPtr_82(uint16_t addr) { return RomPtr(0x820000 | addr); }
@@ -103,54 +101,10 @@ static inline uint8_t *RomPtr_AC(uint16_t addr) { return RomPtr(0xac0000 | addr)
 static inline uint8_t *RomPtr_AD(uint16_t addr) { return RomPtr(0xad0000 | addr); }
 static inline uint8_t *RomPtr_AE(uint16_t addr) { return RomPtr(0xae0000 | addr); }
 static inline uint8_t *RomPtr_AF(uint16_t addr) { return RomPtr(0xaf0000 | addr); }
-static inline uint8_t *RomPtr_B0(uint16_t addr) { return RomPtr(0xb00000 | addr); }
-static inline uint8_t *RomPtr_B1(uint16_t addr) { return RomPtr(0xb10000 | addr); }
 static inline uint8_t *RomPtr_B2(uint16_t addr) { return RomPtr(0xb20000 | addr); }
 static inline uint8_t *RomPtr_B3(uint16_t addr) { return RomPtr(0xb30000 | addr); }
 static inline uint8_t *RomPtr_B4(uint16_t addr) { return RomPtr(0xb40000 | addr); }
-static inline uint8_t *RomPtr_B5(uint16_t addr) { return RomPtr(0xb50000 | addr); }
-static inline uint8_t *RomPtr_B6(uint16_t addr) { return RomPtr(0xb60000 | addr); }
 static inline uint8_t *RomPtr_B7(uint16_t addr) { return RomPtr(0xb70000 | addr); }
-static inline uint8_t *RomPtr_B8(uint16_t addr) { return RomPtr(0xb80000 | addr); }
-static inline uint8_t *RomPtr_B9(uint16_t addr) { return RomPtr(0xb90000 | addr); }
-static inline uint8_t *RomPtr_BA(uint16_t addr) { return RomPtr(0xba0000 | addr); }
-static inline uint8_t *RomPtr_BB(uint16_t addr) { return RomPtr(0xbb0000 | addr); }
-static inline uint8_t *RomPtr_BC(uint16_t addr) { return RomPtr(0xbc0000 | addr); }
-static inline uint8_t *RomPtr_BD(uint16_t addr) { return RomPtr(0xbd0000 | addr); }
-static inline uint8_t *RomPtr_BE(uint16_t addr) { return RomPtr(0xbe0000 | addr); }
-static inline uint8_t *RomPtr_BF(uint16_t addr) { return RomPtr(0xbf0000 | addr); }
-static inline uint8_t *RomPtr_C0(uint16_t addr) { return RomPtr(0xc00000 | addr); }
-static inline uint8_t *RomPtr_C1(uint16_t addr) { return RomPtr(0xc10000 | addr); }
-static inline uint8_t *RomPtr_C2(uint16_t addr) { return RomPtr(0xc20000 | addr); }
-static inline uint8_t *RomPtr_C3(uint16_t addr) { return RomPtr(0xc30000 | addr); }
-static inline uint8_t *RomPtr_C4(uint16_t addr) { return RomPtr(0xc40000 | addr); }
-static inline uint8_t *RomPtr_C5(uint16_t addr) { return RomPtr(0xc50000 | addr); }
-static inline uint8_t *RomPtr_C6(uint16_t addr) { return RomPtr(0xc60000 | addr); }
-static inline uint8_t *RomPtr_C7(uint16_t addr) { return RomPtr(0xc70000 | addr); }
-static inline uint8_t *RomPtr_C8(uint16_t addr) { return RomPtr(0xc80000 | addr); }
-static inline uint8_t *RomPtr_C9(uint16_t addr) { return RomPtr(0xc90000 | addr); }
-static inline uint8_t *RomPtr_CA(uint16_t addr) { return RomPtr(0xca0000 | addr); }
-static inline uint8_t *RomPtr_CB(uint16_t addr) { return RomPtr(0xcb0000 | addr); }
-static inline uint8_t *RomPtr_CC(uint16_t addr) { return RomPtr(0xcc0000 | addr); }
-static inline uint8_t *RomPtr_CD(uint16_t addr) { return RomPtr(0xcd0000 | addr); }
-static inline uint8_t *RomPtr_CE(uint16_t addr) { return RomPtr(0xce0000 | addr); }
-static inline uint8_t *RomPtr_CF(uint16_t addr) { return RomPtr(0xcf0000 | addr); }
-static inline uint8_t *RomPtr_D0(uint16_t addr) { return RomPtr(0xd00000 | addr); }
-static inline uint8_t *RomPtr_D1(uint16_t addr) { return RomPtr(0xd10000 | addr); }
-static inline uint8_t *RomPtr_D2(uint16_t addr) { return RomPtr(0xd20000 | addr); }
-static inline uint8_t *RomPtr_D3(uint16_t addr) { return RomPtr(0xd30000 | addr); }
-static inline uint8_t *RomPtr_D4(uint16_t addr) { return RomPtr(0xd40000 | addr); }
-static inline uint8_t *RomPtr_D5(uint16_t addr) { return RomPtr(0xd50000 | addr); }
-static inline uint8_t *RomPtr_D6(uint16_t addr) { return RomPtr(0xd60000 | addr); }
-static inline uint8_t *RomPtr_D7(uint16_t addr) { return RomPtr(0xd70000 | addr); }
-static inline uint8_t *RomPtr_D8(uint16_t addr) { return RomPtr(0xd80000 | addr); }
-static inline uint8_t *RomPtr_D9(uint16_t addr) { return RomPtr(0xd90000 | addr); }
-static inline uint8_t *RomPtr_DA(uint16_t addr) { return RomPtr(0xda0000 | addr); }
-static inline uint8_t *RomPtr_DB(uint16_t addr) { return RomPtr(0xdb0000 | addr); }
-static inline uint8_t *RomPtr_DC(uint16_t addr) { return RomPtr(0xdc0000 | addr); }
-static inline uint8_t *RomPtr_DD(uint16_t addr) { return RomPtr(0xdd0000 | addr); }
-static inline uint8_t *RomPtr_DE(uint16_t addr) { return RomPtr(0xde0000 | addr); }
-static inline uint8_t *RomPtr_DF(uint16_t addr) { return RomPtr(0xdf0000 | addr); }
 
 static inline uint8_t *RomPtrWithBank(uint8 bank, uint16_t addr) { return RomPtr((bank << 16) | addr); }
 

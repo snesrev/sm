@@ -72,34 +72,18 @@ void CalculatePlmBlockCoords(uint16 k) {  // 0x848290
 }
 
 void WriteLevelDataBlockTypeAndBts(uint16 k, uint16 a) {  // 0x8482B4
-  R18_ = a;
-  uint8 *v2 = RomPtr_7F(k);
+  uint8 *v2 = &g_ram[0x10000 + k];
   v2[3] = HIBYTE(a) | v2[3] & 0xF;
-  BTS[k >> 1] = R18_;
+  BTS[k >> 1] = a;
 }
 
 void WriteRowOfLevelDataBlockAndBTS(uint16 k, uint16 arg0, uint16 arg1, uint16 arg2) {  // 0x8482D6
-  uint16 v1 = k;
-
-  R18_ = arg0;
-  R20_ = arg1;
-  R22_ = arg2;
-  uint16 v2 = plm_block_indices[v1 >> 1];
+  uint16 v2 = plm_block_indices[k >> 1];
   uint16 v8 = v2 >> 1;
-  uint16 v3 = R18_;
-  uint16 v4 = R22_;
-  do {
-    level_data[v2 >> 1] = v3;
-    v2 += 2;
-    --v4;
-  } while (v4);
-  uint16 v5 = v8;
-  uint8 v6 = R20_;
-  uint16 v7 = R22_;
-  do {
-    BTS[v5++] = v6;
-    --v7;
-  } while (v7);
+  for (int i = 0; i < arg2; i++) {
+    level_data[(v2 + i * 2) >> 1] = arg0;
+    BTS[v8 + i] = arg1;
+  }
 }
 
 void LoadXrayBlocks(void) {  // 0x84831A
