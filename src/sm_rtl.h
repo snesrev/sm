@@ -47,6 +47,8 @@ void Call(uint32 addr);
 #define INSTR_INCR_BYTES(x, n) ((const uint16*)((uintptr_t)(x) + n))
 #define INSTR_ADDR_TO_PTR(k, jp) ((uint8*)(jp) - (RomPtrWithBank(gEnemyData(k)->bank, 0x8000) - 0x8000))
 
+#define INSTRB_RETURN_ADDR(x) ((const uint8*)(uintptr_t)(x))
+
 #define GET_WORD(p) (*(uint16*)(p))
 #define GET_BYTE(p) (*(uint8*)(p))
 
