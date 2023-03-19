@@ -73,7 +73,7 @@ make clean all  # clear gen+obj and rebuild
 CC=clang make   # specify compiler
 ```
 
-# Nintendo Switch
+# Nintendo Switch (CURRENTLY DOSEN'T WORK. WTILL BE UPDATED!!!)
 
 Dependencies and requirements:
 
