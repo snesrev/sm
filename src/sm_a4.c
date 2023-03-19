@@ -1109,7 +1109,7 @@ void Crocomire_Func_60(void) {  // 0xA4943D
     uint16 v3 = *(uint16 *)((char *)&g_word_A49BC7 + i);
     int n = g_word_7E068E;
     do {
-      *(uint16 *)&g_ram[v3] = *(uint16 *)IndirPtr(&R0_, v2);
+      *(uint16 *)&g_ram[v3] = IndirReadWord(R0_, v2);
       v3 += 2, v2 += 2;
     } while (--n >= 0);
   }

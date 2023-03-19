@@ -33,9 +33,12 @@ typedef void FuncXY_V(uint16 k, uint16 j);
 typedef PairU16 Func_Y_To_PairU16(uint16 j);
 
 const uint8 *RomPtr(uint32_t addr);
-uint8 *IndirPtr(void *ptr, uint16 offs);
-void IndirWriteWord(void *ptr, uint16 offs, uint16 value);
-void IndirWriteByte(void *ptr, uint16 offs, uint8 value);
+uint8 *IndirPtr(LongPtr ptr, uint16 offs);
+uint8 IndirReadByte(LongPtr ptr, uint16 offs);
+uint16 IndirReadWord(LongPtr ptr, uint16 offs);
+
+void IndirWriteByte(LongPtr ptr, uint16 offs, uint8 value);
+void IndirWriteWord(LongPtr ptr, uint16 offs, uint16 value);
 
 static inline const uint8 *RomFixedPtr(uint32_t addr) { return &g_rom[(((addr >> 16) << 15) | (addr & 0x7fff)) & 0x3fffff]; }
 
@@ -182,10 +185,6 @@ struct VramWriteEntry;
 
 
 PairU16 MakePairU16(uint16 k, uint16 j);
-
-#define R0_ (*(LongPtr*)(g_ram+0x0))
-#define R3_ (*(LongPtr*)(g_ram+0x3))
-#define byte_7E0002 R0_.bank
 
 #define kPoseParams ((SamusPoseParams*)RomFixedPtr(0x91b629))
 #define kAtmosphericGraphicAnimationTimers ((uint16*)RomFixedPtr(0x908b93))

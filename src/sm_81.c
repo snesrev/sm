@@ -132,7 +132,7 @@ void UnpackMapFromSave(void) {  // 0x8182E4
     *(uint16 *)&R3_.bank = 126;
     do {
       uint16 v4 = R20_ + *RomPtr_81(R0_.addr);
-      IndirWriteByte(&R3_, v4, compressed_map_data[v3]);
+      IndirWriteByte(R3_, v4, compressed_map_data[v3]);
       ++R0_.addr;
       ++v3;
       --R18_;
@@ -153,7 +153,7 @@ void PackMapToSave(void) {  // 0x81834B
     *(uint16 *)&R3_.bank = 126;
     do {
       int v3 = R24_ + *RomPtr_81(R0_.addr);
-      compressed_map_data[v1] = *IndirPtr(&R3_, v3);
+      compressed_map_data[v1] = IndirReadByte(R3_, v3);
       ++R0_.addr;
       ++v1;
       --R22_;
@@ -691,14 +691,14 @@ void LoadDebugGameOverMenuTilemaps(void) {  // 0x818E7F
   vram_write_queue_tail = v1 + 7;
   uint16 v3 = v1 + 7;
   for (int i = 0; ; i += 8) {
-    uint16 v5 = *(uint16 *)IndirPtr(&R0_, i);
+    uint16 v5 = IndirReadWord(R0_, i);
     if (v5 == 0xFFFF)
       break;
     VramWriteEntry *v6 = gVramWriteEntry(v3);
     v6->size = v5;
-    v6->src.addr = *(uint16 *)IndirPtr(&R0_, i + 2);
-    *(uint16 *)&v6->src.bank = *(uint16 *)IndirPtr(&R0_, i + 4);
-    v6->vram_dst = *(uint16 *)IndirPtr(&R0_, i + 6);
+    v6->src.addr = IndirReadWord(R0_, i + 2);
+    *(uint16 *)&v6->src.bank = IndirReadWord(R0_, i + 4);
+    v6->vram_dst = IndirReadWord(R0_, i + 6);
     v3 += 7;
   }
   vram_write_queue_tail = v3;
@@ -2261,7 +2261,6 @@ uint16 WraparoundFrom6to0(uint16 a) {  // 0x81A89F
 }
 
 void SelectFileSelectMapArea(void) {  // 0x81A8A9
-  VoidP *v1;
   char v2; // cf
   int16 v3;
   int16 v4;
@@ -2276,19 +2275,18 @@ void SelectFileSelectMapArea(void) {  // 0x81A8A9
   area_index = kFileSelectMap_AreaIndexes[file_select_map_area_index];
   R18_ = *(uint16 *)&used_save_stations_and_elevators[(uint16)(2 * area_index)];
   uint16 v0 = 0;
-  *(uint16 *)&R0_.bank = 130;
+  R0_.bank = 130;
   R0_.addr = addr_kMapIconDataPointers + 64;
-  v1 = (VoidP *)IndirPtr(&R0_, 2 * area_index);
-  while (!*v1)
-    ;
-  R0_.addr = *v1;
+  R0_.addr = IndirReadWord(R0_, 2 * area_index);
+  if (!R0_.addr)
+    InvalidInterrupt_Crash();
   R20_ = 16;
   while (1) {
     v2 = R18_ & 1;
     R18_ >>= 1;
     if (!v2)
       goto LABEL_10;
-    v3 = *(uint16 *)IndirPtr(&R0_, 4 * v0);
+    v3 = IndirReadWord(R0_, 4 * v0);
     if (v3 == -2)
       goto LABEL_10;
     if (v3 != -1)
@@ -2298,7 +2296,7 @@ LABEL_10:
     ++v0;
     if (!--R20_) {
       while (1) {
-        v4 = *(uint16 *)IndirPtr(&R0_, 4 * v0);
+        v4 = IndirReadWord(R0_, 4 * v0);
         if (v4 != -2) {
           if (v4 != -1)
             goto LABEL_16;
@@ -2346,16 +2344,16 @@ void DrawAreaSelectMapLabels(void) {
   for(int i = 0; i < 6; i++) {
     R3_.addr = (i == file_select_map_area_index) ? 0 : 512;
     uint16 v1 = 2 * kFileSelectMap_AreaIndexes[i];
-    R36 = *(uint16 *)&used_save_stations_and_elevators[v1];
+    uint16 r36 = *(uint16 *)&used_save_stations_and_elevators[v1];
     const uint16 *v2 = (const uint16 *)RomPtr_82(*(VoidP *)((char *)&kMapIconDataPointers[4].crateria + v1));
-    R30_ = 16;
+    int R30 = 16;
     while (*v2 != 0xffff) {
-      int v4 = R36 & 1;
-      R36 >>= 1;
+      int v4 = r36 & 1;
+      r36 >>= 1;
       if (v4 && *v2 != 0xfffe)
         goto LABEL_11;
       v2 += 2;
-      if (!--R30_) {
+      if (!--R30) {
         if (enable_debug && *v2 != 0xFFFF) {
 LABEL_11:;
           int j = 4 * kFileSelectMap_AreaIndexes[i] >> 1;
@@ -2566,14 +2564,14 @@ void FileSelectMap_10_RoomSelectMap(void) {  // 0x81AD7F
       ;
     R0_.addr = *v2;
     v3 = 4 * load_station_index;
-    R18_ = *(uint16 *)IndirPtr(&R0_, 4 * load_station_index);
-    R20_ = *(uint16 *)IndirPtr(&R0_, v3 + 2);
+    R18_ = IndirReadWord(R0_, 4 * load_station_index);
+    R20_ = IndirReadWord(R0_, v3 + 2);
     if (!sign16(load_station_index - 16))
       goto LABEL_23;
     do {
       if (!sign16(++load_station_index - 16)) {
         while (1) {
-          v5 = *(uint16 *)IndirPtr(&R0_, 4 * load_station_index);
+          v5 = IndirReadWord(R0_, 4 * load_station_index);
           if (v5 == -1)
             break;
           if (v5 != -2)
@@ -2586,12 +2584,12 @@ LABEL_23:
       }
       v4 = R24_ & 1;
       R24_ >>= 1;
-    } while (!v4 || *(uint16 *)IndirPtr(&R0_, 4 * load_station_index) >= 0xFFFEu);
+    } while (!v4 || IndirReadWord(R0_, 4 * load_station_index) >= 0xFFFEu);
 LABEL_25:;
     uint16 v6 = 4 * load_station_index;
-    uint8 *v7 = IndirPtr(&R0_, 4 * load_station_index);
-    if (sign16(GET_WORD(v7) - reg_BG1HOFS) || !sign16(GET_WORD(v7) - 256 - reg_BG1HOFS)) {
-      v8 = reg_BG1HOFS + *(uint16 *)IndirPtr(&R0_, v6) - R18_;
+    uint16 w7 = IndirReadWord(R0_, 4 * load_station_index);
+    if (sign16(w7 - reg_BG1HOFS) || !sign16(w7 - 256 - reg_BG1HOFS)) {
+      v8 = reg_BG1HOFS + IndirReadWord(R0_, v6) - R18_;
       if (v8 >= 0) {
         if ((int16)(v8 - map_min_x_scroll) >= 0)
           v8 = map_min_x_scroll;
@@ -2601,9 +2599,9 @@ LABEL_25:;
       reg_BG1HOFS = v8;
     }
     uint16 v9 = v6 + 2;
-    uint8 *v10 = IndirPtr(&R0_, v9);
-    if (sign16(GET_WORD(v10) - reg_BG1VOFS) || !sign16(GET_WORD(v10) - 161 - reg_BG1VOFS)) {
-      uint16 v11 = reg_BG1VOFS + *(uint16 *)IndirPtr(&R0_, v9) - R20_;
+    uint16 v10 = IndirReadWord(R0_, v9);
+    if (sign16(v10 - reg_BG1VOFS) || !sign16(v10 - 161 - reg_BG1VOFS)) {
+      uint16 v11 = reg_BG1VOFS + IndirReadWord(R0_, v9) - R20_;
       if ((int16)(v11 - map_min_y_scroll) >= 0)
         v11 = map_min_y_scroll;
       reg_BG1VOFS = v11;

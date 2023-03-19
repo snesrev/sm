@@ -3849,7 +3849,7 @@ void Dachora_Func_1(uint16 j, uint16 k) {  // 0xA7F535
   uint16 v5 = 0;
   do {
     const uint16 *v6 = (const uint16 *)RomPtr_A7(j);
-    IndirWriteWord(&R0_, v5, *v6);
+    IndirWriteWord(R0_, v5, *v6);
     j += 2;
     v5 += 2;
   } while ((int16)(v5 - 32) < 0);

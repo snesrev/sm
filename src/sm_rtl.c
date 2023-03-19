@@ -535,20 +535,28 @@ const uint8 *RomPtr(uint32_t addr) {
   return &g_rom[(((addr >> 16) << 15) | (addr & 0x7fff)) & 0x3fffff];
 }
 
-uint8_t *IndirPtr(void *ptr, uint16 offs) {
-  uint32 a = (*(uint32 *)ptr & 0xffffff) + offs;
-  if ((a >> 16) >= 0x7e && (a >> 16) <= 0x7f || a < 0x2000) {
+uint8 *IndirPtr(LongPtr ptr, uint16 offs) {
+  uint32 a = (ptr.bank << 16 | ptr.addr) + offs;
+  if (ptr.bank >= 0x7e && ptr.bank <= 0x7f || a < 0x2000) {
     return &g_ram[a & 0x1ffff];
   } else {
     return (uint8 *)RomPtr(a);
   }
 }
 
-void IndirWriteWord(void *ptr, uint16 offs, uint16 value) {
+uint16 IndirReadWord(LongPtr ptr, uint16 offs) {
+  return *(uint16 *)IndirPtr(ptr, offs);
+}
+
+void IndirWriteWord(LongPtr ptr, uint16 offs, uint16 value) {
   *(uint16 *)IndirPtr(ptr, offs) = value;
 }
 
-void IndirWriteByte(void *ptr, uint16 offs, uint8 value) {
+uint8 IndirReadByte(LongPtr ptr, uint16 offs) {
+  return *(uint8_t *)IndirPtr(ptr, offs);
+}
+
+void IndirWriteByte(LongPtr ptr, uint16 offs, uint8 value) {
   *IndirPtr(ptr, offs) = value;
 }
 

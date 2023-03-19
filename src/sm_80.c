@@ -35,7 +35,6 @@ uint16 NextRandom(void) {  // 0x808111
 
 void ReleaseButtonsFilter(uint16 v0) {  // 0x808146
   timed_held_input_timer_reset = v0;
-  R18_ = ~joypad1_newkeys & joypad1_lastkeys;
   bool v1 = ((uint16)~joypad1_newkeys & joypad1_lastkeys) == joypad_released_keys;
   joypad_released_keys = ~joypad1_newkeys & joypad1_lastkeys;
   if (!v1) {
@@ -1368,11 +1367,11 @@ void InitializeHud(void) {  // 0x809A79
   R0_.addr = addr_kDigitTilesetsWeapon;
   *(uint16 *)&R0_.bank = 128;
   if (samus_max_missiles)
-    DrawThreeHudDigits(samus_missiles, 0x94);
+    DrawThreeHudDigits(R0_, samus_missiles, 0x94);
   if (samus_max_super_missiles)
-    DrawTwoHudDigits(samus_super_missiles, 0x9C);
+    DrawTwoHudDigits(R0_, samus_super_missiles, 0x9C);
   if (samus_max_power_bombs)
-    DrawTwoHudDigits(samus_power_bombs, 0xA2);
+    DrawTwoHudDigits(R0_, samus_power_bombs, 0xA2);
   ToggleHudItemHighlight(hud_item_index, 0x1000);
   ToggleHudItemHighlight(samus_prev_hud_item_index, 0x1400);
   HandleHudTilemap();
@@ -1412,23 +1411,23 @@ void HandleHudTilemap(void) {  // 0x809B44
       v2 += 2;
     } while ((int16)(v2 - 28) < 0);
     R0_.addr = addr_kDigitTilesetsHealth;
-    DrawTwoHudDigits(R18_, 0x8C);
+    DrawTwoHudDigits(R0_, R18_, 0x8C);
   }
   R0_.addr = addr_kDigitTilesetsWeapon;
   if (samus_max_missiles && samus_missiles != samus_prev_missiles) {
     samus_prev_missiles = samus_missiles;
-    DrawThreeHudDigits(samus_missiles, 0x94);
+    DrawThreeHudDigits(R0_, samus_missiles, 0x94);
   }
   if (samus_max_super_missiles && samus_super_missiles != samus_prev_super_missiles) {
     samus_prev_super_missiles = samus_super_missiles;
     if ((joypad_dbg_flags & 0x1F40) != 0)
-      DrawThreeHudDigits(samus_prev_super_missiles, 0x9C);
+      DrawThreeHudDigits(R0_, samus_prev_super_missiles, 0x9C);
     else
-      DrawTwoHudDigits(samus_prev_super_missiles, 0x9C);
+      DrawTwoHudDigits(R0_, samus_prev_super_missiles, 0x9C);
   }
   if (samus_max_power_bombs && samus_power_bombs != samus_prev_power_bombs) {
     samus_prev_power_bombs = samus_power_bombs;
-    DrawTwoHudDigits(samus_power_bombs, 0xA2);
+    DrawTwoHudDigits(R0_, samus_power_bombs, 0xA2);
   }
   if (hud_item_index != samus_prev_hud_item_index) {
     ToggleHudItemHighlight(hud_item_index, 0x1000);
@@ -1481,19 +1480,19 @@ void ToggleHudItemHighlight(uint16 a, uint16 k) {  // 0x809CEA
   }
 }
 
-void DrawThreeHudDigits(uint16 a, uint16 k) {  // 0x809D78
+void DrawThreeHudDigits(LongPtr r0, uint16 a, uint16 k) {  // 0x809D78
   uint16 v2 = 2 * (a / 100);
-  hud_tilemap[k >> 1] = *(uint16 *)IndirPtr(&R0_, v2);
+  hud_tilemap[k >> 1] = IndirReadWord(r0, v2);
   uint16 RegWord = (a % 100);
-  DrawTwoHudDigits(RegWord, k + 2);
+  DrawTwoHudDigits(r0, RegWord, k + 2);
 }
 
-void DrawTwoHudDigits(uint16 a, uint16 k) {  // 0x809D98
+void DrawTwoHudDigits(LongPtr r0, uint16 a, uint16 k) {  // 0x809D98
   uint16 RegWord = a / 10;
   int v3 = k >> 1;
-  hud_tilemap[v3] = *(uint16 *)IndirPtr(&R0_, 2 * RegWord);
+  hud_tilemap[v3] = IndirReadWord(r0, 2 * RegWord);
   uint16 v4 = 2 * (a % 10);
-  hud_tilemap[v3 + 1] = *(uint16 *)IndirPtr(&R0_, v4);
+  hud_tilemap[v3 + 1] = IndirReadWord(r0, v4);
 }
 
 static Func_U8 *const kTimerProcessFuncs[7] = {  // 0x809DE7
@@ -2185,7 +2184,7 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
     uint16 v9 = 0;
     loopcounter = 16;
     do {
-      tmp_block_to_update = *(uint16 *)IndirPtr(&copywithflip_src, v9);
+      tmp_block_to_update = IndirReadWord(copywithflip_src, v9);
       uint16 v10 = tmp_block_to_update & 0x3FF;
       uint16 v17 = v9;
       uint16 v11 = tmp_vram_base_addr;
@@ -2279,7 +2278,7 @@ void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
     uint16 v9 = 0;
     loopcounter = 17;
     do {
-      tmp_block_to_update = *(uint16 *)IndirPtr(&copywithflip_src, v9);
+      tmp_block_to_update = IndirReadWord(copywithflip_src, v9);
       uint16 v10 = tmp_block_to_update & 0x3FF;
       uint16 v17 = v9;
       uint16 v11 = tmp_vram_base_addr;
@@ -2586,40 +2585,40 @@ void DecompressToMem(void) {  // 0x80B119
       }
       do {
         uint16 v27 = *(uint16 *)&decompress_last_byte;
-        b = *IndirPtr(&decompress_dst, *(uint16 *)&decompress_last_byte);
+        b = IndirReadByte(decompress_dst, *(uint16 *)&decompress_last_byte);
         *(uint16 *)&decompress_last_byte = v27 + 1;
         if (decompress_want_xor)
           b = ~b;
-        IndirWriteByte(&decompress_dst, dst_pos++, b);
+        IndirWriteByte(decompress_dst, dst_pos++, b);
       } while (--len);
     } else {
       switch (cmd) {
       case 0x20:
         b = DecompNextByte();
         do {
-          IndirWriteByte(&decompress_dst, dst_pos++, b);
+          IndirWriteByte(decompress_dst, dst_pos++, b);
         } while (--len);
         break;
       case 0x40:
         decompress_last_byte = DecompNextByte();
         decompress_tmp1 = DecompNextByte();
         do {
-          IndirWriteByte(&decompress_dst, dst_pos++, decompress_last_byte);
+          IndirWriteByte(decompress_dst, dst_pos++, decompress_last_byte);
           if (!--len)
             break;
-          IndirWriteByte(&decompress_dst, dst_pos++, decompress_tmp1);
+          IndirWriteByte(decompress_dst, dst_pos++, decompress_tmp1);
         } while (--len);
         break;
       case 0x60:
         b = DecompNextByte();
         do {
-          IndirWriteByte(&decompress_dst, dst_pos++, b++);
+          IndirWriteByte(decompress_dst, dst_pos++, b++);
         } while (--len);
         break;
       default:
         do {
           b = DecompNextByte();
-          IndirWriteByte(&decompress_dst, dst_pos++, b);
+          IndirWriteByte(decompress_dst, dst_pos++, b);
         } while (--len);
         break;
       }

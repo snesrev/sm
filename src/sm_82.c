@@ -1594,28 +1594,26 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
   *(uint16 *)&R0_.bank = *(uint16 *)(&kPauseMenuMapTilemaps[0].bank + (uint16)(3 * v0));
   R3_.addr = ADDR16_OF_RAM(ram4000);
   *(uint16 *)&R3_.bank = 126;
-  R8_ = 130;
-  R6_ = kPauseMenuMapData[v0];
+  R6_.bank = 130;
+  R6_.addr = kPauseMenuMapData[v0];
   if (map_station_byte_array[area_index]) {
-    uint8 *v4 = IndirPtr(&R6_, 0);
+    uint8 *v4 = IndirPtr(R6_, 0);
     LOBYTE(v5) = GET_HIBYTE(GET_WORD(v4));
     HIBYTE(v5) = GET_WORD(v4);
     R38 = v5;
-    ++R6_;
-    ++R6_;
+    R6_.addr += 2;
     v6 = ADDR16_OF_RAM(*map_tiles_explored);
-    *(uint16 *)((char *)&R10_ + 1) = 0;
-    *(uint16 *)((char *)&R8_ + 1) = v6;
-    uint8 *v7 = IndirPtr((char *)&R8_ + 1, 0);
+    R9_.bank = 0;
+    R9_.addr = v6;
+    uint8 *v7 = IndirPtr(R9_, 0);
     LOBYTE(v5) = GET_HIBYTE(GET_WORD(v7));
     HIBYTE(v5) = GET_WORD(v7);
     R40 = v5;
-    ++ *(uint16 *)((char *)&R8_ + 1);
-    ++ *(uint16 *)((char *)&R8_ + 1);
+    R9_.addr += 2;
     uint16 v8 = 0;
     v9 = 16;
     do {
-      uint16 v10 = *(uint16 *)IndirPtr(&R0_, v8);
+      uint16 v10 = IndirReadWord(R0_, v8);
       bool v11 = R40 >> 15;
       R40 *= 2;
       if (v11) {
@@ -1627,21 +1625,19 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
         if (!v11)
           v10 = 31;
       }
-      IndirWriteWord(&R3_, v8, v10);
+      IndirWriteWord(R3_, v8, v10);
       if (!--v9) {
         v9 = 16;
-        uint8 *v12 = IndirPtr(&R6_, 0);
+        uint8 *v12 = IndirPtr(R6_, 0);
         LOBYTE(v13) = GET_HIBYTE(GET_WORD(v12));
         HIBYTE(v13) = GET_WORD(v12);
         R38 = v13;
-        ++R6_;
-        ++R6_;
-        uint8 *v14 = IndirPtr((char *)&R8_ + 1, 0);
+        R6_.addr += 2;
+        uint8 *v14 = IndirPtr(R9_, 0);
         LOBYTE(v13) = GET_HIBYTE(GET_WORD(v14));
         HIBYTE(v13) = GET_WORD(v14);
         R40 = v13;
-        ++ *(uint16 *)((char *)&R8_ + 1);
-        ++ *(uint16 *)((char *)&R8_ + 1);
+        R9_.addr += 2;
       }
       v8 += 2;
     } while ((int16)(v8 - 4096) < 0);
@@ -1653,11 +1649,10 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
       uint8 t = map_tiles_explored[v2];
       map_tiles_explored[v2] <<= 1;
       if (!(t & 0x80)) {
-        IndirWriteWord(&R3_, v1, 0x1F);
+        IndirWriteWord(R3_, v1, 0x1F);
       } else {
         ++map_tiles_explored[v2];
-        uint8 *v3 = IndirPtr(&R0_, v1);
-        IndirWriteWord(&R3_, v1, GET_WORD(v3) & 0xFBFF);
+        IndirWriteWord(R3_, v1, IndirReadWord(R0_, v1) & 0xFBFF);
       }
       v1 += 2;
       LOBYTE(R18_) = R18_ + 1;
@@ -1689,28 +1684,27 @@ void DrawRoomSelectMap(void) {  // 0x829517
   *(uint16 *)&R0_.bank = *(uint16 *)(&kPauseMenuMapTilemaps[0].bank + (uint16)(3 * v0));
   R3_.addr = ADDR16_OF_RAM(ram3000);
   R3_.bank = 126;
-  R8_ = 130;
-  R6_ = kPauseMenuMapData[v0];
+  R6_.bank = 130;
+  R6_.addr = kPauseMenuMapData[v0];
   if (map_station_byte_array[area_index]) {
-    uint8 *v5 = IndirPtr(&R6_, 0);
+    uint8 *v5 = IndirPtr(R6_, 0);
     LOBYTE(v6) = GET_HIBYTE(GET_WORD(v5));
     HIBYTE(v6) = GET_WORD(v5);
     R38 = v6;
-    ++R6_;
-    ++R6_;
+    ++R6_.addr;
+    ++R6_.addr;
     v7 = 2039;
-    *(uint16 *)((char *)&R10_ + 1) = HIWORD(v7);
-    *(uint16 *)((char *)&R8_ + 1) = v7;
-    uint8 *v8 = IndirPtr((char *)&R8_ + 1, 0);
+    R9_.bank = HIWORD(v7);
+    R9_.addr = v7;
+    uint8 *v8 = IndirPtr(R9_, 0);
     LOBYTE(v6) = GET_HIBYTE(GET_WORD(v8));
     HIBYTE(v6) = GET_WORD(v8);
     R40 = v6;
-    ++ *(uint16 *)((char *)&R8_ + 1);
-    ++ *(uint16 *)((char *)&R8_ + 1);
+    R9_.addr += 2;
     uint16 v9 = 0;
     v10 = 16;
     do {
-      uint16 v11 = *(uint16 *)IndirPtr(&R0_, v9);
+      uint16 v11 = IndirReadWord(R0_, v9);
       bool v12 = R40 >> 15;
       R40 *= 2;
       if (v12) {
@@ -1722,21 +1716,19 @@ void DrawRoomSelectMap(void) {  // 0x829517
         if (!v12)
           v11 = 31;
       }
-      IndirWriteWord(&R3_, v9, v11);
+      IndirWriteWord(R3_, v9, v11);
       if (!--v10) {
         v10 = 16;
-        uint8 *v13 = IndirPtr(&R6_, 0);
+        uint8 *v13 = IndirPtr(R6_, 0);
         LOBYTE(v14) = GET_HIBYTE(GET_WORD(v13));
         HIBYTE(v14) = GET_WORD(v13);
         R38 = v14;
-        ++R6_;
-        ++R6_;
-        uint8 *v15 = IndirPtr((char *)&R8_ + 1, 0);
+        R6_.addr += 2;
+        uint8 *v15 = IndirPtr(R9_, 0);
         LOBYTE(v14) = GET_HIBYTE(GET_WORD(v15));
         HIBYTE(v14) = GET_WORD(v15);
         R40 = v14;
-        ++ *(uint16 *)((char *)&R8_ + 1);
-        ++ *(uint16 *)((char *)&R8_ + 1);
+        R9_.addr += 2;
       }
       v9 += 2;
     } while ((int16)(v9 - 4096) < 0);
@@ -1748,10 +1740,10 @@ void DrawRoomSelectMap(void) {  // 0x829517
       uint8 what = map_tiles_explored[v2];
       map_tiles_explored[v2] <<= 1;
       if (!(what & 0x80)) {
-        IndirWriteWord(&R3_, v1, 0xF);
+        IndirWriteWord(R3_, v1, 0xF);
       } else {
         ++map_tiles_explored[v2];
-        IndirWriteWord(&R3_, v1, *(uint16 *)IndirPtr(&R0_, v1) & ~0x400);
+        IndirWriteWord(R3_, v1, IndirReadWord(R0_, v1) & ~0x400);
       }
       v1 += 2;
       LOBYTE(R18_) = R18_ + 1;
@@ -1775,7 +1767,7 @@ void DrawRoomSelectMap(void) {  // 0x829517
 void DrawRoomSelectMapAreaLabel(void) {  // 0x829628
   const uint8 *v2 = RomPtr_82(kPauseAreaLabelTilemap[area_index]);
   for(int i = 0; i < 24; i += 2)
-    IndirWriteWord(&R0_, i, *(uint16 *)(v2 + i) & 0xEFFF);
+    IndirWriteWord(R0_, i, *(uint16 *)(v2 + i) & 0xEFFF);
 }
 
 void SetupMapScrollingForPauseMenu(uint16 a) {  // 0x829E27
@@ -1808,26 +1800,26 @@ void SetupMapScrollingForPauseMenu(uint16 a) {  // 0x829E27
 
 void DetermineMapScrollLimits(void) {  // 0x829EC4
   if (has_area_map) {
-    R8_ = 130;
-    R6_ = addr_kPauseMenuMapData;
-    R6_ = *(uint16 *)IndirPtr(&R6_, 2 * area_index);
+    R6_.bank = 130;
+    R6_.addr = addr_kPauseMenuMapData;
+    R6_.addr = IndirReadWord(R6_, 2 * area_index);
   } else {
-    R8_ = 0;
-    R6_ = 2039;
+    R6_.bank = 0;
+    R6_.addr = 2039;
   }
-  R0_.bank = R8_;
-  R0_.addr = R6_;
+  R0_.bank = R6_.bank;
+  R0_.addr = R6_.addr;
   uint16 v0 = DetermineLeftmostMapColumn();
   map_min_x_scroll = MultiplyBy8(v0);
   if (area_index == 4)
     map_min_x_scroll -= 24;
-  R0_.addr = R6_ + 131;
+  R0_.addr = R6_.addr + 131;
   uint16 v1 = DetermineRightmostMapColumn();
   map_max_x_scroll = MultiplyBy8(v1);
-  R0_.addr = R6_;
+  R0_.addr = R6_.addr;
   uint16 v2 = DetermineTopmostMapColumn();
   map_min_y_scroll = MultiplyBy8(v2);
-  R0_.addr = R6_ + 124;
+  R0_.addr = R6_.addr + 124;
   uint16 v3 = DetermineBottommostMapColumn();
   map_max_y_scroll = MultiplyBy8(v3);
 }
@@ -1849,7 +1841,7 @@ LABEL_2:
   LOBYTE(v0) = result & 7;
   LOBYTE(R18_) = k0x80Shr[v0];
   uint16 v2 = 0;
-  while (((uint8)R18_ & *IndirPtr(&R0_, v2)) == 0) {
+  while (((uint8)R18_ & IndirReadByte(R0_, v2)) == 0) {
     v2 += 4;
     if ((int16)(v2 - 128) >= 0) {
       if ((int16)(++result - 64) >= 0)
@@ -1871,7 +1863,7 @@ uint16 DetermineRightmostMapColumn(void) {  // 0x829FA9
 LABEL_2:
   LOBYTE(R18_) = k0x80Shr_0[result & 7];
   uint16 v1 = 0;
-  while (((uint8)R18_ & *IndirPtr(&R0_, v1)) == 0) {
+  while (((uint8)R18_ & IndirReadByte(R0_, v1)) == 0) {
     v1 += 4;
     if ((int16)(v1 - 128) >= 0) {
       if ((--result & 0x8000u) != 0)
@@ -1893,7 +1885,7 @@ uint16 DetermineTopmostMapColumn(void) {  // 0x82A009
   R3_.bank = R0_.bank;
   uint16 result = 0;
   uint16 v1 = 0;
-  while (!*IndirPtr(&R0_, v1) && !*IndirPtr(&R3_, v1)) {
+  while (!IndirReadByte(R0_, v1) && !IndirReadByte(R3_, v1)) {
     if ((int16)(++v1 - 4) >= 0) {
       v1 = 0;
       R0_.addr += 4;
@@ -1910,7 +1902,7 @@ uint16 DetermineBottommostMapColumn(void) {  // 0x82A053
   R3_.bank = R0_.bank;
   uint16 result = 31;
   uint16 v1 = 0;
-  while (!*IndirPtr(&R0_, v1) && !*IndirPtr(&R3_, v1)) {
+  while (!IndirReadByte(R0_, v1) && !IndirReadByte(R3_, v1)) {
     if ((int16)(++v1 - 4) >= 0) {
       v1 = 0;
       R0_.addr -= 4;
@@ -1970,19 +1962,19 @@ void LoadEquipmentScreenEquipmentTilemaps(void) {  // 0x82A12B
   if (samus_max_reserve_health) {
     R3_.addr = addr_kEquipmentTilemapOffs_Tanks;
     *(uint16 *)&R3_.bank = 130;
-    R0_.addr = *(uint16 *)IndirPtr(&R3_, 0);
+    R0_.addr = IndirReadWord(R3_, 0);
     R22_ = 14;
     Copy_R22_Bytes(kEquipmentTilemaps_Tanks[0]);
     R3_.addr = addr_kEquipmentTilemapOffs_Tanks;
     *(uint16 *)&R3_.bank = 130;
-    R0_.addr = *(uint16 *)IndirPtr(&R3_, 2u);
+    R0_.addr = IndirReadWord(R3_, 2u);
     R22_ = 14;
     Copy_R22_Bytes(kEquipmentTilemaps_Tanks[1]);
   }
   uint16 v0 = 0;
   R3_.addr = addr_kEquipmentTilemapOffs_Weapons;
   *(uint16 *)&R3_.bank = 130;
-  R0_.addr = *(uint16 *)IndirPtr(&R3_, 0);
+  R0_.addr = IndirReadWord(R3_, 0);
   if (hyper_beam_flag) {
     uint16 v3 = 0;
     do {
@@ -1990,7 +1982,7 @@ void LoadEquipmentScreenEquipmentTilemaps(void) {  // 0x82A12B
       R22_ = 10;
       Copy_R22_Bytes(v4);
       v3 += 2;
-      R0_.addr = *(uint16 *)IndirPtr(&R3_, v3);
+      R0_.addr = IndirReadWord(R3_, v3);
     } while ((int16)(v3 - 10) < 0);
   } else {
     do {
@@ -2009,13 +2001,13 @@ void LoadEquipmentScreenEquipmentTilemaps(void) {  // 0x82A12B
         Copy_R22_Bytes(addr_kEquipmentScreenTilemap_Blank);
       }
       v0 += 2;
-      R0_.addr = *(uint16 *)IndirPtr(&R3_, v0);
+      R0_.addr = IndirReadWord(R3_, v0);
     } while ((int16)(v0 - 12) < 0);
   }
   uint16 v5 = 0;
   R3_.addr = addr_kEquipmentTilemapOffs_Suits;
   *(uint16 *)&R3_.bank = 130;
-  R0_.addr = *(uint16 *)IndirPtr(&R3_, 0);
+  R0_.addr = IndirReadWord(R3_, 0);
   do {
     int v6 = v5 >> 1;
     if ((collected_items & kEquipmentBitmasks_Suits[v6]) != 0) {
@@ -2032,12 +2024,12 @@ void LoadEquipmentScreenEquipmentTilemaps(void) {  // 0x82A12B
       Copy_R22_Bytes(addr_kEquipmentScreenTilemap_Blank);
     }
     v5 += 2;
-    R0_.addr = *(uint16 *)IndirPtr(&R3_, v5);
+    R0_.addr = IndirReadWord(R3_, v5);
   } while ((int16)(v5 - 12) < 0);
   uint16 v8 = 0;
   R3_.addr = addr_kEquipmentTilemapOffs_Boots;
   *(uint16 *)&R3_.bank = 130;
-  R0_.addr = *(uint16 *)IndirPtr(&R3_, 0);
+  R0_.addr = IndirReadWord(R3_, 0);
   do {
     int v9 = v8 >> 1;
     if ((collected_items & kEquipmentBitmasks_Boots[v9]) != 0) {
@@ -2053,7 +2045,7 @@ void LoadEquipmentScreenEquipmentTilemaps(void) {  // 0x82A12B
       Copy_R22_Bytes(addr_kEquipmentScreenTilemap_Blank);
     }
     v8 += 2;
-    R0_.addr = *(uint16 *)IndirPtr(&R3_, v8);
+    R0_.addr = IndirReadWord(R3_, v8);
   } while ((int16)(v8 - 6) < 0);
 }
 
@@ -2062,7 +2054,7 @@ void Copy_R22_Bytes(uint16 k) {  // 0x82A27E
   uint16 v1 = 0;
   do {
     const uint16 *v2 = (const uint16 *)RomPtr_82(k);
-    IndirWriteWord(&R0_, v1, *v2);
+    IndirWriteWord(R0_, v1, *v2);
     k += 2;
     v1 += 2;
     R22_ -= 2;
@@ -2073,8 +2065,7 @@ void SetPaletteOfR22TilemapBytesToR18(void) {  // 0x82A29D
   R0_.bank = 0x7E;
   uint16 v0 = 0;
   do {
-    uint8 *v1 = IndirPtr(&R0_, v0);
-    IndirWriteWord(&R0_, v0, R18_ | *(uint16 *)v1 & 0xE3FF);
+    IndirWriteWord(R0_, v0, R18_ | IndirReadWord(R0_, v0) & 0xE3FF);
     v0 += 2;
     R22_ -= 2;
   } while (R22_);
@@ -2525,7 +2516,7 @@ void EquipmentScreenSetupReserveMode(void) {  // 0x82AB47
     uint16 v2 = 0;
     do {
       v3 = ram3800.cinematic_bg_tilemap[v1 + 327] & 0xFC00;
-      ram3800.cinematic_bg_tilemap[v1 + 327] = *(uint16 *)IndirPtr(&R0_, v2) | v3;
+      ram3800.cinematic_bg_tilemap[v1 + 327] = IndirReadWord(R0_, v2) | v3;
       v2 += 2;
       ++v1;
       --R18_;
@@ -2946,7 +2937,7 @@ void WriteSamusWireframeTilemap(void) {  // 0x82B20C
     uint16 v3 = v2;
     R18_ = 8;
     do {
-      *(uint16 *)((char *)ram3800.cinematic_bg_tilemap + v2) = *(uint16 *)IndirPtr(&R0_, v1);
+      *(uint16 *)((char *)ram3800.cinematic_bg_tilemap + v2) = IndirReadWord(R0_, v1);
       v2 += 2;
       v1 += 2;
       --R18_;
@@ -3241,8 +3232,8 @@ void DrawFileSelectMapIcons(void) {  // 0x82B6DD
   *(uint16 *)&R0_.bank = 130;
   R0_.addr = *(VoidP *)((char *)&kMapIconDataPointers[4].crateria + (uint16)(2 * area_index));
   v0 = 4 * load_station_index;
-  uint16 v1 = *(uint16 *)IndirPtr(&R0_, 4 * load_station_index) - reg_BG1HOFS;
-  uint16 v2 = *(uint16 *)IndirPtr(&R0_, v0 + 2) - reg_BG1VOFS;
+  uint16 v1 = IndirReadWord(R0_, 4 * load_station_index) - reg_BG1HOFS;
+  uint16 v2 = IndirReadWord(R0_, v0 + 2) - reg_BG1VOFS;
   if ((samus_position_indicator_animation_loop_counter & 1) == 0)
     DrawMenuSpritemap(0x12, v1, v2);
   DrawMenuSpritemap(a, v1, v2);

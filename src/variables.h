@@ -4,17 +4,20 @@
 
 extern uint8 g_ram[0x20000];
 
+
+// Aliasing
+// This is used in some R18:R20 places to multiply by 256
+#define R19_ (*(uint16*)(g_ram+0x13))
+
 #define R0_ (*(LongPtr*)(g_ram+0x0))
 #define R3_ (*(LongPtr*)(g_ram+0x3))
-#define R6_ (*(uint16*)(g_ram+0x6))
-#define R8_ (*(uint16*)(g_ram+0x8))
-#define R10_ (*(uint16*)(g_ram+0xA))
+#define R6_ (*(LongPtr*)(g_ram+0x6))
+#define R9_ (*(LongPtr*)(g_ram+0x9))
+
 #define R12_ (*(uint16*)(g_ram+0xC))
 #define R14_ (*(uint16*)(g_ram+0xE))
 #define R16_ (*(uint16*)(g_ram+0x10))
 #define R18_ (*(uint16*)(g_ram+0x12))
-// This is used in some R18:R20 places to multiply by 256
-#define R19_ (*(uint16*)(g_ram+0x13))
 #define R20_ (*(uint16*)(g_ram+0x14))
 #define R22_ (*(uint16*)(g_ram+0x16))
 #define R24_ (*(uint16*)(g_ram+0x18))

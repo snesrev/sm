@@ -3877,14 +3877,15 @@ void Ridley_Func_93(uint16 j, uint16 k) {  // 0xA6D3B4
   int16 v3;
   int16 v5;
 
-  R20_ = 126;
-  R18_ = j;
+  LongPtr r18;
+  r18.bank = 126;
+  r18.addr = j;
   uint16 v2 = 0;
   v3 = 7;
   do {
     v5 = v3;
     const uint16 *v4 = (const uint16 *)RomPtr_A6(k);
-    IndirWriteWord(&R18_, v2, *v4);
+    IndirWriteWord(r18, v2, *v4);
     k += 2;
     v2 += 20;
     --v3;
@@ -4518,8 +4519,8 @@ int BabyMetroid_DBCB_DoubleRetEx(uint16 a) {
   R0_.bank = 126;
   R3_.bank = 126;
 
-  uint16 *instr_ptr = (uint16 *)IndirPtr(&R0_, 0);
-  uint16 *timer_ptr = (uint16 *)IndirPtr(&R3_, 0);
+  uint16 *instr_ptr = (uint16 *)IndirPtr(R0_, 0);
+  uint16 *timer_ptr = (uint16 *)IndirPtr(R3_, 0);
 
   if ((*instr_ptr & 0x8000u) == 0)
     return -1;  // double ret
@@ -4538,7 +4539,7 @@ int BabyMetroid_DBCB_DoubleRetEx(uint16 a) {
     if (v3 >= 0)
       break;
 LABEL_7:
-    R6_ = v3;
+    R6_.addr = v3;
     v2 = CallBabyMetroidInstr((uint16)v3 | 0xA60000, v2 + 2);
   }
   *timer_ptr = 1;

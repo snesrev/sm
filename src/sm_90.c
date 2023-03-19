@@ -238,15 +238,15 @@ static Func_Y_Y *const kAnimDelayFuncs[16] = {  // 0x9082DC
 void Samus_HandleAnimDelay(void) {
   int16 v2;
 
-  byte_7E0002 = -111;
+  R0_.bank = -111;
   uint16 v0 = samus_anim_frame;
   R0_.addr = kSamusAnimationDelayData[samus_pose];
-  if ((*IndirPtr(&R0_, samus_anim_frame) & 0x80) != 0) {
+  if ((IndirReadByte(R0_, samus_anim_frame) & 0x80) != 0) {
     uint16 v1 = Samus_HandleSpeedBoosterAnimDelay(v0);
     if (v1) {
       v2 = kAnimDelayFuncs[v1 & 0xF](v0);
       if (v2 >= 0)
-        samus_anim_frame_timer = samus_anim_frame_buffer + *IndirPtr(&R0_, v2);
+        samus_anim_frame_timer = samus_anim_frame_buffer + IndirReadByte(R0_, v2);
     }
   } else {
     Samus_HandleNormalAnimDelay(v0);
@@ -286,16 +286,16 @@ uint16 Samus_AnimDelayFunc_8_AutoJumpHack(uint16 j) {  // 0x908370
 
 uint16 Samus_AnimDelayFunc_9_TransToPose(uint16 j) {  // 0x90839A
   uint16 v1 = j + 1;
-  R18_ = *(uint16 *)IndirPtr(&R0_, v1);
+  R18_ = IndirReadWord(R0_, v1);
   if ((R18_ & equipped_items) != 0) {
     if (samus_y_speed || samus_y_subspeed)
-      samus_new_pose_transitional = *IndirPtr(&R0_, v1 + 5);
+      samus_new_pose_transitional = IndirReadByte(R0_, v1 + 5);
     else
-      samus_new_pose_transitional = *IndirPtr(&R0_, v1 + 4);
+      samus_new_pose_transitional = IndirReadByte(R0_, v1 + 4);
   } else if (samus_y_speed || samus_y_subspeed) {
-    samus_new_pose_transitional = *IndirPtr(&R0_, v1 + 3);
+    samus_new_pose_transitional = IndirReadByte(R0_, v1 + 3);
   } else {
-    samus_new_pose_transitional = *IndirPtr(&R0_, v1 + 2);
+    samus_new_pose_transitional = IndirReadByte(R0_, v1 + 2);
   }
   samus_hurt_switch_index = 3;
   return -1;
@@ -303,9 +303,9 @@ uint16 Samus_AnimDelayFunc_9_TransToPose(uint16 j) {  // 0x90839A
 
 uint16 UNUSED_Samus_AnimDelayFunc_10(uint16 j) {  // 0x9083F6
   if (samus_y_speed || samus_y_subspeed)
-    samus_new_pose_transitional = *IndirPtr(&R0_, j + 2);
+    samus_new_pose_transitional = IndirReadByte(R0_, j + 2);
   else
-    samus_new_pose_transitional = *IndirPtr(&R0_, j + 1);
+    samus_new_pose_transitional = IndirReadByte(R0_, j + 1);
   samus_hurt_switch_index = 3;
   return -1;
 }
@@ -338,23 +338,23 @@ LABEL_10:
 
 uint16 Samus_AnimDelayFunc_12_TransToPose(uint16 j) {  // 0x90848B
   uint16 v1 = j + 1;
-  R18_ = *(uint16 *)IndirPtr(&R0_, v1);
+  R18_ = IndirReadWord(R0_, v1);
   if ((R18_ & equipped_items) != 0)
-    samus_new_pose_transitional = *IndirPtr(&R0_, v1 + 3);
+    samus_new_pose_transitional = IndirReadByte(R0_, v1 + 3);
   else
-    samus_new_pose_transitional = *IndirPtr(&R0_, v1 + 2);
+    samus_new_pose_transitional = IndirReadByte(R0_, v1 + 2);
   samus_hurt_switch_index = 3;
   return -1;
 }
 
 uint16 Samus_AnimDelayFunc_13_TransToPose(uint16 j) {  // 0x9084B6
-  samus_new_pose_transitional = *IndirPtr(&R0_, j + 1);
+  samus_new_pose_transitional = IndirReadByte(R0_, j + 1);
   samus_hurt_switch_index = 3;
   return -1;
 }
 
 uint16 Samus_AnimDelayFunc_14_Goto(uint16 j) {  // 0x9084C7
-  R18_ = *IndirPtr(&R0_, j + 1);
+  R18_ = IndirReadByte(R0_, j + 1);
   samus_anim_frame -= R18_;
   return samus_anim_frame;
 }
@@ -366,7 +366,7 @@ uint16 Samus_AnimDelayFunc_15_GotoStart(uint16 j) {  // 0x9084DB
 }
 
 void Samus_HandleNormalAnimDelay(uint16 j) {  // 0x9084E3
-  byte_7E0002 = -111;
+  R0_.bank = -111;
   if (samus_has_momentum_flag && samus_movement_type == 1) {
     uint16 *kDefaultAnimFramePtr = (uint16 *)RomPtr(0x91B5D1);
 
@@ -375,7 +375,7 @@ void Samus_HandleNormalAnimDelay(uint16 j) {  // 0x9084E3
     else
       R0_.addr = *kDefaultAnimFramePtr;
   }
-  samus_anim_frame_timer = samus_anim_frame_buffer + *IndirPtr(&R0_, j);
+  samus_anim_frame_timer = samus_anim_frame_buffer + IndirReadByte(R0_, j);
 }
 
 
@@ -383,17 +383,17 @@ void Samus_HandleNormalAnimDelay(uint16 j) {  // 0x9084E3
 uint16 Samus_HandleSpeedBoosterAnimDelay(uint16 j) {  // 0x90852C
   uint16 *kDefaultAnimFramePtr = (uint16 *)RomPtr(0x91B5D1);
 
-  byte_7E0002 = 0x91;
+  R0_.bank = 0x91;
   if (!samus_has_momentum_flag || (button_config_run_b & joypad1_lastkeys) == 0 || samus_movement_type != 1)
-    return *IndirPtr(&R0_, j);
+    return IndirReadByte(R0_, j);
   if ((equipped_items & 0x2000) == 0) {
     samus_anim_frame = 0;
     R0_.addr = *kDefaultAnimFramePtr;
-    samus_anim_frame_timer = samus_anim_frame_buffer + *IndirPtr(&R0_, 0);
+    samus_anim_frame_timer = samus_anim_frame_buffer + IndirReadByte(R0_, 0);
     return 0;
   }
   if ((uint8)--speed_boost_counter)
-    return *IndirPtr(&R0_, j);
+    return IndirReadByte(R0_, j);
   uint16 v2 = speed_boost_counter;
   if ((speed_boost_counter & 0x400) == 0) {
     v2 = speed_boost_counter + 256;
@@ -409,7 +409,7 @@ uint16 Samus_HandleSpeedBoosterAnimDelay(uint16 j) {  // 0x90852C
   speed_boost_counter = kSpeedBoostToCtr[v3] | speed_boost_counter & 0xFF00;
   samus_anim_frame = 0;
   R0_.addr = kSpeedBoostToAnimFramePtr[v3];
-  samus_anim_frame_timer = samus_anim_frame_buffer + *IndirPtr(&R0_, 0);
+  samus_anim_frame_timer = samus_anim_frame_buffer + IndirReadByte(R0_, 0);
   return 0;
 }
 
@@ -2521,21 +2521,21 @@ void UpdateMinimap(void) {  // 0x90A91B
     LOBYTE(v5) = HIBYTE(*(uint16 *)&map_tiles_explored[v3 + 8]);
     HIBYTE(v5) = *(uint16 *)&map_tiles_explored[v3 + 8];
     R28_ = kShr0xFc00[v6] & v5;
-    *(uint16 *)((char *)&R10_ + 1) = 130;
-    *(uint16 *)((char *)&R8_ + 1) = kPauseMenuMapData[area_index];
-    *(uint16 *)((char *)&R14_ + 1) = *(uint16 *)((char *)&R8_ + 1);
-    *(uint16 *)((char *)&R8_ + 1) += v3;
-    uint8 *v7 = IndirPtr((char *)&R8_ + 1, 0);
+    R9_.bank = 130;
+    R9_.addr = kPauseMenuMapData[area_index];
+    *(uint16 *)((char *)&R14_ + 1) = R9_.addr;
+    R9_.addr += v3;
+    uint8 *v7 = IndirPtr(R9_, 0);
     LOBYTE(v5) = GET_HIBYTE(GET_WORD(v7));
     HIBYTE(v5) = GET_WORD(v7);
     R38 = v5;
-    *(uint16 *)((char *)&R8_ + 1) += 4;
-    uint8 *v8 = IndirPtr((char *)&R8_ + 1, 0);
+    R9_.addr += 4;
+    uint8 *v8 = IndirPtr(R9_, 0);
     LOBYTE(v5) = GET_HIBYTE(GET_WORD(v8));
     HIBYTE(v5) = GET_WORD(v8);
     R40 = v5;
-    *(uint16 *)((char *)&R8_ + 1) += 4;
-    uint8 *v9 = IndirPtr((char *)&R8_ + 1, 0);
+    R9_.addr += 4;
+    uint8 *v9 = IndirPtr(R9_, 0);
     LOBYTE(v5) = GET_HIBYTE(GET_WORD(v9));
     HIBYTE(v5) = GET_WORD(v9);
     R42 = v5;
@@ -2578,46 +2578,46 @@ void UpdateMinimapInside(void) {  // 0x90AA43
   else
     v1 = remaining_enemy_spritemap_entries - 34;
   uint16 v2 = 2 * v1;
-  *(uint16 *)&byte_7E0002 = *(uint16 *)((char *)kPauseMenuMapTilemaps + 2 + (uint16)(3 * area_index));
-  R3_.bank = *(uint16 *)&byte_7E0002;
-  R8_ = *(uint16 *)&byte_7E0002;
+  *(uint16 *)&R0_.bank = *(uint16 *)((char *)kPauseMenuMapTilemaps + 2 + (uint16)(3 * area_index));
+  R3_.bank = *(uint16 *)&R0_.bank;
+  R6_.bank = *(uint16 *)&R0_.bank;
   R0_.addr = *(uint16 *)((char *)kPauseMenuMapTilemaps + (uint16)(3 * area_index));
   R3_.addr = R0_.addr + 64;
-  R6_ = R0_.addr + 128;
+  R6_.addr = R0_.addr + 128;
   R18_ = 5;
   uint16 v3 = 0;
   do {
     bool v4 = R38 >> 15;
     R38 *= 2;
-    if (!v4 || (v5 = *(uint16 *)IndirPtr(&R0_, v2), !has_area_map))
+    if (!v4 || (v5 = IndirReadWord(R0_, v2), !has_area_map))
       v5 = 31;
     int v6 = v3 >> 1;
     hud_tilemap[v6 + 26] = v5 & 0xC3FF | 0x2C00;
     v4 = R24_ >> 15;
     R24_ *= 2;
     if (v4)
-      hud_tilemap[v6 + 26] = *(uint16 *)IndirPtr(&R0_, v2) & 0xC3FF | 0x2800;
+      hud_tilemap[v6 + 26] = IndirReadWord(R0_, v2) & 0xC3FF | 0x2800;
     v4 = R40 >> 15;
     R40 *= 2;
-    if (!v4 || (v7 = *(uint16 *)IndirPtr(&R3_, v2), !has_area_map))
+    if (!v4 || (v7 = IndirReadWord(R3_, v2), !has_area_map))
       v7 = 31;
     hud_tilemap[v6 + 58] = v7 & 0xC3FF | 0x2C00;
     v4 = R26_ >> 15;
     R26_ *= 2;
     if (v4) {
-      hud_tilemap[v6 + 58] = *(uint16 *)IndirPtr(&R3_, v2) & 0xC3FF | 0x2800;
+      hud_tilemap[v6 + 58] = IndirReadWord(R3_, v2) & 0xC3FF | 0x2800;
       if (R18_ == 3 && (hud_tilemap[v6 + 58] & 0x1FF) == 40)
         MarkMapTileAboveSamusAsExplored();
     }
     v4 = R42 >> 15;
     R42 *= 2;
-    if (!v4 || (v8 = *(uint16 *)IndirPtr(&R6_, v2), !has_area_map))
+    if (!v4 || (v8 = IndirReadWord(R6_, v2), !has_area_map))
       v8 = 31;
     hud_tilemap[v6 + 90] = v8 & 0xC3FF | 0x2C00;
     v4 = R28_ >> 15;
     R28_ *= 2;
     if (v4)
-      hud_tilemap[v6 + 90] = *(uint16 *)IndirPtr(&R6_, v2) & 0xC3FF | 0x2800;
+      hud_tilemap[v6 + 90] = IndirReadWord(R6_, v2) & 0xC3FF | 0x2800;
     v3 += 2;
     v2 += 2;
     if ((v2 & 0x3F) == 0)
@@ -2634,9 +2634,9 @@ void MarkMapTileAboveSamusAsExplored(void) {  // 0x90AB5F
 
 void AdjustMapBitsForMapPageSpill(void) {  // 0x90AB75
   uint16 v0 = (uint8)R48;
-  *(uint16 *)((char *)&R8_ + 1) = *(uint16 *)((char *)&R14_ + 1) + (uint8)R48;
+  R9_.addr = *(uint16 *)((char *)&R14_ + 1) + (uint8)R48;
   LOBYTE(R44) = map_tiles_explored[(uint8)R48];
-  HIBYTE(R44) = *IndirPtr((char *)&R8_ + 1, 0);
+  HIBYTE(R44) = IndirReadByte(R9_, 0);
   if ((uint8)R34 == 32) {
     uint16 v1 = R44;
     HIBYTE(R38) = HIBYTE(v1);
@@ -2647,8 +2647,8 @@ void AdjustMapBitsForMapPageSpill(void) {  // 0x90AB75
     LOBYTE(R24_) = v2;
   }
   LOBYTE(R44) = map_tiles_explored[v0 + 4];
-  *(uint16 *)((char *)&R8_ + 1) += 4;
-  HIBYTE(R44) = *IndirPtr((char *)&R8_ + 1, 0);
+  R9_.addr += 4;
+  HIBYTE(R44) = IndirReadByte(R9_, 0);
   if ((uint8)R34 == 32) {
     uint16 v3 = R44;
     HIBYTE(R40) = HIBYTE(v3);
@@ -2659,8 +2659,8 @@ void AdjustMapBitsForMapPageSpill(void) {  // 0x90AB75
     LOBYTE(R26_) = v4;
   }
   LOBYTE(R44) = map_tiles_explored[v0 + 8];
-  *(uint16 *)((char *)&R8_ + 1) += 4;
-  HIBYTE(R44) = *IndirPtr((char *)&R8_ + 1, 0);
+  R9_.addr += 4;
+  HIBYTE(R44) = IndirReadByte(R9_, 0);
   if ((uint8)R34 == 32) {
     uint16 v5 = R44;
     HIBYTE(R42) = HIBYTE(v5);
@@ -2730,7 +2730,7 @@ void WriteBeamPalette_Y(uint16 j) {  // 0x90ACCD
   uint16 v1 = 0;
   uint16 v2 = 0;
   do {
-    palette_buffer[(v2 >> 1) + 224] = *(uint16 *)IndirPtr(&R0_, v1);
+    palette_buffer[(v2 >> 1) + 224] = IndirReadWord(R0_, v1);
     v2 += 2;
     v1 += 2;
   } while ((int16)(v1 - 32) < 0);
@@ -2742,7 +2742,7 @@ void LoadProjectilePalette(uint16 a) {  // 0x90ACFC
   uint16 v1 = 0;
   uint16 v2 = 0;
   do {
-    palette_buffer[(v2 >> 1) + 224] = *(uint16 *)IndirPtr(&R0_, v1);
+    palette_buffer[(v2 >> 1) + 224] = IndirReadWord(R0_, v1);
     v2 += 2;
     v1 += 2;
   } while ((int16)(v1 - 32) < 0);
@@ -3944,7 +3944,7 @@ void HandleChargingBeamGfxAudio(void) {  // 0x90BAFC
         QueueSfx1_Max9(8u);
       uint16 v0 = 0;
       do {
-        byte_7E0002 = -112;
+        R0_.bank = -112;
         v1 = *(uint16 *)((char *)&flare_animation_timer + v0) - 1;
         *(uint16 *)((char *)&flare_animation_timer + v0) = v1;
         if (v1 < 0) {
@@ -3952,17 +3952,17 @@ void HandleChargingBeamGfxAudio(void) {  // 0x90BAFC
           *(uint16 *)((char *)&flare_animation_frame + v0) = v2;
           uint16 v3 = v2;
           R0_.addr = kFlareAnimDelays[v0 >> 1];
-          v4 = *IndirPtr(&R0_, v2);
+          v4 = IndirReadByte(R0_, v2);
           if (v4 == 255) {
             *(uint16 *)((char *)&flare_animation_frame + v0) = 0;
             v3 = 0;
           } else if (v4 == 254) {
-            R18_ = *IndirPtr(&R0_, v3 + 1);
+            R18_ = IndirReadByte(R0_, v3 + 1);
             uint16 v5 = *(uint16 *)((char *)&flare_animation_frame + v0) - R18_;
             *(uint16 *)((char *)&flare_animation_frame + v0) = v5;
             v3 = v5;
           }
-          *(uint16 *)((char *)&flare_animation_timer + v0) = *IndirPtr(&R0_, v3);
+          *(uint16 *)((char *)&flare_animation_timer + v0) = IndirReadByte(R0_, v3);
         }
         v9 = v0;
         DrawFlareAnimationComponent(v0);
@@ -3986,7 +3986,7 @@ void DrawFlareAnimationComponent(uint16 k) {  // 0x90BBE1
   int16 v2;
   uint16 v1;
 
-  byte_7E0002 = -109;
+  R0_.bank = -109;
   R18_ = *((uint8 *)&flare_animation_frame + k);
   if (samus_pose_x_dir == 4)
     v1 = word_93A22B[k >> 1];

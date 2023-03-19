@@ -2020,7 +2020,7 @@ void CreditsObject_Func1(uint16 j) {  // 0x8B99C1
   R20_ = 31;
   uint16 v2 = *((uint16 *)RomPtr_8C(j) + 1);
   do {
-    *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + RegWord) = *(uint16 *)IndirPtr(&R0_, v2);
+    *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + RegWord) = IndirReadWord(R0_, v2);
     RegWord += 2;
     v2 += 2;
     --R20_;

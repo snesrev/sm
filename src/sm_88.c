@@ -1011,7 +1011,7 @@ void HdmaobjPreInstr_XrayFunc5_DeactivateBeam(uint16 k) {  // 0x888A08
     R0_.bank = 126;
     R0_.addr = ADDR16_OF_RAM(*hdma_table_1);
     for (int i = 510; i >= 0; i -= 2)
-      IndirWriteWord(&R0_, i, 0xFF);
+      IndirWriteWord(R0_, i, 0xFF);
     if (samus_auto_cancel_hud_item_index) {
       hud_item_index = 0;
       samus_auto_cancel_hud_item_index = 0;
@@ -1628,8 +1628,8 @@ void HdmaobjPreInstr_FxType22_BG3Yscroll(uint16 k) {  // 0x88A643
   DamageSamusInTopRow();
   R0_.addr = addr_word_88A8E8;
   R3_.addr = addr_word_88A8E8__plus__2;
-  R6_ = addr_word_88A8E8__plus__4;
-  *(uint16 *)((char *)&R8_ + 1) = addr_word_88A8E8__plus__6;
+  R6_.addr = addr_word_88A8E8__plus__4;
+  R9_.addr = addr_word_88A8E8__plus__6;
   R24_ = 78;
   Unreachable();
   k = SetupSomeHdmaTablesBG3();
@@ -1768,7 +1768,7 @@ uint16 SetupSomeHdmaTablesBG3(void) {  // 0x88A81C
   R18_ = layer1_y_pos + 32;
   uint16 v2 = 0;
   while ((int16)(v1 - *(uint16 *)&RomPtr_88(R0_.addr)[v2]) < 0
-         || (int16)(v1 - *(uint16 *)&RomPtr_88(*(uint16 *)((char *)&R8_ + 1))[v2]) >= 0) {
+         || (int16)(v1 - *(uint16 *)&RomPtr_88(R9_.addr)[v2]) >= 0) {
     v2 += 6;
     if ((int16)(v2 - R24_) >= 0)
       return v0;
@@ -1780,7 +1780,7 @@ uint16 SetupSomeHdmaTablesBG3(void) {  // 0x88A81C
     v3 = R18_ & 0x1F;
   R22_ = v3;
   *(uint16 *)&mother_brain_indirect_hdma[3] = *(uint16 *)&RomPtr_88(R3_.addr)[v2] - v3;
-  *(uint16 *)&mother_brain_indirect_hdma[4] = R22_ + *(uint16 *)&RomPtr_88(R6_)[v2] - g_word_7E0598;
+  *(uint16 *)&mother_brain_indirect_hdma[4] = R22_ + *(uint16 *)&RomPtr_88(R6_.addr)[v2] - g_word_7E0598;
   while (1) {
     R20_ = mother_brain_indirect_hdma[v0];
     R18_ += R20_;
@@ -1789,13 +1789,13 @@ uint16 SetupSomeHdmaTablesBG3(void) {  // 0x88A81C
     if (!sign16(g_word_7E0598 - 224))
       break;
     while ((int16)(R18_ - *(uint16 *)&RomPtr_88(R0_.addr)[v2]) < 0
-           || (int16)(R18_ - *(uint16 *)&RomPtr_88(*(uint16 *)((char *)&R8_ + 1))[v2]) >= 0) {
+           || (int16)(R18_ - *(uint16 *)&RomPtr_88(R9_.addr)[v2]) >= 0) {
       v2 += 6;
       if ((int16)(v2 - R24_) >= 0)
         return v0;
     }
     *(uint16 *)&mother_brain_indirect_hdma[v0] = *(uint16 *)&RomPtr_88(R3_.addr)[v2];
-    *(uint16 *)&mother_brain_indirect_hdma[v0 + 1] = *(uint16 *)&RomPtr_88(R6_)[v2] - g_word_7E0598;
+    *(uint16 *)&mother_brain_indirect_hdma[v0 + 1] = *(uint16 *)&RomPtr_88(R6_.addr)[v2] - g_word_7E0598;
   }
   return v0;
 }
@@ -1899,10 +1899,10 @@ void RoomMainAsm_ScrollingSky(void) {  // 0x88AFA3
     int v2 = 8 * (uint8)tt;
     int y1 = (uint8)(tt >> 8);
     int y2 = (uint8)((tt >> 8) + 1);
-    VoidP v3 = *(uint16 *)IndirPtr(&R0_, 2 * y1) + v2;
+    VoidP v3 = IndirReadWord(R0_, 2 * y1) + v2;
     v1[0].src.addr = v3;
     v1[1].src.addr = v3 + 64;
-    VoidP v5 = *(uint16 *)IndirPtr(&R0_, 2 * y2) + v2;
+    VoidP v5 = IndirReadWord(R0_, 2 * y2) + v2;
     v1[2].src.addr = v5;
     v1[3].src.addr = v5 + 64;
     v1[0].src.bank = 0x8a;
