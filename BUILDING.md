@@ -21,9 +21,19 @@ Note: *Make sure you're using MINGW64, otherwise it won't work.*
 1. Install MSYS2 on your machine.
 2. Clone the SM repository. `git clone https://github.com/snesrev/sm`
 3. Place the copy of your rom in the main directory.
-4. Install `libsdl2-dev` with `sdl2-config --cflags`
-5. After that it outputs `-IC:/msys64/mingw64/include/SDL2 -Dmain=SDL_main`, type `sdl2-config --libs`, it should output `-LC:/msys64/mingw64/lib -lmingw32 -mwindows -lSDL2main -lSDL2`
-6. Now install Make and GCC, type `pacman -S make && pacman -S mingw-w64-x86_64-gcc`
+4. Install the necessary dependencies by inputting this command in the terminal.
+```sh
+pacman -S mingw-w64-x86_64-SDL2 && pacman -S make && pacman -S mingw-w64-x86_64-gcc
+```
+5. Type `sdl2-config --cflags`, it should output:
+```sh
+-IC:/msys64/mingw64/include/SDL2 -Dmain=SDL_main
+```
+6. After that type `sdl2-config --libs`, should output:
+```sh
+-LC:/msys64/mingw64/lib -lmingw32 -mwindows -lSDL2main -lSDL2
+```
+7. Now type `make` to compile the game. (If you want make the compilation faster, type `make -j16`)
 
 NOTE: *Make sure you're in the `sm` directory.*
 
