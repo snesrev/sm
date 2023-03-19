@@ -1460,7 +1460,7 @@ void EscapeEtecoon_E680(uint16 k) {  // 0xB3E680
   een_var_A = E->een_var_A;
   if (een_var_A < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = een_var_A;
+  R19_ = een_var_A;
   if (Enemy_MoveRight_IgnoreSlopes(k) & 1) {
     E->base.instruction_timer = 1;
     bool v3 = (-E->een_var_A & 0x8000u) != 0;

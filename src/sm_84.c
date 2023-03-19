@@ -1114,25 +1114,25 @@ void DrawPlm(uint16 k) {  // 0x848DAA
   *(uint16 *)((char *)&R8_ + 1) = addr_unk_605000;
   R12_ = addr_unk_6053E0;
   uint16 v1 = plm_instruction_draw_ptr[k >> 1];
-  g_word_7E001E = plm_x_block;
-  R32 = plm_y_block;
+  R30_ = plm_x_block;
+  R32_ = plm_y_block;
 LABEL_2:
   R26_ = layer1_y_pos >> 4;
-  if (!sign16((layer1_y_pos >> 4) + 15 - R32)) {
+  if (!sign16((layer1_y_pos >> 4) + 15 - R32_)) {
     v2 = *(uint16 *)RomPtr_84orRAM(v1);
     if (v2 < 0) {
       R20_ = v2 & 0x7FFF;
-      if (layer1_x_pos >> 4 == g_word_7E001E || (int16)((layer1_x_pos >> 4) - g_word_7E001E) < 0) {
+      if (layer1_x_pos >> 4 == R30_ || (int16)((layer1_x_pos >> 4) - R30_) < 0) {
         v20 = (layer1_x_pos >> 4) + 17;
-        if (v20 != g_word_7E001E && (int16)(v20 - g_word_7E001E) >= 0) {
-          R24_ = g_word_7E001E;
+        if (v20 != R30_ && (int16)(v20 - R30_) >= 0) {
+          R24_ = R30_;
           R18_ = 0;
           R22_ = R26_ + 16;
-          if ((int16)(R26_ - R32) < 0) {
-            R26_ = R32;
+          if ((int16)(R26_ - R32_) < 0) {
+            R26_ = R32_;
           } else {
-            R18_ = R26_ - R32;
-            if (sign16(R32 + R20_ - R26_))
+            R18_ = R26_ - R32_;
+            if (sign16(R32_ + R20_ - R26_))
               return;
             bool v21 = R20_ == R18_;
             bool v22 = (int16)(R20_ - R18_) < 0;
@@ -1159,11 +1159,11 @@ LABEL_2:
               uint16 v26;
               v26 = 0;
               while (1) {
-                g_word_7E001E = *(uint16 *)RomPtr_84orRAM(R3_.addr);
+                R30_ = *(uint16 *)RomPtr_84orRAM(R3_.addr);
                 uint16 v27, v29;
-                v27 = g_word_7E001E & 0x3FF;
-                v28 = g_word_7E001E & 0xC00;
-                if ((g_word_7E001E & 0xC00) != 0) {
+                v27 = R30_ & 0x3FF;
+                v28 = R30_ & 0xC00;
+                if ((R30_ & 0xC00) != 0) {
                   if (v28 == 1024) {
                     IndirWriteWord(&R0_, v26, tile_table.tables[v27].top_right ^ 0x4000);
                     IndirWriteWord(&R6_, v26, tile_table.tables[v27].top_left ^ 0x4000);
@@ -1204,9 +1204,9 @@ LABEL_70:
                     addr = R3_.addr + 2 * R22_;
                   v31 = *(uint16 *)RomPtr_84orRAM(addr);
                   if (v31) {
-                    g_word_7E001E = plm_x_block + (int8)v31;
+                    R30_ = plm_x_block + (int8)v31;
                     uint16 v32 = addr + 1;
-                    R32 = plm_y_block + (int8)*RomPtr_84orRAM(v32);
+                    R32_ = plm_y_block + (int8)*RomPtr_84orRAM(v32);
                     v1 = v32 + 1;
                     goto LABEL_2;
                   }
@@ -1220,21 +1220,21 @@ LABEL_70:
     } else {
       R20_ = v2 & 0x7FFF;
       R28_ = 0;
-      if (sign16(R32 - R26_))
+      if (sign16(R32_ - R26_))
         return;
-      R26_ = R32;
+      R26_ = R32_;
       R18_ = 0;
-      R24_ = g_word_7E001E;
+      R24_ = R30_;
       R22_ = ((uint16)(layer1_x_pos + 15) >> 4) - 1;
-      if ((int16)(R22_ - g_word_7E001E) >= 0 && R22_ != g_word_7E001E) {
-        R18_ = R22_ - g_word_7E001E;
-        if (g_word_7E001E + R20_ == R22_ || (int16)(g_word_7E001E + R20_ - R22_) < 0)
+      if ((int16)(R22_ - R30_) >= 0 && R22_ != R30_) {
+        R18_ = R22_ - R30_;
+        if (R30_ + R20_ == R22_ || (int16)(R30_ + R20_ - R22_) < 0)
           return;
         R20_ -= R18_;
         R24_ = R22_;
       }
       R22_ += 17;
-      if (!sign16(R22_ - g_word_7E001E)) {
+      if (!sign16(R22_ - R30_)) {
         R22_ = R20_ + R24_ - 1 - R22_;
         if ((R22_ & 0x8000u) != 0 || (R20_ -= R22_) != 0) {
           v35 = k;
@@ -1255,7 +1255,7 @@ LABEL_70:
               if ((bg1_x_offset & 0x100) != 0)
                 a += 1024;
             }
-            g_word_7E001E = 2 * R20_;
+            R30_ = 2 * R20_;
             R34 = a & 0x1F;
             if (((2 * R20_ + (a & 0x1F) - 1) & 0xFFE0) != 0) {
               if ((int16)(v3 - 228) >= 0 || (int16)(32 - R34) < 0)
@@ -1268,7 +1268,7 @@ LABEL_70:
               v10[1].vram_dst = a & 0xFFE0 ^ 0x400;
               v10[3].vram_dst = v10[1].vram_dst + 32;
               v10[2].vram_dst = v10->vram_dst + 32;
-              g_word_7E001E = 4 * R20_;
+              R30_ = 4 * R20_;
               uint16 v11 = 4 * R20_ - v10->size;
               v10[1].size = v11;
               v10[3].size = v11;
@@ -1298,10 +1298,10 @@ LABEL_70:
             R3_.addr = R18_ + v1 + 2;
             uint16 v16 = 0;
             while (1) {
-              g_word_7E001E = *(uint16 *)RomPtr_84orRAM(R3_.addr);
-              uint16 v17 = g_word_7E001E & 0x3FF, v19;
-              v18 = g_word_7E001E & 0xC00;
-              if ((g_word_7E001E & 0xC00) != 0) {
+              R30_ = *(uint16 *)RomPtr_84orRAM(R3_.addr);
+              uint16 v17 = R30_ & 0x3FF, v19;
+              v18 = R30_ & 0xC00;
+              if ((R30_ & 0xC00) != 0) {
                 if (v18 == 1024) {
                   IndirWriteWord(&R0_, v16, tile_table.tables[v17].top_right ^ 0x4000);
                   IndirWriteWord(&R6_, v16, tile_table.tables[v17].bottom_right ^ 0x4000);
@@ -1835,8 +1835,8 @@ uint8 PlmSetup_QuicksandSurfaceB_0(uint16 j) {  // 0x84B500
       R20_ = 0;
       return 1;
     } else {
-      if (word_84B53D[j >> 1] < *(uint16 *)((char *)&R18_ + 1))
-        *(uint16 *)((char *)&R18_ + 1) = word_84B53D[j >> 1];
+      if (word_84B53D[j >> 1] < R19_)
+        R19_ = word_84B53D[j >> 1];
       ++flag_samus_in_quicksand;
     }
   }

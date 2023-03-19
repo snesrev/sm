@@ -53,7 +53,13 @@ bool Unreachable();
 
 #define INSTRB_RETURN_ADDR(x) ((const uint8*)(uintptr_t)(x))
 
+#if defined(_DEBUG)
+// Gives better warning messages but non inlined on tcc
+static inline uint16 GET_WORD(const uint8 *p) { return *(uint16 *)(p); }
+#else
 #define GET_WORD(p) (*(uint16*)(p))
+#endif
+
 #define GET_BYTE(p) (*(uint8*)(p))
 
 static inline uint8 *RomPtr_RAM(uint16_t addr) { assert(addr < 0x2000); return g_ram + addr; }

@@ -142,8 +142,8 @@ uint16 PostGrappleColl_Horiz_Slope_NonSquare(uint16 k) {  // 0x948000
     v1 = samus_x_pos >> 4;
     if (v1 != mod)
       return -1;
-    temp_collision_DD4 = R32 & 0xF;
-    temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
+    uint16 temp_collision_DD4 = R32_ & 0xF;
+    uint16 temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
     if ((BTS[k] & 0x40) != 0) {
       if (BTS[k] & 0x80)
         v3 = samus_y_pos ^ 0xF;
@@ -161,8 +161,8 @@ uint16 PostGrappleColl_Horiz_Slope_NonSquare(uint16 k) {  // 0x948000
   v5 = samus_x_pos >> 4;
   if (v5 != mod)
     return -1;
-  temp_collision_DD4 = R32 & 0xF;
-  temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
+  uint16 temp_collision_DD4 = R32_ & 0xF;
+  uint16 temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
   if (BTS[k] & 0x40)
     return PostGrappleColl_Horiz_Solid();
   if (BTS[k] & 0x80)
@@ -191,8 +191,8 @@ uint16 PostGrappleColl_Vert_Slope_NonSquare(uint16 k) {  // 0x9480E0
     v1 = samus_x_pos >> 4;
     if (v1 != mod)
       return -1;
-    temp_collision_DD4 = R32 & 0xF;
-    temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
+    uint16 temp_collision_DD4 = R32_ & 0xF;
+    uint16 temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
     v3 = BTS[k];
     if (v3 & 0x80) {
       if ((v3 & 0x40) != 0)
@@ -211,8 +211,8 @@ uint16 PostGrappleColl_Vert_Slope_NonSquare(uint16 k) {  // 0x9480E0
   v6 = samus_x_pos >> 4;
   if (v6 != mod)
     return -1;
-  temp_collision_DD4 = R32 & 0xF;
-  temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
+  uint16 temp_collision_DD4 = R32_ & 0xF;
+  uint16 temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
   v7 = BTS[k];
   if (v7 & 0x80)
     return PostGrappleColl_Vert_Solid();
@@ -229,9 +229,9 @@ uint16 PostGrappleColl_Vert_Slope_NonSquare(uint16 k) {  // 0x9480E0
 }
 
 uint16 PostGrappleColl_Horiz_Slope_Square(uint16 k) {  // 0x9481B8
-  temp_collision_DD4 = 4 * (BTS[k] & 0x1F);
-  temp_collision_DD6 = BTS[k] >> 6;
-  uint16 v1 = temp_collision_DD4 + (temp_collision_DD6 ^ ((uint8)(R32 & 8) >> 3));
+  uint16 temp_collision_DD4 = 4 * (BTS[k] & 0x1F);
+  uint16 temp_collision_DD6 = BTS[k] >> 6;
+  uint16 v1 = temp_collision_DD4 + (temp_collision_DD6 ^ ((uint8)(R32_ & 8) >> 3));
   if (!R26_) {
     if ((((uint8)samus_y_radius + (uint8)samus_y_pos - 1) & 8) == 0) {
       if (!kTab948E54[v1])
@@ -249,15 +249,15 @@ LABEL_7:
     return -1;
 LABEL_10:
   if (samus_collision_direction & 1)
-    return R32 & 7;
+    return R32_ & 7;
   else
-    return R32 & 7 ^ 7;
+    return R32_ & 7 ^ 7;
 }
 
 uint16 PostGrappleColl_Vertical_Slope_Square(uint16 k) {  // 0x948230
-  temp_collision_DD4 = 4 * (BTS[k] & 0x1F);
-  temp_collision_DD6 = BTS[k] >> 6;
-  uint16 v1 = temp_collision_DD4 + (temp_collision_DD6 ^ ((uint8)(R32 & 8) >> 2));
+  uint16 temp_collision_DD4 = 4 * (BTS[k] & 0x1F);
+  uint16 temp_collision_DD6 = BTS[k] >> 6;
+  uint16 v1 = temp_collision_DD4 + (temp_collision_DD6 ^ ((uint8)(R32_ & 8) >> 2));
   if (!R26_) {
     if ((((uint8)samus_x_radius + (uint8)samus_x_pos - 1) & 8) == 0) {
       if (!kTab948E54[v1])
@@ -275,9 +275,9 @@ LABEL_7:
     return -1;
 LABEL_10:
   if (samus_collision_direction & 1)
-    return R32 & 7;
+    return R32_ & 7;
   else
-    return R32 & 7 ^ 7;
+    return R32_ & 7 ^ 7;
 }
 
 uint16 ClearCarry_0(void) {  // 0x9482A7
@@ -292,7 +292,7 @@ uint16 PostGrappleColl_Horiz_Slope(void) {  // 0x9482A9
 }
 
 uint16 PostGrappleColl_Horiz_Solid(void) {  // 0x9482BE
-  return R32 & 0xF;
+  return R32_ & 0xF;
 }
 
 uint16 PostGrappleColl_Vert_Slope(void) {  // 0x9482C5
@@ -303,7 +303,7 @@ uint16 PostGrappleColl_Vert_Slope(void) {  // 0x9482C5
 }
 
 uint16 PostGrappleColl_Vert_Solid(void) {  // 0x9482DA
-  return R32 & 0xF;
+  return R32_ & 0xF;
 }
 
 static Func_U16 *const kPostGrappleColl_Horiz[16] = {  // 0x948321
@@ -362,8 +362,8 @@ void PostGrappleCollisionDetect_Right(void) {  // 0x94834F
   uint16 prod = Mult8x8((uint16)(samus_y_pos - samus_y_radius) >> 4, room_width_in_blocks);
   R22_ = samus_x_subpos;
   R24_ = samus_x_pos;
-  R32 = samus_x_radius + samus_x_pos - 1;
-  v0 = R32 >> 4;
+  R32_ = samus_x_radius + samus_x_pos - 1;
+  v0 = R32_ >> 4;
   cur_block_index = prod + v0;
   uint16 v1 = 2 * cur_block_index;
   do {
@@ -388,7 +388,7 @@ void PostGrappleCollisionDetect_Left(void) {  // 0x9483B1
   uint16 prod = Mult8x8((uint16)(samus_y_pos - samus_y_radius) >> 4, room_width_in_blocks);
   R22_ = samus_x_subpos;
   R24_ = samus_x_pos;
-  R32 = samus_x_pos - samus_x_radius;
+  R32_ = samus_x_pos - samus_x_radius;
   v0 = (uint16)(samus_x_pos - samus_x_radius) >> 4;
   cur_block_index = prod + v0;
   uint16 v1 = 2 * cur_block_index;
@@ -413,8 +413,8 @@ void PostGrappleCollisionDetect_Down(void) {  // 0x94840F
   Samus_GetXposSpan();
   R22_ = samus_y_subpos;
   R24_ = samus_y_pos;
-  R32 = samus_y_radius + samus_y_pos - 1;
-  uint16 prod = Mult8x8(R32 >> 4, room_width_in_blocks);
+  R32_ = samus_y_radius + samus_y_pos - 1;
+  uint16 prod = Mult8x8(R32_ >> 4, room_width_in_blocks);
   v0 = (uint16)(samus_x_pos - samus_x_radius) >> 4;
   cur_block_index = prod + v0;
   uint16 v1 = 2 * cur_block_index;
@@ -439,7 +439,7 @@ void PostGrappleCollisionDetect_Up(void) {  // 0x94846A
   Samus_GetXposSpan();
   R22_ = samus_y_subpos;
   R24_ = samus_y_pos;
-  R32 = samus_y_pos - samus_y_radius;
+  R32_ = samus_y_pos - samus_y_radius;
   uint16 prod = Mult8x8((uint16)(samus_y_pos - samus_y_radius) >> 4, room_width_in_blocks);
   v0 = (uint16)(samus_x_pos - samus_x_radius) >> 4;
   cur_block_index = prod + v0;
@@ -504,8 +504,8 @@ uint8 BlockColl_Vert_Slope_NonSquare(uint16 k) {  // 0x9486FE
     uint16 mod = SnesModulus(cur_block_index, room_width_in_blocks);
     v8 = samus_x_pos >> 4;
     if (v8 == mod) {
-      temp_collision_DD4 = ((uint8)samus_y_radius + (uint8)R24_ - 1) & 0xF;
-      temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
+      uint16 temp_collision_DD4 = ((uint8)samus_y_radius + (uint8)R24_ - 1) & 0xF;
+      uint16 temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
       v9 = BTS[k];
       if (!(v9 & 0x80)
           && ((v9 & 0x40) != 0 ? (v10 = samus_x_pos ^ 0xF) : (v10 = samus_x_pos),
@@ -529,8 +529,8 @@ uint8 BlockColl_Vert_Slope_NonSquare(uint16 k) {  // 0x9486FE
     uint16 mod = SnesModulus(cur_block_index, room_width_in_blocks);
     v1 = samus_x_pos >> 4;
     if (v1 == mod) {
-      temp_collision_DD4 = ((uint8)R24_ - (uint8)samus_y_radius) & 0xF ^ 0xF;
-      temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
+      uint16 temp_collision_DD4 = ((uint8)R24_ - (uint8)samus_y_radius) & 0xF ^ 0xF;
+      uint16 temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
       v3 = BTS[k];
       if ((v3 & 0x80)
           && ((v3 & 0x40) != 0 ? (v4 = samus_x_pos ^ 0xF) : (v4 = samus_x_pos),
@@ -564,13 +564,11 @@ void Samus_AlignYPosSlope(void) {  // 0x9487F4
   if ((enable_horiz_slope_coll & 2) != 0) {
     R26_ = samus_x_pos;
     R28_ = samus_y_radius + samus_y_pos - 1;
-    g_word_7E001E = 0;
-    R32 = 0;
-    CalculateBlockAt();
+    CalculateBlockAt(R26_, R28_, 0, 0);
     if ((level_data[cur_block_index] & 0xF000) == 4096
         && (BTS[cur_block_index] & 0x1F) >= 5) {
-      temp_collision_DD4 = ((uint8)samus_y_radius + (uint8)samus_y_pos - 1) & 0xF;
-      temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
+      uint16 temp_collision_DD4 = ((uint8)samus_y_radius + (uint8)samus_y_pos - 1) & 0xF;
+      uint16 temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
       v0 = BTS[cur_block_index];
       if (!(v0 & 0x80)) {
         v1 = (v0 & 0x40) != 0 ? samus_x_pos ^ 0xF : samus_x_pos;
@@ -583,13 +581,11 @@ void Samus_AlignYPosSlope(void) {  // 0x9487F4
     }
     R26_ = samus_x_pos;
     R28_ = samus_y_pos - samus_y_radius;
-    g_word_7E001E = 0;
-    R32 = 0;
-    CalculateBlockAt();
+    CalculateBlockAt(R26_, R28_, 0, 0);
     if ((level_data[cur_block_index] & 0xF000) == 4096
         && (BTS[cur_block_index] & 0x1F) >= 5) {
-      temp_collision_DD4 = ((uint8)samus_y_pos - (uint8)samus_y_radius) & 0xF ^ 0xF;
-      temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
+      uint16 temp_collision_DD4 = ((uint8)samus_y_pos - (uint8)samus_y_radius) & 0xF ^ 0xF;
+      uint16 temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
       v3 = BTS[cur_block_index];
       if (v3 & 0x80) {
         if ((v3 & 0x40) != 0)
@@ -611,9 +607,9 @@ uint8 BlockColl_Horiz_Slope_Square(uint16 a, uint16 k) {  // 0x948D2B
   int16 v4;
   int16 v5;
 
-  temp_collision_DD4 = 4 * a;
-  temp_collision_DD6 = BTS[k] >> 6;
-  uint16 v2 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R32 & 8) >> 3));
+  uint16 temp_collision_DD4 = 4 * a;
+  uint16 temp_collision_DD6 = BTS[k] >> 6;
+  uint16 v2 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R32_ & 8) >> 3));
   if (!R26_) {
     if ((((uint8)samus_y_radius + (uint8)samus_y_pos - 1) & 8) == 0) {
       if (!kTab948E54[v2])
@@ -632,14 +628,14 @@ LABEL_7:
 LABEL_10:
   R20_ = 0;
   if ((R18_ & 0x8000) != 0) {
-    v5 = samus_x_radius + (R32 | 7) + 1 - samus_x_pos;
+    v5 = samus_x_radius + (R32_ | 7) + 1 - samus_x_pos;
     if (v5 >= 0)
       v5 = 0;
     R18_ = v5;
     samus_x_subpos = 0;
     return 1;
   } else {
-    v4 = (__PAIR32__((R32 & 0xFFF8) - samus_x_radius, R32 & 0xFFF8) - __PAIR32__(samus_x_pos, samus_x_radius)) >> 16;
+    v4 = (__PAIR32__((R32_ & 0xFFF8) - samus_x_radius, R32_ & 0xFFF8) - __PAIR32__(samus_x_pos, samus_x_radius)) >> 16;
     if (v4 < 0)
       v4 = 0;
     R18_ = v4;
@@ -652,9 +648,9 @@ uint8 BlockColl_Vert_Slope_Square(uint16 a, uint16 k) {  // 0x948DBD
   int16 v4;
   int16 v5;
 
-  temp_collision_DD4 = 4 * a;
-  temp_collision_DD6 = BTS[k] >> 6;
-  uint16 v2 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R32 & 8) >> 2));
+  uint16 temp_collision_DD4 = 4 * a;
+  uint16 temp_collision_DD6 = BTS[k] >> 6;
+  uint16 v2 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R32_ & 8) >> 2));
   if (!R26_) {
     if ((((uint8)samus_x_radius + (uint8)samus_x_pos - 1) & 8) == 0) {
       if (!kTab948E54[v2])
@@ -673,14 +669,14 @@ LABEL_7:
 LABEL_10:
   R20_ = 0;
   if ((R18_ & 0x8000) != 0) {
-    v5 = samus_y_radius + (R32 | 7) + 1 - samus_y_pos;
+    v5 = samus_y_radius + (R32_ | 7) + 1 - samus_y_pos;
     if (v5 >= 0)
       v5 = 0;
     R18_ = v5;
     samus_y_subpos = 0;
     return 1;
   } else {
-    v4 = (__PAIR32__((R32 & 0xFFF8) - samus_y_radius, R32 & 0xFFF8) - __PAIR32__(samus_y_pos, samus_y_radius)) >> 16;
+    v4 = (__PAIR32__((R32_ & 0xFFF8) - samus_y_radius, R32_ & 0xFFF8) - __PAIR32__(samus_y_pos, samus_y_radius)) >> 16;
     if (v4 < 0)
       v4 = 0;
     R18_ = v4;
@@ -744,14 +740,14 @@ uint8 BlockColl_Horiz_SolidShootGrappleBlock(void) {  // 0x948F49
 
   R20_ = 0;
   if ((R18_ & 0x8000) != 0) {
-    v2 = samus_x_radius + (R32 | 0xF) + 1 - samus_x_pos;
+    v2 = samus_x_radius + (R32_ | 0xF) + 1 - samus_x_pos;
     if (v2 >= 0)
       v2 = 0;
     R18_ = v2;
     samus_x_subpos = 0;
     return 1;
   } else {
-    v0 = (R32 & 0xFFF0) - samus_x_radius - samus_x_pos;
+    v0 = (R32_ & 0xFFF0) - samus_x_radius - samus_x_pos;
     if (v0 < 0)
       v0 = 0;
     R18_ = v0;
@@ -766,14 +762,14 @@ uint8 BlockColl_Vert_SolidShootGrappleBlock(void) {  // 0x948F82
 
   R20_ = 0;
   if ((R18_ & 0x8000) != 0) {
-    v2 = samus_y_radius + (R32 | 0xF) + 1 - samus_y_pos;
+    v2 = samus_y_radius + (R32_ | 0xF) + 1 - samus_y_pos;
     if (v2 >= 0)
       v2 = 0;
     R18_ = v2;
     samus_y_subpos = 0;
     return 1;
   } else {
-    v0 = (R32 & 0xFFF0) - samus_y_radius - samus_y_pos;
+    v0 = (R32_ & 0xFFF0) - samus_y_radius - samus_y_pos;
     if (v0 < 0)
       v0 = 0;
     R18_ = v0;
@@ -887,7 +883,7 @@ uint8 BlockColl_Vert_SpecialBlock(void) {  // 0x949102
 
   v0 = BTS[cur_block_index];
   if ((v0 & 0x80) != 0) {
-    uint16 *v3 = (uint16*)RomPtr_94(off_9492E9[area_index]);
+    const uint16 *v3 = (const uint16 *)RomPtr_94(off_9492E9[area_index]);
     uint8 v4 = SpawnPLM(v3[v0 & 0x7F]) & 1;
     if (v4)
       return BlockColl_Vert_SolidShootGrappleBlock();
@@ -902,27 +898,21 @@ uint8 BlockColl_Vert_SpecialBlock(void) {  // 0x949102
 
 
 uint8 BlockColl_Horiz_BombableAir(void) {  // 0x9492F9
-  int16 v0;
-
-  v0 = BTS[cur_block_index];
+  uint16 v0 = BTS[cur_block_index];
   if ((v0 & 0x80) == 0)
     SpawnPLM(off_94936B[v0]);
   return 0;
 }
 
 uint8 BlockColl_Vert_BombableAir(void) {  // 0x949313
-  int16 v0;
-
-  v0 = BTS[cur_block_index];
+  uint16 v0 = BTS[cur_block_index];
   if ((v0 & 0x80) == 0)
     SpawnPLM(off_94936B[v0]);
   return 0;
 }
 
 uint8 BlockColl_Horiz_BombBlock(void) {  // 0x94932D
-  int16 v0;
-
-  v0 = BTS[cur_block_index];
+  uint16 v0 = BTS[cur_block_index];
   if ((v0 & 0x80) != 0)
     return BlockColl_Horiz_SolidShootGrappleBlock();
   uint8 v1 = SpawnPLM(off_94936B[v0]) & 1;
@@ -933,9 +923,7 @@ uint8 BlockColl_Horiz_BombBlock(void) {  // 0x94932D
 }
 
 uint8 BlockColl_Vert_BombBlock(void) {  // 0x94934C
-  int16 v0;
-
-  v0 = BTS[cur_block_index];
+  uint16 v0 = BTS[cur_block_index];
   if ((v0 & 0x80) != 0)
     return BlockColl_Vert_SolidShootGrappleBlock();
   uint8 v1 = SpawnPLM(off_94936B[v0]) & 1;
@@ -988,14 +976,14 @@ uint8 BlockReact_VertExt(void) {  // 0x949447
   uint16 v0;
   if (BTS[cur_block_index]) {
     if ((BTS[cur_block_index] & 0x80) != 0) {
-      temp_collision_DD4 = BTS[cur_block_index] | 0xFF00;
+      uint16 temp_collision_DD4 = BTS[cur_block_index] | 0xFF00;
       v0 = cur_block_index;
       do {
         v0 -= room_width_in_blocks;
         ++temp_collision_DD4;
       } while (temp_collision_DD4);
     } else {
-      temp_collision_DD4 = BTS[cur_block_index];
+      uint16 temp_collision_DD4 = BTS[cur_block_index];
       v0 = cur_block_index;
       do {
         v0 += room_width_in_blocks;
@@ -1086,7 +1074,7 @@ uint8 BlockColl_Handle_Horiz(void) {  // 0x949543
     v1 = samus_x_radius + v0 - 1;
   else
     v1 = v0 - samus_x_radius;
-  R32 = v1;
+  R32_ = v1;
   uint16 v2 = 2 * (prod + (v1 >> 4));
   while (!(BlockColl_Horiz_CheckColl(v2) & 1)) {
     v2 += room_width_in_blocks * 2;
@@ -1107,7 +1095,7 @@ uint8 BlockColl_Handle_Vert_LeftToRight(void) {  // 0x94959E
     v1 = samus_y_radius + v0 - 1;
   else
     v1 = v0 - samus_y_radius;
-  R32 = v1;
+  R32_ = v1;
   uint16 prod = Mult8x8(v1 >> 4, room_width_in_blocks);
   v2 = (uint16)(samus_x_pos - samus_x_radius) >> 4;
   cur_block_index = prod + v2;
@@ -1130,7 +1118,7 @@ uint8 BlockColl_Handle_Vert_RightToLeft(void) {  // 0x9495F5
     v1 = samus_y_radius + v0 - 1;
   else
     v1 = v0 - samus_y_radius;
-  R32 = v1;
+  R32_ = v1;
   uint16 prod = Mult8x8(v1 >> 4, room_width_in_blocks);
   v2 = (uint16)(samus_x_radius + samus_x_pos - 1) >> 4;
   cur_block_index = prod + v2;
@@ -1533,9 +1521,7 @@ void BlockInsideDetection(void) {  // 0x949B60
   R26_ = samus_x_pos;
   samus_bottom_boundary_position = samus_y_radius + samus_y_pos - 1;
   R28_ = samus_y_radius + samus_y_pos - 1;
-  g_word_7E001E = 0;
-  R32 = 0;
-  CalculateBlockAt();
+  CalculateBlockAt(R26_, R28_, 0, 0);
   uint8 rv;
   do {
     rv = kSamus_BlockInsideDetection[(HIBYTE(level_data[cur_block_index]) & 0xF0) >> 4]();
@@ -1544,9 +1530,7 @@ void BlockInsideDetection(void) {  // 0x949B60
   if (((samus_bottom_boundary_position ^ samus_y_pos) & 0xFFF0) != 0) {
     R26_ = samus_x_pos;
     R28_ = samus_y_pos;
-    g_word_7E001E = 0;
-    R32 = 0;
-    CalculateBlockAt();
+    CalculateBlockAt(R26_, R28_, 0, 0);
     do {
       rv = kSamus_BlockInsideDetection[(HIBYTE(level_data[cur_block_index]) & 0xF0) >> 4]();
     } while (rv & 0x80);
@@ -1556,25 +1540,24 @@ void BlockInsideDetection(void) {  // 0x949B60
       && ((samus_y_pos ^ (samus_bottom_boundary_position ^ (uint16)(samus_y_pos - samus_y_radius)) & 0xFFF0) & 0xFFF0) != 0) {
     R26_ = samus_x_pos;
     R28_ = samus_y_pos - samus_y_radius;
-    g_word_7E001E = 0;
-    R32 = 0;
-    CalculateBlockAt();
+    CalculateBlockAt(R26_, R28_, 0, 0);
     do {
       rv = kSamus_BlockInsideDetection[(HIBYTE(level_data[cur_block_index]) & 0xF0) >> 4]();
     } while (rv & 0x80);
   }
 }
 
-void CalculateBlockAt(void) {  // 0x949C1D
+void CalculateBlockAt(uint16 r26, uint16 r28, uint16 r30, uint16 r32) {  // 0x949C1D
   int16 v0;
   int16 v1;
+  uint16 temp_collision_DD4;
 
-  v0 = g_word_7E001E + R26_;
-  if ((int16)(g_word_7E001E + R26_) >= 0
+  v0 = r30 + r26;
+  if ((int16)(r30 + r26) >= 0
       && sign16(v0 - 4096)
       && (temp_collision_DD4 = (uint16)(v0 & 0xFFF0) >> 4,
-          v1 = R32 + R28_,
-          (int16)(R32 + R28_) >= 0)
+          v1 = r32 + r28,
+          (int16)(r32 + r28) >= 0)
       && sign16(v1 - 4096)) {
     uint16 RegWord = (uint16)(v1 & 0xFFF0) >> 4;
     RegWord = Mult8x8(RegWord, room_width_in_blocks);
@@ -1614,10 +1597,10 @@ void BlockFunc_9C73(uint16 v0) {
 
   int v1 = v0 >> 1;
   if ((projectile_type[v1] & 0xF00) != 0) {
-    temp_collision_DD2 = kBlockFunc_9C73_Tab1[(uint16)(2 * (HIBYTE(projectile_type[v1]) & 0xF) + 1)];
+    temp_collision_DD2 = kBlockFunc_9C73_Tab1[2 * (HIBYTE(projectile_type[v1]) & 0xF) + 1];
   } else {
-    R18_ = projectile_type[v1] & 0xF;
-    temp_collision_DD2 = kBlockFunc_9C73_Tab0[(uint16)(R18_ + 2 * R18_ + 2)];
+    int R18 = projectile_type[v1] & 0xF;
+    temp_collision_DD2 = kBlockFunc_9C73_Tab0[3 * R18 + 2];
   }
 }
 
@@ -1635,10 +1618,8 @@ void BombOrPowerBomb_Func1(uint16 v0) {  // 0x949CAC
       if (v3 >= 0) {
         R28_ = projectile_y_pos[v1];
         if ((int16)(HIBYTE(v3) - room_height_in_scrolls) < 0) {
-          g_word_7E001E = 0;
-          R32 = 0;
           cur_block_index = 0;
-          CalculateBlockAt();
+          CalculateBlockAt(R26_, R28_, 0, 0);
           if (temp_collision_DD2 == 2)
             BlockColl_BombExplosion(v0);
           else
@@ -1957,14 +1938,14 @@ void BlockGetSomePos2(uint16 k) {  // 0x94A219
 uint8 BlockCollNoWaveBeamHoriz(uint16 k) {  // 0x94A23B
   int16 v2;
 
-  g_word_7E001E = 0;
+  R30_ = 0;
   R18_ = 0;
   R20_ = 0;
   int v1 = k >> 1;
   v2 = projectile_bomb_x_speed[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   BlockGetSomePos1(k);
   uint16 prod = Mult8x8((uint16)(projectile_y_pos[v1] - projectile_y_radius[v1]) >> 4, room_width_in_blocks);
   uint16 v3 = projectile_bomb_x_subpos[v1];
@@ -1999,14 +1980,14 @@ uint8 BlockCollNoWaveBeamVert(uint16 k) {  // 0x94A2CA
   int16 v8;
   int16 v9;
 
-  g_word_7E001E = 0;
+  R30_ = 0;
   R18_ = 0;
   R20_ = 0;
   int v1 = k >> 1;
   v2 = projectile_bomb_y_speed[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   BlockGetSomePos2(k);
   uint16 v3 = projectile_bomb_y_subpos[v1];
   bool v4 = __CFADD__uint16(R18_, v3);
@@ -2042,14 +2023,14 @@ uint8 BlockCollWaveBeamHoriz(uint16 k) {  // 0x94A352
   char v9;
   int16 v10;
 
-  g_word_7E001E = 0;
+  R30_ = 0;
   R18_ = 0;
   R20_ = 0;
   int v1 = k >> 1;
   v2 = projectile_bomb_x_speed[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   BlockGetSomePos1(k);
   uint16 prod = Mult8x8((uint16)(projectile_y_pos[v1] - projectile_y_radius[v1]) >> 4, room_width_in_blocks);
   uint16 v3 = projectile_bomb_x_subpos[v1];
@@ -2089,14 +2070,14 @@ uint8 BlockCollWaveBeamVert(uint16 k) {  // 0x94A3E4
   char v10;
   int16 v11;
 
-  g_word_7E001E = 0;
+  R30_ = 0;
   R18_ = 0;
   R20_ = 0;
   int v1 = k >> 1;
   v2 = projectile_bomb_y_speed[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   BlockGetSomePos2(k);
   uint16 v3 = projectile_bomb_y_subpos[v1];
   bool v4 = __CFADD__uint16(R18_, v3);
@@ -2133,7 +2114,7 @@ uint8 BlockCollWaveBeamVert(uint16 k) {  // 0x94A3E4
 uint8 BlockCollMissileHoriz(uint16 k) {  // 0x94A46F
   int16 v2;
 
-  g_word_7E001E = 1;
+  R30_ = 1;
   R38 = 0;
   R26_ = 0;
   R18_ = 0;
@@ -2142,7 +2123,7 @@ uint8 BlockCollMissileHoriz(uint16 k) {  // 0x94A46F
   v2 = projectile_bomb_x_speed[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   uint16 prod = Mult8x8(projectile_y_pos[v1] >> 4, room_width_in_blocks);
   uint16 v3 = projectile_bomb_x_subpos[v1];
   bool v4 = __CFADD__uint16(R18_, v3);
@@ -2164,7 +2145,7 @@ uint8 BlockCollMissileVert(uint16 k) {  // 0x94A4D9
   int16 v2;
   int16 v7;
 
-  g_word_7E001E = 1;
+  R30_ = 1;
   R38 = 0;
   R26_ = 0;
   R18_ = 0;
@@ -2173,7 +2154,7 @@ uint8 BlockCollMissileVert(uint16 k) {  // 0x94A4D9
   v2 = projectile_bomb_y_speed[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   uint16 v3 = projectile_bomb_y_subpos[v1];
   bool v4 = __CFADD__uint16(R18_, v3);
   uint16 v5 = R18_ + v3;
@@ -2223,14 +2204,14 @@ uint8 BlockShotReact_Slope_NonSquare(uint16 j, uint16 k) {  // 0x94A58F
   int16 v5;
   uint16 v2;
 
-  temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
+  uint16 temp_collision_DD6 = 16 * (BTS[k] & 0x1F);
   if ((BTS[k] & 0x40) != 0)
     v2 = projectile_x_pos[j >> 1] ^ 0xF;
   else
     v2 = projectile_x_pos[j >> 1];
   uint16 v6 = temp_collision_DD6 + (v2 & 0xF);
   if (!(BTS[k] & 0x80)) {
-    temp_collision_DD4 = projectile_y_pos[j >> 1] & 0xF;
+    uint16 temp_collision_DD4 = projectile_y_pos[j >> 1] & 0xF;
     v5 = kAlignYPos_Tab0[v6] & 0x1F;
     if ((int16)(v5 - temp_collision_DD4) < 0 || v5 == temp_collision_DD4) {
       R38 = 0;
@@ -2240,7 +2221,7 @@ uint8 BlockShotReact_Slope_NonSquare(uint16 j, uint16 k) {  // 0x94A58F
       return 0;
     }
   } else {
-    temp_collision_DD4 = projectile_y_pos[j >> 1] & 0xF ^ 0xF;
+    uint16 temp_collision_DD4 = projectile_y_pos[j >> 1] & 0xF ^ 0xF;
     v3 = kAlignYPos_Tab0[v6] & 0x1F;
     if ((int16)(v3 - temp_collision_DD4) < 0 || v3 == temp_collision_DD4) {
       R38 = 0;
@@ -2276,10 +2257,10 @@ uint8 BlockCollSpreadBomb(uint16 k) {  // 0x94A621
   int v1 = k >> 1;
   R26_ = projectile_x_pos[v1];
   R28_ = projectile_y_pos[v1];
-  g_word_7E001E = 0;
-  R32 = 0;
+  R30_ = 0;
+  R32_ = 0;
   cur_block_index = 0;
-  CalculateBlockAt();
+  CalculateBlockAt(R26_, R28_, R30_, R32_);
   if (!projectile_variables[v1]) {
     BlockColl_BombExplosion(k);
     return 0;
@@ -2294,10 +2275,10 @@ uint8 BlockCollSpreadBomb(uint16 k) {  // 0x94A621
 }
 
 uint8 BlockShotReactVert_Slope_Square(uint16 a, uint16 k) {  // 0x94A66A
-  temp_collision_DD4 = 4 * a;
-  temp_collision_DD6 = BTS[k] >> 6;
+  uint16 temp_collision_DD4 = 4 * a;
+  uint16 temp_collision_DD6 = BTS[k] >> 6;
   uint16 v2 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R28_ & 8) >> 3));
-  if (!g_word_7E001E) {
+  if (!R30_) {
     if (!R26_) {
       int v3 = projectile_index >> 1;
       if (((projectile_y_pos[v3] - projectile_y_radius[v3]) & 8) != 0
@@ -2329,10 +2310,10 @@ uint8 BlockShotReactVert_Slope_Square(uint16 a, uint16 k) {  // 0x94A66A
 
 
 uint8 BlockShotReactHoriz_Slope_Square(uint16 a, uint16 k) {  // 0x94A71A
-  temp_collision_DD4 = 4 * a;
-  temp_collision_DD6 = BTS[k] >> 6;
+  uint16 temp_collision_DD4 = 4 * a;
+  uint16 temp_collision_DD6 = BTS[k] >> 6;
   uint16 v2 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R28_ & 8) >> 2));
-  if (!g_word_7E001E) {
+  if (!R30_) {
     if (!R26_) {
       int v3 = projectile_index >> 1;
       if (((projectile_x_pos[v3] - projectile_x_radius[v3]) & 8) != 0
@@ -2947,12 +2928,12 @@ void HandleGrappleBeamGfx(void) {  // 0x94AFBA
   if ((kSinCosTable8bit_Sext[v1 + 64] & 0x1000) != 0)
     --R28_;
   *(uint16 *)((char *)&R26_ + 1) = v2;
-  g_word_7E001E = 0;
-  R32 = 0;
+  R30_ = 0;
+  R32_ = 0;
   uint16 v3 = 8 * kSinCosTable8bit_Sext[v1];
   if ((kSinCosTable8bit_Sext[v1] & 0x1000) != 0)
-    --R32;
-  *(uint16 *)((char *)&g_word_7E001E + 1) = v3;
+    --R32_;
+  *(uint16 *)((char *)&R30_ + 1) = v3;
   R38 = (uint16)(*(uint16 *)&grapple_beam_end_subangle & 0x8000) >> 1;
   R38 |= 2 * ((*(uint16 *)&grapple_beam_end_subangle ^ R38) & 0x4000 ^ 0x4000);
   R20_ = x_pos_of_start_of_grapple_beam_prevframe - layer1_x_pos - 4;
@@ -3007,7 +2988,7 @@ void DrawGrappleOams(uint16 j) {  // 0x94B0AA
   R20_ = HIWORD(v3);
   R18_ = v3;
   *(uint16 *)&v2->ycoord = R24_;
-  v4 = __PAIR32__(R32, g_word_7E001E) + __PAIR32__(R24_, R22_);
+  v4 = __PAIR32__(R32_, R30_) + __PAIR32__(R24_, R22_);
   R24_ = HIWORD(v4);
   R22_ = v4;
   *(uint16 *)&v2->charnum = R38 | j;

@@ -3113,7 +3113,7 @@ void BlockInsideReact_SpecialAir_9(void);
 void BlockInsideReact_SpecialAir_Default(void);
 void BlockInsideReact_SpikeAir_BTS2(void);
 void BombOrPowerBomb_Func1(uint16 k);
-void CalculateBlockAt(void);
+void CalculateBlockAt(uint16 r26, uint16 r28, uint16 r30, uint16 r32);
 void ClearCarry_8(void);
 void DrawGrappleOams(uint16 j);
 void DrawGrappleOams2(void);

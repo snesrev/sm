@@ -705,11 +705,11 @@ LABEL_16:;
   uint16 v4 = R26_;
   if (!sign16(R26_ - 128))
     v4 = R26_ - 128;
-  g_word_7E001E = kTanTable[v4];
+  R30_ = kTanTable[v4];
   uint16 v5 = R28_;
   if (!sign16(R28_ - 128))
     v5 = R28_ - 128;
-  R32 = kTanTable[v5];
+  R32_ = kTanTable[v5];
   kXrayHdmaFuncs[v3 >> 1]();
 }
 
@@ -721,8 +721,8 @@ void XrayHdmaFunc_BeamAimedR(void) {  // 0x91BEC2
   R34 = R22_;
   R36 = R22_;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
     v0 -= 2;
@@ -735,8 +735,8 @@ void XrayHdmaFunc_BeamAimedR(void) {  // 0x91BEC2
   R18_ = v0 + 2;
   v2 = v0 - 2;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
     IndirWriteWord(&R0_, v2, HIBYTE(R34) | 0xFF00);
@@ -751,8 +751,8 @@ void XrayHdmaFunc_BeamAimedR(void) {  // 0x91BEC2
 LABEL_10:;
   uint16 v3 = 2 * R24_;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
     v3 += 2;
@@ -766,8 +766,8 @@ LABEL_10:;
   uint16 v4;
   v4 = v3 - 2 + 4;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
     IndirWriteWord(&R0_, v4, HIBYTE(R36) | 0xFF00);
@@ -797,8 +797,8 @@ void XrayHdmaFunc_BeamAimedL(void) {  // 0x91BF72
   R34 = R22_;
   R36 = R22_;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
     v0 -= 2;
@@ -811,8 +811,8 @@ void XrayHdmaFunc_BeamAimedL(void) {  // 0x91BF72
   R18_ = v0 + 2;
   v2 = v0 - 2;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
     IndirWriteWord(&R0_, v2, R36 & 0xFF00);
@@ -827,8 +827,8 @@ void XrayHdmaFunc_BeamAimedL(void) {  // 0x91BF72
 LABEL_10:;
   uint16 v3 = 2 * R24_;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
     v3 += 2;
@@ -842,8 +842,8 @@ LABEL_10:;
   uint16 v4;
   v4 = v3 - 2 + 4;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
     IndirWriteWord(&R0_, v4, R34 & 0xFF00);
@@ -899,8 +899,8 @@ void XrayHdmaFunc_BeamAimedUUR(uint16 v0) {  // 0x91C069
 
   v6 = v0;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
     v0 -= 2;
@@ -914,8 +914,8 @@ void XrayHdmaFunc_BeamAimedUUR(uint16 v0) {  // 0x91C069
   if (v2 >= 0) {
     R18_ = v2 + 4;
     while (1) {
-      bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-      R34 += g_word_7E001E;
+      bool v1 = __CFADD__uint16(R30_, R34);
+      R34 += R30_;
       if (v1)
         break;
       IndirWriteByte(&R0_, v2, HIBYTE(R34));
@@ -933,8 +933,8 @@ void XrayHdmaFunc_BeamAimedUUR(uint16 v0) {  // 0x91C069
 LABEL_12:
   v3 = v6 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
     v3 -= 2;
@@ -948,8 +948,8 @@ LABEL_12:
   if (v4 >= 0) {
     R20_ = v4 + 4;
     while (1) {
-      bool v1 = __CFADD__uint16(R32, R36);
-      R36 += R32;
+      bool v1 = __CFADD__uint16(R32_, R36);
+      R36 += R32_;
       if (v1)
         break;
       IndirWriteByte(&R0_, v4, HIBYTE(R36));
@@ -980,8 +980,8 @@ void XrayHdmaFunc_BeamAimedUU(uint16 j) {  // 0x91C123
 
   uint16 v5 = j;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
     j -= 2;
@@ -995,8 +995,8 @@ void XrayHdmaFunc_BeamAimedUU(uint16 j) {  // 0x91C123
   if (v2 >= 0) {
     R18_ = v2 + 4;
     while (1) {
-      bool v1 = R34 >= g_word_7E001E;
-      R34 -= g_word_7E001E;
+      bool v1 = R34 >= R30_;
+      R34 -= R30_;
       if (!v1)
         break;
       IndirWriteByte(&R0_, v2, HIBYTE(R34));
@@ -1014,8 +1014,8 @@ void XrayHdmaFunc_BeamAimedUU(uint16 j) {  // 0x91C123
 LABEL_12:
   v3 = v5 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
     v3 -= 2;
@@ -1029,8 +1029,8 @@ LABEL_12:
   if (v4 >= 0) {
     R20_ = v4 + 4;
     while (1) {
-      bool v1 = __CFADD__uint16(R32, R36);
-      R36 += R32;
+      bool v1 = __CFADD__uint16(R32_, R36);
+      R36 += R32_;
       if (v1)
         break;
       IndirWriteByte(&R0_, v4, HIBYTE(R36));
@@ -1054,8 +1054,8 @@ void XrayHdmaFunc_BeamAimedUUL(uint16 j) {  // 0x91C1CA
 
   uint16 v6 = j;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
     j -= 2;
@@ -1069,8 +1069,8 @@ void XrayHdmaFunc_BeamAimedUUL(uint16 j) {  // 0x91C1CA
   if (v2 >= 0) {
     R18_ = v2 + 4;
     while (1) {
-      bool v1 = R34 >= g_word_7E001E;
-      R34 -= g_word_7E001E;
+      bool v1 = R34 >= R30_;
+      R34 -= R30_;
       if (!v1)
         break;
       IndirWriteByte(&R0_, v2, HIBYTE(R34));
@@ -1088,8 +1088,8 @@ void XrayHdmaFunc_BeamAimedUUL(uint16 j) {  // 0x91C1CA
 LABEL_12:
   v3 = v6 + 1;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
     v3 -= 2;
@@ -1103,8 +1103,8 @@ LABEL_12:
   if (v4 >= 0) {
     R20_ = v4 + 4;
     while (1) {
-      bool v1 = R36 >= R32;
-      R36 -= R32;
+      bool v1 = R36 >= R32_;
+      R36 -= R32_;
       if (!v1)
         break;
       IndirWriteByte(&R0_, v4, HIBYTE(R36));
@@ -1157,8 +1157,8 @@ void XrayHdmaFunc_BeamAimedD(void) {
 void XrayHdmaFunc_BeamAimedDDR(uint16 j) {  // 0x91C2BD
   uint16 v6 = j;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
     j += 2;
@@ -1173,8 +1173,8 @@ void XrayHdmaFunc_BeamAimedDDR(uint16 j) {  // 0x91C2BD
   if ((int16)(v2 - 460) < 0) {
     R18_ = v2 - 4;
     while (1) {
-      bool v1 = __CFADD__uint16(R32, R36);
-      R36 += R32;
+      bool v1 = __CFADD__uint16(R32_, R36);
+      R36 += R32_;
       if (v1)
         break;
       IndirWriteWord(&R0_, v2, *(uint16 *)((char *)&R36 + 1));
@@ -1192,8 +1192,8 @@ void XrayHdmaFunc_BeamAimedDDR(uint16 j) {  // 0x91C2BD
 LABEL_12:;
   uint16 v3 = v6 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
     v3 += 2;
@@ -1208,8 +1208,8 @@ LABEL_12:;
   if ((int16)(v4 - 460) < 0) {
     R20_ = v4 - 4;
     while (1) {
-      bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-      R34 += g_word_7E001E;
+      bool v1 = __CFADD__uint16(R30_, R34);
+      R34 += R30_;
       if (v1)
         break;
       IndirWriteByte(&R0_, v4, HIBYTE(R34));
@@ -1235,10 +1235,10 @@ LABEL_23:;
 
 void XrayHdmaFunc_BeamAimedDD(uint16 j) {  // 0x91C381
   uint16 v5 = j;
-  if (R32) {
+  if (R32_) {
     while (1) {
-      bool v1 = R36 >= R32;
-      R36 -= R32;
+      bool v1 = R36 >= R32_;
+      R36 -= R32_;
       if (!v1)
         break;
       j += 2;
@@ -1252,8 +1252,8 @@ void XrayHdmaFunc_BeamAimedDD(uint16 j) {  // 0x91C381
     if ((int16)(v2 - 460) < 0) {
       R18_ = v2 - 4;
       while (1) {
-        bool v1 = R36 >= R32;
-        R36 -= R32;
+        bool v1 = R36 >= R32_;
+        R36 -= R32_;
         if (!v1)
           break;
         IndirWriteWord(&R0_, v2, *(uint16 *)((char *)&R36 + 1));
@@ -1278,8 +1278,8 @@ void XrayHdmaFunc_BeamAimedDD(uint16 j) {  // 0x91C381
 LABEL_15:;
   uint16 v3 = v5 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
     v3 += 2;
@@ -1293,8 +1293,8 @@ LABEL_15:;
   if ((int16)(v4 - 460) < 0) {
     R20_ = v4 - 4;
     while (1) {
-      bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-      R34 += g_word_7E001E;
+      bool v1 = __CFADD__uint16(R30_, R34);
+      R34 += R30_;
       if (v1)
         break;
       IndirWriteByte(&R0_, v4, HIBYTE(R34));
@@ -1314,8 +1314,8 @@ LABEL_15:;
 void XrayHdmaFunc_BeamAimedDDL(uint16 j) {  // 0x91C446
   uint16 v6 = j;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
     j += 2;
@@ -1330,8 +1330,8 @@ void XrayHdmaFunc_BeamAimedDDL(uint16 j) {  // 0x91C446
   if ((int16)(v2 - 460) < 0) {
     R18_ = v2 - 4;
     while (1) {
-      bool v1 = R36 >= R32;
-      R36 -= R32;
+      bool v1 = R36 >= R32_;
+      R36 -= R32_;
       if (!v1)
         break;
       IndirWriteWord(&R0_, v2, *(uint16 *)((char *)&R36 + 1));
@@ -1349,8 +1349,8 @@ void XrayHdmaFunc_BeamAimedDDL(uint16 j) {  // 0x91C446
 LABEL_12:;
   uint16 v3 = v6 + 1;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
     v3 += 2;
@@ -1365,8 +1365,8 @@ LABEL_12:;
   if ((int16)(v4 - 460) < 0) {
     R20_ = v4 - 4;
     while (1) {
-      bool v1 = R34 >= g_word_7E001E;
-      R34 -= g_word_7E001E;
+      bool v1 = R34 >= R30_;
+      R34 -= R30_;
       if (!v1)
         break;
       IndirWriteByte(&R0_, v4, HIBYTE(R34));
@@ -1451,11 +1451,11 @@ LABEL_16:;
   uint16 v4 = R26_;
   if (!sign16(R26_ - 128))
     v4 = R26_ - 128;
-  g_word_7E001E = kTanTable[v4];
+  R30_ = kTanTable[v4];
   uint16 v5 = R28_;
   if (!sign16(R28_ - 128))
     v5 = R28_ - 128;
-  R32 = kTanTable[v5];
+  R32_ = kTanTable[v5];
   grapple_beam_unkD1E = 0;
   static Func_V *const kXrayHdmaOnScreen_Funcs[5] = {
     XrayHdmaOnScreen_BeamAimedR,
@@ -1477,8 +1477,8 @@ void XrayHdmaOnScreen_BeamAimedR(void) {  // 0x91C5FF
   R34 = R22_;
   R36 = R22_;
   while (1) {
-    bool v2 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v2 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v2)
       break;
     IndirWriteWord(&R0_, v1, HIBYTE(R34) | 0xFF00);
@@ -1493,8 +1493,8 @@ void XrayHdmaOnScreen_BeamAimedR(void) {  // 0x91C5FF
 LABEL_6:;
   uint16 v3 = 2 * R24_;
   while (1) {
-    bool v2 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v2 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v2)
       break;
     IndirWriteWord(&R0_, v3, HIBYTE(R36) | 0xFF00);
@@ -1517,8 +1517,8 @@ void XrayHdmaOnScreen_BeamAimedL(void) {  // 0x91C660
   R34 = R22_;
   R36 = R22_;
   while (1) {
-    bool v2 = R36 >= R32;
-    R36 -= R32;
+    bool v2 = R36 >= R32_;
+    R36 -= R32_;
     if (!v2)
       break;
     IndirWriteWord(&R0_, v1, R36 & 0xFF00);
@@ -1533,8 +1533,8 @@ void XrayHdmaOnScreen_BeamAimedL(void) {  // 0x91C660
 LABEL_6:;
   uint16 v3 = 2 * R24_;
   while (1) {
-    bool v2 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v2 = R34 >= R30_;
+    R34 -= R30_;
     if (!v2)
       break;
     IndirWriteWord(&R0_, v3, R34 & 0xFF00);
@@ -1584,8 +1584,8 @@ void XrayHdmaOnScreen_BeamAimedUUR(uint16 v0) {  // 0x91C71C
 
   v4 = v0;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
     IndirWriteByte(&R0_, v0, HIBYTE(R34));
@@ -1601,8 +1601,8 @@ void XrayHdmaOnScreen_BeamAimedUUR(uint16 v0) {  // 0x91C71C
 LABEL_7:
   v2 = v4 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
     IndirWriteByte(&R0_, v2, HIBYTE(R36));
@@ -1626,8 +1626,8 @@ void XrayHdmaOnScreen_BeamAimedUU(uint16 v0) {  // 0x91C77F
 
   v3 = v0;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
     IndirWriteByte(&R0_, v0, HIBYTE(R34));
@@ -1642,8 +1642,8 @@ void XrayHdmaOnScreen_BeamAimedUU(uint16 v0) {  // 0x91C77F
 LABEL_6:
   v2 = v3 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
     IndirWriteByte(&R0_, v2, HIBYTE(R36));
@@ -1664,8 +1664,8 @@ void XrayHdmaOnScreen_BeamAimedUUL(uint16 j) {  // 0x91C7CB
 
   uint16 v4 = j;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
     IndirWriteByte(&R0_, j, HIBYTE(R34));
@@ -1680,8 +1680,8 @@ void XrayHdmaOnScreen_BeamAimedUUL(uint16 j) {  // 0x91C7CB
 LABEL_6:
   v2 = v4 + 1;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
     IndirWriteByte(&R0_, v2, HIBYTE(R36));
@@ -1736,8 +1736,8 @@ void XrayHdmaOnScreen_BeamAimedD(void) {  // 0x91C822
 void XrayHdmaOnScreen_BeamAimedDDR(uint16 j) {  // 0x91C87A
   uint16 v4 = j;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
     IndirWriteWord(&R0_, j, *(uint16 *)((char *)&R36 + 1));
@@ -1753,8 +1753,8 @@ void XrayHdmaOnScreen_BeamAimedDDR(uint16 j) {  // 0x91C87A
 LABEL_7:;
   uint16 v2 = v4 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
     IndirWriteByte(&R0_, v2, HIBYTE(R34));
@@ -1780,8 +1780,8 @@ LABEL_7:;
 void XrayHdmaOnScreen_BeamAimedDD(uint16 j) {  // 0x91C8E8
   uint16 v3 = j;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
     IndirWriteWord(&R0_, j, *(uint16 *)((char *)&R36 + 1));
@@ -1796,8 +1796,8 @@ void XrayHdmaOnScreen_BeamAimedDD(uint16 j) {  // 0x91C8E8
 LABEL_6:;
   uint16 v2 = v3 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
     IndirWriteByte(&R0_, v2, HIBYTE(R34));
@@ -1814,8 +1814,8 @@ LABEL_6:;
 void XrayHdmaOnScreen_BeamAimedDDL(uint16 j) {  // 0x91C939
   uint16 v4 = j;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
     IndirWriteWord(&R0_, j, *(uint16 *)((char *)&R36 + 1));
@@ -1830,8 +1830,8 @@ void XrayHdmaOnScreen_BeamAimedDDL(uint16 j) {  // 0x91C939
 LABEL_6:;
   uint16 v2 = v4 + 1;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
     IndirWriteByte(&R0_, v2, HIBYTE(R34));
@@ -1928,14 +1928,14 @@ void Xray_SetupStage4(void) {  // 0x91CB8E
     R18_ = 16;
     R26_ = R24_ & 0x7E0;
     R28_ = R24_ & 0x1F;
-    g_word_7E001E = 0;
+    R30_ = 0;
     do {
-      if (!sign16(g_word_7E001E + R28_ - 32)) {
+      if (!sign16(R30_ + R28_ - 32)) {
         R26_ = (R26_ + 1024) & 0x7E0;
         R28_ = 0;
-        g_word_7E001E = 0;
+        R30_ = 0;
       }
-      uint16 v0 = g_word_7E001E + R28_ + R26_;
+      uint16 v0 = R30_ + R28_ + R26_;
       uint16 v11 = ram4000.xray_tilemaps[v0 + 4096];
       uint16 v10 = ram4000.xray_tilemaps[v0 + 4097];
       uint16 v9 = ram4000.xray_tilemaps[v0 + 4128];
@@ -1947,11 +1947,11 @@ void Xray_SetupStage4(void) {  // 0x91CB8E
       *(uint16 *)((char *)&ram4000.xray_tilemaps[1] + v2) = v10;
       *(uint16 *)((char *)ram4000.xray_tilemaps + v2) = v11;
       R22_ += 4;
-      g_word_7E001E += 2;
+      R30_ += 2;
       --R18_;
     } while (R18_);
     Xray_SetupStage4_Func1();
-    R32 = R24_ & 0x400;
+    R32_ = R24_ & 0x400;
     R24_ = (R24_ & 0x400) + ((R24_ + 64) & 0x3FF);
     R22_ += 64;
     --R20_;
@@ -1990,13 +1990,13 @@ void Xray_SetupStage4(void) {  // 0x91CB8E
 void Xray_SetupStage4_Func1(void) {  // 0x91CCF1
   int16 v0;
 
-  R32 = R26_;
-  v0 = g_word_7E001E + R28_;
-  if (!sign16(g_word_7E001E + R28_ - 32)) {
-    R32 = (R32 + 1024) & 0x7E0;
+  R32_ = R26_;
+  v0 = R30_ + R28_;
+  if (!sign16(R30_ + R28_ - 32)) {
+    R32_ = (R32_ + 1024) & 0x7E0;
     v0 = 0;
   }
-  uint16 v1 = R32 + v0;
+  uint16 v1 = R32_ + v0;
   uint16 v6 = ram4000.xray_tilemaps[v1 + 4096];
   uint16 v5 = ram4000.xray_tilemaps[v1 + 4097];
   uint16 v4 = ram4000.xray_tilemaps[v1 + 4128];

@@ -2500,8 +2500,8 @@ void UpdateMinimap(void) {  // 0x90A91B
     R22_ = room_y_coordinate_on_map + (uint8)((uint16)(samus_y_pos & 0xFF00) >> 8) + 1;
     uint16 v2 = R20_ + 4 * (R34 + R22_);
     map_tiles_explored[v2] |= kShr0x80[((uint8)room_x_coordinate_on_map + v0) & 7];
-    R32 = v1;
-    g_word_7E001E = v2;
+    R32_ = v1;
+    R30_ = v2;
     uint16 v3 = v2 - 4;
     v4 = v1 - 2;
     if ((int16)(v1 - 2) < 0) {
@@ -2540,7 +2540,7 @@ void UpdateMinimap(void) {  // 0x90A91B
     HIBYTE(v5) = GET_WORD(v9);
     R42 = v5;
     if ((R50 & 3) == 3) {
-      v10 = R46 ? bg3_tilemap_offset >> 1 : R32;
+      v10 = R46 ? bg3_tilemap_offset >> 1 : R32_;
       if (!sign16(v10 - 6)) {
         if (R34)
           LOBYTE(R48) = R50 - 124;
@@ -2629,7 +2629,7 @@ void UpdateMinimapInside(void) {  // 0x90AA43
 }
 
 void MarkMapTileAboveSamusAsExplored(void) {  // 0x90AB5F
-  *((uint8 *)&music_data_index + g_word_7E001E) |= kShr0x80[R32];
+  *((uint8 *)&music_data_index + R30_) |= kShr0x80[R32_];
 }
 
 void AdjustMapBitsForMapPageSpill(void) {  // 0x90AB75

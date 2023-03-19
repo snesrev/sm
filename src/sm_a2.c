@@ -2453,7 +2453,7 @@ void Rio_3(uint16 k) {  // 0xA2BC48
   rio_var_D = E->rio_var_D;
   if (rio_var_D < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = rio_var_D;
+  R19_ = rio_var_D;
   if (Enemy_MoveRight_IgnoreSlopes(k) & 1) {
     E->rio_var_D = -E->rio_var_D;
 LABEL_13:
@@ -2466,7 +2466,7 @@ LABEL_13:
   rio_var_C = E->rio_var_C;
   if (rio_var_C < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = rio_var_C;
+  R19_ = rio_var_C;
   if (Enemy_MoveDown(k) & 1)
     goto LABEL_13;
   v4 = E->rio_var_C - 24;
@@ -2492,7 +2492,7 @@ void Rio_4(uint16 k) {  // 0xA2BCB7
   rio_var_D = E->rio_var_D;
   if (rio_var_D < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = rio_var_D;
+  R19_ = rio_var_D;
   if (Enemy_MoveRight_IgnoreSlopes(k) & 1)
     E->rio_var_D = -E->rio_var_D;
   R18_ = 0;
@@ -2500,7 +2500,7 @@ void Rio_4(uint16 k) {  // 0xA2BCB7
   rio_var_C = E->rio_var_C;
   if (rio_var_C < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = rio_var_C;
+  R19_ = rio_var_C;
   if (Enemy_MoveDown(k) & 1) {
     Rio_6(addr_kRio_Ilist_BBA3);
     E->rio_var_B = FUNC16(Rio_2);
@@ -2526,14 +2526,14 @@ void Rio_5(uint16 k) {  // 0xA2BCFF
     rio_var_D = E->rio_var_D;
     if (rio_var_D < 0)
       --R20_;
-    *(uint16 *)((char *)&R18_ + 1) = rio_var_D;
+    R19_ = rio_var_D;
     Enemy_MoveRight_IgnoreSlopes(k);
     R18_ = 0;
     R20_ = 0;
     rio_var_C = E->rio_var_C;
     if (rio_var_C < 0)
       --R20_;
-    *(uint16 *)((char *)&R18_ + 1) = rio_var_C;
+    R19_ = rio_var_C;
     Enemy_MoveDown(k);
   }
 }
@@ -2791,7 +2791,7 @@ void NorfairRio_Func_4(uint16 k) {  // 0xA2C361
   nro_var_B = E->nro_var_B;
   if (nro_var_B < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = nro_var_B;
+  R19_ = nro_var_B;
   if (Enemy_MoveRight_IgnoreSlopes(k) & 1)
     E->nro_var_B = -E->nro_var_B;
   R18_ = 0;
@@ -2799,7 +2799,7 @@ void NorfairRio_Func_4(uint16 k) {  // 0xA2C361
   nro_var_A = E->nro_var_A;
   if (nro_var_A < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = nro_var_A;
+  R19_ = nro_var_A;
   if (Enemy_MoveDown(k) & 1 || (v4 = E->nro_var_A - 32, E->nro_var_A = v4, v4 < 0)) {
     E->nro_var_A = -1;
     NorfairRio_Func_7(addr_kNorfairRio_Ilist_C145);
@@ -2817,7 +2817,7 @@ void NorfairRio_Func_5(uint16 k) {  // 0xA2C3B1
   nro_var_B = E->nro_var_B;
   if (nro_var_B < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = nro_var_B;
+  R19_ = nro_var_B;
   if (Enemy_MoveRight_IgnoreSlopes(k) & 1)
     E->nro_var_B = -E->nro_var_B;
   R18_ = 0;
@@ -2825,7 +2825,7 @@ void NorfairRio_Func_5(uint16 k) {  // 0xA2C3B1
   nro_var_A = E->nro_var_A;
   if (nro_var_A < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = nro_var_A;
+  R19_ = nro_var_A;
   if (Enemy_MoveDown(k) & 1) {
     E->nro_var_F = FUNC16(NorfairRio_Func_6);
   } else {
@@ -2940,7 +2940,7 @@ void LowerNorfairRio_Func_4(uint16 k) {  // 0xA2C7D6
   lnro_var_D = E->lnro_var_D;
   if (lnro_var_D < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = lnro_var_D;
+  R19_ = lnro_var_D;
   if (Enemy_MoveRight_IgnoreSlopes(k) & 1)
     E->lnro_var_D = -E->lnro_var_D;
   R18_ = 0;
@@ -2948,7 +2948,7 @@ void LowerNorfairRio_Func_4(uint16 k) {  // 0xA2C7D6
   lnro_var_C = E->lnro_var_C;
   if (lnro_var_C < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = lnro_var_C;
+  R19_ = lnro_var_C;
   if (Enemy_MoveDown(k) & 1 || (v4 = E->lnro_var_C - 32, E->lnro_var_C = v4, v4 < 0)) {
     E->lnro_var_C = -1;
     LowerNorfairRio_Func_7(addr_kLowerNorfairRio_Ilist_C662);
@@ -2967,7 +2967,7 @@ void LowerNorfairRio_Func_5(uint16 k) {  // 0xA2C82D
   nro_var_D = E->nro_var_D;
   if (nro_var_D < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = nro_var_D;
+  R19_ = nro_var_D;
   if (Enemy_MoveRight_IgnoreSlopes(k) & 1)
     E->nro_var_D = -E->nro_var_D;
   R18_ = 0;
@@ -2975,7 +2975,7 @@ void LowerNorfairRio_Func_5(uint16 k) {  // 0xA2C82D
   nro_var_C = E->nro_var_C;
   if (nro_var_C < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = nro_var_C;
+  R19_ = nro_var_C;
   if (Enemy_MoveDown(k) & 1) {
     LowerNorfairRio_Func_7(addr_kLowerNorfairRio_Ilist_C686);
     E->nro_var_F = FUNC16(LowerNorfairRio_Func_6);

@@ -491,7 +491,7 @@ void Torizo_C643(uint16 k) {  // 0xAAC643
   torizo_var_B = E->toriz_var_B;
   if (torizo_var_B < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = torizo_var_B;
+  R19_ = torizo_var_B;
   if (Enemy_MoveDown(k) & 1) {
     v3 = E->toriz_var_B;
     if (v3 >= 0 && v3 != 256) {
@@ -667,7 +667,7 @@ void Torizo_Func_7(uint16 k) {  // 0xAAC82C
   torizo_var_A = E->toriz_var_A;
   if (torizo_var_A < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = torizo_var_A;
+  R19_ = torizo_var_A;
   Enemy_MoveRight_IgnoreSlopes(k);
   EnemyFunc_C8AD(k);
   R18_ = 0;
@@ -675,7 +675,7 @@ void Torizo_Func_7(uint16 k) {  // 0xAAC82C
   torizo_var_B = E->toriz_var_B;
   if (torizo_var_B < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = torizo_var_B;
+  R19_ = torizo_var_B;
   if (Enemy_MoveDown(k) & 1) {
     E->base.current_instruction = E->toriz_var_00;
     E->base.instruction_timer = 1;
@@ -1189,7 +1189,7 @@ const uint16 *Shaktool_D956(uint16 k, const uint16 *jp, uint16 a) {  // 0xAAD956
   v4 = kSinCosTable8bit_Sext[v3 + 64];
   if (v4 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v4;
+  R19_ = v4;
   Enemy_Shaktool *E = Get_Shaktool(k);
   uint16 x_subpos = E->base.x_subpos;
   bool v7 = __CFADD__uint16(R18_, x_subpos);
@@ -1200,7 +1200,7 @@ const uint16 *Shaktool_D956(uint16 k, const uint16 *jp, uint16 a) {  // 0xAAD956
   v8 = kSinCosTable8bit_Sext[v3];
   if (v8 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v8;
+  R19_ = v8;
   uint16 y_subpos = E->base.y_subpos;
   v7 = __CFADD__uint16(R18_, y_subpos);
   E->base.y_subpos = R18_ + y_subpos;
@@ -1352,7 +1352,7 @@ void Shaktool_DC2A(uint16 k) {  // 0xAADC2A
   v4 = kSine[v3];
   if (v4 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v4;
+  R19_ = v4;
   int v5 = k >> 1;
   bool v6 = __CFADD__uint16(enemy_drawing_queue[v5 + 92], R18_);
   E->base.x_subpos = enemy_drawing_queue[v5 + 92] + R18_;
@@ -1362,7 +1362,7 @@ void Shaktool_DC2A(uint16 k) {  // 0xAADC2A
   v7 = kNegativeCosine[v3];
   if (v7 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v7;
+  R19_ = v7;
   v6 = __CFADD__uint16(enemy_drawing_queue[v5 + 94], R18_);
   E->base.y_subpos = enemy_drawing_queue[v5 + 94] + R18_;
   E->base.y_pos = enemy_drawing_queue[v5 + 93] + v6 + R20_;
@@ -1575,14 +1575,14 @@ const uint16 *Shaktool_Instr_7(uint16 k, const uint16 *jp) {  // 0xAAE5D8
   v4 = g_word_AAE630[E->shakt_var_C >> 1];
   if (v4 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v4;
+  R19_ = v4;
   Enemy_MoveRight_IgnoreSlopes(k);
   R18_ = 0;
   R20_ = 0;
   v5 = abs16(g_word_AAE630[E->shakt_var_C >> 1]);
   if (v5 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v5;
+  R19_ = v5;
   Enemy_MoveDown(k);
   EnemyFunc_C8AD(k);
   int v6 = E->shakt_var_C >> 1;

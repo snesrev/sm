@@ -833,9 +833,9 @@ void NuclearWaffle_Func_1(void) {  // 0xA69615
 void NuclearWaffle_Func_2(void) {  // 0xA69682
   Enemy_NuclearWaffle *E = Get_NuclearWaffle(cur_enemy_index);
   draw_enemy_layer = E->nwe_var_D;
-  g_word_7E001E = NuclearWaffle_Func_6(E->nwe_var_21);
-  uint16 v8 = g_word_7E001E;
-  if (g_word_7E001E != E->nwe_var_33) {
+  R30_ = NuclearWaffle_Func_6(E->nwe_var_21);
+  uint16 v8 = R30_;
+  if (R30_ != E->nwe_var_33) {
     R18_ = E->base.x_pos;
     R20_ = E->base.y_pos;
     R22_ = 46;
@@ -870,9 +870,9 @@ void NuclearWaffle_Func_3(void) {  // 0xA69721
     R36 -= E->nwe_var_2B;
     Enemy_NuclearWaffle *ET = Get_NuclearWaffle(cur_enemy_index + E->nwe_var_2A);
     uint16 nwe_var_00 = ET->nwe_var_00;
-    g_word_7E001E = NuclearWaffle_Func_6(R36);
-    uint16 v13 = g_word_7E001E;
-    if (g_word_7E001E != ET->nwe_var_08) {
+    R30_ = NuclearWaffle_Func_6(R36);
+    uint16 v13 = R30_;
+    if (R30_ != ET->nwe_var_08) {
       int v5 = nwe_var_00 >> 1;
       R18_ = enemy_projectile_x_pos[v5];
       R20_ = enemy_projectile_y_pos[v5];
@@ -911,9 +911,9 @@ void NuclearWaffle_Func_4(void) {  // 0xA697E9
     R36 -= E->nwe_var_2B;
     Enemy_NuclearWaffle *ET = Get_NuclearWaffle(cur_enemy_index + E->nwe_var_2A);
     uint16 nwe_var_10 = ET->nwe_var_10;
-    g_word_7E001E = NuclearWaffle_Func_6(R36);
-    uint16 v13 = g_word_7E001E;
-    if (g_word_7E001E != ET->nwe_var_18) {
+    R30_ = NuclearWaffle_Func_6(R36);
+    uint16 v13 = R30_;
+    if (R30_ != ET->nwe_var_18) {
       R38 = E->nwe_var_34;
       int v5 = nwe_var_10 >> 1;
       R18_ = sprite_x_pos[v5];
@@ -931,10 +931,10 @@ void NuclearWaffle_Func_4(void) {  // 0xA697E9
     ET->nwe_var_18 = v13;
     uint16 v6 = NuclearWaffle_Func_5(R36);
     uint16 v7 = CosineMult8bit(v6);
-    R32 = E->nwe_var_26 + v7;
+    R32_ = E->nwe_var_26 + v7;
     uint16 v9 = NuclearWaffle_Func_5(R36);
     R34 = E->nwe_var_27 + SineMult8bitNegative(v9);
-    sprite_x_pos[nwe_var_10 >> 1] = R32;
+    sprite_x_pos[nwe_var_10 >> 1] = R32_;
     sprite_y_pos[nwe_var_10 >> 1] = R34;
     v12 = E->nwe_var_2A - 2;
     E->nwe_var_2A = v12;
@@ -985,7 +985,7 @@ uint16 NuclearWaffle_Func_6(uint16 a) {  // 0xA698E7
 }
 
 void NuclearWaffle_Func_7(void) {  // 0xA6993F
-  if (g_word_7E001E != 2)
+  if (R30_ != 2)
     QueueSfx2_Max6(0x5Eu);
 }
 

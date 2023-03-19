@@ -2348,14 +2348,14 @@ void DrawAreaSelectMapLabels(void) {
     uint16 v1 = 2 * kFileSelectMap_AreaIndexes[i];
     R36 = *(uint16 *)&used_save_stations_and_elevators[v1];
     const uint16 *v2 = (const uint16 *)RomPtr_82(*(VoidP *)((char *)&kMapIconDataPointers[4].crateria + v1));
-    g_word_7E001E = 16;
+    R30_ = 16;
     while (*v2 != 0xffff) {
       int v4 = R36 & 1;
       R36 >>= 1;
       if (v4 && *v2 != 0xfffe)
         goto LABEL_11;
       v2 += 2;
-      if (!--g_word_7E001E) {
+      if (!--R30_) {
         if (enable_debug && *v2 != 0xFFFF) {
 LABEL_11:;
           int j = 4 * kFileSelectMap_AreaIndexes[i] >> 1;

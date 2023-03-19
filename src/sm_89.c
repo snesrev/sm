@@ -110,7 +110,7 @@ void LoadFXHeader(void) {
     v6 = get_FxDef(current_fx_entry_ptr);
     uint16 v7 = v6->type;
     if (v6->type) {
-      *(uint16 *)((char *)&R18_ + 1) = -30720;
+      R19_ = -30720;
       kFxTypeFuncPtrs[v7 >> 1]();
     }
     v8 = get_FxDef(current_fx_entry_ptr);

@@ -3125,10 +3125,10 @@ void HdmaobjPreInstr_E567(uint16 v0) {  // 0x88E567
   if (enemy_data[1].parameter_1) {
     if ((enemy_data[1].parameter_1 & 1) != 0) {
       R28_ = 4;
-      g_word_7E001E = 128;
+      R30_ = 128;
     } else {
       R28_ = 8;
-      g_word_7E001E = 64;
+      R30_ = 64;
     }
     int v2 = v0 >> 1;
     if (hdma_object_B[v2]-- == 1) {
@@ -3167,7 +3167,7 @@ void HdmaobjPreInstr_E567(uint16 v0) {  // 0x88E567
         *(uint16 *)((char *)&g_word_7E9100 + v11) = R18_ + reg_BG2HOFS;
       }
       v4 = v8 + 2;
-    } while ((int16)(v4 - g_word_7E001E) < 0);
+    } while ((int16)(v4 - R30_) < 0);
     if ((enemy_data[1].parameter_1 & 1) != 0) {
       for (int i = 126; i >= 0; i -= 2)
         *(uint16 *)((char *)&g_word_7E9180 + i) = reg_BG2HOFS + reg_BG2HOFS - *(uint16 *)((char *)&g_word_7E9100 + i);
@@ -3438,7 +3438,7 @@ void HdmaobjPreInstr_ECB6(uint16 k) {  // 0x88ECB6
 
   if (g_word_7E0D9C) {
     R28_ = 4;
-    g_word_7E001E = 128;
+    R30_ = 128;
     R18_ = 2 * loop_counter_transfer_enemies_to_vram;
     int v3 = k >> 1;
     hdma_object_A[v3] = (2 * loop_counter_transfer_enemies_to_vram + hdma_object_A[v3]) & 0x1FF;
@@ -3473,7 +3473,7 @@ void HdmaobjPreInstr_ECB6(uint16 k) {  // 0x88ECB6
         hdma_table_1[v10 >> 1] = R18_ + reg_BG3HOFS;
       }
       v4 = v8 + 2;
-    } while ((int16)(v4 - g_word_7E001E) < 0);
+    } while ((int16)(v4 - R30_) < 0);
     for (int i = 126; i >= 0; i -= 2)
       hdma_table_1[(i >> 1) + 64] = reg_BG3HOFS + reg_BG3HOFS - hdma_table_1[i >> 1];
   } else {

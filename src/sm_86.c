@@ -867,14 +867,14 @@ uint8 EprojColl_Unknown8536(void) {  // 0x86853C
   if (BTS[cur_block_index]) {
     uint16 v1;
     if ((BTS[cur_block_index] & 0x80) != 0) {
-      temp_collision_DD4 = BTS[cur_block_index] | 0xFF00;
+      uint16 temp_collision_DD4 = BTS[cur_block_index] | 0xFF00;
       v1 = cur_block_index;
       do {
         v1 -= room_width_in_blocks;
         ++temp_collision_DD4;
       } while (temp_collision_DD4);
     } else {
-      temp_collision_DD4 = BTS[cur_block_index];
+      uint16 temp_collision_DD4 = BTS[cur_block_index];
       v1 = cur_block_index;
       do {
         v1 += room_width_in_blocks;
@@ -920,15 +920,15 @@ static const uint8 unk_868729[20] = {  // 0x8685C2
 
 uint8 EprojColl_85C2(uint16 a, uint16 k) {
 
-  temp_collision_DD4 = 4 * a;
-  temp_collision_DD6 = BTS[k] >> 6;
+  uint16 temp_collision_DD4 = 4 * a;
+  uint16 temp_collision_DD6 = BTS[k] >> 6;
   uint16 v2 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R34 & 8) >> 3));
-  if (!R32) {
+  if (!R32_) {
     int v3 = enemy_projectile_index >> 1;
-    if ((((uint8)enemy_projectile_y_pos[v3] - (uint8)g_word_7E001E) & 8) != 0
+    if ((((uint8)enemy_projectile_y_pos[v3] - (uint8)R30_) & 8) != 0
         || CHECK_locret_868728(v2) >= 0) {
       uint16 v4 = v2 ^ 2;
-      if ((((uint8)g_word_7E001E + (uint8)enemy_projectile_y_pos[v3] - 1) & 8) == 0
+      if ((((uint8)R30_ + (uint8)enemy_projectile_y_pos[v3] - 1) & 8) == 0
           || CHECK_locret_868728(v4) >= 0) {
         return 0;
       }
@@ -936,15 +936,15 @@ uint8 EprojColl_85C2(uint16 a, uint16 k) {
     goto LABEL_17;
   }
   if (!R26_) {
-    if ((((uint8)g_word_7E001E + (uint8)enemy_projectile_y_pos[enemy_projectile_index >> 1] - 1) & 8) == 0) {
+    if ((((uint8)R30_ + (uint8)enemy_projectile_y_pos[enemy_projectile_index >> 1] - 1) & 8) == 0) {
       if (CHECK_locret_868728(v2) >= 0)
         return 0;
       goto LABEL_17;
     }
     goto LABEL_14;
   }
-  if (R26_ != R32
-      || (((uint8)enemy_projectile_y_pos[enemy_projectile_index >> 1] - (uint8)g_word_7E001E) & 8) == 0) {
+  if (R26_ != R32_
+      || (((uint8)enemy_projectile_y_pos[enemy_projectile_index >> 1] - (uint8)R30_) & 8) == 0) {
 LABEL_14:
     if (CHECK_locret_868728(v2) < 0)
       goto LABEL_17;
@@ -966,10 +966,10 @@ LABEL_17:;
 uint8 EprojColl_8676(uint16 a, uint16 k, uint16 j) {  // 0x868676
   uint16 v2 = enemy_projectile_index;
 
-  temp_collision_DD4 = 4 * a;
-  temp_collision_DD6 = BTS[k] >> 6;
+  uint16 temp_collision_DD4 = 4 * a;
+  uint16 temp_collision_DD6 = BTS[k] >> 6;
   uint16 v3 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R34 & 8) >> 2));
-  if (!R32) {
+  if (!R32_) {
     printf("Y unknown!\n");
     int v4 = v2 >> 1;
     if ((((uint8)enemy_projectile_x_pos[v4] - (uint8)R28_) & 8) != 0
@@ -990,7 +990,7 @@ uint8 EprojColl_8676(uint16 a, uint16 k, uint16 j) {  // 0x868676
     }
     goto LABEL_14;
   }
-  if (R26_ != R32 || (((uint8)enemy_projectile_x_pos[enemy_projectile_index >> 1] - (uint8)R28_) & 8) == 0) {
+  if (R26_ != R32_ || (((uint8)enemy_projectile_x_pos[enemy_projectile_index >> 1] - (uint8)R28_) & 8) == 0) {
 LABEL_14:
     if (CHECK_locret_868728(v3) < 0)
       goto LABEL_17;
@@ -1002,9 +1002,9 @@ LABEL_17:;
   uint16 v8;
   enemy_projectile_y_subpos[v7] = 0;
   if ((R20_ & 0x8000u) != 0)
-    v8 = g_word_7E001E + (R34 | 7) + 1;
+    v8 = R30_ + (R34 | 7) + 1;
   else
-    v8 = (R34 & 0xFFF8) - g_word_7E001E;
+    v8 = (R34 & 0xFFF8) - R30_;
   enemy_projectile_y_pos[v7] = v8;
   return 1;
 }
@@ -1032,8 +1032,8 @@ uint8 EprojColl_874E(void) {  // 0x86874E
     int v10 = v0 >> 1;
     v11 = enemy_projectile_x_pos[v10] >> 4;
     if (v11 == mod) {
-      temp_collision_DD4 = ((uint8)R24_ - (uint8)g_word_7E001E) & 0xF ^ 0xF;
-      temp_collision_DD6 = 16 * (BTS[v9] & 0x1F);
+      uint16 temp_collision_DD4 = ((uint8)R24_ - (uint8)R30_) & 0xF ^ 0xF;
+      uint16 temp_collision_DD6 = 16 * (BTS[v9] & 0x1F);
       v12 = BTS[v9] << 8;
       if (v12 < 0
           && ((v12 & 0x4000) != 0 ? (v13 = enemy_projectile_x_pos[v10] ^ 0xF) : (v13 = enemy_projectile_x_pos[v10]),
@@ -1056,8 +1056,8 @@ uint8 EprojColl_874E(void) {  // 0x86874E
     int v2 = v0 >> 1;
     v3 = enemy_projectile_x_pos[v2] >> 4;
     if (v3 == mod) {
-      temp_collision_DD4 = ((uint8)g_word_7E001E + (uint8)R24_ - 1) & 0xF;
-      temp_collision_DD6 = 16 * (BTS[v1] & 0x1F);
+      uint16 temp_collision_DD4 = ((uint8)R30_ + (uint8)R24_ - 1) & 0xF;
+      uint16 temp_collision_DD6 = 16 * (BTS[v1] & 0x1F);
       v5 = BTS[v1] << 8;
       if (v5 >= 0
           && ((v5 & 0x4000) != 0 ? (v6 = enemy_projectile_x_pos[v2] ^ 0xF) : (v6 = enemy_projectile_x_pos[v2]),
@@ -1141,13 +1141,13 @@ uint8 EnemyProjectileBlockCollisition_Horiz(uint16 k) {  // 0x8688B6
   v2 = enemy_projectile_x_vel[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
-  g_word_7E001E = HIBYTE(enemy_projectile_radius[v1]);
+  R19_ = v2;
+  R30_ = HIBYTE(enemy_projectile_radius[v1]);
   R28_ = LOBYTE(enemy_projectile_radius[v1]);
-  R26_ = (enemy_projectile_y_pos[v1] - g_word_7E001E) & 0xFFF0;
-  R26_ = (uint16)(g_word_7E001E + enemy_projectile_y_pos[v1] - 1 - R26_) >> 4;
-  R32 = R26_;
-  uint16 prod = Mult8x8((uint16)(enemy_projectile_y_pos[v1] - g_word_7E001E) >> 4, room_width_in_blocks);
+  R26_ = (enemy_projectile_y_pos[v1] - R30_) & 0xFFF0;
+  R26_ = (uint16)(R30_ + enemy_projectile_y_pos[v1] - 1 - R26_) >> 4;
+  R32_ = R26_;
+  uint16 prod = Mult8x8((uint16)(enemy_projectile_y_pos[v1] - R30_) >> 4, room_width_in_blocks);
   uint16 v3 = (__PAIR32__(R20_, R18_) + __PAIR32__(enemy_projectile_x_pos[v1], enemy_projectile_1A27[v1])) >> 16;
   R22_ = R18_ + enemy_projectile_1A27[v1];
   R24_ = v3;
@@ -1192,20 +1192,20 @@ uint8 EnemyProjectileBlockCollisition_Vertical(uint16 k) {  // 0x86897B
   v2 = enemy_projectile_y_vel[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
-  g_word_7E001E = HIBYTE(enemy_projectile_radius[v1]);
+  R19_ = v2;
+  R30_ = HIBYTE(enemy_projectile_radius[v1]);
   R28_ = LOBYTE(enemy_projectile_radius[v1]);
   R26_ = (enemy_projectile_x_pos[v1] - R28_) & 0xFFF0;
   R26_ = (uint16)(R28_ + enemy_projectile_x_pos[v1] - 1 - R26_) >> 4;
-  R32 = R26_;
+  R32_ = R26_;
   uint16 v3 = (__PAIR32__(R20_, R18_) + __PAIR32__(enemy_projectile_y_pos[v1], enemy_projectile_y_subpos[v1])) >> 16;
   R22_ = R18_ + enemy_projectile_y_subpos[v1];
   R24_ = v3;
   uint16 v4;
   if ((R20_ & 0x8000u) != 0)
-    v4 = v3 - g_word_7E001E;
+    v4 = v3 - R30_;
   else
-    v4 = g_word_7E001E + v3 - 1;
+    v4 = R30_ + v3 - 1;
   R34 = v4;
   uint16 prod = Mult8x8(v4 >> 4, room_width_in_blocks);
   v5 = (uint16)(enemy_projectile_x_pos[v1] - R28_) >> 4;
@@ -1220,12 +1220,12 @@ uint8 EnemyProjectileBlockCollisition_Vertical(uint16 k) {  // 0x86897B
   int v9 = k >> 1;
   enemy_projectile_y_subpos[v9] = 0;
   if ((R20_ & 0x8000u) != 0) {
-    uint16 v11 = g_word_7E001E + (R34 | 0xF) + 1;
+    uint16 v11 = R30_ + (R34 | 0xF) + 1;
     if (v11 < enemy_projectile_y_pos[v9] || v11 == enemy_projectile_y_pos[v9])
       enemy_projectile_y_pos[v9] = v11;
     return 1;
   } else {
-    uint16 v10 = (R34 & 0xFFF0) - g_word_7E001E;
+    uint16 v10 = (R34 & 0xFFF0) - R30_;
     if (v10 >= enemy_projectile_y_pos[v9])
       enemy_projectile_y_pos[v9] = v10;
     return 1;
@@ -2683,7 +2683,7 @@ void EprojPreInstr_AB07(uint16 k) {  // 0x86AA8C
   uint16 v2 = 8 * (samus_x_pos - enemy_projectile_x_pos[v1]);
   if (((samus_x_pos - enemy_projectile_x_pos[v1]) & 0x1000) != 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   bool v3 = __CFADD__uint16(enemy_projectile_1A27[v1], R18_);
   enemy_projectile_1A27[v1] += R18_;
   enemy_projectile_x_pos[v1] += v3 + R20_;
@@ -2692,7 +2692,7 @@ void EprojPreInstr_AB07(uint16 k) {  // 0x86AA8C
   uint16 v4 = 8 * (samus_y_pos - 36 - enemy_projectile_y_pos[v1]);
   if (((samus_y_pos - 36 - enemy_projectile_y_pos[v1]) & 0x1000) != 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v4;
+  R19_ = v4;
   v3 = __CFADD__uint16(enemy_projectile_y_subpos[v1], R18_);
   enemy_projectile_y_subpos[v1] += R18_;
   enemy_projectile_y_pos[v1] += v3 + R20_;
@@ -2796,7 +2796,7 @@ uint16 EprojInstr_GotoDependingOnXDirection(uint16 k, uint16 j) {  // 0x86AD92
   v3 = enemy_projectile_x_vel[v2];
   if (v3 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v3;
+  R19_ = v3;
   uint16 v4 = enemy_projectile_1A27[v2];
   bool v5 = __CFADD__uint16(R18_, v4);
   enemy_projectile_1A27[v2] = R18_ + v4;
@@ -3349,7 +3349,7 @@ void EprojPreInstr_TourianStatueUnlockingParticle(uint16 k) {  // 0x86B982
   v2 = enemy_projectile_x_vel[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   uint16 v3 = enemy_projectile_1A27[v1];
   bool v4 = __CFADD__uint16(R18_, v3);
   enemy_projectile_1A27[v1] = R18_ + v3;
@@ -3360,7 +3360,7 @@ void EprojPreInstr_TourianStatueUnlockingParticle(uint16 k) {  // 0x86B982
   v5 = enemy_projectile_y_vel[v1];
   if (v5 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v5;
+  R19_ = v5;
   uint16 v6 = enemy_projectile_y_subpos[v1];
   v4 = __CFADD__uint16(R18_, v6);
   enemy_projectile_y_subpos[v1] = R18_ + v6;
@@ -3384,7 +3384,7 @@ void EprojPreInstr_TourianStatueSoul(uint16 k) {  // 0x86B9FD
   v2 = enemy_projectile_y_vel[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   uint16 v3 = enemy_projectile_y_subpos[v1];
   bool v4 = __CFADD__uint16(R18_, v3);
   enemy_projectile_y_subpos[v1] = R18_ + v3;
@@ -4321,7 +4321,7 @@ void EprojPreInstr_MotherBrainGlassShatteringShard(uint16 k) {  // 0x86CE9B
   v2 = enemy_projectile_x_vel[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   uint16 v3 = enemy_projectile_1A27[v1];
   bool v4 = __CFADD__uint16(R18_, v3);
   enemy_projectile_1A27[v1] = R18_ + v3;
@@ -4331,7 +4331,7 @@ void EprojPreInstr_MotherBrainGlassShatteringShard(uint16 k) {  // 0x86CE9B
   v5 = enemy_projectile_y_vel[v1];
   if (v5 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v5;
+  R19_ = v5;
   uint16 v6 = enemy_projectile_y_subpos[v1];
   v4 = __CFADD__uint16(R18_, v6);
   enemy_projectile_y_subpos[v1] = R18_ + v6;
@@ -4698,7 +4698,7 @@ void sub_86D7BF(uint16 k) {  // 0x86D7BF
 void sub_86D7DE(uint16 k) {  // 0x86D7DE
   R18_ = 0;
   R20_ = 0;
-  *(uint16 *)((char *)&R18_ + 1) = 192;
+  R19_ = 192;
   int v1 = k >> 1;
   uint16 v2 = enemy_projectile_y_subpos[v1];
   bool v3 = __CFADD__uint16(R18_, v2);
@@ -4716,7 +4716,7 @@ void EprojPreInstr_N00bTubeShards(uint16 k) {  // 0x86D7FD
   v2 = enemy_projectile_x_vel[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   uint16 v3 = enemy_projectile_E[v1];
   bool v4 = __CFADD__uint16(R18_, v3);
   enemy_projectile_E[v1] = R18_ + v3;
@@ -4726,7 +4726,7 @@ void EprojPreInstr_N00bTubeShards(uint16 k) {  // 0x86D7FD
   v5 = enemy_projectile_y_vel[v1];
   if (v5 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v5;
+  R19_ = v5;
   uint16 v6 = enemy_projectile_y_subpos[v1];
   v4 = __CFADD__uint16(R18_, v6);
   enemy_projectile_y_subpos[v1] = R18_ + v6;
@@ -4744,7 +4744,7 @@ void sub_86D83D(uint16 k) {  // 0x86D83D
   uint16 v3 = kSinCosTable8bit_Sext[v2 + 64];
   if ((kSinCosTable8bit_Sext[v2 + 64] & 0x8000u) != 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = (int16)v3 >> 2;
+  R19_ = (int16)v3 >> 2;
   uint16 v5 = enemy_projectile_index;
   int v6 = enemy_projectile_index >> 1;
   uint16 v7 = enemy_projectile_E[v6];
@@ -4757,7 +4757,7 @@ void sub_86D83D(uint16 k) {  // 0x86D83D
   v8 = enemy_projectile_y_vel[v6];
   if (v8 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v8;
+  R19_ = v8;
   uint16 v9 = enemy_projectile_y_subpos[v6];
   v4 = __CFADD__uint16(R18_, v9);
   enemy_projectile_y_subpos[v6] = R18_ + v9;
@@ -4773,7 +4773,7 @@ void sub_86D89F(uint16 k) {  // 0x86D89F
   uint16 v3 = kSinCosTable8bit_Sext[v2 + 64];
   if ((kSinCosTable8bit_Sext[v2 + 64] & 0x8000u) != 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = (int16)v3 >> 2;
+  R19_ = (int16)v3 >> 2;
   int v5 = enemy_projectile_index >> 1;
   uint16 v6 = enemy_projectile_E[v5];
   bool v4 = __CFADD__uint16(R18_, v6);
@@ -4791,7 +4791,7 @@ void sub_86D8DF(uint16 k) {  // 0x86D8DF
   v7 = enemy_projectile_y_vel[v5];
   if (v7 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v7;
+  R19_ = v7;
   uint16 v8 = enemy_projectile_y_subpos[v5];
   bool v4 = __CFADD__uint16(R18_, v8);
   enemy_projectile_y_subpos[v5] = R18_ + v8;

@@ -1238,8 +1238,8 @@ void Mochtroid_Func_1(void) {  // 0xA3A7AA
   R18_ = 0;
   R20_ = 0;
   Enemy_Mochtroid *E = Get_Mochtroid(cur_enemy_index);
-  *(uint16 *)((char *)&R18_ + 1) = (uint16)(E->base.y_pos - samus_y_pos) >> 2;
-  if ((*(uint16 *)((char *)&R18_ + 1) & 0x2000) != 0)
+  R19_ = (uint16)(E->base.y_pos - samus_y_pos) >> 2;
+  if ((R19_ & 0x2000) != 0)
     R20_ = (uint8)R20_ | 0xFFC0;
   uint16 mochtr_var_C = E->mochtr_var_C;
   bool v3 = mochtr_var_C < R18_;
@@ -1269,8 +1269,8 @@ LABEL_8:
   }
   R18_ = 0;
   R20_ = 0;
-  *(uint16 *)((char *)&R18_ + 1) = (uint16)(E->base.x_pos - samus_x_pos) >> 2;
-  if ((*(uint16 *)((char *)&R18_ + 1) & 0x2000) != 0)
+  R19_ = (uint16)(E->base.x_pos - samus_x_pos) >> 2;
+  if ((R19_ & 0x2000) != 0)
     R20_ = (uint8)R20_ | 0xFFC0;
   uint16 mochtr_var_A = E->mochtr_var_A;
   v3 = mochtr_var_A < R18_;
@@ -2017,11 +2017,11 @@ void Bang_Func_14(void) {  // 0xA3BDB9
   R24_ = E->bang_var_0A;
   Bang_Func_16();
   R22_ = R28_;
-  R24_ = g_word_7E001E;
+  R24_ = R30_;
   if (E->bang_var_07) {
     Bang_Func_17();
     R22_ = R28_;
-    R24_ = g_word_7E001E;
+    R24_ = R30_;
   }
   uint16 x_subpos = E->base.x_subpos;
   bool v5 = __CFADD__uint16(R22_, x_subpos);
@@ -2044,11 +2044,11 @@ void Bang_Func_15(void) {  // 0xA3BE1C
   R24_ = E->bang_var_0A;
   Bang_Func_16();
   R22_ = R28_;
-  R24_ = g_word_7E001E;
+  R24_ = R30_;
   if (E->bang_var_08) {
     Bang_Func_17();
     R22_ = R28_;
-    R24_ = g_word_7E001E;
+    R24_ = R30_;
   }
   uint16 y_subpos = E->base.y_subpos;
   bool v5 = __CFADD__uint16(R22_, y_subpos);
@@ -2061,20 +2061,20 @@ void Bang_Func_16(void) {  // 0xA3BE7B
 
   R28_ = Mult8x8(R22_, R24_);
   uint16 prod = Mult8x8(R22_, HIBYTE(R24_));
-  g_word_7E001E = (uint8)((uint16)(prod & 0xFF00) >> 8);
+  R30_ = (uint8)((uint16)(prod & 0xFF00) >> 8);
   uint16 RegWord = (uint8)prod;
   LOBYTE(v1) = HIBYTE(RegWord);
   HIBYTE(v1) = RegWord;
   bool v2 = __CFADD__uint16(R28_, v1);
   R28_ += v1;
   if (v2)
-    ++g_word_7E001E;
+    ++R30_;
 }
 
 void Bang_Func_17(void) {  // 0xA3BEBE
   if (R22_ || R24_) {
     R28_ = -R22_;
-    g_word_7E001E = ~R24_;
+    R30_ = ~R24_;
   }
 }
 
@@ -2374,7 +2374,7 @@ void MaridiaSnail_Func_7(uint16 k) {  // 0xA3CF60
 void MaridiaSnail_Func_8(uint16 a) {  // 0xA3CF8F
   if ((a & 0x8000u) != 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = a;
+  R19_ = a;
   uint16 v1;
   if ((R20_ & 0x8000u) == 0)
     v1 = R20_ + 7;
@@ -2446,7 +2446,7 @@ void MaridiaSnail_D002(uint16 k, uint16 j) {  // 0xA3D002
   msl_var_A = E->msl_var_A;
   if (msl_var_A < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = msl_var_A;
+  R19_ = msl_var_A;
   uint16 v4;
   if ((R20_ & 0x8000u) == 0)
     v4 = R20_ + 1;
@@ -2464,7 +2464,7 @@ void MaridiaSnail_D002(uint16 k, uint16 j) {  // 0xA3D002
     msl_var_B = E->msl_var_B;
     if (msl_var_B < 0)
       --R20_;
-    *(uint16 *)((char *)&R18_ + 1) = msl_var_B;
+    R19_ = msl_var_B;
     if (Enemy_MoveDown(k) & 1) {
       E->msl_var_A = -E->msl_var_A;
       const uint8 *v6 = RomPtr_A3(j);
@@ -2494,7 +2494,7 @@ void MaridiaSnail_D07E(uint16 k, uint16 j) {  // 0xA3D07E
   msl_var_B = E->msl_var_B;
   if (msl_var_B < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = msl_var_B;
+  R19_ = msl_var_B;
   uint16 v4;
   if ((R20_ & 0x8000u) == 0)
     v4 = R20_ + 1;
@@ -2510,7 +2510,7 @@ void MaridiaSnail_D07E(uint16 k, uint16 j) {  // 0xA3D07E
     msl_var_A = E->msl_var_A;
     if (msl_var_A < 0)
       --R20_;
-    *(uint16 *)((char *)&R18_ + 1) = msl_var_A;
+    R19_ = msl_var_A;
     if (Enemy_MoveRight_ProcessSlopes(k) & 1) {
       E->msl_var_B = -E->msl_var_B;
       const uint8 *v6 = RomPtr_A3(j);
@@ -2964,7 +2964,7 @@ void WreckedShipOrangeZoomer_Func_2(uint16 k) {  // 0xA3E091
   wsozr_var_A = E->wsozr_var_A;
   if (wsozr_var_A < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = wsozr_var_A;
+  R19_ = wsozr_var_A;
   uint16 v4;
   if ((R20_ & 0x8000u) == 0)
     v4 = R20_ + 1;
@@ -2979,7 +2979,7 @@ void WreckedShipOrangeZoomer_Func_2(uint16 k) {  // 0xA3E091
     wsozr_var_B = E->wsozr_var_B;
     if (wsozr_var_B < 0)
       --R20_;
-    *(uint16 *)((char *)&R18_ + 1) = wsozr_var_B;
+    R19_ = wsozr_var_B;
     if (!(Enemy_MoveDown(k) & 1)) {
       if ((int16)(samus_y_pos - E->base.y_pos) >= 0) {
         v7 = E->wsozr_var_B;
@@ -3035,7 +3035,7 @@ void sub_A3E168(uint16 k) {  // 0xA3E168
   wsozr_var_B = E->wsozr_var_B;
   if (wsozr_var_B < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = wsozr_var_B;
+  R19_ = wsozr_var_B;
   uint16 v4;
   if ((R20_ & 0x8000u) == 0)
     v4 = R20_ + 1;
@@ -3049,7 +3049,7 @@ void sub_A3E168(uint16 k) {  // 0xA3E168
     wsozr_var_A = E->wsozr_var_A;
     if (wsozr_var_A < 0)
       --R20_;
-    *(uint16 *)((char *)&R18_ + 1) = wsozr_var_A;
+    R19_ = wsozr_var_A;
     if (!(Enemy_MoveRight_ProcessSlopes(k) & 1)) {
       EnemyFunc_C8AD(k);
       if ((int16)(samus_x_pos - E->base.x_pos) >= 0) {
@@ -3149,7 +3149,7 @@ void FireZoomer_Func_1(uint16 k) {  // 0xA3E6C8
   fzr_var_A = E->fzr_var_A;
   if (fzr_var_A < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = fzr_var_A;
+  R19_ = fzr_var_A;
   uint16 v4;
   if ((R20_ & 0x8000u) == 0)
     v4 = R20_ + 1;
@@ -3164,7 +3164,7 @@ void FireZoomer_Func_1(uint16 k) {  // 0xA3E6C8
     fzr_var_B = E->fzr_var_B;
     if (fzr_var_B < 0)
       --R20_;
-    *(uint16 *)((char *)&R18_ + 1) = fzr_var_B;
+    R19_ = fzr_var_B;
     if (Enemy_MoveDown(k) & 1) {
       E->fzr_var_A = -E->fzr_var_A;
       uint16 fzr_parameter_2 = E->fzr_parameter_2, v7;
@@ -3232,7 +3232,7 @@ void FireZoomer_Func_3(uint16 k) {  // 0xA3E7F2
   fzr_var_B = E->fzr_var_B;
   if (fzr_var_B < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = fzr_var_B;
+  R19_ = fzr_var_B;
   uint16 v4;
   if ((R20_ & 0x8000u) == 0)
     v4 = R20_ + 1;
@@ -3302,7 +3302,7 @@ void FireZoomer_E8A5(uint16 k) {  // 0xA3E8A5
     v3 = E->fzr_var_A;
     if (v3 < 0)
       --R20_;
-    *(uint16 *)((char *)&R18_ + 1) = v3;
+    R19_ = v3;
   }
 }
 
@@ -3400,8 +3400,8 @@ void Metroid_Func_1(void) {  // 0xA3EC11
   R18_ = 0;
   R20_ = 0;
   Enemy_Metroid *E = Get_Metroid(cur_enemy_index);
-  *(uint16 *)((char *)&R18_ + 1) = (uint16)(E->base.y_pos - draw_enemy_layer) >> 2;
-  if ((*(uint16 *)((char *)&R18_ + 1) & 0x2000) != 0)
+  R19_ = (uint16)(E->base.y_pos - draw_enemy_layer) >> 2;
+  if ((R19_ & 0x2000) != 0)
     R20_ = (uint8)R20_ | 0xFFC0;
   uint16 metroid_var_C = E->metroid_var_C;
   bool v2 = metroid_var_C < R18_;
@@ -3428,8 +3428,8 @@ LABEL_9:
   }
   R18_ = 0;
   R20_ = 0;
-  *(uint16 *)((char *)&R18_ + 1) = (uint16)(E->base.x_pos - samus_x_pos) >> 2;
-  if ((*(uint16 *)((char *)&R18_ + 1) & 0x2000) != 0)
+  R19_ = (uint16)(E->base.x_pos - samus_x_pos) >> 2;
+  if ((R19_ & 0x2000) != 0)
     R20_ = (uint8)R20_ | 0xFFC0;
   uint16 metroid_var_A = E->metroid_var_A;
   v2 = metroid_var_A < R18_;

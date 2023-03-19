@@ -530,7 +530,7 @@ void RoomCode_Elevatube(void) {  // 0x8FE2B6
   R20_ = 0;
   if (*(int16 *)&room_main_asm_variables[4] < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = *(uint16 *)&room_main_asm_variables[4];
+  R19_ = *(uint16 *)&room_main_asm_variables[4];
   v0 = (__PAIR32__(R20_, R18_) + *(uint32 *)room_main_asm_variables) >> 16;
   *(uint16 *)room_main_asm_variables += R18_;
   *(uint16 *)&room_main_asm_variables[2] = v0;

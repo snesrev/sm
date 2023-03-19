@@ -3911,7 +3911,7 @@ void LoadDoorHeader(void) {  // 0x82DE12
     else
       samus_distance_from_door = 200;
   }
-  *(uint16 *)((char *)&R18_ + 1) = samus_distance_from_door;
+  R19_ = samus_distance_from_door;
   samus_door_transition_subspeed = R18_;
   samus_door_transition_speed = R20_;
 }

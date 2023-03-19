@@ -3403,7 +3403,7 @@ void MaridiaPuffer_Func_6(void) {  // 0xA8D9DB
   uint16 x_subpos = E->base.x_subpos;
   bool v5 = __CFADD__uint16(R28_, x_subpos);
   E->base.x_subpos = R28_ + x_subpos;
-  E->base.x_pos += g_word_7E001E + v5;
+  E->base.x_pos += R30_ + v5;
 }
 
 void MaridiaPuffer_Func_7(void) {  // 0xA8DA28
@@ -3426,7 +3426,7 @@ void MaridiaPuffer_Func_7(void) {  // 0xA8DA28
   uint16 y_subpos = E->base.y_subpos;
   bool v5 = __CFADD__uint16(R28_, y_subpos);
   E->base.y_subpos = R28_ + y_subpos;
-  E->base.y_pos += g_word_7E001E + v5;
+  E->base.y_pos += R30_ + v5;
 }
 
 void MaridiaPuffer_Func_8(uint16 k) {  // 0xA8DA71
@@ -3453,25 +3453,25 @@ void MaridiaPuffer_Func_10(void) {  // 0xA8DAB3
   uint16 prod1 = Mult8x8(R22_, R24_);
   uint16 prod2 = Mult8x8(R22_, HIBYTE(R24_));
   R28_ = prod1;
-  g_word_7E001E = (uint8)((uint16)(prod2 & 0xFF00) >> 8);
+  R30_ = (uint8)((uint16)(prod2 & 0xFF00) >> 8);
   uint16 RegWord = (uint8)prod2;
   LOBYTE(v1) = HIBYTE(RegWord);
   HIBYTE(v1) = RegWord;
   bool v2 = __CFADD__uint16(R28_, v1);
   R28_ += v1;
   if (v2)
-    ++g_word_7E001E;
+    ++R30_;
 }
 
 void MaridiaPuffer_Func_11(void) {  // 0xA8DAF6
   if (R28_) {
     R28_ = -R28_;
   } else {
-    if (!g_word_7E001E)
+    if (!R30_)
       return;
     --R28_;
   }
-  g_word_7E001E = ~g_word_7E001E;
+  R30_ = ~R30_;
 }
 
 void MaridiaPuffer_Shot(void) {  // 0xA8DB14
