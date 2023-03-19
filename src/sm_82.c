@@ -1598,7 +1598,7 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
   R6_ = kPauseMenuMapData[v0];
   if (map_station_byte_array[area_index]) {
     uint8 *v4 = IndirPtr(&R6_, 0);
-    LOBYTE(v5) = HIBYTE(GET_WORD(v4));
+    LOBYTE(v5) = GET_HIBYTE(GET_WORD(v4));
     HIBYTE(v5) = GET_WORD(v4);
     R38 = v5;
     ++R6_;
@@ -1607,7 +1607,7 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
     *(uint16 *)((char *)&R10_ + 1) = 0;
     *(uint16 *)((char *)&R8_ + 1) = v6;
     uint8 *v7 = IndirPtr((char *)&R8_ + 1, 0);
-    LOBYTE(v5) = HIBYTE(GET_WORD(v7));
+    LOBYTE(v5) = GET_HIBYTE(GET_WORD(v7));
     HIBYTE(v5) = GET_WORD(v7);
     R40 = v5;
     ++ *(uint16 *)((char *)&R8_ + 1);
@@ -1631,13 +1631,13 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
       if (!--v9) {
         v9 = 16;
         uint8 *v12 = IndirPtr(&R6_, 0);
-        LOBYTE(v13) = HIBYTE(GET_WORD(v12));
+        LOBYTE(v13) = GET_HIBYTE(GET_WORD(v12));
         HIBYTE(v13) = GET_WORD(v12);
         R38 = v13;
         ++R6_;
         ++R6_;
         uint8 *v14 = IndirPtr((char *)&R8_ + 1, 0);
-        LOBYTE(v13) = HIBYTE(GET_WORD(v14));
+        LOBYTE(v13) = GET_HIBYTE(GET_WORD(v14));
         HIBYTE(v13) = GET_WORD(v14);
         R40 = v13;
         ++ *(uint16 *)((char *)&R8_ + 1);
@@ -1693,7 +1693,7 @@ void DrawRoomSelectMap(void) {  // 0x829517
   R6_ = kPauseMenuMapData[v0];
   if (map_station_byte_array[area_index]) {
     uint8 *v5 = IndirPtr(&R6_, 0);
-    LOBYTE(v6) = HIBYTE(GET_WORD(v5));
+    LOBYTE(v6) = GET_HIBYTE(GET_WORD(v5));
     HIBYTE(v6) = GET_WORD(v5);
     R38 = v6;
     ++R6_;
@@ -1702,7 +1702,7 @@ void DrawRoomSelectMap(void) {  // 0x829517
     *(uint16 *)((char *)&R10_ + 1) = HIWORD(v7);
     *(uint16 *)((char *)&R8_ + 1) = v7;
     uint8 *v8 = IndirPtr((char *)&R8_ + 1, 0);
-    LOBYTE(v6) = HIBYTE(GET_WORD(v8));
+    LOBYTE(v6) = GET_HIBYTE(GET_WORD(v8));
     HIBYTE(v6) = GET_WORD(v8);
     R40 = v6;
     ++ *(uint16 *)((char *)&R8_ + 1);
@@ -1726,13 +1726,13 @@ void DrawRoomSelectMap(void) {  // 0x829517
       if (!--v10) {
         v10 = 16;
         uint8 *v13 = IndirPtr(&R6_, 0);
-        LOBYTE(v14) = HIBYTE(GET_WORD(v13));
+        LOBYTE(v14) = GET_HIBYTE(GET_WORD(v13));
         HIBYTE(v14) = GET_WORD(v13);
         R38 = v14;
         ++R6_;
         ++R6_;
         uint8 *v15 = IndirPtr((char *)&R8_ + 1, 0);
-        LOBYTE(v14) = HIBYTE(GET_WORD(v15));
+        LOBYTE(v14) = GET_HIBYTE(GET_WORD(v15));
         HIBYTE(v14) = GET_WORD(v15);
         R40 = v14;
         ++ *(uint16 *)((char *)&R8_ + 1);
@@ -2061,7 +2061,7 @@ void Copy_R22_Bytes(uint16 k) {  // 0x82A27E
   R0_.bank = 0x7E;
   uint16 v1 = 0;
   do {
-    uint16 *v2 = (uint16 *)RomPtr_82(k);
+    const uint16 *v2 = (const uint16 *)RomPtr_82(k);
     IndirWriteWord(&R0_, v1, *v2);
     k += 2;
     v1 += 2;
@@ -2764,7 +2764,7 @@ void EquipmentScreenHudReserveAutoTilemap_On_BUGGY(void) {  // 0x82AEFD
   uint16 v0 = -26229;
   if (!samus_reserve_health)
     v0 = -26217;
-  uint16 *v1 = (uint16 *)RomPtr_82(v0);
+  const uint16 *v1 = (const uint16 *)RomPtr_82(v0);
   hud_tilemap[8] = *v1;
   hud_tilemap[9] = v1[1];
   hud_tilemap[40] = v1[2];
@@ -3302,7 +3302,7 @@ void DrawMapIconsOfType(uint16 a) {  // 0x82B81C
   int16 v4;
 
   while (1) {
-    uint16 *v2 = (uint16 *)RomPtr_82(a);
+    const uint16 *v2 = (const uint16 *)RomPtr_82(a);
     if ((*v2 & 0x8000u) != 0)
       break;
     v3 = R36 & 1;
@@ -3337,7 +3337,7 @@ void DrawBossMapIcons(uint16 a, uint16 k) {  // 0x82B892
   int t = *(uint16 *)RomPtr_82(k + 2 * area_index);
   if (t == 0)
     return;
-  uint16 *v4 = (uint16 *)RomPtr_82(t);
+  const uint16 *v4 = (const uint16 *)RomPtr_82(t);
   for (; ; v4 += 2) {
     if (v4[0] == 0xffff)
       return;
@@ -3361,7 +3361,7 @@ void DrawBossMapIcons(uint16 a, uint16 k) {  // 0x82B892
 }
 
 void DrawMapScrollArrowAndCheckToScroll(uint8 db, uint16 k) {  // 0x82B90A
-  uint16 *v1 = (uint16 *)RomPtrWithBank(db, k);
+  const uint16 *v1 = (const uint16 *)RomPtrWithBank(db, k);
   DrawPauseScreenSpriteAnim(v1[2], *v1, v1[1]);
   const uint8 *v2 = RomPtrWithBank(db, k);
   if ((joypad1_lastkeys & GET_WORD(v2 + 6)) != 0 && !map_scrolling_direction)
@@ -4622,7 +4622,7 @@ void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
 
 void SpawnDoorClosingPLM(void) {  // 0x82E8EB
   if (!CheckIfColoredDoorCapSpawned()) {
-    uint16 *v0 = (uint16 *)RomPtr_8F(2 * door_direction + addr_kDoorClosingPlmIds);
+    const uint16 *v0 = (const uint16 *)RomPtr_8F(2 * door_direction + addr_kDoorClosingPlmIds);
     if (*v0) {
       R18_ = *v0;
       R20_ = *(uint16 *)&get_DoorDef(door_def_ptr)->x_pos_plm;
@@ -5306,7 +5306,7 @@ void OptionsPreInstr_F2A9(uint16 v0) {  // 0x82F2A9
     uint16 v3 = off_82F2ED[v2];
     if (v3) {
       R18_ = off_82F2ED[v2];
-      uint16 *v4 = (uint16 *)RomPtr_82(v3 + 4 * menu_option_index);
+      const uint16 *v4 = (const uint16 *)RomPtr_82(v3 + 4 * menu_option_index);
       int v5 = v0 >> 1;
       enemy_projectile_y_pos[v5 + 13] = *v4;
       enemy_projectile_x_vel[v5 + 3] = v4[1];
@@ -5468,7 +5468,7 @@ void OptionsMenuFunc6(void) {
     v4 = v0;
     int v1 = v0 >> 1;
     uint16 v2 = g_word_82F639[v1];
-    uint16 *v3 = (uint16 *)RomPtr_82(g_off_82F647[(uint16)(2 * enemy_projectile_F[v1 + 13]) >> 1]);
+    const uint16 *v3 = (const uint16 *)RomPtr_82(g_off_82F647[(uint16)(2 * enemy_projectile_F[v1 + 13]) >> 1]);
     *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + v2) = *v3;
     *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[1] + v2) = v3[1];
     *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[2] + v2) = v3[2];

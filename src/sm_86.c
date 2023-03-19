@@ -509,7 +509,7 @@ void EprojRunOne(uint16 k) {  // 0x868125
   if (enemy_projectile_instr_timers[v2]-- == 1) {
     uint16 v4 = enemy_projectile_instr_list_ptr[v2], v6;
     while (1) {
-      uint16 *v5 = (uint16 *)RomPtr_86(v4);
+      const uint16 *v5 = (const uint16 *)RomPtr_86(v4);
       v6 = *v5;
       if ((*v5 & 0x8000u) == 0)
         break;
@@ -2708,7 +2708,7 @@ uint16 EprojInstr_SpawnEnemyDrops(uint16 k, uint16 j) {  // 0x86AB8A
 }
 
 void Eproj_InitXYVelRandom(uint16 j, uint16 k) {  // 0x86ABAE
-  uint16 *v2 = (uint16 *)RomPtr_86(k);
+  const uint16 *v2 = (const uint16 *)RomPtr_86(k);
   int v3 = j >> 1;
   enemy_projectile_instr_list_ptr[v3] = *v2;
   enemy_projectile_x_pos[v3] = v2[1] + R18_;

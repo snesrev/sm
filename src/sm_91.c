@@ -2828,7 +2828,7 @@ uint8 Samus_HandleCrystalFlashPals(void) {  // 0x91DB93
 }
 
 void Samus_Copy10PalColors(uint16 v0) {  // 0x91DC34
-  uint16 *v1 = (uint16 *)RomPtr_9B(v0);
+  const uint16 *v1 = (const uint16 *)RomPtr_9B(v0);
   palette_buffer[224] = *v1;
   palette_buffer[225] = v1[1];
   palette_buffer[226] = v1[2];
@@ -2842,7 +2842,7 @@ void Samus_Copy10PalColors(uint16 v0) {  // 0x91DC34
 }
 
 void Samus_Copy6PalColors(uint16 j) {  // 0x91DC82
-  uint16 *v1 = (uint16 *)RomPtr_9B(j);
+  const uint16 *v1 = (const uint16 *)RomPtr_9B(j);
   palette_buffer[234] = *v1;
   palette_buffer[235] = v1[1];
   palette_buffer[236] = v1[2];

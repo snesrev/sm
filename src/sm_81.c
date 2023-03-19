@@ -168,7 +168,7 @@ void DrawSpritemap(uint8 db, uint16 j) {  // 0x81879F
   char v13;
   char v15;
 
-  uint16 *v2 = (uint16 *)RomPtrWithBank(db, j);
+  const uint16 *v2 = (const uint16 *)RomPtrWithBank(db, j);
   if (*v2) {
     R24_ = *v2;
     uint16 v3 = j + 2;
@@ -243,7 +243,7 @@ void DrawSpritemapOffScreen(uint16 j) {  // 0x818853
   char v12;
   char v14;
 
-  uint16 *v1 = (uint16 *)RomPtr_8C(j);
+  const uint16 *v1 = (const uint16 *)RomPtr_8C(j);
   if (*v1) {
     R24_ = *v1;
     uint16 v2 = j + 2;
@@ -494,7 +494,7 @@ void DrawEnemyProjectileSpritemapWithBaseTile(uint8 db, uint16 j) {  // 0x818C0A
   char v10;
   char v12; // cf
 
-  uint16 *v2 = (uint16 *)RomPtrWithBank(db, j);
+  const uint16 *v2 = (const uint16 *)RomPtrWithBank(db, j);
   if (*v2) {
     R24_ = *v2;
     uint16 v3 = j + 2;
@@ -546,7 +546,7 @@ void DrawEnemyProjectileSpritemapWithBaseTileOffscreen(uint8 db, uint16 j) {  //
   char v10;
   char v12; // cf
 
-  uint16 *v2 = (uint16 *)RomPtrWithBank(db, j);
+  const uint16 *v2 = (const uint16 *)RomPtrWithBank(db, j);
   if (*v2) {
     R24_ = *v2;
     uint16 v3 = j + 2;
@@ -2347,7 +2347,7 @@ void DrawAreaSelectMapLabels(void) {
     R3_.addr = (i == file_select_map_area_index) ? 0 : 512;
     uint16 v1 = 2 * kFileSelectMap_AreaIndexes[i];
     R36 = *(uint16 *)&used_save_stations_and_elevators[v1];
-    uint16 *v2 = (uint16 *)RomPtr_82(*(VoidP *)((char *)&kMapIconDataPointers[4].crateria + v1));
+    const uint16 *v2 = (const uint16 *)RomPtr_82(*(VoidP *)((char *)&kMapIconDataPointers[4].crateria + v1));
     g_word_7E001E = 16;
     while (*v2 != 0xffff) {
       int v4 = R36 & 1;

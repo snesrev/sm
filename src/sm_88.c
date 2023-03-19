@@ -604,7 +604,7 @@ void HdmaobjInstructionHandler(uint16 k) {  // 0x88851C
     uint16 v4 = hdma_object_instruction_list_pointers[v2];
     uint16 v6;
     while (1) {
-      uint16 *v5 = (uint16 *)RomPtrWithBank(v8, v4);
+      const uint16 *v5 = (const uint16 *)RomPtrWithBank(v8, v4);
       v6 = *v5;
       if ((*v5 & 0x8000u) == 0)
         break;

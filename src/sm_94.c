@@ -843,7 +843,7 @@ uint8 BlockColl_Horiz_SpecialAir(void) {  // 0x94906F
 
   v0 = BTS[cur_block_index];
   if ((v0 & 0x80) != 0) {
-    uint16 *v2 = (uint16 *)RomPtr_94(off_9492D9[area_index]);
+    const uint16 *v2 = (const uint16 *)RomPtr_94(off_9492D9[area_index]);
     return SpawnPLM(v2[v0 & 0x7f]) & 1;
   } else {
     SpawnPLM(kPlmHeaderDefPtrs[v0]);
@@ -856,7 +856,7 @@ uint8 BlockColl_Vert_SpecialAir(void) {  // 0x94909D
 
   v0 = BTS[cur_block_index];
   if ((v0 & 0x80) != 0) {
-    uint16 *v2 = (uint16 *)RomPtr_94(off_9492D9[area_index]);
+    const uint16 *v2 = (const uint16 *)RomPtr_94(off_9492D9[area_index]);
     return SpawnPLM(v2[v0 & 0x7f]) & 1;
   } else {
     SpawnPLM(kPlmHeaderDefPtrs[v0]);
@@ -869,7 +869,7 @@ uint8 BlockColl_Horiz_SpecialBlock(void) {  // 0x9490CB
 
   v0 = BTS[cur_block_index];
   if ((v0 & 0x80) != 0) {
-    uint16 *v2 = (uint16 *)RomPtr_94(off_9492E9[area_index]);
+    const uint16 *v2 = (const uint16 *)RomPtr_94(off_9492E9[area_index]);
     uint8 v4 = SpawnPLM(v2[v0 & 0x7f]) & 1;
     if (v4)
       return BlockColl_Horiz_SolidShootGrappleBlock();
@@ -2969,7 +2969,7 @@ void HandleGrappleBeamGfx(void) {  // 0x94AFBA
         uint16 v10;
         if (grapple_segment_anim_instr_timers[v6]-- == 1) {
           for (i = grapple_segment_anim_instr_ptrs[v6]; ; ) {
-            uint16 *v9 = (uint16 *)RomPtr_94(i);
+            const uint16 *v9 = (const uint16 *)RomPtr_94(i);
             v10 = *v9;
             if ((*v9 & 0x8000) == 0)
               break;

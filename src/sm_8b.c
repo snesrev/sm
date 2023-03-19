@@ -1463,7 +1463,7 @@ void ProcessCinematicSpriteInstructionList(uint16 k) {  // 0x8B9409
   if (cinematicspr_instr_timer[v2]-- == 1) {
     uint16 v4 = cinematicspr_instr_ptr[v2], v6;
     while (1) {
-      uint16 *v5 = (uint16 *)RomPtr_8B(v4);
+      const uint16 *v5 = (const uint16 *)RomPtr_8B(v4);
       v6 = *v5;
       if ((*v5 & 0x8000u) == 0)
         break;
@@ -1632,7 +1632,7 @@ void ProcessMode7ObjectInstructions(uint16 k) {  // 0x8B9537
   if (mode7_obj_instr_timer[v2]-- == 1) {
     uint16 v4 = mode7_obj_instr_ptr[v2], v6;
     while (1) {
-      uint16 *v5 = (uint16 *)RomPtr_8B(v4);
+      const uint16 *v5 = (const uint16 *)RomPtr_8B(v4);
       v6 = *v5;
       if ((*v5 & 0x8000u) == 0)
         break;
@@ -1792,7 +1792,7 @@ void ProcessCinematicBgObjectsInstrs(uint16 k) {  // 0x8B9659
   if (cinematicbg_instr_timer[v2]-- == 1) {
     uint16 v4 = cinematicbg_instr_ptr[v2], v6;
     while (1) {
-      uint16 *v5 = (uint16 *)RomPtr_8C(v4);
+      const uint16 *v5 = (const uint16 *)RomPtr_8C(v4);
       v6 = *v5;
       if ((*v5 & 0x8000u) == 0)
         break;
@@ -1998,7 +1998,7 @@ void CreditsObject_ProcessOne(void) {  // 0x8B996A
   if (!sign16(v0 - enemy_projectile_pre_instr[0] - 8)) {
     enemy_projectile_pre_instr[0] = cinematic_var10;
     for (i = cinematic_var21; ; ) {
-      uint16 *v2 = (uint16 *)RomPtr_8C(i);
+      const uint16 *v2 = (const uint16 *)RomPtr_8C(i);
       uint16 v3 = *v2;
       if ((*v2 & 0x8000u) == 0)
         break;
@@ -6057,7 +6057,7 @@ uint16 CalcItemPercentageCount(uint16 k, uint16 instrp) {  // 0x8BE627
   uint16 v0 = 4;
   R18_ = 0;
   do {
-    uint16 *v1 = (uint16 *)RomPtr_RAM(g_off_8BE70D[v0]);
+    const uint16 *v1 = (const uint16 *)RomPtr_RAM(g_off_8BE70D[v0]);
     R18_ += SnesDivide(*v1, g_word_8BE717[v0]);
     --v0;
   } while ((v0 & 0x8000u) == 0);
@@ -6233,7 +6233,7 @@ void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
             *(uint16 *)v16 = v22 + 512;
           }
           if (v16[1]) {
-            *(uint16 *)&gOamEnt(v13)->charnum = g_word_8BE9A7[(uint16)HIBYTE(GET_WORD(v16)) >> 1];
+            *(uint16 *)&gOamEnt(v13)->charnum = g_word_8BE9A7[(uint16)GET_HIBYTE(GET_WORD(v16)) >> 1];
             v13 += 4;
           }
         }

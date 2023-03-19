@@ -118,7 +118,7 @@ void PalFx_ProcessOne(uint16 k) {  // 0x8DC54A
   if (palettefx_instr_timers[v2]-- == 1) {
     uint16 j = palettefx_instr_list_ptrs[v2], v6;
     while (1) {
-      uint16 *v5 = (uint16 *)RomPtr_8D(j);
+      const uint16 *v5 = (const uint16 *)RomPtr_8D(j);
       v6 = *v5;
       if ((*v5 & 0x8000u) == 0)
         break;
@@ -242,19 +242,19 @@ PairU16 PalInstr_QueueMusic(uint16 k, uint16 j) {  // 0x8DC65E
 }
 
 PairU16 PalInstr_QueueSfx1(uint16 k, uint16 j) {  // 0x8DC66A
-  uint16 *v2 = (uint16 *)RomPtr_8D(j);
+  const uint16 *v2 = (const uint16 *)RomPtr_8D(j);
   QueueSfx1_Max6(*v2);
   return MakePairU16(k, j + 1);
 }
 
 PairU16 PalInstr_QueueSfx2(uint16 k, uint16 j) {  // 0x8DC673
-  uint16 *v2 = (uint16 *)RomPtr_8D(j);
+  const uint16 *v2 = (const uint16 *)RomPtr_8D(j);
   QueueSfx2_Max6(*v2);
   return MakePairU16(k, j + 1);
 }
 
 PairU16 PalInstr_QueueSfx3(uint16 k, uint16 j) {  // 0x8DC67C
-  uint16 *v2 = (uint16 *)RomPtr_8D(j);
+  const uint16 *v2 = (const uint16 *)RomPtr_8D(j);
   QueueSfx3_Max6(*v2);
   return MakePairU16(k, j + 1);
 }

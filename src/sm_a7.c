@@ -673,7 +673,7 @@ uint16 Kraid_ExecuteInstr(void) {  // 0xA7AF3D
   Enemy_Kraid *E = Get_Kraid(0);
 RESTART:;
   uint16 kraid_var_B = E->kraid_var_B;
-  uint16 *v2 = (uint16 *)RomPtr_A7(kraid_var_B);
+  const uint16 *v2 = (const uint16 *)RomPtr_A7(kraid_var_B);
   uint16 result = *v2;
   if (*v2 != 0xFFFF) {
     if ((int16)(*v2 + 1) < 0) {
@@ -1266,7 +1266,7 @@ void KraidsFoot_SecondPhase_Thinking(void) {  // 0xA7BA2E
     v4 = random_number & 0x1C;
     if (!sign16(v4 - 16))
       v4 = 16;
-    uint16 *v5 = (uint16 *)RomPtr_A7(g_word_A7BA7D[(v2 >> 1) + 1] + v4);
+    const uint16 *v5 = (const uint16 *)RomPtr_A7(g_word_A7BA7D[(v2 >> 1) + 1] + v4);
     uint16 v6 = v5[1];
     if ((int16)(*v5 - E0->base.x_pos) >= 0)
       Kraid_SetWalkingBackwards(v6, *v5);
@@ -3228,7 +3228,7 @@ PairU16 Phantoon_SetColorBasedOnHp_FindEntry(uint16 k) {  // 0xA7DC0F
     R20_ += R18_;
     ++R22_;
   } while (sign16(R22_ - 7));
-  uint16 *v1 = (uint16 *)RomPtr_A7(R24_ + g_off_A7DC4A[R22_]);
+  const uint16 *v1 = (const uint16 *)RomPtr_A7(R24_ + g_off_A7DC4A[R22_]);
   return MakePairU16(R24_, *v1);
 }
 
@@ -3848,7 +3848,7 @@ void Dachora_Func_1(uint16 j, uint16 k) {  // 0xA7F535
   R0_.addr = g_off_A7F55F[v3 >> 1];
   uint16 v5 = 0;
   do {
-    uint16 *v6 = (uint16 *)RomPtr_A7(j);
+    const uint16 *v6 = (const uint16 *)RomPtr_A7(j);
     IndirWriteWord(&R0_, v5, *v6);
     j += 2;
     v5 += 2;

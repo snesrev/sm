@@ -745,7 +745,7 @@ uint16 RoomDefStateSelect_Door(uint16 k) {  // 0x8FE5EB
 uint16 RoomDefStateSelect_TourianBoss01(uint16 k) {  // 0x8FE5FF
   if (!(CheckBossBitForCurArea(1u) & 1))
     return k + 2;
-  uint16 *v1 = (uint16 *)RomPtr_8F(k);
+  const uint16 *v1 = (const uint16 *)RomPtr_8F(k);
   return RoomDefStateSelect_Finish(*v1);
 }
 
@@ -768,14 +768,14 @@ uint16 RoomDefStateSelect_IsBossDead(uint16 k) {  // 0x8FE629
 uint16 RoomDefStateSelect_MorphBallMissiles(uint16 k) {  // 0x8FE652
   if ((collected_items & 4) == 0 || !samus_max_missiles)
     return k + 2;
-  uint16 *v1 = (uint16 *)RomPtr_8F(k);
+  const uint16 *v1 = (const uint16 *)RomPtr_8F(k);
   return RoomDefStateSelect_Finish(*v1);
 }
 
 uint16 RoomDefStateSelect_PowerBombs(uint16 k) {  // 0x8FE669
   if (!samus_max_power_bombs)
     return k + 2;
-  uint16 *v1 = (uint16 *)RomPtr_8F(k);
+  const uint16 *v1 = (const uint16 *)RomPtr_8F(k);
   return RoomDefStateSelect_Finish(*v1);
 }
 

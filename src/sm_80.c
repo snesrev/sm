@@ -1383,7 +1383,7 @@ static const uint16 kEnergyTankIconTilemapOffsets[14] = { 0x42, 0x44, 0x46, 0x48
 void HandleHudTilemap(void) {  // 0x809B44
   R0_.bank = 0;
   if (reserve_health_mode == 1) {
-    uint16 *v1 = (uint16 *)RomPtr_80(addr_kHudTilemaps_AutoReserve);
+    const uint16 *v1 = (const uint16 *)RomPtr_80(addr_kHudTilemaps_AutoReserve);
     if (!samus_reserve_health)
       v1 += 6;
     hud_tilemap[8] = v1[0];
@@ -2783,7 +2783,7 @@ void DecompressToVRAM(void) {  // 0x80B271
 void LoadFromLoadStation(void) {  // 0x80C437
   save_station_lockout_flag = 1;
   R18_ = 2 * load_station_index;
-  uint16 *v0 = (uint16 *)RomPtr_80(kLoadStationLists[area_index] + 14 * load_station_index);
+  const uint16 *v0 = (const uint16 *)RomPtr_80(kLoadStationLists[area_index] + 14 * load_station_index);
   room_ptr = *v0;
   door_def_ptr = v0[1];
   door_bts = v0[2];

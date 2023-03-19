@@ -143,6 +143,8 @@ typedef struct Point16U {
 #define HIBYTE(x)  BYTEn(x,HIGH_IND(x,uint8))
 #define HIWORD(x)  WORDn(x,HIGH_IND(x,uint16))
 
+#define GET_HIBYTE(x) (((x) & 0xff00) >> 8)
+
 // Generate a pair of operands.
 #define __PAIR32__(high, low)   (((uint32) (high) << 16) | (uint16)(low))
 

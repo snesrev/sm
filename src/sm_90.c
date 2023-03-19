@@ -2453,7 +2453,7 @@ void DisableMinimapAndMarkBossRoomAsExplored(void) {  // 0x90A7E2
       return;
   }
   for (int i = g_stru_90A83A[v2].ptrs; ; i += 4) {
-    uint16 *v4 = (uint16 *)RomPtr_90(i);
+    const uint16 *v4 = (const uint16 *)RomPtr_90(i);
     if ((*v4 & 0x8000u) != 0)
       break;
     R18_ = *v4;
@@ -2526,17 +2526,17 @@ void UpdateMinimap(void) {  // 0x90A91B
     *(uint16 *)((char *)&R14_ + 1) = *(uint16 *)((char *)&R8_ + 1);
     *(uint16 *)((char *)&R8_ + 1) += v3;
     uint8 *v7 = IndirPtr((char *)&R8_ + 1, 0);
-    LOBYTE(v5) = HIBYTE(GET_WORD(v7));
+    LOBYTE(v5) = GET_HIBYTE(GET_WORD(v7));
     HIBYTE(v5) = GET_WORD(v7);
     R38 = v5;
     *(uint16 *)((char *)&R8_ + 1) += 4;
     uint8 *v8 = IndirPtr((char *)&R8_ + 1, 0);
-    LOBYTE(v5) = HIBYTE(GET_WORD(v8));
+    LOBYTE(v5) = GET_HIBYTE(GET_WORD(v8));
     HIBYTE(v5) = GET_WORD(v8);
     R40 = v5;
     *(uint16 *)((char *)&R8_ + 1) += 4;
     uint8 *v9 = IndirPtr((char *)&R8_ + 1, 0);
-    LOBYTE(v5) = HIBYTE(GET_WORD(v9));
+    LOBYTE(v5) = GET_HIBYTE(GET_WORD(v9));
     HIBYTE(v5) = GET_WORD(v9);
     R42 = v5;
     if ((R50 & 3) == 3) {
@@ -3554,7 +3554,7 @@ void HandleProjectileTrails(void) {  // 0x90B6A9
         if (v3)
           goto LABEL_10;
         for (i = projectiletrail_left_instr_list_ptr[v1]; ; i += 2) {
-          uint16 *v5 = (uint16 *)RomPtr_90(i);
+          const uint16 *v5 = (const uint16 *)RomPtr_90(i);
           v6 = *v5;
           if ((*v5 & 0x8000u) == 0)
             break;
@@ -3575,7 +3575,7 @@ LABEL_14:;
         if (v15)
           goto LABEL_21;
         for (j = projectiletrail_right_instr_list_ptr[v13]; ; j += 2) {
-          uint16 *v17 = (uint16 *)RomPtr_90(j);
+          const uint16 *v17 = (const uint16 *)RomPtr_90(j);
           v18 = *v17;
           if ((*v17 & 0x8000u) == 0)
             break;

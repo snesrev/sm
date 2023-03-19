@@ -1282,7 +1282,7 @@ void MotherBrain_AddSpritemapToOam(uint16 j) {  // 0xA993EE
   int16 v15;
   int16 v17;
 
-  uint16 *v1 = (uint16 *)RomPtr_A9(j);
+  const uint16 *v1 = (const uint16 *)RomPtr_A9(j);
   uint16 v2 = j + 2;
   R24_ = *v1;
   uint16 v3 = oam_next_ptr;
@@ -1563,13 +1563,13 @@ uint16 MotherBrain_Instr_DisableNeckMovement(uint16 k) {  // 0xA99B20
 }
 
 uint16 MotherBrain_Instr_QueueSfx2(uint16 k) {  // 0xA99B28
-  uint16 *v2 = (uint16 *)RomPtr_A9(k);
+  const uint16 *v2 = (const uint16 *)RomPtr_A9(k);
   QueueSfx2_Max6(*v2);
   return k + 2;
 }
 
 uint16 MotherBrain_Instr_QueueSfx3(uint16 k) {  // 0xA99B32
-  uint16 *v2 = (uint16 *)RomPtr_A9(k);
+  const uint16 *v2 = (const uint16 *)RomPtr_A9(k);
   QueueSfx3_Max6(*v2);
   return k + 2;
 }
@@ -1687,7 +1687,7 @@ uint16 MotherBrain_Instr_SetShitroidAttackCtr0(uint16 k) {  // 0xA99EB5
 }
 
 uint16 MotherBrain_Instr_SpawnBombEproj(uint16 k) {  // 0xA99EBD
-  uint16 *v2 = (uint16 *)RomPtr_A9(k);
+  const uint16 *v2 = (const uint16 *)RomPtr_A9(k);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_MotherBrainBomb, *v2);
   return k + 2;
 }
@@ -1839,7 +1839,7 @@ void MotherBrain_GenerateExplosions(uint16 a) {  // 0xA9B03E
       int v5 = v3 >> 1;
       R18_ = g_word_A9B099[v5];
       R20_ = g_word_A9B099[v5 + 1];
-      uint16 *v6 = (uint16 *)RomPtr_A9(R22_);
+      const uint16 *v6 = (const uint16 *)RomPtr_A9(R22_);
       uint16 v7 = *v6;
       uint16 Random = NextRandom();
       if (Random >= 0x4000) {
@@ -2107,7 +2107,7 @@ void MotherBrain_SamusCollDetect(void) {  // 0xA9B3B6
 uint8 MotherBrain_SamusCollDetectPart(uint16 k) {  // 0xA9B455
   int16 v5;
 
-  uint16 *v1 = (uint16 *)RomPtr_A9(k);
+  const uint16 *v1 = (const uint16 *)RomPtr_A9(k);
   if (!*v1)
     return 0;
   R22_ = *v1;
@@ -3922,7 +3922,7 @@ void ShitroidInCutscene_MoveToSamus(uint16 k) {  // 0xA9C9C3
   if ((random_number & 0xFFFu) >= 0xFA0)
     QueueSfx2_Max6(0x52u);
   uint16 sice_var_0E = E->sice_var_0E;
-  uint16 *v3 = (uint16 *)RomPtr_A9(sice_var_0E);
+  const uint16 *v3 = (const uint16 *)RomPtr_A9(sice_var_0E);
   R18_ = *v3;
   R20_ = v3[1];
   R22_ = v3[3];
@@ -4564,7 +4564,7 @@ uint8 DeadTorizo_Func_0(void) {  // 0xA9D443
   Enemy_DeadTorizo *E = Get_DeadTorizo(0);
   R18_ = E->base.x_pos;
   R20_ = E->base.y_pos;
-  uint16 *v1 = (uint16 *)RomPtr_A9(addr_kDeadTorizo_Hitbox_D77C);
+  const uint16 *v1 = (const uint16 *)RomPtr_A9(addr_kDeadTorizo_Hitbox_D77C);
   if (!*v1)
     return 0;
   int R22 = *v1;

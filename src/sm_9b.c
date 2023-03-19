@@ -151,7 +151,7 @@ uint16 HandleSamusDeathSequence(void) {  // 0x9BB441
 }
 
 void HandleSamusDeathSequence_Helper2(void) {  // 0x9BB4B6
-  uint16 *v0 = (uint16 *)RomPtr_9B(g_off_9BB5C8[samus_suit_palette_index >> 1]);
+  const uint16 *v0 = (const uint16 *)RomPtr_9B(g_off_9BB5C8[samus_suit_palette_index >> 1]);
   memcpy(&palette_buffer[192], RomPtr_9B(*v0), 32);
   memcpy(&palette_buffer[240], RomPtr_9B(addr_word_9BA120), 32);
   QueueTransferOfSamusDeathSequence(8);
@@ -163,7 +163,7 @@ void HandleSamusDeathSequence_Helper2(void) {  // 0x9BB4B6
 
 void CopyPalettesForSamusDeath(uint16 v0) {  // 0x9BB5CE
   int R20 = g_off_9BB6D2[samus_suit_palette_index >> 1];
-  uint16 *v1 = (uint16 *)RomPtr_9B(R20 + v0);
+  const uint16 *v1 = (const uint16 *)RomPtr_9B(R20 + v0);
   memcpy(&palette_buffer[192], RomPtr_9B(*v1), 32);
   memcpy(&palette_buffer[240], RomPtr_9B(kDeathSequencePals_Suitless[v0 >> 1]), 32);
 }

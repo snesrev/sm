@@ -3883,7 +3883,7 @@ void Ridley_Func_93(uint16 j, uint16 k) {  // 0xA6D3B4
   v3 = 7;
   do {
     v5 = v3;
-    uint16 *v4 = (uint16 *)RomPtr_A6(k);
+    const uint16 *v4 = (const uint16 *)RomPtr_A6(k);
     IndirWriteWord(&R18_, v2, *v4);
     k += 2;
     v2 += 20;
@@ -4557,7 +4557,7 @@ void sub_A6DC13(uint16 j) {  // 0xA6DC13
   int16 v13;
   int16 v15;
 
-  uint16 *v1 = (uint16 *)RomPtr_A6(j);
+  const uint16 *v1 = (const uint16 *)RomPtr_A6(j);
   uint16 v2 = j + 2;
   R24_ = *v1;
   uint16 v3 = oam_next_ptr;

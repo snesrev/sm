@@ -320,7 +320,7 @@ void RecordEnemySpawnData(uint16 j) {  // 0xA088D0
   R28_ = 0;
   uint16 name_ptr = get_EnemyDef_A2(v1->enemy_ptr)->name_ptr;
   if (name_ptr) {
-    uint16 *v4 = (uint16 *)RomPtr_B4(name_ptr);
+    const uint16 *v4 = (const uint16 *)RomPtr_B4(name_ptr);
     R18_ = *v4;
     R20_ = v4[1];
     R22_ = v4[2];
