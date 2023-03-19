@@ -580,7 +580,7 @@ static inline uint8_t *RomPtr_84orRAM(uint16_t addr) {
 void ProcessPlmDrawInstruction(uint16 v0) {  // 0x84861E
   int v1 = v0 >> 1;
   uint16 *p = (uint16 *)RomPtr_84orRAM(plm_instruction_draw_ptr[v1]);
-  uint16 dst = plm_block_indices[v1];
+  uint16 dst = plm_block_indices[v1], dst_base = dst;
   while (1) {
     uint16 v4 = *p++;
     if (v4 & 0x8000) {
@@ -592,7 +592,7 @@ void ProcessPlmDrawInstruction(uint16 v0) {  // 0x84861E
     }
     if (!*p)
       break;
-    dst += 2 * ((int8)*p + (int8)(*p >> 8) * room_width_in_blocks);
+    dst = dst_base + 2 * ((int8)*p + (int8)(*p >> 8) * room_width_in_blocks);
     p++;
   }
 }
