@@ -33,8 +33,6 @@ pacman -S mingw-w64-x86_64-SDL2 && pacman -S make && pacman -S mingw-w64-x86_64-
 ```sh
 -LC:/msys64/mingw64/lib -lmingw32 -mwindows -lSDL2main -lSDL2
 ```
-7. Now type `make` to compile the game. (If you want make the compilation faster, type `make -j16`)
-
 NOTE: *Make sure you're in the `sm` directory.*
 
 After you've done installing everything, cd to `sm` folder. Type `make`
