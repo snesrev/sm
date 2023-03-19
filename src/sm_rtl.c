@@ -515,11 +515,6 @@ uint32 Load24(void *a) {
   return *(uint32 *)a & 0xffffff;
 }
 
-void DecompressToMem_IpArg(const void *p) {
-  decompress_dst = *(LongPtr *)p;
-  DecompressToMem();
-}
-
 bool Unreachable(void) {
   printf("Unreachable!\n");
   assert(0);

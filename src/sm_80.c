@@ -2557,68 +2557,62 @@ uint8 DecompNextByte(void) {
   return v2;
 }
 
-void DecompressToMem(void) {  // 0x80B119
-  HIBYTE(decompress_want_xor) = 0;
-  uint16 dst_pos = 0;
+void DecompressToMem(uint8 *decompress_dst) {  // 0x80B119
+  int src_pos, dst_pos = 0;
   while (1) {
     int len;
-    uint8 v2 = DecompNextByte(), cmd, b;
-    decompress_last_byte = v2;
-    if (v2 == 0xFF)
+    uint8 cmd, b;
+    b = DecompNextByte();
+    if (b == 0xFF)
       break;
-    if ((v2 & 0xE0) == 0xE0) {
-      cmd = (8 * decompress_last_byte) & 0xE0;
-      len = ((decompress_last_byte & 3) << 8 | DecompNextByte()) + 1;
+    if ((b & 0xE0) == 0xE0) {
+      cmd = (8 * b) & 0xE0;
+      len = ((b & 3) << 8 | DecompNextByte()) + 1;
     } else {
-      cmd = v2 & 0xE0;
-      len = (decompress_last_byte & 0x1F) + 1;
+      cmd = b & 0xE0;
+      len = (b & 0x1F) + 1;
     }
     if (cmd & 0x80) {
-      decompress_want_xor = cmd & 0x20;
-      if (cmd >= 0xC0u) {
-        decompress_last_byte = DecompNextByte();
-        decompress_tmp1 = 0;
-        *(uint16 *)&decompress_last_byte = dst_pos - *(uint16 *)&decompress_last_byte;
+      uint8 want_xor = cmd & 0x20 ? 0xff : 0;
+      if (cmd >= 0xC0) {
+        src_pos = dst_pos - DecompNextByte();
       } else {
-        decompress_last_byte = DecompNextByte();
-        decompress_tmp1 = DecompNextByte();
+        src_pos = DecompNextByte();
+        src_pos += DecompNextByte() * 256;
       }
       do {
-        uint16 v27 = *(uint16 *)&decompress_last_byte;
-        b = IndirReadByte(decompress_dst, *(uint16 *)&decompress_last_byte);
-        *(uint16 *)&decompress_last_byte = v27 + 1;
-        if (decompress_want_xor)
-          b = ~b;
-        IndirWriteByte(decompress_dst, dst_pos++, b);
+        b = decompress_dst[src_pos++] ^ want_xor;
+        decompress_dst[dst_pos++] = b;
       } while (--len);
     } else {
       switch (cmd) {
       case 0x20:
         b = DecompNextByte();
         do {
-          IndirWriteByte(decompress_dst, dst_pos++, b);
+          decompress_dst[dst_pos++] = b;
         } while (--len);
         break;
-      case 0x40:
-        decompress_last_byte = DecompNextByte();
-        decompress_tmp1 = DecompNextByte();
+      case 0x40: {
+        b = DecompNextByte();
+        uint8 b2 = DecompNextByte();
         do {
-          IndirWriteByte(decompress_dst, dst_pos++, decompress_last_byte);
+          decompress_dst[dst_pos++] = b;
           if (!--len)
             break;
-          IndirWriteByte(decompress_dst, dst_pos++, decompress_tmp1);
+          decompress_dst[dst_pos++] = b2;
         } while (--len);
         break;
+      }
       case 0x60:
         b = DecompNextByte();
         do {
-          IndirWriteByte(decompress_dst, dst_pos++, b++);
+          decompress_dst[dst_pos++] = b++;
         } while (--len);
         break;
       default:
         do {
           b = DecompNextByte();
-          IndirWriteByte(decompress_dst, dst_pos++, b);
+          decompress_dst[dst_pos++] = b;
         } while (--len);
         break;
       }
@@ -2626,152 +2620,71 @@ void DecompressToMem(void) {  // 0x80B119
   }
 }
 
-void DecompressToVRAM(void) {  // 0x80B271
-  uint16 v0; // r8
-  VoidP addr;
-  int16 v5;
-  int16 v7;
-  int16 v10;
-  int16 v13;
-  int16 v14;
-  int16 v16;
-  int16 v21;
-  int16 v28;
-  int16 v29;
-  int16 v30;
-  int16 v31;
-  int16 v32;
-  int16 v33;
-  int16 v34;
-  uint8 v35;
+static uint8 ReadPpuByte(uint16 addr) {
+  WriteRegWord(VMADDL, addr >> 1);
+  ReadRegWord(RDVRAML);  // latch
+  uint16 data = ReadRegWord(RDVRAML);
+  return (addr & 1) ? GET_HIBYTE(data) : data;
+}
 
-  uint8 bank = decompress_src.bank;
-  HIBYTE(decompress_want_xor) = 0;
-  addr = decompress_dst.addr;
+void DecompressToVRAM(uint16 dst_addr) {  // 0x80B271
+  int src_pos, dst_pos = dst_addr;
   while (1) {
-    uint8 v2 = DecompNextByte();
-    decompress_last_byte = v2;
-    if (v2 == 0xFF)
+    int len;
+    uint8 b = DecompNextByte(), cmd;
+    if (b == 0xFF)
       break;
-    uint8 v4 = v2 & 0xE0;
-    if (v4 == 0xE0) {
-      v35 = (8 * decompress_last_byte) & 0xE0;
-      HIBYTE(v5) = decompress_last_byte & 3;
-      LOBYTE(v5) = DecompNextByte();
+    if ((b & 0xE0) == 0xE0) {
+      cmd = (8 * b) & 0xE0;
+      len = ((b & 3) << 8 | DecompNextByte()) + 1;
     } else {
-      v35 = v4;
-      v5 = decompress_last_byte & 0x1F;
+      cmd = b & 0xE0;
+      len = (b & 0x1F) + 1;
     }
-    v7 = v5 + 1;
-    LOBYTE(v0) = v35;
-    if ((uint8)sign8(v0)) {
-      if (v35 >= 0xC0u) {
-        LOBYTE(decompress_want_xor) = v35 & 0x20;
-        v34 = v5 + 1;
-        uint8 v25 = DecompNextByte();
-        v21 = v34;
-        decompress_last_byte = v25;
-        decompress_tmp1 = 0;
-        *(uint16 *)&decompress_last_byte = addr - *(uint16 *)&decompress_last_byte;
+    if (cmd & 0x80) {
+      uint8 want_xor = cmd & 0x20 ? 0xff : 0;
+      if (cmd >= 0xC0) {
+        src_pos = dst_pos - DecompNextByte();
       } else {
-        LOBYTE(decompress_want_xor) = v35 & 0x20;
-        v32 = v5 + 1;
-        uint8 v17 = DecompNextByte();
-        decompress_last_byte = v17;
-        uint8 v19 = DecompNextByte();
-        v21 = v32;
-        decompress_tmp1 = v19;
-        *(uint16 *)&decompress_last_byte += decompress_dst.addr;
+        src_pos = DecompNextByte();
+        src_pos += DecompNextByte() * 256;
+        src_pos += dst_addr;
       }
       do {
-        v33 = v21;
-        WriteRegWord(VMADDL, *(uint16 *)&decompress_last_byte >> 1);
-        ReadRegWord(RDVRAML);
-        uint16 RegWord = ReadRegWord(RDVRAML);
-        uint8 v23 = RegWord;
-        if (decompress_last_byte & 1)
-          v23 = HIBYTE(RegWord);
-        ++ *(uint16 *)&decompress_last_byte;
-        if (decompress_want_xor)
-          v23 = ~v23;
-        WriteRegWord(VMADDL, addr >> 1);
-        HIBYTE(v0) = (uint16)(addr >> 1) >> 8;
-        if (addr & 1)
-          WriteReg(VMDATAH, v23);
-        else
-          WriteReg(VMDATAL, v23);
-        ++addr;
-        --v21;
-      } while (v33 != 1);
+        b = ReadPpuByte(src_pos++) ^ want_xor;
+        WriteRegWord(VMADDL, dst_pos >> 1);
+        WriteReg(VMDATAL + (dst_pos++ & 1), b);
+      } while (--len);
     } else {
-      switch (v35) {
-      case ' ':
-        v29 = v5 + 1;
-        LOBYTE(v5) = DecompNextByte();
-        v10 = v29;
+      switch (cmd) {
+      case 0x20:
+        b = DecompNextByte();
         do {
-          HIBYTE(v0) = HIBYTE(v5);
-          if (addr & 1)
-            WriteReg(VMDATAH, v5);
-          else
-            WriteReg(VMDATAL, v5);
-          ++addr;
-          --v10;
-        } while (v10);
+          WriteReg(VMDATAL + (dst_pos++ & 1), b);
+        } while (--len);
         break;
-      case '@':
-        v30 = v5 + 1;
-        LOBYTE(v5) = DecompNextByte();
-        decompress_last_byte = v5;
-        LOBYTE(v5) = DecompNextByte();
-        v13 = v30;
-        decompress_tmp1 = v5;
+      case 0x40: {
+        b = DecompNextByte();
+        uint8 b2 = DecompNextByte();
         do {
-          HIBYTE(v0) = HIBYTE(v5);
-          if (addr & 1)
-            WriteReg(VMDATAH, decompress_last_byte);
-          else
-            WriteReg(VMDATAL, decompress_last_byte);
-          ++addr;
-          v14 = v13 - 1;
-          if (!v14)
+          WriteReg(VMDATAL + (dst_pos++ & 1), b);
+          if (!--len)
             break;
-          HIBYTE(v0) = HIBYTE(v5);
-          if (addr & 1)
-            WriteReg(VMDATAH, decompress_tmp1);
-          else
-            WriteReg(VMDATAL, decompress_tmp1);
-          ++addr;
-          v13 = v14 - 1;
-        } while (v13);
+          WriteReg(VMDATAL + (dst_pos++ & 1), b2);
+        } while (--len);
         break;
-      case '`':
-        v31 = v5 + 1;
-        LOBYTE(v5) = DecompNextByte();
-        v16 = v31;
+      }
+      case 0x60:
+        b = DecompNextByte();
         do {
-          HIBYTE(v0) = HIBYTE(v5);
-          if (addr & 1)
-            WriteReg(VMDATAH, v5);
-          else
-            WriteReg(VMDATAL, v5);
-          ++addr;
-          LOBYTE(v5) = v5 + 1;
-          --v16;
-        } while (v16);
+          WriteReg(VMDATAL + (dst_pos++ & 1), b++);
+        } while (--len);
         break;
       default:
         do {
-          v28 = v7;
-          LOBYTE(v5) = DecompNextByte();
-          HIBYTE(v0) = HIBYTE(v5);
-          if (addr & 1)
-            WriteReg(VMDATAH, v5);
-          else
-            WriteReg(VMDATAL, v5);
-          ++addr;
-          v7 = v28 - 1;
-        } while (v28 != 1);
+          b = DecompNextByte();
+          WriteReg(VMDATAL + (dst_pos++ & 1), b++);
+        } while (--len);
         break;
       }
     }

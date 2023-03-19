@@ -41,9 +41,8 @@ void ClearTimerRam(void);
 void ConfigureMode7RotationMatrix(void);
 void CopySuperMetroidString(void);
 void DebugScrollPosSaveLoad(void);
-void DecompressToMem(void);
-void DecompressToMem_IpArg(const void* p);
-void DecompressToVRAM(void);
+void DecompressToMem(uint8 *decompress_dst);
+void DecompressToVRAM(uint16 dst_addr);
 void DisableIrqInterrupts(void);
 void DisableNMI(void);
 void DisplayViewablePartOfRoom(void);
@@ -5979,7 +5978,6 @@ void SpriteObject_Instr_Goto(void);
 void SpriteObject_Instr_RepeatLast(void);
 void SpriteObject_Instr_Terminate(void);
 void VerifySRAM(void);
-void DecompressToMem_IpArg(const void* p);
 
 #define fnDrawTimer 0x809F6C
 #define fnnullsub_1 0x818AB7

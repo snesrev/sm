@@ -246,11 +246,6 @@ typedef struct LoadBg_E {
   uint16 field_2;
 }LoadBg_E;
 
-/* 24 */
-typedef struct LoadBg_28 {
-  uint16 field_0;
-  uint16 field_2;
-}LoadBg_28;
 
 /* 25 */
 typedef struct LoadBg_4 {
@@ -1058,11 +1053,6 @@ typedef struct StartDmaCopy {
   LongPtr a1;
   VoidP das;
 } StartDmaCopy;
-
-/* 102 */
-typedef struct DecompressToParams {
-  LongPtr field_0;
-} DecompressToParams;
 
 /* 103 */
 typedef struct  OpcodeData3 {
@@ -2746,7 +2736,6 @@ struct RoomDefStateSelect_E6E5_Finish; static inline RoomDefStateSelect_E6E5_Fin
 struct SamusSpeedTableEntry; static inline SamusSpeedTableEntry *get_SamusSpeedTableEntry(uint16 a) { return (SamusSpeedTableEntry *)RomPtr(0x900000 | a); }
 struct SpriteDrawEnt; static inline SpriteDrawEnt *get_SpriteDrawEnt(uint16 a) { return (SpriteDrawEnt *)RomPtr(0xA60000 | a); }
 struct SamusTileAnimationDefs; static inline SamusTileAnimationDefs *get_SamusTileAnimationDefs(uint16 a) { return (SamusTileAnimationDefs *)RomPtr(0x920000 | a); }
-struct LoadBg_28; static inline LoadBg_28 *get_LoadBg_28(uint16 a) { return (LoadBg_28 *)RomPtr(0x8F0000 | a); }
 struct PalFxDef; static inline PalFxDef *get_PalFxDef(uint16 a) { return (PalFxDef *)RomPtr(0x8D0000 | a); }
 struct Mode7ObjectDef; static inline Mode7ObjectDef *get_Mode7ObjectDef(uint16 a) { return (Mode7ObjectDef *)RomPtr(0x8B0000 | a); }
 static inline Ram7800_Default *gRam7800_Default(uint16 a) { return (Ram7800_Default *)&g_ram[0x7800 + a]; }

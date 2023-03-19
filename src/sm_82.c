@@ -4223,9 +4223,6 @@ CoroutineRet DoorTransitionFunction_SetupScrolling(void) {  // 0x82E38E
 }
 
 CoroutineRet DoorTransitionFunction_PlaceSamusLoadTiles(void) {  // 0x82E3C0
-  static const LongPtr unk_82E421 = LONGPTR(0x7e7000);
-  static const LongPtr unk_82E432 = LONGPTR(0x7e2000);
-  static const LongPtr unk_82E443 = LONGPTR(0x7ec200);
   static const CopyToVramAtNextInterruptArgs unk_82E449 = { LONGPTR(0x7e2000), 0x0000, 0x2000 };
   static const CopyToVramAtNextInterruptArgs unk_82E453 = { LONGPTR(0x7e4000), 0x1000, 0x2000 };
   static const CopyToVramAtNextInterruptArgs unk_82E45D = { LONGPTR(0x7e6000), 0x2000, 0x1000 };
@@ -4248,12 +4245,12 @@ CoroutineRet DoorTransitionFunction_PlaceSamusLoadTiles(void) {  // 0x82E3C0
   WaitUntilEndOfVblankAndEnableIrq();
   if ((cre_bitset & 2) != 0 && door_def_ptr != addr_kDoorDef_947a) {
     mov24(&decompress_src, 0xb98000);
-    DecompressToMem_IpArg(&unk_82E421);
+    DecompressToMem(g_ram + 0x7000);
   }
   copy24(&decompress_src, &tileset_tiles_pointer);
-  DecompressToMem_IpArg(&unk_82E432);
+  DecompressToMem(g_ram + 0x2000);
   copy24(&decompress_src, &tileset_compr_palette_ptr);
-  DecompressToMem_IpArg(&unk_82E443);
+  DecompressToMem(g_ram + 0xc200);
   CopyToVramAtNextInterrupt(&unk_82E449);
   CopyToVramAtNextInterrupt(&unk_82E453);
   CopyToVramAtNextInterrupt(&unk_82E45D);
@@ -4384,13 +4381,9 @@ uint16 UpdateBackgroundCommand_2_TransferToVram(uint16 j) {  // 0x82E5EB
 }
 
 uint16 UpdateBackgroundCommand_4_Decompression(uint16 j) {  // 0x82E616
-  LongPtr *v1;
-
-  v1 = (LongPtr *)RomPtr_8F(j);
-  copy24(&decompress_src, v1);
-  *(VoidP *)((char *)&decompress_dst.addr + 1) = 32256;
-  decompress_dst.addr = v1[1].addr;
-  DecompressToMem();
+  const uint8 *v1 = RomPtr_8F(j);
+  copy24(&decompress_src, (LongPtr *)v1);
+  DecompressToMem(g_ram + GET_WORD(v1 + 3));
   return j + 5;
 }
 
@@ -4488,17 +4481,13 @@ void LoadCRETilesTilesetTilesAndPalette(void) {  // 0x82E783
   elevator_flags = 0;
   WriteRegWord(VMAIN, 0x80);
   mov24(&decompress_src, 0xb98000);
-  decompress_dst.addr = addr_unk_605000;
-  WriteRegWord(VMADDL, 0x2800);
-  DecompressToVRAM();
+  WriteRegWord(VMADDL, addr_unk_605000 >> 1);
+  DecompressToVRAM(addr_unk_605000);
   copy24(&decompress_src, &tileset_tiles_pointer);
   WriteRegWord(VMADDL, 0);
-  decompress_dst.addr = 0;
-  DecompressToVRAM();
-  *(VoidP *)((char *)&decompress_src.addr + 1) = *(VoidP *)((char *)&tileset_compr_palette_ptr.addr + 1);
-  decompress_src.addr = tileset_compr_palette_ptr.addr;
-  static const LongPtr unk_82E7CD = LONGPTR(0x7ec200);
-  DecompressToMem_IpArg(&unk_82E7CD);
+  DecompressToVRAM(0);
+  decompress_src = tileset_compr_palette_ptr;
+  DecompressToMem(&g_ram[0xc200]);
 }
 
 void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
@@ -4511,19 +4500,13 @@ void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
   uint16 m;
   char v10;
   char v11;
-
   uint16 n;
   char v14;
-
-  static const LongPtr unk_82E849 = LONGPTR(0x7ea000);
-  static const LongPtr unk_82E85A = LONGPTR(0x7ea800);
-  static const LongPtr unk_82E86D = LONGPTR(0x7ea000);
 
   for (int i = 25598; i >= 0; i -= 2)
     level_data[i >> 1] = 0x8000;
   copy24(&decompress_src, &room_compr_level_data_ptr);
-  static const DecompressToParams unk_82E7F8 = { LONGPTR(0x7f0000) };
-  DecompressToMem_IpArg(&unk_82E7F8);
+  DecompressToMem(g_ram + 0x10000);
   uint16 v1 = ram7F_start;
   for (j = ram7F_start + ram7F_start + (ram7F_start >> 1); ; custom_background[v1 >> 1] = level_data[j >> 1]) {
     j -= 2;
@@ -4540,12 +4523,12 @@ void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
   }
   if (area_index == 6) {
     copy24(&decompress_src, &tileset_tile_table_pointer);
-    DecompressToMem_IpArg(&unk_82E86D);
+    DecompressToMem(g_ram + 0xa000);
   } else {
     mov24(&decompress_src, 0xb9a09d);
-    DecompressToMem_IpArg(&unk_82E849);
+    DecompressToMem(g_ram + 0xa000);
     copy24(&decompress_src, &tileset_tile_table_pointer);
-    DecompressToMem_IpArg(&unk_82E85A);
+    DecompressToMem(g_ram + 0xa800);
   }
   RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
   rdf_scroll_ptr = RoomDefRoomstate->rdf_scroll_ptr;
@@ -4667,7 +4650,7 @@ uint16 LoadLibraryBackgroundFunc_E_DoorDependentTransferToVram(uint16 j) {  // 0
 }
 
 uint16 LoadLibraryBackgroundFunc_2_TransferToVram(uint16 j) {  // 0x82E9F9
-  uint16 *LoadBg_28 = (uint16 *)get_LoadBg_28(j);
+  uint16 *LoadBg_28 = (uint16 *)RomPtr_8F(j);
   WriteRegWord(VMADDL, *(uint16 *)((char *)LoadBg_28 + 3));
   WriteRegWord(DMAP1, 0x1801);
   WriteRegWord(A1T1L, *LoadBg_28);
@@ -4679,13 +4662,9 @@ uint16 LoadLibraryBackgroundFunc_2_TransferToVram(uint16 j) {  // 0x82E9F9
 }
 
 uint16 LoadLibraryBackgroundFunc_4_Decompress(uint16 j) {  // 0x82EA2D
-  LongPtr *LoadBg_28;
-
-  LoadBg_28 = (LongPtr *)get_LoadBg_28(j);
-  copy24(&decompress_src, LoadBg_28);
-  *(VoidP *)((char *)&decompress_dst.addr + 1) = 32256;
-  decompress_dst.addr = LoadBg_28[1].addr;
-  DecompressToMem();
+  const uint8 *p = RomPtr_8F(j);
+  copy24(&decompress_src, (LongPtr *)p);
+  DecompressToMem(g_ram + GET_WORD(p + 3));
   return j + 5;
 }
 
@@ -4721,10 +4700,6 @@ void LoadLevelScrollAndCre(void) {  // 0x82EA73
   char v11;
   char v12;
 
-  static const LongPtr unk_82EAA0 = LONGPTR(0x7f0000);
-  static const LongPtr unk_82EAF9 = LONGPTR(0x7ea000);
-  static const LongPtr unk_82EB0A = LONGPTR(0x7ea800);
-  static const LongPtr unk_82EB1D = LONGPTR(0x7ea000);
 
   for (int i = 6398; i >= 0; i -= 2) {
     level_data[i >> 1] = 0x8000;
@@ -4733,7 +4708,7 @@ void LoadLevelScrollAndCre(void) {  // 0x82EA73
     level_data[(i >> 1) + 3200 * 3] = 0x8000;
   }
   copy24(&decompress_src, &room_compr_level_data_ptr);
-  DecompressToMem_IpArg(&unk_82EAA0);
+  DecompressToMem(g_ram + 0x10000);
   uint16 v1 = ram7F_start;
   for (j = ram7F_start + ram7F_start + (ram7F_start >> 1); ; custom_background[v1 >> 1] = level_data[j >> 1]) {
     j -= 2;
@@ -4752,14 +4727,14 @@ void LoadLevelScrollAndCre(void) {  // 0x82EA73
   }
   if (area_index == 6) {
     copy24(&decompress_src, &tileset_tile_table_pointer);
-    DecompressToMem_IpArg(&unk_82EB1D);
+    DecompressToMem(g_ram + 0xa000);
   } else {
     if ((cre_bitset & 2) != 0) {
       mov24(&decompress_src, 0xb9a09d);
-      DecompressToMem_IpArg(&unk_82EAF9);
+      DecompressToMem(g_ram + 0xa000);
     }
     copy24(&decompress_src, &tileset_tile_table_pointer);
-    DecompressToMem_IpArg(&unk_82EB0A);
+    DecompressToMem(g_ram + 0xa800);
   }
   RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
   rdf_scroll_ptr = RoomDefRoomstate->rdf_scroll_ptr;
@@ -4842,13 +4817,6 @@ void GameOptionsMenuFunc_0(void) {  // 0x82EBDB
 
 void GameOptionsMenu_1_LoadingOptionsScreen(void) {  // 0x82EC11
   uint16 j;
-
-  static const DecompressToParams unk_82EC74 = { LONGPTR(0x7fc000) };
-  static const DecompressToParams unk_82EC85 = { LONGPTR(0x7fc800) };
-  static const DecompressToParams unk_82EC96 = { LONGPTR(0x7fd000) };
-  static const DecompressToParams unk_82ECA7 = { LONGPTR(0x7fd800) };
-  static const DecompressToParams unk_82ECB8 = { LONGPTR(0x7fe000) };
-
   reg_BG12NBA = 0;
   reg_TM = 19;
   reg_TS = 0;
@@ -4872,15 +4840,15 @@ void GameOptionsMenu_1_LoadingOptionsScreen(void) {  // 0x82EC11
   for (int i = 510; i >= 0; i -= 2)
     palette_buffer[i >> 1] = kMenuPalettes[i >> 1];
   mov24(&decompress_src, 0x978DF4);
-  DecompressToMem_IpArg(&unk_82EC74);
+  DecompressToMem(g_ram + 0x1c000);
   mov24(&decompress_src, 0x978FCD);
-  DecompressToMem_IpArg(&unk_82EC85);
+  DecompressToMem(g_ram + 0x1c800);
   mov24(&decompress_src, 0x9791C4);
-  DecompressToMem_IpArg(&unk_82EC96);
+  DecompressToMem(g_ram + 0x1d000);
   mov24(&decompress_src, 0x97938D);
-  DecompressToMem_IpArg(&unk_82ECA7);
+  DecompressToMem(g_ram + 0x1d800);
   mov24(&decompress_src, 0x97953A);
-  DecompressToMem_IpArg(&unk_82ECB8);
+  DecompressToMem(g_ram + 0x1e000);
   for (j = 1023; (j & 0x8000u) == 0; --j)
     ram3000.pause_menu_map_tilemap[j] = custom_background[j + 5375];
   menu_option_index = 0;
