@@ -2701,10 +2701,6 @@ enum Consts_B7 {
   addr_kMotherBrain_Misc_TileData = 0xCE00,
 
 };
-enum Consts_B9 {
-  addr_byte_B9FA38 = 0xFA38,
-  addr_byte_B9FE3E = 0xFE3E,
-};
 
 static inline OamEnt *gOamEnt(int v) { return (OamEnt *)&g_ram[0x370 + v]; }
 static inline VramWriteEntry *gVramWriteEntry(int a) { return (VramWriteEntry *)&g_ram[0xd0 + a]; }

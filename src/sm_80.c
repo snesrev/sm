@@ -2548,16 +2548,18 @@ void ConfigureMode7RotationMatrix(void) {  // 0x80B0C2
   }
 }
 
-uint8 DecompNextByte(void) {
-  uint8 v2 = *RomPtrWithBank(decompress_src.bank, decompress_src.addr);
-  if (decompress_src.addr++ == 0xFFFF) {
-    decompress_src.addr = 0x8000;
-    decompress_src.bank++;
-  }
-  return v2;
+static uint32 decompress_src;
+
+static uint8 DecompNextByte() {
+  uint8 b = *RomPtrWithBank(decompress_src >> 16, decompress_src);
+  if ((decompress_src++ & 0xffff) == 0xffff)
+    decompress_src += 0x8000;
+  return b;
 }
 
-void DecompressToMem(uint8 *decompress_dst) {  // 0x80B119
+void DecompressToMem(uint32 src, uint8 *decompress_dst) {  // 0x80B119
+  decompress_src = src;
+
   int src_pos, dst_pos = 0;
   while (1) {
     int len;
@@ -2627,7 +2629,8 @@ static uint8 ReadPpuByte(uint16 addr) {
   return (addr & 1) ? GET_HIBYTE(data) : data;
 }
 
-void DecompressToVRAM(uint16 dst_addr) {  // 0x80B271
+void DecompressToVRAM(uint32 src, uint16 dst_addr) {  // 0x80B271
+  decompress_src = src;
   int src_pos, dst_pos = dst_addr;
   while (1) {
     int len;

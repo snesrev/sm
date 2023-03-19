@@ -4244,13 +4244,10 @@ CoroutineRet DoorTransitionFunction_PlaceSamusLoadTiles(void) {  // 0x82E3C0
   irqhandler_next_handler = v0;
   WaitUntilEndOfVblankAndEnableIrq();
   if ((cre_bitset & 2) != 0 && door_def_ptr != addr_kDoorDef_947a) {
-    mov24(&decompress_src, 0xb98000);
-    DecompressToMem(g_ram + 0x7000);
+    DecompressToMem(0xb98000, g_ram + 0x7000);
   }
-  copy24(&decompress_src, &tileset_tiles_pointer);
-  DecompressToMem(g_ram + 0x2000);
-  copy24(&decompress_src, &tileset_compr_palette_ptr);
-  DecompressToMem(g_ram + 0xc200);
+  DecompressToMem(Load24(&tileset_tiles_pointer), g_ram + 0x2000);
+  DecompressToMem(Load24(&tileset_compr_palette_ptr), g_ram + 0xc200);
   CopyToVramAtNextInterrupt(&unk_82E449);
   CopyToVramAtNextInterrupt(&unk_82E453);
   CopyToVramAtNextInterrupt(&unk_82E45D);
@@ -4382,8 +4379,7 @@ uint16 UpdateBackgroundCommand_2_TransferToVram(uint16 j) {  // 0x82E5EB
 
 uint16 UpdateBackgroundCommand_4_Decompression(uint16 j) {  // 0x82E616
   const uint8 *v1 = RomPtr_8F(j);
-  copy24(&decompress_src, (LongPtr *)v1);
-  DecompressToMem(g_ram + GET_WORD(v1 + 3));
+  DecompressToMem(Load24((LongPtr *)v1), g_ram + GET_WORD(v1 + 3));
   return j + 5;
 }
 
@@ -4480,14 +4476,11 @@ void LoadDestinationRoomThings(void) {  // 0x82E76B
 void LoadCRETilesTilesetTilesAndPalette(void) {  // 0x82E783
   elevator_flags = 0;
   WriteRegWord(VMAIN, 0x80);
-  mov24(&decompress_src, 0xb98000);
   WriteRegWord(VMADDL, addr_unk_605000 >> 1);
-  DecompressToVRAM(addr_unk_605000);
-  copy24(&decompress_src, &tileset_tiles_pointer);
+  DecompressToVRAM(0xb98000, addr_unk_605000);
   WriteRegWord(VMADDL, 0);
-  DecompressToVRAM(0);
-  decompress_src = tileset_compr_palette_ptr;
-  DecompressToMem(&g_ram[0xc200]);
+  DecompressToVRAM(Load24(&tileset_tiles_pointer), 0);
+  DecompressToMem(Load24(&tileset_compr_palette_ptr),  &g_ram[0xc200]);
 }
 
 void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
@@ -4505,8 +4498,7 @@ void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
 
   for (int i = 25598; i >= 0; i -= 2)
     level_data[i >> 1] = 0x8000;
-  copy24(&decompress_src, &room_compr_level_data_ptr);
-  DecompressToMem(g_ram + 0x10000);
+  DecompressToMem(Load24(&room_compr_level_data_ptr), g_ram + 0x10000);
   uint16 v1 = ram7F_start;
   for (j = ram7F_start + ram7F_start + (ram7F_start >> 1); ; custom_background[v1 >> 1] = level_data[j >> 1]) {
     j -= 2;
@@ -4522,13 +4514,10 @@ void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
       break;
   }
   if (area_index == 6) {
-    copy24(&decompress_src, &tileset_tile_table_pointer);
-    DecompressToMem(g_ram + 0xa000);
+    DecompressToMem(Load24(&tileset_tile_table_pointer), g_ram + 0xa000);
   } else {
-    mov24(&decompress_src, 0xb9a09d);
-    DecompressToMem(g_ram + 0xa000);
-    copy24(&decompress_src, &tileset_tile_table_pointer);
-    DecompressToMem(g_ram + 0xa800);
+    DecompressToMem(0xb9a09d, g_ram + 0xa000);
+    DecompressToMem(Load24(&tileset_tile_table_pointer), g_ram + 0xa800);
   }
   RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
   rdf_scroll_ptr = RoomDefRoomstate->rdf_scroll_ptr;
@@ -4663,8 +4652,7 @@ uint16 LoadLibraryBackgroundFunc_2_TransferToVram(uint16 j) {  // 0x82E9F9
 
 uint16 LoadLibraryBackgroundFunc_4_Decompress(uint16 j) {  // 0x82EA2D
   const uint8 *p = RomPtr_8F(j);
-  copy24(&decompress_src, (LongPtr *)p);
-  DecompressToMem(g_ram + GET_WORD(p + 3));
+  DecompressToMem(Load24((LongPtr *)p), g_ram + GET_WORD(p + 3));
   return j + 5;
 }
 
@@ -4707,8 +4695,7 @@ void LoadLevelScrollAndCre(void) {  // 0x82EA73
     level_data[(i >> 1) + 3200 * 2] = 0x8000;
     level_data[(i >> 1) + 3200 * 3] = 0x8000;
   }
-  copy24(&decompress_src, &room_compr_level_data_ptr);
-  DecompressToMem(g_ram + 0x10000);
+  DecompressToMem(Load24(&room_compr_level_data_ptr), g_ram + 0x10000);
   uint16 v1 = ram7F_start;
   for (j = ram7F_start + ram7F_start + (ram7F_start >> 1); ; custom_background[v1 >> 1] = level_data[j >> 1]) {
     j -= 2;
@@ -4726,15 +4713,12 @@ void LoadLevelScrollAndCre(void) {  // 0x82EA73
       break;
   }
   if (area_index == 6) {
-    copy24(&decompress_src, &tileset_tile_table_pointer);
-    DecompressToMem(g_ram + 0xa000);
+    DecompressToMem(Load24(&tileset_tile_table_pointer), g_ram + 0xa000);
   } else {
     if ((cre_bitset & 2) != 0) {
-      mov24(&decompress_src, 0xb9a09d);
-      DecompressToMem(g_ram + 0xa000);
+      DecompressToMem(0xb9a09d, g_ram + 0xa000);
     }
-    copy24(&decompress_src, &tileset_tile_table_pointer);
-    DecompressToMem(g_ram + 0xa800);
+    DecompressToMem(Load24(&tileset_tile_table_pointer), g_ram + 0xa800);
   }
   RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
   rdf_scroll_ptr = RoomDefRoomstate->rdf_scroll_ptr;
@@ -4839,16 +4823,11 @@ void GameOptionsMenu_1_LoadingOptionsScreen(void) {  // 0x82EC11
   debug_invincibility = 0;
   for (int i = 510; i >= 0; i -= 2)
     palette_buffer[i >> 1] = kMenuPalettes[i >> 1];
-  mov24(&decompress_src, 0x978DF4);
-  DecompressToMem(g_ram + 0x1c000);
-  mov24(&decompress_src, 0x978FCD);
-  DecompressToMem(g_ram + 0x1c800);
-  mov24(&decompress_src, 0x9791C4);
-  DecompressToMem(g_ram + 0x1d000);
-  mov24(&decompress_src, 0x97938D);
-  DecompressToMem(g_ram + 0x1d800);
-  mov24(&decompress_src, 0x97953A);
-  DecompressToMem(g_ram + 0x1e000);
+  DecompressToMem(0x978DF4, g_ram + 0x1c000);
+  DecompressToMem(0x978FCD, g_ram + 0x1c800);
+  DecompressToMem(0x9791C4, g_ram + 0x1d000);
+  DecompressToMem(0x97938D, g_ram + 0x1d800);
+  DecompressToMem(0x97953A, g_ram + 0x1e000);
   for (j = 1023; (j & 0x8000u) == 0; --j)
     ram3000.pause_menu_map_tilemap[j] = custom_background[j + 5375];
   menu_option_index = 0;

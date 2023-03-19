@@ -264,12 +264,8 @@ void Kraid_Init(void) {  // 0xA7A959
 }
 
 void Kraid_SetupGfxWithTilePrioClear(void) {  // 0xA7AAC6
-  decompress_src.addr = addr_byte_B9FA38;
-  decompress_src.bank = 0xb9;
-  DecompressToMem(g_ram + 0x4000);
-  decompress_src.addr = addr_byte_B9FE3E;
-  decompress_src.bank = 0xb9;
-  DecompressToMem(g_ram + 0x2000);
+  DecompressToMem(0xB9FA38, g_ram + 0x4000);
+  DecompressToMem(0xB9FE3E, g_ram + 0x2000);
   Enemy_Kraid *E = Get_Kraid(0);
   E->kraid_hurt_frame = 0;
   E->kraid_hurt_frame_timer = 0;

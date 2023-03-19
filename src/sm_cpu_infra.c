@@ -387,7 +387,6 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
   memcpy(&b->ram[0x44], &a->ram[0x44], 13);  // decompress temp
   memcpy(&b->ram[0x19b3], &a->ram[0x19b3], 1);  // mode7_spawn_param
   memcpy(&b->ram[0x1993], &a->ram[0x1993], 2);  // enemy_projectile_init_param
-  memcpy(&b->ram[0x49], &a->ram[0x49], 1);  // decompress_src.bank
   memcpy(&b->ram[0x1B9D], &a->ram[0x1B9D], 2);  // cinematic_spawn_param
   memcpy(&b->ram[0x1a93], &a->ram[0x1a93], 2);  // cinematic_spawn_param
   memcpy(&b->ram[0xA82], &a->ram[0xA82], 2);  // xray_angle

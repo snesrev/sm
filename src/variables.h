@@ -41,7 +41,7 @@ extern uint8 g_ram[0x20000];
 #define nmicopy1_var_d (*(uint16*)(g_ram+0x3C))
 #define g_word_7E003E (*(uint16*)(g_ram+0x3E))
 #define REMOVED_decompress_dst_tmp (*(LongPtr*)(g_ram+0x44))
-#define decompress_src (*(LongPtr*)(g_ram+0x47))
+#define REMOVED_decompress_src (*(LongPtr*)(g_ram+0x47))
 #define REMOVED_decompress_last_byte (*(uint8*)(g_ram+0x4A))
 #define REMOVED_decompress_tmp1 (*(uint8*)(g_ram+0x4B))
 #define REMOVED_decompress_dst (*(LongPtr*)(g_ram+0x4C))
