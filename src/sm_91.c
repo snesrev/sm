@@ -405,8 +405,8 @@ void ProcessDemoInputObject(void) {  // 0x9183F2
     }
     demo_input_instr_timer = *v1;
     const uint8 *v3 = RomPtr_91(v0);
-    demo_input = *((uint16 *)v3 + 1);
-    demo_input_new = *((uint16 *)v3 + 2);
+    demo_input = GET_WORD(v3 + 2);
+    demo_input_new = GET_WORD(v3 + 4);
     demo_input_instr_ptr = v0 + 6;
   }
 }

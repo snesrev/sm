@@ -736,8 +736,8 @@ uint16 RoomDefStateSelect_Finish(uint16 k) {  // 0x8FE5E6
 
 uint16 RoomDefStateSelect_Door(uint16 k) {  // 0x8FE5EB
   const uint8 *v1 = RomPtr_8F(k);
-  if (*(uint16 *)v1 == door_def_ptr)
-    return RoomDefStateSelect_Finish(*((uint16 *)v1 + 1));
+  if (GET_WORD(v1) == door_def_ptr)
+    return RoomDefStateSelect_Finish(GET_WORD(v1 + 2));
   else
     return k + 4;
 }
@@ -752,7 +752,7 @@ uint16 RoomDefStateSelect_TourianBoss01(uint16 k) {  // 0x8FE5FF
 uint16 RoomDefStateSelect_IsEventSet(uint16 k) {  // 0x8FE612
   const uint8 *v1 = RomPtr_8F(k);
   if (CheckEventHappened(*v1))
-    return RoomDefStateSelect_Finish(*(uint16 *)(v1 + 1));
+    return RoomDefStateSelect_Finish(GET_WORD(v1 + 1));
   else
     return k + 3;
 }
@@ -760,7 +760,7 @@ uint16 RoomDefStateSelect_IsEventSet(uint16 k) {  // 0x8FE612
 uint16 RoomDefStateSelect_IsBossDead(uint16 k) {  // 0x8FE629
   const uint8 *v1 = RomPtr_8F(k);
   if (CheckBossBitForCurArea(*v1) & 1)
-    return RoomDefStateSelect_Finish(*(uint16 *)(v1 + 1));
+    return RoomDefStateSelect_Finish(GET_WORD(v1 + 1));
   else
     return k + 3;
 }

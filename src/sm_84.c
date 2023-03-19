@@ -108,7 +108,7 @@ void LoadXrayBlocks(void) {  // 0x84831A
       if ((bitmask & v2) == 0) {
         CalculatePlmBlockCoords(k);
         const uint8 *v3 = RomPtr_84(kXrayBlockDrawingInstrs[plm_variables[k >> 1] >> 1]);
-        LoadBlockToXrayTilemap(*((uint16 *)v3 + 1) & 0xFFF, plm_x_block, plm_y_block);
+        LoadBlockToXrayTilemap(GET_WORD(v3 + 2) & 0xFFF, plm_x_block, plm_y_block);
         i = k;
       }
     }
@@ -117,12 +117,12 @@ void LoadXrayBlocks(void) {  // 0x84831A
   if (RoomDefRoomstate->xray_special_casing_ptr) {
     for (j = RoomDefRoomstate->xray_special_casing_ptr; ; j += 4) {
       const uint8 *v6 = RomPtr_8F(j);
-      v7 = *(uint16 *)v6;
-      if (!*(uint16 *)v6)
+      v7 = GET_WORD(v6);
+      if (!GET_WORD(v6))
         break;
       R18_ = (uint8)v7;
       R20_ = v6[1];
-      LoadBlockToXrayTilemap(*((uint16 *)v6 + 1), (uint8)v7, R20_);
+      LoadBlockToXrayTilemap(GET_WORD(v6 + 2), (uint8)v7, R20_);
     }
   }
 }

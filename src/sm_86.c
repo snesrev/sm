@@ -696,9 +696,9 @@ uint16 EprojInstr_CalculateDirectionTowardsSamus(uint16 k, uint16 j) {  // 0x868
 
 uint16 EprojInstr_WriteColorsToPalette(uint16 k, uint16 j) {  // 0x8682D5
   const uint8 *v2 = RomPtr_86(j);
-  uint16 v3 = *((uint16 *)v2 + 1);
+  uint16 v3 = GET_WORD(v2 + 2);
   R18_ = v2[4];
-  uint16 v4 = *(uint16 *)v2;
+  uint16 v4 = GET_WORD(v2);
   do {
     palette_buffer[v3 >> 1] = *(uint16 *)RomPtr_86(v4);
     v4 += 2;
@@ -5821,14 +5821,14 @@ void RespawnEnemy(uint16 v0) {  // 0x86F264
   cur_enemy_index = v0;
   const uint8 *v1 = RomPtr_A1(room_enemy_population_ptr + (v0 >> 2));
   EnemyData *v2 = gEnemyData(v0);
-  v2->enemy_ptr = *(uint16 *)v1;
-  v2->x_pos = *((uint16 *)v1 + 1);
-  v2->y_pos = *((uint16 *)v1 + 2);
-  v2->current_instruction = *((uint16 *)v1 + 3);
-  v2->properties = *((uint16 *)v1 + 4);
-  v2->extra_properties = *((uint16 *)v1 + 5);
-  v2->parameter_1 = *((uint16 *)v1 + 6);
-  v2->parameter_2 = *((uint16 *)v1 + 7);
+  v2->enemy_ptr = GET_WORD(v1);
+  v2->x_pos = GET_WORD(v1 + 2);
+  v2->y_pos = GET_WORD(v1 + 4);
+  v2->current_instruction = GET_WORD(v1 + 6);
+  v2->properties = GET_WORD(v1 + 8);
+  v2->extra_properties = GET_WORD(v1 + 10);
+  v2->parameter_1 = GET_WORD(v1 + 12);
+  v2->parameter_2 = GET_WORD(v1 + 14);
   v3 = gEnemySpawnData(v0);
   EnemyData *v4 = gEnemyData(v0);
   v4->palette_index = v3->palette_index;

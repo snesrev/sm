@@ -714,19 +714,19 @@ void Kraid_Shot_Mouth(void) {  // 0xA7AFAA
   if (!sign16(E->kraid_var_A + 0x3AC9))
     return;
   const uint8 *v2 = RomPtr_A7(E->kraid_var_B - 8);
-  if (*((uint16 *)v2 + 3) == 0xFFFF) {
+  if (GET_WORD(v2 + 6) == 0xFFFF) {
     v3 = 0;
     goto LABEL_14;
   }
   uint16 v4;
-  v4 = *((uint16 *)v2 + 3);
+  v4 = GET_WORD(v2 + 6);
   E->kraid_var_E = 1;
   v3 = 0;
   const uint8 *v5;
   v5 = RomPtr_A7(v4);
-  R22_ = E->base.x_pos + *(uint16 *)v5;
-  R20_ = E->base.y_pos + *((uint16 *)v5 + 1);
-  R18_ = E->base.y_pos + *((uint16 *)v5 + 3);
+  R22_ = E->base.x_pos + GET_WORD(v5);
+  R20_ = E->base.y_pos + GET_WORD(v5 + 2);
+  R18_ = E->base.y_pos + GET_WORD(v5 + 6);
   if (projectile_counter) {
     uint16 v6 = 2 * projectile_counter;
     while (1) {
@@ -832,10 +832,10 @@ void Kraid_Shot_Body(void) {  // 0xA7B181
     E->kraid_mouth_flags &= ~1u;
     R48 = 0;
     const uint8 *v2 = RomPtr_A7(E->kraid_var_B - 8);
-    const uint8 *v3 = RomPtr_A7(*((uint16 *)v2 + 2));
-    R22_ = E->base.x_pos + *(uint16 *)v3;
-    R20_ = E->base.y_pos + *((uint16 *)v3 + 1);
-    R18_ = E->base.y_pos + *((uint16 *)v3 + 3);
+    const uint8 *v3 = RomPtr_A7(GET_WORD(v2 + 4));
+    R22_ = E->base.x_pos + GET_WORD(v3);
+    R20_ = E->base.y_pos + GET_WORD(v3 + 2);
+    R18_ = E->base.y_pos + GET_WORD(v3 + 6);
     if (projectile_counter) {
       for (int i = 2 * projectile_counter; i >= 0; i -= 2) {
         int v5 = i >> 1;
@@ -1449,10 +1449,10 @@ void KraidsFingernail_Init(void) {  // 0xA7BD60
     v2 = g_off_A7BE46[(uint8)(random_number & 6) >> 1];
   const uint8 *v3 = RomPtr_A7(v2);
   Enemy_Kraid *E = Get_Kraid(cur_enemy_index);
-  E->kraid_var_B = *(uint16 *)v3;
-  E->kraid_var_C = *((uint16 *)v3 + 1);
-  E->kraid_var_D = *((uint16 *)v3 + 2);
-  E->kraid_var_E = *((uint16 *)v3 + 3);
+  E->kraid_var_B = GET_WORD(v3);
+  E->kraid_var_C = GET_WORD(v3 + 2);
+  E->kraid_var_D = GET_WORD(v3 + 4);
+  E->kraid_var_E = GET_WORD(v3 + 6);
   E->kraid_parameter_1 = 1;
   E->base.properties &= ~(kEnemyProps_Tangible | kEnemyProps_Invisible);
   E->base.instruction_timer = 1;

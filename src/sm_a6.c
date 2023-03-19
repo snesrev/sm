@@ -2925,10 +2925,10 @@ void Ridley_Func_59(void) {  // 0xA6C136
   uint16 v0 = vram_write_queue_tail;
   const uint8 *v1 = RomPtr_A6(addr_byte_A6C15D);
   v2 = gVramWriteEntry(vram_write_queue_tail);
-  v2->size = *(uint16 *)v1;
-  *(VoidP *)((char *)&v2->src.addr + 1) = *(uint16 *)(v1 + 3);
-  v2->src.addr = *((uint16 *)v1 + 1);
-  v2->vram_dst = *(uint16 *)(v1 + 5);
+  v2->size = GET_WORD(v1);
+  *(VoidP *)((char *)&v2->src.addr + 1) = GET_WORD(v1 + 3);
+  v2->src.addr = GET_WORD(v1 + 2);
+  v2->vram_dst = GET_WORD(v1 + 5);
   vram_write_queue_tail = v0 + 7;
 }
 
@@ -2978,12 +2978,12 @@ uint8 ProcessEscapeTimerTileTransfers(void) {  // 0xA6C26E
   uint16 v2 = vram_write_queue_tail;
   const uint8 *v3 = RomPtr_A6(ai_var_E);
   uint8 result = 1;
-  if (*(uint16 *)v3) {
+  if (GET_WORD(v3)) {
     v4 = gVramWriteEntry(vram_write_queue_tail);
-    v4->size = *(uint16 *)v3;
-    *(VoidP *)((char *)&v4->src.addr + 1) = *(uint16 *)(v3 + 3);
-    v4->src.addr = *((uint16 *)v3 + 1);
-    v4->vram_dst = *(uint16 *)(v3 + 5);
+    v4->size = GET_WORD(v3);
+    *(VoidP *)((char *)&v4->src.addr + 1) = GET_WORD(v3 + 3);
+    v4->src.addr = GET_WORD(v3 + 2);
+    v4->vram_dst = GET_WORD(v3 + 5);
     vram_write_queue_tail = v2 + 7;
     v0->ai_var_E = ai_var_E + 7;
     if (*(uint16 *)RomPtr_A6(v0->ai_var_E))
@@ -3067,13 +3067,13 @@ void Ridley_Func_62(void) {  // 0xA6C383
   uint16 v0 = addr_stru_A6C3B8;
   for (i = vram_write_queue_tail; ; i += 7) {
     const uint8 *v2 = RomPtr_A6(v0);
-    if (!*(uint16 *)v2)
+    if (!GET_WORD(v2))
       break;
     v3 = gVramWriteEntry(i);
-    v3->size = *(uint16 *)v2;
-    *(VoidP *)((char *)&v3->src.addr + 1) = *(uint16 *)(v2 + 3);
-    v3->src.addr = *((uint16 *)v2 + 1);
-    v3->vram_dst = *(uint16 *)(v2 + 5);
+    v3->size = GET_WORD(v2);
+    *(VoidP *)((char *)&v3->src.addr + 1) = GET_WORD(v2 + 3);
+    v3->src.addr = GET_WORD(v2 + 2);
+    v3->vram_dst = GET_WORD(v2 + 5);
     v0 += 7;
   }
   vram_write_queue_tail = i;
@@ -3931,7 +3931,7 @@ uint8 Ridley_Func_97(void) {  // 0xA6D431
 void Ridley_Func_98(void) {  // 0xA6D453
   uint16 enemy_ptr = Get_Ridley(cur_enemy_index)->base.enemy_ptr;
   const uint8 *v1 = RomPtr_A0(enemy_ptr);
-  uint16 v2 = SuitDamageDivision(*((uint16 *)v1 + 3));
+  uint16 v2 = SuitDamageDivision(GET_WORD(v1 + 6));
   Samus_DealDamage(v2);
 }
 
@@ -4442,8 +4442,8 @@ void Ridley_Func_119(uint8 carry) {  // 0xA6DA8B
   *(VoidP *)((char *)&v3->src.addr + 1) = -20480;
   *(VoidP *)((char *)&v3[1].src.addr + 1) = -20480;
   const uint8 *v4 = RomPtr_A6(v1);
-  v3->src.addr = *(uint16 *)v4;
-  v3[1].src.addr = *((uint16 *)v4 + 1);
+  v3->src.addr = GET_WORD(v4);
+  v3[1].src.addr = GET_WORD(v4 + 2);
   v3->vram_dst = 31424;
   v3[1].vram_dst = 31680;
   v3->size = 128;
@@ -4573,7 +4573,7 @@ void sub_A6DC13(uint16 j) {  // 0xA6DC13
     v9 = R20_ + v7 - layer1_y_pos;
     if (v9 >= 0 && sign16(v9 - 224)) {
       R26_ = v9;
-      v10 = R18_ + *(uint16 *)v4 - layer1_x_pos;
+      v10 = R18_ + GET_WORD(v4) - layer1_x_pos;
       v11 = gOamEnt(v3);
       *(uint16 *)&v11->xcoord = v10;
       if ((v10 & 0x100) != 0) {

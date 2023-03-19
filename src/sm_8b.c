@@ -575,7 +575,7 @@ void ProcessCinematicBgObject_DrawChar(uint16 k, uint16 j) {  // 0x8B884D
     v3 = 8 * v2[9];
   }
   cinematicbg_arr8[15] = v3 - 8;
-  if (*((uint16 *)v2 + 2) != 0xD67D && cinematicbg_var1)
+  if (GET_WORD(v2 + 4) != 0xD67D && cinematicbg_var1)
     QueueSfx3_Max6(0xDu);
   ProcessCinematicBgObject_DrawToTextTilemap(0x1E, j);
 }
@@ -1309,14 +1309,14 @@ void CallCinematicSpriteObjectSetup(uint32 ea, uint16 j) {
 uint8 SpawnCimenaticSpriteObjectInner(uint16 k, uint16 j) {  // 0x8B93AC
   const uint8 *v2 = RomPtr_8B(k);
   int v3 = j >> 1;
-  cinematicspr_preinstr_func[v3] = *((uint16 *)v2 + 1);
-  cinematicspr_instr_ptr[v3] = *((uint16 *)v2 + 2);
+  cinematicspr_preinstr_func[v3] = GET_WORD(v2 + 2);
+  cinematicspr_instr_ptr[v3] = GET_WORD(v2 + 4);
   cinematicspr_instr_timer[v3] = 1;
   cinematicspr_whattodraw[v3] = 0;
   cinematicspr_goto_timer[v3] = 0;
   cinematicspr_arr6[v3] = 0;
   cinematicspr_arr7[v3] = 0;
-  CallCinematicSpriteObjectSetup(*(uint16 *)v2 | 0x8B0000, j);
+  CallCinematicSpriteObjectSetup(GET_WORD(v2) | 0x8B0000, j);
   return 0;
 }
 
@@ -1643,7 +1643,7 @@ void ProcessMode7ObjectInstructions(uint16 k) {  // 0x8B9537
     }
     mode7_obj_instr_timer[v1 >> 1] = v6;
     const uint8 *v7 = RomPtr_8B(v4);
-    QueueMode7Transfers(0x8b, *((uint16 *)v7 + 1));
+    QueueMode7Transfers(0x8b, GET_WORD(v7 + 2));
     mode7_obj_instr_ptr[v1 >> 1] = v4 + 4;
   }
 }
@@ -1726,12 +1726,12 @@ uint8 SpawnCinematicBgObject(uint16 j, uint16 a) {  // 0x8B95F0
   }
   const uint8 *v5 = RomPtr_8B(j);
   int v6 = v3 >> 1;
-  cinematicbg_preinstr[v6] = *((uint16 *)v5 + 1);
-  cinematicbg_instr_ptr[v6] = *((uint16 *)v5 + 2);
+  cinematicbg_preinstr[v6] = GET_WORD(v5 + 2);
+  cinematicbg_instr_ptr[v6] = GET_WORD(v5 + 4);
   cinematicbg_instr_timer[v6] = 1;
   cinematicbg_arr1[v6] = 0;
   cinematicbg_arr6[v6] = 0;
-  CallCinematicBgObjectSetup(*(uint16 *)v5 | 0x8B0000, v3);
+  CallCinematicBgObjectSetup(GET_WORD(v5) | 0x8B0000, v3);
   return 0;
 }
 
@@ -1804,8 +1804,8 @@ void ProcessCinematicBgObjectsInstrs(uint16 k) {  // 0x8B9659
     int v7 = v1 >> 1;
     cinematicbg_instr_timer[v7] = v6;
     const uint8 *v8 = RomPtr_8C(v4);
-    R18_ = *((uint16 *)v8 + 1);
-    cinematicbg_arr1[v7] = *((uint16 *)v8 + 2);
+    R18_ = GET_WORD(v8 + 2);
+    cinematicbg_arr1[v7] = GET_WORD(v8 + 4);
     ProcessCinematicBgObject(v1);
     cinematicbg_instr_ptr[v7] = v4 + 6;
   }
@@ -1962,11 +1962,11 @@ void CallCreditsObjectFunc(uint32 ea, uint16 k) {
 
 void CreditsObject_Init(uint16 j) {  // 0x8B9932
   const uint8 *v1 = RomPtr_8B(j);
-  cinematic_var24 = *((uint16 *)v1 + 1);
-  cinematic_var21 = *((uint16 *)v1 + 2);
+  cinematic_var24 = GET_WORD(v1 + 2);
+  cinematic_var21 = GET_WORD(v1 + 4);
   cinematic_var22 = 1;
   cinematic_var23 = 0;
-  CallCreditsObjectFunc(*(uint16 *)v1 | 0x8B0000, 0);
+  CallCreditsObjectFunc(GET_WORD(v1) | 0x8B0000, 0);
 }
 
 void CreditsObject_Process(void) {  // 0x8B9955
@@ -6168,7 +6168,7 @@ void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
       uint8 *v3 = RomPtr_RAM(v0);
       if (*(int16 *)v3 < 0) {
         uint8 *v1 = RomPtr_RAM(v0);
-        v2 = *((uint16 *)v1 + 5) - 1;
+        v2 = GET_WORD(v1 + 10) - 1;
         *((uint16 *)v1 + 5) = v2;
         if (v2 < 0) {
           *((uint16 *)v1 + 5) = 32;
@@ -6176,25 +6176,25 @@ void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
         }
       } else {
         int v4 = (uint16)(8 * (uint8) * (uint16 *)v3) >> 1;
-        if (sign16((*(uint16 *)v3 & 0xFF00) - 1024)) {
+        if (sign16((GET_WORD(v3) & 0xFF00) - 1024)) {
           *((uint16 *)v3 + 6) += g_word_8BE9CF[v4];
-          v5 = *((uint16 *)v3 + 7);
+          v5 = GET_WORD(v3 + 14);
         } else {
           *((uint16 *)v3 + 6) += g_word_8BE9CF[v4] + g_word_8BE9CF[v4];
           v5 = g_word_8BE9CF[v4 + 1] + *((uint16 *)v3 + 7);
         }
         *((uint16 *)v3 + 7) = g_word_8BE9CF[v4 + 1] + v5;
-        uint16 v23 = *((uint16 *)v3 + 6);
+        uint16 v23 = GET_WORD(v3 + 12);
         R18_ = (int8)HIBYTE(v23);
         R20_ = (v23 << 8) & 0xFF00;
-        v8 = *((uint16 *)v3 + 2);
+        v8 = GET_WORD(v3 + 4);
         bool v9 = __CFADD__uint16(R20_, v8);
         *((uint16 *)v3 + 2) = R20_ + v8;
         *((uint16 *)v3 + 1) += R18_ + v9;
-        uint16 v24 = *((uint16 *)v3 + 7);
+        uint16 v24 = GET_WORD(v3 + 14);
         R18_ = (int8)HIBYTE(v24);
         R20_ = (v24 << 8) & 0xFF00;
-        v12 = *((uint16 *)v3 + 4);
+        v12 = GET_WORD(v3 + 8);
         v9 = __CFADD__uint16(R20_, v12);
         *((uint16 *)v3 + 4) = R20_ + v12;
         *((uint16 *)v3 + 3) += R18_ + v9;
@@ -6209,10 +6209,10 @@ void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
       uint8 *v15 = RomPtr_RAM(v14);
       uint8 *v16 = v15;
       if (*(int16 *)v15 >= 0) {
-        v17 = *((uint16 *)v15 + 1);
+        v17 = GET_WORD(v15 + 2);
         if (v15[3]
             || ((v17 - 4) & 0xFF00) != 0
-            || (v18 = gOamEnt(v13), *(uint16 *)&v18->xcoord = v17 - 4, v19 = *((uint16 *)v16 + 3), v16[7])
+            || (v18 = gOamEnt(v13), *(uint16 *)&v18->xcoord = v17 - 4, v19 = GET_WORD(v16 + 6), v16[7])
             || ((v19 - 4) & 0xFF00) != 0) {
           uint8 *v21 = RomPtr_RAM(v14);
           *((uint16 *)v21 + 5) = 32;
@@ -6225,15 +6225,15 @@ void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
           *(uint16 *)v21 = *v21;
         } else {
           *(uint16 *)&v18->ycoord = v19 - 4;
-          v20 = *((uint16 *)v16 + 5) - 1;
+          v20 = GET_WORD(v16 + 10) - 1;
           *((uint16 *)v16 + 5) = v20;
           if (v20 <= 0) {
-            v22 = *(uint16 *)v16;
+            v22 = GET_WORD(v16);
             *((uint16 *)v16 + 5) = g_word_8BE9CF[((uint16)(8 * (uint8) * (uint16 *)v16) >> 1) + 2];
             *(uint16 *)v16 = v22 + 512;
           }
           if (v16[1]) {
-            *(uint16 *)&gOamEnt(v13)->charnum = g_word_8BE9A7[(uint16)HIBYTE(*(uint16 *)v16) >> 1];
+            *(uint16 *)&gOamEnt(v13)->charnum = g_word_8BE9A7[(uint16)HIBYTE(GET_WORD(v16)) >> 1];
             v13 += 4;
           }
         }

@@ -136,14 +136,14 @@ void PalFx_ProcessOne(uint16 k) {  // 0x8DC54A
     do {
       while (1) {
         v10 = RomPtr_8D(j);
-        v11 = *((uint16 *)v10 + 1);
+        v11 = GET_WORD(v10 + 2);
         if (v11 & 0x8000)
           break;
         palette_buffer[v9 >> 1] = v11;
         v9 += 2;
         j += 2;
       }
-      R18_ = *((uint16 *)v10 + 1);
+      R18_ = GET_WORD(v10 + 2);
       v12 = CallPalInstr((uint16)v11 | 0x8D0000, v9, j);
       v9 = v12.k;
       j = v12.j;

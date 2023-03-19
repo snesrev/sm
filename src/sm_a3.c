@@ -2468,7 +2468,7 @@ void MaridiaSnail_D002(uint16 k, uint16 j) {  // 0xA3D002
     if (Enemy_MoveDown(k) & 1) {
       E->msl_var_A = -E->msl_var_A;
       const uint8 *v6 = RomPtr_A3(j);
-      MaridiaSnail_Func_13(k, *((uint16 *)v6 + 3));
+      MaridiaSnail_Func_13(k, GET_WORD(v6 + 6));
     }
   } else {
     uint16 v7 = E->msl_var_E + 1;
@@ -2476,7 +2476,7 @@ void MaridiaSnail_D002(uint16 k, uint16 j) {  // 0xA3D002
     if (sign16(v7 - 4)) {
       E->msl_var_B = -E->msl_var_B;
       const uint8 *v8 = RomPtr_A3(j);
-      MaridiaSnail_Func_13(k, *((uint16 *)v8 + 2));
+      MaridiaSnail_Func_13(k, GET_WORD(v8 + 4));
     } else {
       MaridiaSnail_Func_14(k);
     }
@@ -2514,7 +2514,7 @@ void MaridiaSnail_D07E(uint16 k, uint16 j) {  // 0xA3D07E
     if (Enemy_MoveRight_ProcessSlopes(k) & 1) {
       E->msl_var_B = -E->msl_var_B;
       const uint8 *v6 = RomPtr_A3(j);
-      MaridiaSnail_Func_13(k, *((uint16 *)v6 + 3));
+      MaridiaSnail_Func_13(k, GET_WORD(v6 + 6));
     } else {
       uint8 carry = EnemyFunc_C8AD(k);
       MaridiaSnail_Func_12(k, carry);
@@ -2525,7 +2525,7 @@ void MaridiaSnail_D07E(uint16 k, uint16 j) {  // 0xA3D07E
     if (sign16(v7 - 4)) {
       E->msl_var_A = -E->msl_var_A;
       const uint8 *v8 = RomPtr_A3(j);
-      MaridiaSnail_Func_13(k, *((uint16 *)v8 + 2));
+      MaridiaSnail_Func_13(k, GET_WORD(v8 + 4));
     } else {
       MaridiaSnail_Func_14(k);
     }
@@ -2535,15 +2535,15 @@ void MaridiaSnail_D07E(uint16 k, uint16 j) {  // 0xA3D07E
 void MaridiaSnail_Func_10(uint16 k, uint16 j) {  // 0xA3D0F8
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   const uint8 *v3 = RomPtr_A3(j);
-  E->base.x_pos += *(uint16 *)v3;
-  E->base.y_pos += *((uint16 *)v3 + 1);
+  E->base.x_pos += GET_WORD(v3);
+  E->base.y_pos += GET_WORD(v3 + 2);
 }
 
 void MaridiaSnail_Func_11(uint16 k, uint16 j) {  // 0xA3D10D
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   const uint8 *v3 = RomPtr_A3(j);
-  E->base.x_pos -= *(uint16 *)v3;
-  E->base.y_pos = E->base.y_pos - *((uint16 *)v3 + 1);
+  E->base.x_pos -= GET_WORD(v3);
+  E->base.y_pos = E->base.y_pos - GET_WORD(v3 + 2);
 }
 
 void MaridiaSnail_Func_12(uint16 k, uint16 carry) {  // 0xA3D124

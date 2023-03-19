@@ -100,7 +100,7 @@ void DrawSpriteObjects(void) {  // 0xB4BD32
               R3_.addr = sprite_palettes[v1] & 0xE00;
               R0_.addr = sprite_palettes[v1] & 0x1FF;
               const uint8 *v3 = RomPtr_B4(sprite_instr_list_ptrs[v1]);
-              DrawSpritemapWithBaseTile(0xB4, *((uint16 *)v3 + 1));
+              DrawSpritemapWithBaseTile(0xB4, GET_WORD(v3 + 2));
             }
           }
         }

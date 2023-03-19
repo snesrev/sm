@@ -3409,7 +3409,7 @@ void HirisingSlowfalling_Func_6(void) {  // 0xA2E06A
 void HirisingSlowfalling_Func_7(void) {  // 0xA2E0CD
   Enemy_HirisingSlowfalling *E = Get_HirisingSlowfalling(cur_enemy_index);
   const uint8 *v1 = RomPtr_A2(E->hsg_var_E + 4 * HIBYTE(E->hsg_var_C));
-  if (*(uint16 *)v1 == 0x8000) {
+  if (GET_WORD(v1) == 0x8000) {
     E->hsg_var_05 += E->hsg_var_F;
     E->hsg_var_C = 0;
     if ((--E->hsg_var_D & 0x8000u) != 0) {
@@ -3422,8 +3422,8 @@ void HirisingSlowfalling_Func_7(void) {  // 0xA2E0CD
       E->hsg_var_A = FUNC16(HirisingSlowfalling_Func_4);
     }
   } else {
-    E->base.x_pos = *(uint16 *)v1 + E->hsg_var_04;
-    E->base.y_pos = *((uint16 *)v1 + 1) + E->hsg_var_05;
+    E->base.x_pos = GET_WORD(v1) + E->hsg_var_04;
+    E->base.y_pos = GET_WORD(v1 + 2) + E->hsg_var_05;
     E->hsg_var_C += 256;
   }
 }

@@ -627,7 +627,7 @@ uint16 HdmaobjInstr_Delete(uint16 k, uint16 j) {  // 0x888569
 
 uint16 HdmaobjInstr_SetPreInstr(uint8 db, uint16 k, uint16 j) {  // 0x888570
   const uint8 *v2 = RomPtrWithBank(db, j);
-  hdma_object_pre_instructions[k >> 1] = *(uint16 *)v2;
+  hdma_object_pre_instructions[k >> 1] = GET_WORD(v2);
   *((uint8 *)hdma_object_pre_instruction_bank + k) = v2[2];
   return j + 3;
 }
@@ -1822,7 +1822,7 @@ void HdmaobjPreInstr_SkyLandBG2XscrollInner(uint16 k) {  // 0x88ADC2
   do {
     uint16 scroll_subspeed = kHdmaScrollEntrys[v1].scroll_subspeed;
     uint8 *v3 = &g_ram[kHdmaScrollEntrys[v1].hdma_data_table_entry];
-    bool v4 = __CFADD__uint16(*(uint16 *)v3, scroll_subspeed);
+    bool v4 = __CFADD__uint16(GET_WORD(v3), scroll_subspeed);
     *(uint16 *)v3 += scroll_subspeed;
     *((uint16 *)v3 + 1) += v4 + kHdmaScrollEntrys[v1++].scroll_speed;
   } while (sign16(v1 * 8 - 184));

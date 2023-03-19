@@ -181,7 +181,7 @@ void DrawSpritemap(uint8 db, uint16 j) {  // 0x81879F
     while (1) {
 
       const uint8 *v6 = RomPtrWithBank(db, v3);
-      v7 = R20_ + *(uint16 *)v6;
+      v7 = R20_ + GET_WORD(v6);
       v8 = gOamEnt(v5);
       *(uint16 *)&v8->xcoord = v7;
       if ((v7 & 0x100) != 0) {
@@ -220,7 +220,7 @@ LABEL_21:
       {
 LABEL_22:
         v8->ycoord = v15;
-        *(uint16 *)&v8->charnum = R22_ | *(uint16 *)(v6 + 3) & 0xF1FF;
+        *(uint16 *)&v8->charnum = R22_ | GET_WORD(v6 + 3) & 0xF1FF;
         v4 = v5 + 4;
         if (((v5 + 4) & 0xFE00) != 0) {
           oam_next_ptr = v4;
@@ -255,7 +255,7 @@ void DrawSpritemapOffScreen(uint16 j) {  // 0x818853
     uint16 v4 = oam_next_ptr;
     while (1) {
       const uint8 *v5 = RomPtrWithBank(0x8c, v2);
-      v6 = R20_ + *(uint16 *)v5;
+      v6 = R20_ + GET_WORD(v5);
       v7 = gOamEnt(v4);
       *(uint16 *)&v7->xcoord = v6;
       if ((v6 & 0x100) != 0) {
@@ -501,7 +501,7 @@ void DrawEnemyProjectileSpritemapWithBaseTile(uint8 db, uint16 j) {  // 0x818C0A
     uint16 v4 = oam_next_ptr;
     while (1) {
       const uint8 *v5 = RomPtrWithBank(db, v3);
-      v6 = R20_ + *(uint16 *)v5;
+      v6 = R20_ + GET_WORD(v5);
       v7 = gOamEnt(v4);
       *(uint16 *)&v7->xcoord = v6;
       if ((v6 & 0x100) != 0) {
@@ -529,7 +529,7 @@ LABEL_10:
         int v13 = v4 >> 1;
         *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v13]) |= kOamExtra_X8Small_And_Large[v13 + 1];
       }
-      *(uint16 *)&v7->charnum = R28_ | (R26_ + v12 + *(uint16 *)(v5 + 3));
+      *(uint16 *)&v7->charnum = R28_ | (R26_ + v12 + GET_WORD(v5 + 3));
       v4 = (v4 + 4) & 0x1FF;
       v3 += 5;
       if (!--R24_) {
@@ -553,7 +553,7 @@ void DrawEnemyProjectileSpritemapWithBaseTileOffscreen(uint8 db, uint16 j) {  //
     uint16 v4 = oam_next_ptr;
     while (1) {
       const uint8 *v5 = RomPtrWithBank(db, v3);
-      v6 = R20_ + *(uint16 *)v5;
+      v6 = R20_ + GET_WORD(v5);
       v7 = gOamEnt(v4);
       *(uint16 *)&v7->xcoord = v6;
       if ((v6 & 0x100) != 0) {
@@ -582,7 +582,7 @@ LABEL_10:
         int v13 = v4 >> 1;
         *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v13]) |= kOamExtra_X8Small_And_Large[v13 + 1];
       }
-      *(uint16 *)&v7->charnum = R28_ | (R26_ + v12 + *(uint16 *)(v5 + 3));
+      *(uint16 *)&v7->charnum = R28_ | (R26_ + v12 + GET_WORD(v5 + 3));
       v4 = (v4 + 4) & 0x1FF;
       v3 += 5;
       if (!--R24_) {
@@ -2590,7 +2590,7 @@ LABEL_23:
 LABEL_25:;
     uint16 v6 = 4 * load_station_index;
     uint8 *v7 = IndirPtr(&R0_, 4 * load_station_index);
-    if (sign16(*(uint16 *)v7 - reg_BG1HOFS) || !sign16(*(uint16 *)v7 - 256 - reg_BG1HOFS)) {
+    if (sign16(GET_WORD(v7) - reg_BG1HOFS) || !sign16(GET_WORD(v7) - 256 - reg_BG1HOFS)) {
       v8 = reg_BG1HOFS + *(uint16 *)IndirPtr(&R0_, v6) - R18_;
       if (v8 >= 0) {
         if ((int16)(v8 - map_min_x_scroll) >= 0)
@@ -2602,7 +2602,7 @@ LABEL_25:;
     }
     uint16 v9 = v6 + 2;
     uint8 *v10 = IndirPtr(&R0_, v9);
-    if (sign16(*(uint16 *)v10 - reg_BG1VOFS) || !sign16(*(uint16 *)v10 - 161 - reg_BG1VOFS)) {
+    if (sign16(GET_WORD(v10) - reg_BG1VOFS) || !sign16(GET_WORD(v10) - 161 - reg_BG1VOFS)) {
       uint16 v11 = reg_BG1VOFS + *(uint16 *)IndirPtr(&R0_, v9) - R20_;
       if ((int16)(v11 - map_min_y_scroll) >= 0)
         v11 = map_min_y_scroll;

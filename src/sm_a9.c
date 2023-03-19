@@ -3549,13 +3549,13 @@ uint8 ProcessSpriteTilesTransfers(uint8 db, uint16 k) {  // 0xA9C5BE
   uint16 v3 = mbn_var_22;
   uint16 v4 = vram_write_queue_tail;
   const uint8 *v5 = RomPtrWithBank(db, mbn_var_22);
-  uint16 v6 = *(uint16 *)v5;
-  if (*(uint16 *)v5) {
+  uint16 v6 = GET_WORD(v5);
+  if (GET_WORD(v5)) {
     v7 = gVramWriteEntry(vram_write_queue_tail);
     v7->size = v6;
-    *(VoidP *)((char *)&v7->src.addr + 1) = *(uint16 *)(v5 + 3);
-    v7->src.addr = *((uint16 *)v5 + 1);
-    v7->vram_dst = *(uint16 *)(v5 + 5);
+    *(VoidP *)((char *)&v7->src.addr + 1) = GET_WORD(v5 + 3);
+    v7->src.addr = GET_WORD(v5 + 2);
+    v7->vram_dst = GET_WORD(v5 + 5);
     vram_write_queue_tail = v4 + 7;
     E->mbn_var_22 = v3 + 7;
     v6 = *(uint16 *)RomPtrWithBank(db, E->mbn_var_22);
@@ -4395,7 +4395,7 @@ LABEL_8:
     return 0;
   } else {
     uint8 *v5 = IndirPtr(&R3_, 0);
-    IndirWriteWord(&R3_, 0, *(uint16 *)v5 + 1);
+    IndirWriteWord(&R3_, 0, GET_WORD(v5) + 1);
     return *((uint16 *)RomPtr_A9(v3) + 1);
   }
 }
@@ -5031,10 +5031,10 @@ void CopyMoveCorpseRottingRotEntry(uint16 a) {  // 0xA9DBE0
   uint16 v2 = a & 7;
   uint8 *v4 = IndirPtr(&R20_, v1);
   if (v2 >= 6u) {
-    uint16 v6 = *(uint16 *)v4 + 2 * v2;
+    uint16 v6 = GET_WORD(v4) + 2 * v2;
     CallCorpseRottingMove(R18_ | 0xA90000, E->dms_var_48 + v6, v6);
   } else {
-    uint16 v5 = *(uint16 *)v4 + 2 * v2;
+    uint16 v5 = GET_WORD(v4) + 2 * v2;
     CallCorpseRottingMove(R18_ | 0xA90000, v5, v5);
   }
 }
@@ -5065,11 +5065,11 @@ void InitializeEnemyCorpseRotting(uint16 k, uint16 j) {  // 0xA9DC5F
   const uint8 *v2 = RomPtr_A9(j);
   Enemy_DeadMonsters *E = Get_DeadMonsters(k);
   E->dms_var_52 = *(uint16 *)v2;
-  E->dms_var_53 = *((uint16 *)v2 + 1);
-  E->dms_var_54 = *((uint16 *)v2 + 2);
-  E->dms_var_55 = *((uint16 *)v2 + 3);
-  E->dms_var_5B = *((uint16 *)v2 + 7);
-  uint16 v4 = *((uint16 *)v2 + 6);
+  E->dms_var_53 = GET_WORD(v2 + 2);
+  E->dms_var_54 = GET_WORD(v2 + 4);
+  E->dms_var_55 = GET_WORD(v2 + 6);
+  E->dms_var_5B = GET_WORD(v2 + 14);
+  uint16 v4 = GET_WORD(v2 + 12);
   E->dms_var_56 = v4;
   E->dms_var_5A = *((uint16 *)RomPtr_A9(v4) + 1) - 12;
   uint16 *v5 = (uint16 *)v2;

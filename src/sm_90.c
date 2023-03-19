@@ -2526,18 +2526,18 @@ void UpdateMinimap(void) {  // 0x90A91B
     *(uint16 *)((char *)&R14_ + 1) = *(uint16 *)((char *)&R8_ + 1);
     *(uint16 *)((char *)&R8_ + 1) += v3;
     uint8 *v7 = IndirPtr((char *)&R8_ + 1, 0);
-    LOBYTE(v5) = HIBYTE(*(uint16 *)v7);
-    HIBYTE(v5) = *(uint16 *)v7;
+    LOBYTE(v5) = HIBYTE(GET_WORD(v7));
+    HIBYTE(v5) = GET_WORD(v7);
     R38 = v5;
     *(uint16 *)((char *)&R8_ + 1) += 4;
     uint8 *v8 = IndirPtr((char *)&R8_ + 1, 0);
-    LOBYTE(v5) = HIBYTE(*(uint16 *)v8);
-    HIBYTE(v5) = *(uint16 *)v8;
+    LOBYTE(v5) = HIBYTE(GET_WORD(v8));
+    HIBYTE(v5) = GET_WORD(v8);
     R40 = v5;
     *(uint16 *)((char *)&R8_ + 1) += 4;
     uint8 *v9 = IndirPtr((char *)&R8_ + 1, 0);
-    LOBYTE(v5) = HIBYTE(*(uint16 *)v9);
-    HIBYTE(v5) = *(uint16 *)v9;
+    LOBYTE(v5) = HIBYTE(GET_WORD(v9));
+    HIBYTE(v5) = GET_WORD(v9);
     R42 = v5;
     if ((R50 & 3) == 3) {
       v10 = R46 ? bg3_tilemap_offset >> 1 : R32;
@@ -3363,8 +3363,8 @@ void Missile_Func1(uint16 k) {  // 0x90B2F6
     else
       v3 = R18_ - 0x3CFD;
     const uint8 *v4 = RomPtr_90(v3);
-    projectile_bomb_x_speed[v1] += *(uint16 *)v4;
-    projectile_bomb_y_speed[v1] += *((uint16 *)v4 + 1);
+    projectile_bomb_x_speed[v1] += GET_WORD(v4);
+    projectile_bomb_y_speed[v1] += GET_WORD(v4 + 2);
   } else {
     uint16 v2 = word_90C301 + projectile_variables[v1];
     projectile_variables[v1] = v2;

@@ -1194,7 +1194,7 @@ const uint16 *Draygon_Instr_15(uint16 k, const uint16 *jp) {  // 0xA59B9A
   Enemy_Draygon *E = Get_Draygon(0);
   E->draygon_var_0F = 24;
   const uint8 *v3 = RomPtr_A0(E->base.enemy_ptr);
-  uint16 v4 = SuitDamageDivision(*((uint16 *)v3 + 3));
+  uint16 v4 = SuitDamageDivision(GET_WORD(v3 + 6));
   Samus_DealDamage(v4);
   earthquake_timer = 32;
   earthquake_type = 7;
@@ -1473,9 +1473,9 @@ const uint16 *Draygon_Instr_24(uint16 k, const uint16 *jp) {  // 0xA5E771
 void Draygon_Func_50(uint16 j) {  // 0xA5E811
   const uint8 *v1 = RomPtr_A5(j);
   Enemy_Draygon *E = Get_Draygon(0);
-  E->draygon_var_0B = *(uint16 *)v1;
-  E->draygon_var_0C = *((uint16 *)v1 + 1);
-  E->draygon_var_0A = *((uint16 *)v1 + 2);
+  E->draygon_var_0B = GET_WORD(v1);
+  E->draygon_var_0C = GET_WORD(v1 + 2);
+  E->draygon_var_0A = GET_WORD(v1 + 4);
 }
 
 const uint16 *Draygon_Instr_21(uint16 k, const uint16 *jp) {  // 0xA5E82D

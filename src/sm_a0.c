@@ -160,10 +160,10 @@ const uint16 *EnemyInstr_CopyToVram(uint16 k, const uint16 *jp) {  // 0xA0814B
   uint16 v2 = vram_write_queue_tail;
   uint8 *v3 = (uint8*)jp;
   v4 = gVramWriteEntry(vram_write_queue_tail);
-  v4->size = *(uint16 *)v3;
-  v4->src.addr = *((uint16 *)v3 + 1);
-  *(VoidP *)((char *)&v4->src.addr + 1) = *(uint16 *)(v3 + 3);
-  v4->vram_dst = *(uint16 *)(v3 + 5);
+  v4->size = GET_WORD(v3);
+  v4->src.addr = GET_WORD(v3 + 2);
+  *(VoidP *)((char *)&v4->src.addr + 1) = GET_WORD(v3 + 3);
+  v4->vram_dst = GET_WORD(v3 + 5);
   vram_write_queue_tail = v2 + 7;
   return INSTR_INCR_BYTES(jp, 7);
 }
@@ -287,7 +287,7 @@ void DrawSamusEnemiesAndProjectiles(void) {  // 0xA0884D
       do {
         loop_index = v1;
         uint8 *v2 = RomPtr_RAM(enemy_drawing_queue_base + v1);
-        uint16 v3 = *(uint16 *)v2;
+        uint16 v3 = GET_WORD(v2);
         *(uint16 *)v2 = 0;
         cur_enemy_index = v3;
         WriteEnemyOams();
