@@ -535,7 +535,7 @@ const uint8 *RomPtr(uint32_t addr) {
   return &g_rom[(((addr >> 16) << 15) | (addr & 0x7fff)) & 0x3fffff];
 }
 
-uint8 *IndirPtr(LongPtr ptr, uint16 offs) {
+static uint8 *IndirPtr(LongPtr ptr, uint16 offs) {
   uint32 a = (ptr.bank << 16 | ptr.addr) + offs;
   if (ptr.bank >= 0x7e && ptr.bank <= 0x7f || a < 0x2000) {
     return &g_ram[a & 0x1ffff];

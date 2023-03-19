@@ -2779,29 +2779,25 @@ void DrawBabyMetroid_0(void) {  // 0xA6BF1A
 
 uint16 BabyMetroid_Instr_2(uint16 k) {  // 0xA6BFC9
   if (!Get_Ridley(0)->ridley_var_46 && (random_number & 1) != 0)
-    return BabyMetroid_Instr_4(k);
+    return BabyMetroid_Goto(k);
   QueueSfx3_Max6(0x24u);
-  return BabyMetroid_Incr2(k);
-}
-
-uint16 BabyMetroid_Incr2(uint16 k) {  // 0xA6BFDE
   return k + 2;
 }
 
 uint16 BabyMetroid_Instr_3(uint16 k) {  // 0xA6BFE1
   uint16 v1 = *(uint16 *)RomPtr_A6(k);
   WriteColorsToPalette(0x162, 0xa6, v1, 0xF);
-  return BabyMetroid_Incr2(k);
+  return k + 2;
 }
 
 uint16 BabyMetroid_Instr_1(uint16 k) {  // 0xA6BFF2
   if (Get_Ridley(0)->ridley_var_46)
-    return BabyMetroid_Instr_4(k);
+    return BabyMetroid_Goto(k);
   else
-    return BabyMetroid_Incr2(k);
+    return k + 2;
 }
 
-uint16 BabyMetroid_Instr_4(uint16 k) {  // 0xA6BFF8
+uint16 BabyMetroid_Goto(uint16 k) {  // 0xA6BFF8
   return *(uint16 *)RomPtr_A6(k);
 }
 
@@ -4507,44 +4503,40 @@ uint16 CallBabyMetroidInstr(uint32 ea, uint16 k) {
   case fnBabyMetroid_Instr_2: return BabyMetroid_Instr_2(k);
   case fnBabyMetroid_Instr_3: return BabyMetroid_Instr_3(k);
   case fnBabyMetroid_Instr_1: return BabyMetroid_Instr_1(k);
-  case fnBabyMetroid_Instr_4: return BabyMetroid_Instr_4(k);
+  case fnBabyMetroid_Instr_4: return BabyMetroid_Goto(k);
   default: return Unreachable();
   }
 }
+
+typedef struct BabyMetroidExecState {
+  uint16 ip;
+  uint16 timer;
+} BabyMetroidExecState;
+
 int BabyMetroid_DBCB_DoubleRetEx(uint16 a) {
-  int16 v3;
+  BabyMetroidExecState *st = (BabyMetroidExecState *)&g_ram[a];
 
-  R0_.addr = a;
-  R3_.addr = a + 2;
-  R0_.bank = 126;
-  R3_.bank = 126;
-
-  uint16 *instr_ptr = (uint16 *)IndirPtr(R0_, 0);
-  uint16 *timer_ptr = (uint16 *)IndirPtr(R3_, 0);
-
-  if ((*instr_ptr & 0x8000u) == 0)
+  if ((st->ip & 0x8000u) == 0)
     return -1;  // double ret
-
-  uint16 v2 = *instr_ptr;
-  v3 = *(uint16 *)RomPtr_A6(v2);
-  if (v3 < 0)
+  uint16 v2 = st->ip;
+  const uint16 *v3 = (uint16 *)RomPtr_A6(v2);
+  if (sign16(v3[0]))
     goto LABEL_7;
-  if (*timer_ptr != v3) {
-    (*timer_ptr)++;
-    return *((uint16 *)RomPtr_A6(v2) + 1);
+  if (st->timer != v3[0]) {
+    st->timer++;
+    return v3[1];
   }
   v2 += 4;
   for (; ; ) {
-    v3 = *(uint16 *)RomPtr_A6(v2);
-    if (v3 >= 0)
+    v3 = (uint16 *)RomPtr_A6(v2);
+    if (!sign16(v3[0]))
       break;
 LABEL_7:
-    R6_.addr = v3;
-    v2 = CallBabyMetroidInstr((uint16)v3 | 0xA60000, v2 + 2);
+    v2 = CallBabyMetroidInstr(v3[0] | 0xA60000, v2 + 2);
   }
-  *timer_ptr = 1;
-  *instr_ptr = v2;
-  return *((uint16 *)RomPtr_A6(v2) + 1);
+  st->timer = 1;
+  st->ip = v2;
+  return v3[1];
 }
 
 void sub_A6DC13(uint16 j) {  // 0xA6DC13

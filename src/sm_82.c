@@ -1581,10 +1581,8 @@ void LoadPauseMenuMapTilemapAndAreaLabel(void) {  // 0x8293C3
 }
 
 void LoadPauseMenuMapTilemap(void) {  // 0x82943D
-  uint16 v5;
   uint16 v6;
   int16 v9;
-  uint16 v13;
 
   uint16 v0 = area_index;
   if (!sign16(area_index - 7))
@@ -1597,18 +1595,12 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
   R6_.bank = 130;
   R6_.addr = kPauseMenuMapData[v0];
   if (map_station_byte_array[area_index]) {
-    uint8 *v4 = IndirPtr(R6_, 0);
-    LOBYTE(v5) = GET_HIBYTE(GET_WORD(v4));
-    HIBYTE(v5) = GET_WORD(v4);
-    R38 = v5;
+    R38 = swap16(IndirReadWord(R6_, 0));
     R6_.addr += 2;
     v6 = ADDR16_OF_RAM(*map_tiles_explored);
     R9_.bank = 0;
     R9_.addr = v6;
-    uint8 *v7 = IndirPtr(R9_, 0);
-    LOBYTE(v5) = GET_HIBYTE(GET_WORD(v7));
-    HIBYTE(v5) = GET_WORD(v7);
-    R40 = v5;
+    R40 = swap16(IndirReadWord(R9_, 0));
     R9_.addr += 2;
     uint16 v8 = 0;
     v9 = 16;
@@ -1628,15 +1620,9 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
       IndirWriteWord(R3_, v8, v10);
       if (!--v9) {
         v9 = 16;
-        uint8 *v12 = IndirPtr(R6_, 0);
-        LOBYTE(v13) = GET_HIBYTE(GET_WORD(v12));
-        HIBYTE(v13) = GET_WORD(v12);
-        R38 = v13;
+        R38 = swap16(IndirReadWord(R6_, 0));
         R6_.addr += 2;
-        uint8 *v14 = IndirPtr(R9_, 0);
-        LOBYTE(v13) = GET_HIBYTE(GET_WORD(v14));
-        HIBYTE(v13) = GET_WORD(v14);
-        R40 = v13;
+        R40 = swap16(IndirReadWord(R9_, 0));
         R9_.addr += 2;
       }
       v8 += 2;
@@ -1667,10 +1653,8 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
 
 void DrawRoomSelectMap(void) {  // 0x829517
   uint16 v3; // r8
-  uint16 v6;
   unsigned int v7; // kr00_4
   int16 v10;
-  uint16 v14;
   VramWriteEntry *v17;
 
   reg_BG12NBA = 51;
@@ -1687,19 +1671,13 @@ void DrawRoomSelectMap(void) {  // 0x829517
   R6_.bank = 130;
   R6_.addr = kPauseMenuMapData[v0];
   if (map_station_byte_array[area_index]) {
-    uint8 *v5 = IndirPtr(R6_, 0);
-    LOBYTE(v6) = GET_HIBYTE(GET_WORD(v5));
-    HIBYTE(v6) = GET_WORD(v5);
-    R38 = v6;
+    R38 = swap16(IndirReadWord(R6_, 0));
     ++R6_.addr;
     ++R6_.addr;
     v7 = 2039;
     R9_.bank = HIWORD(v7);
     R9_.addr = v7;
-    uint8 *v8 = IndirPtr(R9_, 0);
-    LOBYTE(v6) = GET_HIBYTE(GET_WORD(v8));
-    HIBYTE(v6) = GET_WORD(v8);
-    R40 = v6;
+    R40 = swap16(IndirReadWord(R9_, 0));
     R9_.addr += 2;
     uint16 v9 = 0;
     v10 = 16;
@@ -1719,15 +1697,9 @@ void DrawRoomSelectMap(void) {  // 0x829517
       IndirWriteWord(R3_, v9, v11);
       if (!--v10) {
         v10 = 16;
-        uint8 *v13 = IndirPtr(R6_, 0);
-        LOBYTE(v14) = GET_HIBYTE(GET_WORD(v13));
-        HIBYTE(v14) = GET_WORD(v13);
-        R38 = v14;
+        R38 = swap16(IndirReadWord(R6_, 0));
         R6_.addr += 2;
-        uint8 *v15 = IndirPtr(R9_, 0);
-        LOBYTE(v14) = GET_HIBYTE(GET_WORD(v15));
-        HIBYTE(v14) = GET_WORD(v15);
-        R40 = v14;
+        R40 = swap16(IndirReadWord(R9_, 0));
         R9_.addr += 2;
       }
       v9 += 2;

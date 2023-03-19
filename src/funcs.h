@@ -4207,14 +4207,10 @@ void sub_A5960D(void);
 void sub_A5E9F5(void);
 
 // Bank A6
-uint16 BabyMetroid_DBCB_DoubleRet(uint16 a);
-uint16 BabyMetroid_Incr2(uint16 k);
 uint16 BabyMetroid_Instr_1(uint16 k);
 uint16 BabyMetroid_Instr_2(uint16 k);
 uint16 BabyMetroid_Instr_3(uint16 k);
-uint16 BabyMetroid_Instr_4(uint16 k);
-uint16 CeresDoor_Goto(uint16 j);
-uint16 CeresDoor_Incr(uint16 j);
+uint16 BabyMetroid_Goto(uint16 k);
 const uint16 *CeresDoor_Instr_1(uint16 k, const uint16 *jp);
 const uint16 *CeresDoor_Instr_2(uint16 k, const uint16 *jp);
 const uint16 *CeresDoor_Instr_3(uint16 k, const uint16 *jp);
@@ -5124,7 +5120,7 @@ void sub_A8F6DC(uint16 k, uint16 j);
 // Bank A9
 uint16 ComputeCosMult(uint16 a);
 uint16 ComputeSinMult(uint16 a);
-uint16 HandleRoomPaletteInstructionList(uint16 a);
+uint16 HandleMotherBrainInstructionList(uint16 a);
 uint16 MotherBrain_DetermineShotReactionType(void);
 uint16 MotherBrain_Func_1_DoubleRetTmp(void);
 uint16 MotherBrain_Instr_AimRingsAtSamus(uint16 k);

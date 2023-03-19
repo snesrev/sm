@@ -33,10 +33,8 @@ typedef void FuncXY_V(uint16 k, uint16 j);
 typedef PairU16 Func_Y_To_PairU16(uint16 j);
 
 const uint8 *RomPtr(uint32_t addr);
-uint8 *IndirPtr(LongPtr ptr, uint16 offs);
 uint8 IndirReadByte(LongPtr ptr, uint16 offs);
 uint16 IndirReadWord(LongPtr ptr, uint16 offs);
-
 void IndirWriteByte(LongPtr ptr, uint16 offs, uint8 value);
 void IndirWriteWord(LongPtr ptr, uint16 offs, uint16 value);
 

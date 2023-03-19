@@ -4351,7 +4351,7 @@ void MotherBrain_Pal_EndScreenFlash(void) {  // 0xA9D00C
 }
 
 void MotherBrain_Pal_HandleRoomPal(void) {  // 0xA9D01C
-  uint16 j = HandleRoomPaletteInstructionList(ADDR16_OF_RAM(*enemy_ram7800) + 28);
+  uint16 j = HandleMotherBrainInstructionList(ADDR16_OF_RAM(*enemy_ram7800) + 28);
   if (j)
     MotherBrain_Pal_WriteRoomPal(j);
 }
@@ -4362,40 +4362,39 @@ void MotherBrain_Pal_WriteRoomPal(uint16 j) {  // 0xA9D025
   WriteColorsToPalette(0xE6, 0xa9, j + 24, 12);
 }
 
-uint16 HandleRoomPaletteInstructionList(uint16 a) {  // 0xA9D192
-  int16 v4;
+typedef struct MotherBrainInstrExecState {
+  uint16 ip;
+  uint16 timer;
+} MotherBrainInstrExecState;
 
-  R0_.addr = a;
-  R3_.addr = a + 2;
-  R0_.bank = 126;
-  R3_.bank = 126;
-  uint16 *v1 = (uint16 *)IndirPtr(R0_, 0);
-  if ((*v1 & 0x8000) == 0)
+uint16 HandleMotherBrainInstructionList(uint16 a) {  // 0xA9D192
+  MotherBrainInstrExecState *st = (MotherBrainInstrExecState *)&g_ram[a];
+  if ((st->ip & 0x8000) == 0)
     return 0;
-  uint16 v3 = *v1;
-  v4 = *(uint16 *)RomPtr_A9(*v1);
-  if (v4 < 0)
+  uint16 v2 = st->ip;
+  const uint16 *v3 = (uint16 *)RomPtr_A6(v2);
+  if (sign16(v3[0]))
     goto LABEL_8;
-  if (v4 == IndirReadWord(R3_, 0)) {
-    for (v3 += 4; ; ) {
-      v4 = *(uint16 *)RomPtr_A9(v3);
-      if (!v4)
-        break;
-      if (v4 >= 0) {
-        IndirWriteWord(R3_, 0, 1u);
-        IndirWriteWord(R0_, 0, v3);
-        return *((uint16 *)RomPtr_A9(v3) + 1);
-      }
+  if (st->timer != v3[0]) {
+    st->timer++;
+    return v3[1];
+  }
+  v2 += 4;
+  for (; ; ) {
+    v3 = (uint16 *)RomPtr_A6(v2);
+    if (!sign16(v3[0]))
+      break;
 LABEL_8:
-      R6_.addr = v4;
-      v3 = CallMotherBrainInstr((uint16)v4 | 0xA90000, v3 + 2);
-    }
-    IndirWriteWord(R0_, 0, 0);
-    IndirWriteWord(R3_, 0, 0);
+    v2 = CallMotherBrainInstr(v3[0] | 0xA90000, v2 + 2);
+  }
+  if (!v3[0]) {
+    st->ip = 0;
+    st->timer = 0;
     return 0;
   } else {
-    IndirWriteWord(R3_, 0, IndirReadWord(R3_, 0) + 1);
-    return *((uint16 *)RomPtr_A9(v3) + 1);
+    st->timer = 1;
+    st->ip = v2;
+    return v3[1];
   }
 }
 

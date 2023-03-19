@@ -2525,20 +2525,11 @@ void UpdateMinimap(void) {  // 0x90A91B
     R9_.addr = kPauseMenuMapData[area_index];
     *(uint16 *)((char *)&R14_ + 1) = R9_.addr;
     R9_.addr += v3;
-    uint8 *v7 = IndirPtr(R9_, 0);
-    LOBYTE(v5) = GET_HIBYTE(GET_WORD(v7));
-    HIBYTE(v5) = GET_WORD(v7);
-    R38 = v5;
+    R38 = swap16(IndirReadWord(R9_, 0));
     R9_.addr += 4;
-    uint8 *v8 = IndirPtr(R9_, 0);
-    LOBYTE(v5) = GET_HIBYTE(GET_WORD(v8));
-    HIBYTE(v5) = GET_WORD(v8);
-    R40 = v5;
+    R40 = swap16(IndirReadWord(R9_, 0));
     R9_.addr += 4;
-    uint8 *v9 = IndirPtr(R9_, 0);
-    LOBYTE(v5) = GET_HIBYTE(GET_WORD(v9));
-    HIBYTE(v5) = GET_WORD(v9);
-    R42 = v5;
+    R42 = swap16(IndirReadWord(R9_, 0));
     if ((R50 & 3) == 3) {
       v10 = R46 ? bg3_tilemap_offset >> 1 : R32_;
       if (!sign16(v10 - 6)) {
