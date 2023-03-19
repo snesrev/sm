@@ -4273,7 +4273,7 @@ CoroutineRet DoorTransitionFunction_PlaceSamusLoadTiles(void) {  // 0x82E3C0
     v0 = 22;
   irqhandler_next_handler = v0;
   WaitUntilEndOfVblankAndEnableIrq();
-  if ((cre_bitset & 2) != 0 && door_def_ptr != (uint16)addr_kDoorDef_947a) {
+  if ((cre_bitset & 2) != 0 && door_def_ptr != addr_kDoorDef_947a) {
     mov24(&decompress_src, 0xb98000);
     DecompressToMem_IpArg(&unk_82E421);
   }
@@ -4284,7 +4284,7 @@ CoroutineRet DoorTransitionFunction_PlaceSamusLoadTiles(void) {  // 0x82E3C0
   CopyToVramAtNextInterrupt(&unk_82E449);
   CopyToVramAtNextInterrupt(&unk_82E453);
   CopyToVramAtNextInterrupt(&unk_82E45D);
-  if ((cre_bitset & 6) != 0 && door_def_ptr != (uint16)addr_kDoorDef_947a) {
+  if ((cre_bitset & 6) != 0 && door_def_ptr != addr_kDoorDef_947a) {
     CopyToVramAtNextInterrupt(&unk_82E477);
     CopyToVramAtNextInterrupt(&unk_82E481);
     CopyToVramAtNextInterrupt(&unk_82E48B);

@@ -93,7 +93,7 @@ void LoadXrayBlocks(void) {  // 0x84831A
 
   for (int i = 78; i >= 0; i -= 2) {
     int v1 = i >> 1;
-    if (plm_header_ptr[v1] >= (uint16)FUNC16(PlmPreInstr_GotoLinkIfTriggered)) {
+    if (plm_header_ptr[v1] >= FUNC16(PlmPreInstr_GotoLinkIfTriggered)) {
       uint16 k = i;
       uint16 v2 = item_bit_array[PrepareBitAccess(plm_room_arguments[v1])];
       i = k;
@@ -578,8 +578,6 @@ static inline uint8_t *RomPtr_84orRAM(uint16_t addr) {
 }
 
 void ProcessPlmDrawInstruction(uint16 v0) {  // 0x84861E
-  int16 v4;
-
   int v1 = v0 >> 1;
   uint16 *p = (uint16 *)RomPtr_84orRAM(plm_instruction_draw_ptr[v1]);
   uint16 dst = plm_block_indices[v1];

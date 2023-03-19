@@ -5395,7 +5395,7 @@ void CallBotwoonEprojFunc(uint32 ea, uint16 k) {
 void EprojPreInstr_BotwoonsBody(uint16 k) {  // 0x86EA80
   if (*(uint16 *)&extra_enemy_ram8000[0].pad[32]) {
     int v1 = k >> 1;
-    if (enemy_projectile_x_vel[v1] == (uint16)FUNC16(Eproj_BotwoonsBody_Main))
+    if (enemy_projectile_x_vel[v1] == FUNC16(Eproj_BotwoonsBody_Main))
       enemy_projectile_x_vel[v1] = FUNC16(Eproj_BotwonsBodyFunction_Dying);
   }
   CallBotwoonEprojFunc(enemy_projectile_x_vel[k >> 1] | 0x860000, k);

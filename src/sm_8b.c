@@ -3601,8 +3601,8 @@ void CinematicFunction_Intro_Fadestuff2(void) {  // 0x8BB458
 }
 
 void CinematicBgPreInstr_SamusBlink(uint16 k) {  // 0x8BB4BC
-  if (cinematic_function == (uint16)FUNC16(CinematicFunction_Intro_Func15b)
-      || cinematic_function == (uint16)FUNC16(nullsub_121)) {
+  if (cinematic_function == FUNC16(CinematicFunction_Intro_Func15b)
+      || cinematic_function == FUNC16(nullsub_121)) {
     int v1 = k >> 1;
     cinematicbg_instr_ptr[v1] = -10733;
     cinematicbg_instr_timer[v1] = 1;
@@ -3926,7 +3926,7 @@ void CinematicFunction_Intro_Func44(uint16 k) {  // 0x8BB8D8
   cinematicbg_arr8[v1] += __CFADD__uint16(v3, 0x8000);
   R18_ = samus_x_pos - 5;
   if (sign16(cinematicbg_arr7[v1] + 8 - (samus_x_pos - 5))) {
-    if (cinematicspr_preinstr_func[0] != (uint16)FUNC16(CinematicFunction_Intro_Func39))
+    if (cinematicspr_preinstr_func[0] != FUNC16(CinematicFunction_Intro_Func39))
       return;
   } else {
     samus_invincibility_timer = 11;
@@ -4617,7 +4617,7 @@ void CinematicFunction_Intro_Func78(uint16 j) {  // 0x8BC434
 }
 
 void CinematicSprPreInstr_C489(uint16 k) {  // 0x8BC489
-  if (cinematic_function == (uint16)FUNC16(CinematicFunction_Intro_Func77)) {
+  if (cinematic_function == FUNC16(CinematicFunction_Intro_Func77)) {
     cinematicspr_preinstr_func[k >> 1] = FUNC16(CinematicFunction_nullsub_116);
   } else {
     bool v1 = (--cinematic_var4 & 0x8000u) != 0;
@@ -4835,7 +4835,7 @@ void CinematicFunction_Intro_Func89(uint16 j) {  // 0x8BC83B
 }
 
 void CinematicFunction_Intro_Func90(uint16 k) {  // 0x8BC84E
-  if (cinematic_function == (uint16)FUNC16(nullsub_124))
+  if (cinematic_function == FUNC16(nullsub_124))
     cinematicspr_preinstr_func[k >> 1] = FUNC16(CinematicFunction_Intro_Func91);
 }
 
@@ -4869,7 +4869,7 @@ void CinematicFunction_Intro_Func92(uint16 j) {  // 0x8BC897
 }
 
 void CinematicFunction_Intro_Func93(uint16 k) {  // 0x8BC8AA
-  if (cinematic_function == (uint16)FUNC16(nullsub_124))
+  if (cinematic_function == FUNC16(nullsub_124))
     cinematicspr_preinstr_func[k >> 1] = FUNC16(CinematicFunction_Intro_Func94);
 }
 
@@ -4897,7 +4897,7 @@ void CinematicFunction_Intro_Func94(uint16 k) {  // 0x8BC8B9
 }
 
 void CinematicFunction_Intro_Func96(uint16 k) {  // 0x8BC8F9
-  if (cinematic_function == (uint16)FUNC16(nullsub_124))
+  if (cinematic_function == FUNC16(nullsub_124))
     cinematicspr_preinstr_func[k >> 1] = FUNC16(CinematicFunction_Intro_Func97);
 }
 
@@ -6564,7 +6564,7 @@ uint16 CinematicSprInstr_Func187(uint16 k, uint16 j) {  // 0x8BF32B
 
 
 void CinematicSprPreInstr_F35A(uint16 k) {  // 0x8BF35A
-  if (cinematic_function == (uint16)FUNC16(CinematicFunction_Intro_Func121)) {
+  if (cinematic_function == FUNC16(CinematicFunction_Intro_Func121)) {
     int v1 = k >> 1;
     cinematicspr_preinstr_func[v1] = FUNC16(CinematicFunction_Intro_Func189);
     cinematicspr_arr7[v1] = 0x4000;
@@ -6599,7 +6599,7 @@ uint16 CinematicSprInstr_Func190(uint16 k, uint16 j) {  // 0x8BF3B0
 }
 
 void CinematicFunction_Intro_Func191(uint16 k) {  // 0x8BF3B9
-  if (cinematic_function == (uint16)FUNC16(CinematicFunction_Intro_Func126)) {
+  if (cinematic_function == FUNC16(CinematicFunction_Intro_Func126)) {
     int v1 = k >> 1;
     cinematicspr_instr_timer[v1] = 1;
     cinematicspr_instr_ptr[v1] = addr_off_8BEE9B;
@@ -6703,7 +6703,7 @@ void CinematicFunction_Intro_Func206(uint16 k) {  // 0x8BF4E0
 }
 
 void CinematicFunction_Intro_Func207(uint16 k) {  // 0x8BF507
-  if (cinematic_function == (uint16)FUNC16(nullsub_125)) {
+  if (cinematic_function == FUNC16(nullsub_125)) {
     int v1 = k >> 1;
     cinematicspr_instr_timer[v1] = 1;
     cinematicspr_instr_ptr[v1] = addr_off_8BEE9B;

@@ -2292,12 +2292,12 @@ void MotherBrain_Body_Phase2_TryAttack(void) {  // 0xA9B64B
       }
     }
     uint16 v6 = g_off_A9B6D4[v4 >> 1];
-    if (v6 == (uint16)addr_kMotherBrain_Ilist_9ECC) {
+    if (v6 == addr_kMotherBrain_Ilist_9ECC) {
       if (sign16(E1->mbn_var_05 - 1)) {
         E->mbn_var_A = FUNC16(MotherBrain_FiringBomb_DecideOnWalking);
         MotherBrain_FiringBomb_DecideOnWalking();
       }
-    } else if (v6 == (uint16)addr_kMotherBrain_Ilist_9F34) {
+    } else if (v6 == addr_kMotherBrain_Ilist_9F34) {
       E->mbn_var_A = FUNC16(MotherBomb_FiringLaser_PositionHead);
       MotherBomb_FiringLaser_PositionHead();
     } else {
@@ -4263,7 +4263,7 @@ void ShitroidInCutscene_Shake(uint16 k) {  // 0xA9CEDB
 
 void ShitroidInCutscene_Touch(void) {  // 0xA9CF03
   Enemy_ShitroidInCutscene *E = Get_ShitroidInCutscene(cur_enemy_index);
-  if (E->sice_var_A == (uint16)FUNC16(ShitroidInCutscene_LatchOntoSamus)) {
+  if (E->sice_var_A == FUNC16(ShitroidInCutscene_LatchOntoSamus)) {
     R18_ = samus_x_pos;
     R20_ = samus_y_pos - 20;
     if (Shitroid_AccelerateTowardsPoint(cur_enemy_index, 0x10) & 1) {
@@ -4424,7 +4424,7 @@ void MotherBrain_HandleBrainPal(void) {  // 0xA9D206
       HIBYTE(E->mbn_var_D) = E->mbn_var_E;
       mbn_var_D = E->mbn_var_D;
       if (mbn_var_D
-          || Get_MotherBrain(0x40)->mbn_var_A == (uint16)FUNC16(MotherBrainsBrain_SetupBrainAndNeckToDraw)) {
+          || Get_MotherBrain(0x40)->mbn_var_A == FUNC16(MotherBrainsBrain_SetupBrainAndNeckToDraw)) {
         uint8 v4 = (mbn_var_D + 1) & 7;
         LOBYTE(E->mbn_var_D) = v4;
         uint16 v5 = 290;
@@ -6405,7 +6405,7 @@ void Shitroid_F3C4(uint16 k) {  // 0xA9F3C4
 }
 
 void Shitroid_Func_26(uint16 k) {  // 0xA9F3CB
-  if (Get_Shitroid(k)->shitr_var_A == (uint16)FUNC16(Shitroid_Func_25))
+  if (Get_Shitroid(k)->shitr_var_A == FUNC16(Shitroid_Func_25))
     Shitroid_F3C4(k);
 }
 
@@ -6705,7 +6705,7 @@ void Shitroid_Touch(void) {  // 0xA9F789
       E->shitr_var_B += v4;
       uint16 v6 = Math_MultByCos(0x40);
       E->shitr_var_C += v6;
-    } else if (E->shitr_var_A == (uint16)FUNC16(Shitroid_Func_14)) {
+    } else if (E->shitr_var_A == FUNC16(Shitroid_Func_14)) {
       R18_ = samus_x_pos;
       R20_ = samus_y_pos - 32;
       if (Shitroid_AccelerateTowardsPoint(cur_enemy_index, 0x200) & 1) {
@@ -6718,7 +6718,7 @@ void Shitroid_Touch(void) {  // 0xA9F789
         E->shitr_var_C = 0;
         E->shitr_var_A = FUNC16(Shitroid_Func_15);
       }
-    } else if (E->shitr_var_A == (uint16)FUNC16(Shitroid_Func_13)) {
+    } else if (E->shitr_var_A == FUNC16(Shitroid_Func_13)) {
       E->shitr_var_A = FUNC16(Shitroid_Func_14);
     }
   }

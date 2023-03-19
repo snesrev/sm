@@ -260,7 +260,7 @@ void PalInit_E1BC(uint16 k, uint16 j) {  // 0x8DE204
 }
 
 void PalPreInstr_E1BC(uint16 k) {  // 0x8DE20B
-  if (cinematic_function == (uint16)FUNC16(CinematicFunction_Intro_Page2)) {
+  if (cinematic_function == FUNC16(CinematicFunction_Intro_Page2)) {
     int v1 = k >> 1;
     palettefx_instr_list_ptrs[v1] = addr_off_8DE192;
     palettefx_instr_timers[v1] = 1;

@@ -547,7 +547,7 @@ void Torizo_Func_4(uint16 k) {  // 0xAAC6C6
   Enemy_Torizo *E = Get_Torizo(k);
   E->base.properties |= kEnemyProps_Tangible;
   uint16 v2 = 78;
-  while (plm_header_ptr[v2 >> 1] != (uint16)addr_kPlmHeader_D6EA) {
+  while (plm_header_ptr[v2 >> 1] != addr_kPlmHeader_D6EA) {
     v2 -= 2;
     if ((v2 & 0x8000u) != 0) {
       QueueMusic_Delayed8(g_word_AAB096);

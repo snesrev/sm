@@ -235,7 +235,7 @@ void HandleLayerBlendingXrayCantShowBlocks(void) {  // 0x8881A4
   reg_TSW = 4;
   next_gameplay_CGWSEL = 34;
   next_gameplay_CGADSUB = next_gameplay_CGADSUB & 0x80 | 0x61;
-  if (room_ptr == (uint16)addr_kRoom_cefb)
+  if (room_ptr == addr_kRoom_cefb)
     reg_TM = 17;
 }
 
@@ -257,7 +257,7 @@ static Func_V *const kLayerBlendPowerBombFuncs[4] = {  // 0x8881FE
   LayerBlendPowerBombFunc_6,
 };
 void HandleLayerBlendingPowerBomb(uint16 j) {
-  if (room_ptr == (uint16)addr_kRoom_a66a)
+  if (room_ptr == addr_kRoom_a66a)
     j = 6;
   kLayerBlendPowerBombFuncs[j >> 1]();
 }
@@ -323,12 +323,12 @@ void sub_8882AC(void) {  // 0x8882AC
 void InitializeSpecialEffectsForNewRoom(void) {  // 0x8882C1
   earthquake_sfx_index = 0;
   earthquake_sfx_timer = 0;
-  if (room_ptr == (uint16)addr_kRoom_9804
-      || room_ptr == (uint16)addr_kRoom_96ba
-      || room_ptr == (uint16)addr_kRoom_b32e
-      || room_ptr == (uint16)addr_kRoom_b457
-      || room_ptr == (uint16)addr_kRoom_dd58
-      || room_ptr == (uint16)addr_kRoom_dede) {
+  if (room_ptr == addr_kRoom_9804
+      || room_ptr == addr_kRoom_96ba
+      || room_ptr == addr_kRoom_b32e
+      || room_ptr == addr_kRoom_b457
+      || room_ptr == addr_kRoom_dd58
+      || room_ptr == addr_kRoom_dede) {
     earthquake_sfx_timer = -1;
   }
   debug_disable_minimap = 0;

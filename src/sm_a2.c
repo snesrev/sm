@@ -1605,7 +1605,7 @@ void GunshipTop_7(uint16 k) {  // 0xA2A987
 }
 
 void GunshipTop_8(uint16 k) {  // 0xA2A9BD
-  if (game_state == 8 && frame_handler_alfa == (uint16)FUNC16(Samus_FrameHandlerAlfa_Func11)) {
+  if (game_state == 8 && frame_handler_alfa == FUNC16(Samus_FrameHandlerAlfa_Func11)) {
     Enemy_GunshipTop *E = Get_GunshipTop(k);
     if ((int16)(E->base.x_pos - 8 - samus_x_pos) < 0
         && (int16)(E->base.x_pos + 8 - samus_x_pos) >= 0
@@ -2732,7 +2732,7 @@ void NorfairRio_Func_1(uint16 k) {  // 0xA2C281
     E->base.frozen_timer = v3;
     if (v3
         || (E->base.properties &= ~kEnemyProps_Invisible,
-            gEnemySpawnData(k)[31].some_flag == (uint16)addr_kNorfairRio_Ilist_C0F1)) {
+            gEnemySpawnData(k)[31].some_flag == addr_kNorfairRio_Ilist_C0F1)) {
       E->base.properties |= kEnemyProps_Invisible;
     } else {
       R18_ = addr_kNorfairRio_Ilist_C18F;
@@ -4068,8 +4068,8 @@ void CallRisingFallingPlatformFunc(uint32 ea) {
 void RisingFallingPlatform_Main(void) {  // 0xA2EED1
   Enemy_RisingFallingPlatform *E = Get_RisingFallingPlatform(cur_enemy_index);
   CallRisingFallingPlatformFunc(E->rfpm_var_A | 0xA20000);
-  if (E->rfpm_var_A != (uint16)FUNC16(RisingFallingPlatform_Func_9)
-      && E->rfpm_var_A != (uint16)FUNC16(RisingFallingPlatform_Func_10)
+  if (E->rfpm_var_A != FUNC16(RisingFallingPlatform_Func_9)
+      && E->rfpm_var_A != FUNC16(RisingFallingPlatform_Func_10)
       && (enemy_index_colliding_dirs[3] & (uint16)(enemy_index_colliding_dirs[2] & enemy_index_colliding_dirs[1] & enemy_index_colliding_dirs[0])) != 0xFFFF
       && (enemy_index_colliding_dirs[3] & (uint16)(enemy_index_colliding_dirs[2] & enemy_index_colliding_dirs[1] & enemy_index_colliding_dirs[0])) == cur_enemy_index) {
     if (samus_contact_damage_index)
@@ -4226,8 +4226,8 @@ LABEL_10:
       return;
     E->rfpm_var_0C = 1;
   }
-  if (E->rfpm_var_A != (uint16)FUNC16(RisingFallingPlatform_Func_9)
-      && E->rfpm_var_A != (uint16)FUNC16(RisingFallingPlatform_Func_10)) {
+  if (E->rfpm_var_A != FUNC16(RisingFallingPlatform_Func_9)
+      && E->rfpm_var_A != FUNC16(RisingFallingPlatform_Func_10)) {
     E->rfpm_var_A = FUNC16(RisingFallingPlatform_Func_9);
     if (E->rfpm_var_20)
       E->rfpm_var_A = FUNC16(RisingFallingPlatform_Func_10);
@@ -4284,8 +4284,8 @@ void HorizontalShootableShutter_Func_1(uint16 k) {  // 0xA2F11E
 void HorizontalShootableShutter_Main(void) {  // 0xA2F1DE
   Enemy_RisingFallingPlatform *E = Get_RisingFallingPlatform(cur_enemy_index);
   CallRisingFallingPlatformFunc(E->rfpm_var_A | 0xA20000);
-  if (E->rfpm_var_A != (uint16)FUNC16(HorizontalShootableShutter_Func_8)
-      && E->rfpm_var_A != (uint16)FUNC16(HorizontalShootableShutter_Func_9)
+  if (E->rfpm_var_A != FUNC16(HorizontalShootableShutter_Func_8)
+      && E->rfpm_var_A != FUNC16(HorizontalShootableShutter_Func_9)
       && (enemy_index_colliding_dirs[3] & (uint16)(enemy_index_colliding_dirs[2] & enemy_index_colliding_dirs[1] & enemy_index_colliding_dirs[0])) != 0xFFFF
       && (enemy_index_colliding_dirs[3] & (uint16)(enemy_index_colliding_dirs[2] & enemy_index_colliding_dirs[1] & enemy_index_colliding_dirs[0])) == cur_enemy_index
       && samus_contact_damage_index) {
@@ -4431,7 +4431,7 @@ void HorizontalShootableShutter_Func_14(void) {  // 0xA2F3D4
 
 void HorizontalShootableShutter_Touch(void) {  // 0xA2F3D8
   Enemy_HorizontalShootableShutter *E = Get_HorizontalShootableShutter(cur_enemy_index);
-  if (E->hssr_var_A == (uint16)FUNC16(HorizontalShootableShutter_Func_14)) {
+  if (E->hssr_var_A == FUNC16(HorizontalShootableShutter_Func_14)) {
     if ((int16)(samus_x_pos - E->base.x_pos) >= 0) {
       if ((joypad1_lastkeys & 0x200) != 0) {
         extra_samus_x_displacement = 4;
@@ -4457,8 +4457,8 @@ void HorizontalShootableShutter_Powerbomb(void) {  // 0xA2F41A
         return;
       E->rfpm_var_0C = 1;
     }
-    if (E->rfpm_var_A != (uint16)FUNC16(HorizontalShootableShutter_Func_8)
-        && E->rfpm_var_A != (uint16)FUNC16(HorizontalShootableShutter_Func_9)) {
+    if (E->rfpm_var_A != FUNC16(HorizontalShootableShutter_Func_8)
+        && E->rfpm_var_A != FUNC16(HorizontalShootableShutter_Func_9)) {
       E->rfpm_var_20 ^= 1u;
       E->rfpm_var_A = FUNC16(HorizontalShootableShutter_Func_8);
       if (E->rfpm_var_20)

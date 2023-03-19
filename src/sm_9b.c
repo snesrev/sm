@@ -219,11 +219,11 @@ void CancelGrappleBeamIfIncompatiblePose(void) {  // 0x9BB861
 
   if (kIsGrappleBannedForMovementType[samus_movement_type]) {
 LABEL_2:
-    if (grapple_beam_function != (uint16)FUNC16(GrappleBeamFunc_Inactive))
+    if (grapple_beam_function != FUNC16(GrappleBeamFunc_Inactive))
       grapple_beam_function = FUNC16(GrappleBeamFunc_Cancel);
     return;
   }
-  if (grapple_beam_function != (uint16)FUNC16(GrappleBeamFunc_Inactive)
+  if (grapple_beam_function != FUNC16(GrappleBeamFunc_Inactive)
       && sign16(grapple_beam_function + 0x3882)) {
     v0 = *(&kPoseParams[0].direction_shots_fired + (uint16)(8 * samus_pose));
     if ((v0 & 0xF0) == 0) {
@@ -737,7 +737,7 @@ void GrappleBeamHandler(void) {  // 0x9BC490
   samus_grapple_flags &= ~1u;
   CancelGrappleBeamIfIncompatiblePose();
   CallGrappleBeamFunc(grapple_beam_function | 0x9B0000);
-  if (grapple_beam_function != (uint16)FUNC16(GrappleBeamFunc_Inactive)
+  if (grapple_beam_function != FUNC16(GrappleBeamFunc_Inactive)
       && sign16(grapple_beam_function + 0x37AA)
       && (samus_suit_palette_index & 4) == 0
       && fx_type

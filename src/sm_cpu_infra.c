@@ -56,8 +56,12 @@ void Call(uint32 addr) {
   RunAsmCode(addr, 0, 0, 0, 0);
 }
 
+uint8_t *SnesRomPtr(uint32 v) {
+  return RomPtr(v);
+}
+
 bool ProcessHook(uint32 v) {
-  uint8_t *rombyte = RomPtr(v);
+  uint8_t *rombyte = SnesRomPtr(v);
   switch (hookmode) {
   case 0: // remove hooks
     *rombyte = hook_orgbyte[hookcnt++];
@@ -79,7 +83,7 @@ bool ProcessHook(uint32 v) {
 bool FixBugHook(uint32 addr) {
   switch (hookmode) {
   case 1: { // install hooks
-    uint8_t *rombyte = RomPtr(addr);
+    uint8_t *rombyte = SnesRomPtr(addr);
     hook_fixbug_orgbyte[hookcnt++] = *rombyte;
     *rombyte = 0;
     return false;
@@ -342,7 +346,7 @@ int RunPatchBugHook(uint32 addr) {
     } else {
       g_cpu->k = new_pc >> 16;
       g_cpu->pc = (new_pc & 0xffff) + 1;
-      return *RomPtr(new_pc);
+      return *SnesRomPtr(new_pc);
     }
   }
 
@@ -563,12 +567,12 @@ static bool loadRom(const char *name, Snes *snes) {
 
 void PatchBytes(uint32 addr, const uint8 *value, size_t n) {
   for(size_t i = 0; i != n; i++)
-    RomPtr(addr)[i] = value[i];
+    SnesRomPtr(addr)[i] = value[i];
 }
 
 // Patches add/sub to ignore carry
 void FixupCarry(uint32 addr) {
-  *RomPtr(addr) = 0;
+  *SnesRomPtr(addr) = 0;
 }
 
 void RtlUpdateSnesPatchForBugfix() {
@@ -761,7 +765,7 @@ Snes *SnesInit(const char *filename) {
   RtlUpdateSnesPatchForBugfix();
 
   for (size_t i = 0; i != arraysize(kPatchedCarrys); i++) {
-    uint8 t = *RomPtr(kPatchedCarrys[i]);
+    uint8 t = *SnesRomPtr(kPatchedCarrys[i]);
     if (t) {
       kPatchedCarrysOrg[i] = t;
       FixupCarry(kPatchedCarrys[i]);

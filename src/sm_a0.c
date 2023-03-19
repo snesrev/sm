@@ -577,7 +577,7 @@ void DetermineWhichEnemiesToProcess(void) {  // 0xA08EB6
     do {
       uint16 v5 = cur_enemy_index;
       EnemyData *v6 = gEnemyData(cur_enemy_index);
-      if (v6->enemy_ptr && v6->enemy_ptr != (uint16)addr_kEnemyDef_DAFF) {
+      if (v6->enemy_ptr && v6->enemy_ptr != addr_kEnemyDef_DAFF) {
         if ((v6->properties & 0x200) != 0) {
           v6->enemy_ptr = 0;
         } else {
@@ -601,7 +601,7 @@ void DetermineWhichEnemiesToProcess(void) {  // 0xA08EB6
     do {
       uint16 v0 = cur_enemy_index;
       EnemyData *v1 = gEnemyData(cur_enemy_index);
-      if (v1->enemy_ptr && v1->enemy_ptr != (uint16)addr_kEnemyDef_DAFF) {
+      if (v1->enemy_ptr && v1->enemy_ptr != addr_kEnemyDef_DAFF) {
         uint16 properties = v1->properties;
         if ((properties & 0x200) != 0) {
           v1->enemy_ptr = 0;
@@ -2368,7 +2368,7 @@ void EnemySamusCollHandler_Multibox(void) {  // 0xA09A5A
   enemy_processing_stage = 6;
   if (v0[11]) {
     touch_ai = get_EnemyDef_A2(*v0)->touch_ai;
-    if (touch_ai != (uint16)FUNC16(nullsub_170) && touch_ai != (uint16)FUNC16(nullsub_169)) {
+    if (touch_ai != FUNC16(nullsub_170) && touch_ai != FUNC16(nullsub_169)) {
       if (samus_contact_damage_index) {
         samus_invincibility_timer = 0;
       } else if (samus_invincibility_timer) {
@@ -2434,13 +2434,13 @@ void EnemyProjectileCollHandler_Multibox(void) {  // 0xA09B7F
     EnemyData *v0 = gEnemyData(cur_enemy_index);
     uint16 spritemap_pointer = v0->spritemap_pointer;
     if (spritemap_pointer) {
-      if (spritemap_pointer != (uint16)addr_kExtendedSpritemap_Nothing_A0) {
+      if (spritemap_pointer != addr_kExtendedSpritemap_Nothing_A0) {
         shot_ai = get_EnemyDef_A2(v0->enemy_ptr)->shot_ai;
-        if (shot_ai != (uint16)FUNC16(nullsub_170) && shot_ai != (uint16)FUNC16(nullsub_169)) {
+        if (shot_ai != FUNC16(nullsub_170) && shot_ai != FUNC16(nullsub_169)) {
           EnemyData *v3 = gEnemyData(cur_enemy_index);
           if ((v3->properties & 0x400) == 0
               && !v3->invincibility_timer
-              && v3->enemy_ptr != (uint16)addr_kEnemyDef_DAFF) {
+              && v3->enemy_ptr != addr_kEnemyDef_DAFF) {
             collision_detection_index = 0;
             while (1) {
               uint16 v4;
@@ -2528,8 +2528,8 @@ void EnemyBombCollHandler_Multibox(void) {  // 0xA09D23
     if ((v0->properties & 0x400) == 0 && !v0->invincibility_timer) {
       uint16 enemy_ptr = gEnemyData(cur_enemy_index)->enemy_ptr;
       shot_ai = get_EnemyDef_A2(enemy_ptr)->shot_ai;
-      if (shot_ai != (uint16)FUNC16(nullsub_170)
-          && shot_ai != (uint16)FUNC16(nullsub_169)
+      if (shot_ai != FUNC16(nullsub_170)
+          && shot_ai != FUNC16(nullsub_169)
           && bomb_counter) {
         collision_detection_index = 5;
         while (1) {
@@ -2628,19 +2628,19 @@ uint16 GrappleBeam_CollDetect_Enemy(void) {  // 0xA09E9A
   uint16 v0 = 0;
   uint16 enemy_ptr = ED->enemy_ptr;
   grapple_ai = get_EnemyDef_A2(ED->enemy_ptr)->grapple_ai;
-  if (grapple_ai + (uint16)FUNC16(Enemy_GrappleReact_NoInteract_A0)) {
+  if (grapple_ai + FUNC16(Enemy_GrappleReact_NoInteract_A0)) {
     v0 = 1;
-    if (grapple_ai != (uint16)FUNC16(Enemy_GrappleReact_SamusLatchesOn_A0)) {
+    if (grapple_ai != FUNC16(Enemy_GrappleReact_SamusLatchesOn_A0)) {
       v0 = 2;
-      if (grapple_ai != (uint16)FUNC16(Enemy_GrappleReact_KillEnemy_A0)) {
+      if (grapple_ai != FUNC16(Enemy_GrappleReact_KillEnemy_A0)) {
         v0 = 3;
-        if (grapple_ai != (uint16)FUNC16(Enemy_GrappleReact_CancelBeam_A0)) {
+        if (grapple_ai != FUNC16(Enemy_GrappleReact_CancelBeam_A0)) {
           v0 = 4;
-          if (grapple_ai != (uint16)FUNC16(Enemy_GrappleReact_SamusLatchesNoInvinc_A0)) {
+          if (grapple_ai != FUNC16(Enemy_GrappleReact_SamusLatchesNoInvinc_A0)) {
             v0 = 5;
-            if (grapple_ai != (uint16)FUNC16(Enemy_GrappleReact_SamusLatchesParalyze_A0)) {
+            if (grapple_ai != FUNC16(Enemy_GrappleReact_SamusLatchesParalyze_A0)) {
               v0 = 6;
-              if (grapple_ai != (uint16)FUNC16(Enemy_GrappleReact_HurtSamus_A0))
+              if (grapple_ai != FUNC16(Enemy_GrappleReact_HurtSamus_A0))
                 v0 = 0;
             }
           }
@@ -2742,7 +2742,7 @@ void EnemySamusCollHandler(void) {  // 0xA0A07A
     if (samus_contact_damage_index) {
       samus_invincibility_timer = 0;
     } else if (samus_invincibility_timer) {
-      if (gEnemyData(cur_enemy_index)->enemy_ptr != (uint16)addr_kEnemyDef_DAFF)
+      if (gEnemyData(cur_enemy_index)->enemy_ptr != addr_kEnemyDef_DAFF)
         return;
       uint16 some_flag = gEnemySpawnData(cur_enemy_index)->some_flag;
       if (!some_flag || some_flag == 8)
@@ -2750,7 +2750,7 @@ void EnemySamusCollHandler(void) {  // 0xA0A07A
     }
     uint16 enemy_ptr = gEnemyData(cur_enemy_index)->enemy_ptr;
     touch_ai = get_EnemyDef_A2(enemy_ptr)->touch_ai;
-    if (touch_ai != (uint16)FUNC16(nullsub_170) && touch_ai != (uint16)FUNC16(nullsub_169)) {
+    if (touch_ai != FUNC16(nullsub_170) && touch_ai != FUNC16(nullsub_169)) {
       EnemyData *v3 = gEnemyData(cur_enemy_index);
       uint16 v4 = abs16(samus_x_pos - v3->x_pos);
       bool v5 = v4 < samus_x_radius;
@@ -2761,7 +2761,7 @@ void EnemySamusCollHandler(void) {  // 0xA0A07A
         uint16 v8 = v7 - samus_y_radius;
         if (v5 || v8 < v3->y_height) {
           R20_ = 2 * gEnemyData(cur_enemy_index)->spritemap_pointer;
-          if (gEnemyData(cur_enemy_index)->enemy_ptr == (uint16)addr_kEnemyDef_DAFF
+          if (gEnemyData(cur_enemy_index)->enemy_ptr == addr_kEnemyDef_DAFF
               || !gEnemyData(cur_enemy_index)->frozen_timer) {
             enemy_ptr = gEnemyData(cur_enemy_index)->enemy_ptr;
             enemy_ai_pointer.addr = get_EnemyDef_A2(enemy_ptr)->touch_ai;
@@ -2783,9 +2783,9 @@ void EnemyProjectileCollHandler(void) {  // 0xA0A143
     EnemyData *v0 = gEnemyData(cur_enemy_index);
     uint16 spritemap_pointer = v0->spritemap_pointer;
     if (spritemap_pointer) {
-      if (spritemap_pointer != (uint16)addr_kSpritemap_Nothing_A0
+      if (spritemap_pointer != addr_kSpritemap_Nothing_A0
           && (v0->properties & 0x400) == 0
-          && v0->enemy_ptr != (uint16)addr_kEnemyDef_DAFF
+          && v0->enemy_ptr != addr_kEnemyDef_DAFF
           && !v0->invincibility_timer) {
         collision_detection_index = 0;
         int v2;
@@ -2836,7 +2836,7 @@ void EnemyBombCollHandler(void) {  // 0xA0A236
   if (bomb_counter) {
     if (gEnemyData(cur_enemy_index)->spritemap_pointer) {
       EnemyData *v0 = gEnemyData(cur_enemy_index);
-      if (!v0->invincibility_timer && v0->enemy_ptr != (uint16)addr_kEnemyDef_DAFF) {
+      if (!v0->invincibility_timer && v0->enemy_ptr != addr_kEnemyDef_DAFF) {
         collision_detection_index = 5;
         while (1) {
           int v1 = collision_detection_index;
@@ -2883,7 +2883,7 @@ void ProcessEnemyPowerBombInteraction(void) {  // 0xA0A306
       if (!v0->invincibility_timer) {
         uint16 enemy_ptr = v0->enemy_ptr;
         if (v0->enemy_ptr) {
-          if (enemy_ptr != (uint16)addr_kEnemyDef_DAFF) {
+          if (enemy_ptr != addr_kEnemyDef_DAFF) {
             uint16 vulnerability_ptr = get_EnemyDef_A2(enemy_ptr)->vulnerability_ptr;
             if (!vulnerability_ptr)
               vulnerability_ptr = addr_stru_B4EC1C;

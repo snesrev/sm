@@ -39,34 +39,31 @@ void CallSpriteObjectInstr(uint32 ea) {
 void HandleSpriteObjects(void) {  // 0xB4BC82
   uint16 v1;
 
-  if (!(debug_time_frozen_for_enemies | time_is_frozen_flag)) {
-    sprite_object_index = 62;
-    while (1) {
-      int v0;
-      v0 = sprite_object_index >> 1;
-      if (!sprite_instr_list_ptrs[v0] || (sprite_disable_flag[v0] & 1) != 0)
-        goto LABEL_9;
-      v1 = sprite_instr_timer[v0];
-      if ((v1 & 0x8000u) != 0)
-        break;
-      sprite_instr_timer[v0] = v1 - 1;
-      if (v1 == 1) {
-        uint16 v3 = sprite_instr_list_ptrs[v0] + 4;
-        sprite_instr_list_ptrs[v0] = v3;
-        v1 = *(uint16 *)RomPtr_B4(v3);
-        if (!sign16(v1 + 0x8000))
-          break;
-        sprite_instr_timer[sprite_object_index >> 1] = v1;
-      }
-LABEL_9:
-      sprite_object_index -= 2;
-      if ((sprite_object_index & 0x8000u) != 0)
-        return;
+  if (debug_time_frozen_for_enemies | time_is_frozen_flag)
+    return;
+
+  sprite_object_index = 62;
+  do {
+    int v0;
+    v0 = sprite_object_index >> 1;
+    if (!sprite_instr_list_ptrs[v0] || (sprite_disable_flag[v0] & 1) != 0)
+      continue;
+    v1 = sprite_instr_timer[v0];
+    if (sign16(v1)) {
+BREAKLABEL:
+      CallSpriteObjectInstr(v1 | 0xB40000);
+      continue;
     }
-    R18_ = v1;
-    CallSpriteObjectInstr(v1 | 0xB40000);
-    goto LABEL_9;
-  }
+    sprite_instr_timer[v0] = v1 - 1;
+    if (v1 == 1) {
+      uint16 v3 = sprite_instr_list_ptrs[v0] + 4;
+      sprite_instr_list_ptrs[v0] = v3;
+      v1 = *(uint16 *)RomPtr_B4(v3);
+      if (sign16(v1))
+        goto BREAKLABEL;
+      sprite_instr_timer[sprite_object_index >> 1] = v1;
+    }
+  } while (!sign16(sprite_object_index -= 2));
 }
 
 void SpriteObject_Instr_RepeatLast(void) {  // 0xB4BCF0

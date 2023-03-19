@@ -233,10 +233,10 @@ void NorfairPipeBug_8BA8(void) {  // 0xB38BA8
 
 void NorfairPipeBug_Func_1(void) {  // 0xB38BCD
   if (LOBYTE(Get_PipeBug(cur_enemy_index)->pbg_parameter_2)
-      && Get_PipeBug(cur_enemy_index + 64)->pbg_var_A == (uint16)FUNC16(NorfairPipeBug_Func_1)
-      && Get_PipeBug(cur_enemy_index + 128)->pbg_var_A == (uint16)FUNC16(NorfairPipeBug_Func_1)
-      && Get_PipeBug(cur_enemy_index + 192)->pbg_var_A == (uint16)FUNC16(NorfairPipeBug_Func_1)
-      && Get_PipeBug(cur_enemy_index + 256)->pbg_var_A == (uint16)FUNC16(NorfairPipeBug_Func_1)) {
+      && Get_PipeBug(cur_enemy_index + 64)->pbg_var_A == FUNC16(NorfairPipeBug_Func_1)
+      && Get_PipeBug(cur_enemy_index + 128)->pbg_var_A == FUNC16(NorfairPipeBug_Func_1)
+      && Get_PipeBug(cur_enemy_index + 192)->pbg_var_A == FUNC16(NorfairPipeBug_Func_1)
+      && Get_PipeBug(cur_enemy_index + 256)->pbg_var_A == FUNC16(NorfairPipeBug_Func_1)) {
     Get_PipeBug(cur_enemy_index)->pbg_var_A = FUNC16(NorfairPipeBug_Func_2);
   }
 }

@@ -140,7 +140,7 @@ const uint16 *MiniDraygon_Instr_2(uint16 k, const uint16 *jp) {  // 0xA8878F
 }
 
 const uint16 *MiniDraygon_Instr_1(uint16 k, const uint16 *jp) {  // 0xA8879B
-  if (gEnemySpawnData(cur_enemy_index)[30].cause_of_death == (uint16)addr_kMiniDraygon_Ilist_870B)
+  if (gEnemySpawnData(cur_enemy_index)[30].cause_of_death == addr_kMiniDraygon_Ilist_870B)
     Get_MiniDraygon(cur_enemy_index)->mdn_var_F = -8;
   else
     Get_MiniDraygon(cur_enemy_index)->mdn_var_F = 8;
@@ -149,7 +149,7 @@ const uint16 *MiniDraygon_Instr_1(uint16 k, const uint16 *jp) {  // 0xA8879B
 
 const uint16 *MiniDraygon_Instr_3(uint16 k, const uint16 *jp) {  // 0xA887B6
   Enemy_MiniDraygon *E = Get_MiniDraygon(cur_enemy_index);
-  if (gEnemySpawnData(cur_enemy_index)[30].cause_of_death == (uint16)addr_kMiniDraygon_Ilist_870B) {
+  if (gEnemySpawnData(cur_enemy_index)[30].cause_of_death == addr_kMiniDraygon_Ilist_870B) {
     ++E->mdn_var_F;
   } else {
     --E->mdn_var_F;
@@ -416,7 +416,7 @@ void MiniDraygon_Func_13(void) {  // 0xA88B16
   if (frozen_timer) {
     E1->base.frozen_timer = frozen_timer;
     E1->base.ai_handler_bits |= 4u;
-    if (E2->mdn_var_C != (uint16)FUNC16(MiniDraygon_Func_9)) {
+    if (E2->mdn_var_C != FUNC16(MiniDraygon_Func_9)) {
       E2->base.ai_handler_bits |= 4u;
       E2->base.frozen_timer = E->base.frozen_timer;
     }
@@ -1314,7 +1314,7 @@ void YappingMaw_Func_11(void) {  // 0xA8A68A
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   if (E->ymw_var_30)
     YappingMaw_Func_10();
-  if ((--E->ymw_var_E & 0x8000u) != 0 && samus_input_handler != (uint16)FUNC16(Samus_InputHandler_E91D)) {
+  if ((--E->ymw_var_E & 0x8000u) != 0 && samus_input_handler != FUNC16(Samus_InputHandler_E91D)) {
     samus_input_handler = FUNC16(Samus_InputHandler_E913);
     E->ymw_var_30 = 0;
     E->ymw_var_35 = 48;
@@ -1390,7 +1390,7 @@ void YappingMaw_Shot(void) {  // 0xA8A7BD
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   if (E->base.health) {
     if (E->base.frozen_timer) {
-      if (samus_input_handler != (uint16)FUNC16(Samus_InputHandler_E91D))
+      if (samus_input_handler != FUNC16(Samus_InputHandler_E91D))
         samus_input_handler = FUNC16(Samus_InputHandler_E913);
       E->ymw_var_30 = 0;
     }
@@ -1400,7 +1400,7 @@ void YappingMaw_Shot(void) {  // 0xA8A7BD
     *(uint16 *)((char *)enemy_projectile_id + E->ymw_var_42) = 0;
     *(uint16 *)((char *)enemy_projectile_id + E->ymw_var_43) = 0;
     sprite_instr_list_ptrs[E->ymw_var_46 >> 1] = 0;
-    if (samus_input_handler != (uint16)FUNC16(Samus_InputHandler_E91D))
+    if (samus_input_handler != FUNC16(Samus_InputHandler_E91D))
       samus_input_handler = FUNC16(Samus_InputHandler_E913);
     Get_YappingMaw(cur_enemy_index)->ymw_var_30 = 0;
   }
@@ -1855,7 +1855,7 @@ void NorfairLavaMan_Func_14(uint16 k) {  // 0xA8B2C5
 }
 
 void NorfairLavaMan_Func_15(uint16 k) {  // 0xA8B30D
-  if (enemy_drawing_queue[(cur_enemy_index >> 1) + 87] == (uint16)FUNC16(NorfairLavaMan_Func_8))
+  if (enemy_drawing_queue[(cur_enemy_index >> 1) + 87] == FUNC16(NorfairLavaMan_Func_8))
     Get_NorfairLavaMan(cur_enemy_index)->nlmn_var_F = FUNC16(NorfairLavaMan_Func_17);
 }
 
@@ -1895,7 +1895,7 @@ void NorfairLavaMan_Func_17(uint16 k) {  // 0xA8B356
 
 void NorfairLavaMan_Func_18(uint16 k) {  // 0xA8B3A7
   int v1 = cur_enemy_index >> 1;
-  if (enemy_drawing_queue[v1 + 87] == (uint16)FUNC16(NorfairLavaMan_Func_7))
+  if (enemy_drawing_queue[v1 + 87] == FUNC16(NorfairLavaMan_Func_7))
     Get_NorfairLavaMan(cur_enemy_index)->nlmn_var_F = FUNC16(NorfairLavaMan_Func_15);
   else
     Get_NorfairLavaMan(cur_enemy_index)->base.y_pos = enemy_drawing_queue[v1 + 93]
@@ -2511,8 +2511,8 @@ void Beetom_Shot(void) {  // 0xA8BEAC
   Enemy_NormalShotAI_A8();
   Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
   if (E->base.frozen_timer
-      && (E->beetom_var_C == (uint16)FUNC16(Beetom_Func_33)
-          || E->beetom_var_C == (uint16)FUNC16(Beetom_Func_32))) {
+      && (E->beetom_var_C == FUNC16(Beetom_Func_33)
+          || E->beetom_var_C == FUNC16(Beetom_Func_32))) {
     E->beetom_var_C = FUNC16(Beetom_Func_15);
   }
   E->beetom_var_08 = 0;
@@ -4239,7 +4239,7 @@ const uint16 *KiHunter_Instr_1(uint16 k, const uint16 *jp) {  // 0xA8F526
   E->base.current_instruction = R18_;
   E->base.instruction_timer = 1;
   Enemy_KiHunter *E1 = Get_KiHunter(k + 64);
-  if (E1->khr_var_A == (uint16)FUNC16(KiHunter_Func_9)) {
+  if (E1->khr_var_A == FUNC16(KiHunter_Func_9)) {
     E1->base.current_instruction = R18_;
     E1->base.instruction_timer = 1;
   }
@@ -4380,7 +4380,7 @@ void KiHunter_Shot(void) {  // 0xA8F701
         EK->khr_var_08 = 0;
         EK->khr_var_09 = 1;
         cur_enemy_index = old_cur_enemy_index + 64;
-        if (E1->khr_var_A != (uint16)FUNC16(KiHunter_Func_10)) {
+        if (E1->khr_var_A != FUNC16(KiHunter_Func_10)) {
           E1->khr_var_07 = E1->base.y_pos;
           E1->khr_var_08 = E1->base.x_pos;
           KiHunter_Func_17();

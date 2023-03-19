@@ -863,7 +863,7 @@ LABEL_7:
       }
     }
     if (R48) {
-      if (E->kraid_var_A == (uint16)FUNC16(Kraid_Mainloop_Thinking)) {
+      if (E->kraid_var_A == FUNC16(Kraid_Mainloop_Thinking)) {
         E->kraid_var_A = FUNC16(Kraid_InitEyeGlowing);
         uint16 kraid_mouth_flags = E->kraid_mouth_flags;
         if ((kraid_mouth_flags & 1) != 0)
@@ -1364,7 +1364,7 @@ void Kraid_Main_AttackWithMouthOpen(void) {  // 0xA7BBEA
       E->kraid_mouth_flags = 0;
     }
   } else {
-    if (*((uint16 *)RomPtr_A7(E->kraid_var_B - 8) + 1) == (uint16)addr_kKraidTilemaps_3
+    if (*((uint16 *)RomPtr_A7(E->kraid_var_B - 8) + 1) == addr_kKraidTilemaps_3
         && (E->kraid_var_C & 0xF) == 0) {
       SpawnEnemyProjectileWithGfx(
         g_word_A7BC65[(uint8)(random_number & 0xE) >> 1],
@@ -1575,11 +1575,11 @@ void Kraid_HandleFirstPhase(void) {  // 0xA7C005
     E0->kraid_next = FUNC16(Kraid_GetsBig_ReleaseCamera);
     uint16 v2 = *((uint16 *)RomPtr_A7(E0->kraid_var_B) + 1);
     uint16 v3 = 50;
-    if (v2 != (uint16)addr_kKraidTilemaps_0) {
+    if (v2 != addr_kKraidTilemaps_0) {
       v3 = 42;
-      if (v2 != (uint16)addr_kKraidTilemaps_1) {
+      if (v2 != addr_kKraidTilemaps_1) {
         v3 = 34;
-        if (v2 != (uint16)addr_kKraidTilemaps_2)
+        if (v2 != addr_kKraidTilemaps_2)
           v3 = 26;
       }
     }
@@ -2558,7 +2558,7 @@ void Phantoon_MoveInSwoopingPattern(uint16 k) {  // 0xA7D2D1
   } else if (!sign16(v12 - 448)) {
     v7->base.x_pos = 448;
   }
-  if (Get_Phantoon(k)->phant_var_F == (uint16)FUNC16(Phantoon_CompleteSwoopAfterFatalShot))
+  if (Get_Phantoon(k)->phant_var_F == FUNC16(Phantoon_CompleteSwoopAfterFatalShot))
     v13 = 112;
   else
     v13 = samus_y_pos - 48;
@@ -2604,8 +2604,8 @@ void Phantoon_StartDeathSequence(uint16 k) {  // 0xA7D421
   int16 v3;
 
   Enemy_Phantoon *E = Get_Phantoon(k);
-  if (E->phant_var_F == (uint16)FUNC16(Phantoon_IsSwooping)
-      || E->phant_var_F == (uint16)FUNC16(Phantoon_FadeoutWithSwoop)) {
+  if (E->phant_var_F == FUNC16(Phantoon_IsSwooping)
+      || E->phant_var_F == FUNC16(Phantoon_FadeoutWithSwoop)) {
     E->phant_var_F = FUNC16(Phantoon_CompleteSwoopAfterFatalShot);
   } else {
     E->phant_var_F = FUNC16(Phantoon_DyingPhantoonFadeInOut);
@@ -3334,9 +3334,9 @@ void Phantoon_Shot(void) {  // 0xA7DD9B
     if ((EK->base.ai_handler_bits & 2) != 0) {
       QueueSfx2_Max6(0x73u);
       uint16 phanto_var_F = EK->phant_var_F;
-      if (phanto_var_F != (uint16)FUNC16(Phantoon_EyeFollowsSamusUntilTimerRunsOut)
-          && phanto_var_F != (uint16)FUNC16(Phantoon_FollowSamusWithEyeDuringFireballRain)) {
-        if (phanto_var_F != (uint16)FUNC16(Phantoon_IsSwooping)) {
+      if (phanto_var_F != FUNC16(Phantoon_EyeFollowsSamusUntilTimerRunsOut)
+          && phanto_var_F != FUNC16(Phantoon_FollowSamusWithEyeDuringFireballRain)) {
+        if (phanto_var_F != FUNC16(Phantoon_IsSwooping)) {
 LABEL_20:
           Get_Phantoon(0x80)->phant_parameter_2 = 2;
           return;
