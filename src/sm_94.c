@@ -4,6 +4,15 @@
 #include "variables.h"
 #include "funcs.h"
 
+
+#define fnkPlmHeaderDefPtrs 0x949139
+#define off_9492D9 ((uint16*)RomFixedPtr(0x9492d9))
+#define off_9492E9 ((uint16*)RomFixedPtr(0x9492e9))
+#define kPlmHeaderDefPtrs ((uint16*)RomFixedPtr(0x949139))
+#define off_94936B ((uint16*)RomFixedPtr(0x94936b))
+
+
+
 static const uint8 kAlignPos_Tab1[512] = {
   16, 16, 16, 16, 16, 16, 16, 16,  0,  0,  0,  0,  0,  0,  0,  0,
    8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
@@ -119,11 +128,7 @@ static const uint16 kBlockColl_Horiz_Slope_NonSquare_Tab[64] = {
   0x6000,  0x50,
 };
 
-#define fnkPlmHeaderDefPtrs 0x949139
 
-#define off_9492D9 ((uint16*)RomPtr(0x9492d9))
-#define off_9492E9 ((uint16*)RomPtr(0x9492e9))
-#define kPlmHeaderDefPtrs ((uint16*)RomPtr(0x949139))
 
 uint16 PostGrappleColl_Horiz_Slope_NonSquare(uint16 k) {  // 0x948000
   int16 v1;
@@ -895,7 +900,6 @@ uint8 BlockColl_Vert_SpecialBlock(void) {  // 0x949102
   }
 }
 
-#define off_94936B ((uint16*)RomPtr(0x94936b))
 
 uint8 BlockColl_Horiz_BombableAir(void) {  // 0x9492F9
   int16 v0;
@@ -1492,7 +1496,7 @@ uint8 BlockInsideReact_SpecialAir(void) {
   v0 = BTS[cur_block_index] << 8;
   if (v0 < 0) {
     R34 = g_off_949B06[area_index];
-    uint8 *v3 = RomPtr_94(R34);
+    const uint8 *v3 = RomPtr_94(R34);
     SpawnPLM(*(uint16 *)&v3[(2 * (HIBYTE(v0) & 0x7F))]);
   } else {
     off_949966[v0 >> 8]();
@@ -1707,7 +1711,7 @@ uint8 BlockBombedReact_Special(void) {  // 0x949D71
   if ((v0 & 0x80) != 0) {
     uint16 *kBlockBombedReact_Region_Plm = (uint16 *)RomPtr_94(0x9e44);
     R18_ = kBlockBombedReact_Region_Plm[area_index];
-    uint8 *v2 = RomPtr_94(R18_);
+    const uint8 *v2 = RomPtr_94(R18_);
     SpawnPLM(*(uint16 *)&v2[(uint16)(2 * (v0 & 0x7F))]);
   } else {
     uint16 *kBlockBombedReact_Special_Plm = (uint16 *)RomPtr_94(0x9dA4);

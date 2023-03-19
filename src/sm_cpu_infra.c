@@ -4,6 +4,10 @@
 #include "snes/snes.h"
 #include "tracing.h"
 
+
+
+
+
 #include "ida_types.h"
 #include "variables.h"
 #include "funcs.h"
@@ -57,7 +61,7 @@ void Call(uint32 addr) {
 }
 
 uint8_t *SnesRomPtr(uint32 v) {
-  return RomPtr(v);
+  return (uint8*)RomPtr(v);
 }
 
 bool ProcessHook(uint32 v) {
@@ -409,7 +413,7 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
     for (size_t i = 0; i < 0x20000; i++) {
       if (a->ram[i] != b->ram[i]) {
         if (++j < 256) {
-          if (/* (i & 1) == 0 && */a->ram[i + 1] != b->ram[i + 1]) {
+          if (((i & 1) == 0 || i < 0x10000) && a->ram[i + 1] != b->ram[i + 1]) {
             fprintf(stderr, "0x%.6X: %.4X != %.4X (%.4X)\n", (int)i,
                     WORD(b->ram[i]), WORD(a->ram[i]), WORD(prev->ram[i]));
             i++, j++;
@@ -594,6 +598,7 @@ Snes *SnesInit(const char *filename) {
   }
 
   g_sram = g_snes->cart->ram;
+  g_rom = g_snes->cart->rom;
 
   RtlSetupEmuCallbacks(NULL, &RtlRunFrameCompare, NULL);
 

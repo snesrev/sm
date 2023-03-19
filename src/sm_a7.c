@@ -6,12 +6,49 @@
 #include "sm_rtl.h"
 
 
+#define kKraid_Palette2 ((uint16*)RomFixedPtr(0xa786c7))
+#define kKraid_Palette2 ((uint16*)RomFixedPtr(0xa786c7))
+#define kKraid_BgTargetPalette3 ((uint16*)RomFixedPtr(0xa7aaa6))
+#define g_word_A7ACB3 ((uint16*)RomFixedPtr(0xa7acb3))
+#define g_off_A7ACC5 ((uint16*)RomFixedPtr(0xa7acc5))
+#define g_stru_A796D2 (*(KraidInstrList*)RomFixedPtr(0xa796d2))
+#define g_stru_A796DA (*(KraidInstrList*)RomFixedPtr(0xa796da))
+#define g_word_A7B161 ((uint16*)RomFixedPtr(0xa7b161))
+#define kKraid_BgPalette7 ((uint16*)RomFixedPtr(0xa7b3d3))
+#define kKraid_BgPalette7_KraidDeath ((uint16*)RomFixedPtr(0xa7b4f3))
+#define kKraid_SprPalette7_KraidDeath ((uint16*)RomFixedPtr(0xa7b513))
+#define g_stru_A7974A ((KraidInstrList*)RomFixedPtr(0xa7974a))
+#define g_stru_A79764 ((KraidInstrList*)RomFixedPtr(0xa79764))
+#define g_stru_A792B7 (*(Hitbox*)RomFixedPtr(0xa792b7))
+#define g_word_A7BA7D ((uint16*)RomFixedPtr(0xa7ba7d))
+#define g_word_A7BC65 ((uint16*)RomFixedPtr(0xa7bc65))
+#define kKraid_Ilist_8B0A (*(SpriteDrawInstr*)RomFixedPtr(0xa78b0a))
+#define g_off_A7BE3E ((uint16*)RomFixedPtr(0xa7be3e))
+#define g_off_A7BE46 ((uint16*)RomFixedPtr(0xa7be46))
+#define g_word_A7BF1D ((uint16*)RomFixedPtr(0xa7bf1d))
+#define kKraidSinkEntry ((KraidSinkTable*)RomFixedPtr(0xa7c5e7))
+#define g_off_A7CE8E ((uint16*)RomFixedPtr(0xa7ce8e))
+#define g_word_A7CDED ((uint16*)RomFixedPtr(0xa7cded))
+#define g_stru_A7902D ((ExtendedSpriteMap*)RomFixedPtr(0xa7902d))
+#define g_byte_A7CFC2 ((uint8*)RomFixedPtr(0xa7cfc2))
+#define g_off_A7CCFD ((uint16*)RomFixedPtr(0xa7ccfd))
+#define g_word_A7CD41 ((uint16*)RomFixedPtr(0xa7cd41))
+#define g_word_A7CD53 ((uint16*)RomFixedPtr(0xa7cd53))
+#define g_word_A7CD63 ((uint16*)RomFixedPtr(0xa7cd63))
+#define g_off_A7D40D ((uint16*)RomFixedPtr(0xa7d40d))
+#define g_word_A7CDAD ((uint16*)RomFixedPtr(0xa7cdad))
+#define g_byte_A7DA1D ((uint8*)RomFixedPtr(0xa7da1d))
+#define g_off_A7DC4A ((uint16*)RomFixedPtr(0xa7dc4a))
+#define g_off_A7F787 ((uint16*)RomFixedPtr(0xa7f787))
+#define g_off_A7F92D ((uint16*)RomFixedPtr(0xa7f92d))
+#define g_word_A7CA41 ((uint16*)RomFixedPtr(0xa7ca41))
+#define g_word_A7CA61 ((uint16*)RomFixedPtr(0xa7ca61))
+#define g_off_A7F55F ((uint16*)RomFixedPtr(0xa7f55f))
 
-#define kKraid_Palette2 ((uint16*)RomPtr(0xa786c7))
-#define kKraid_Palette2 ((uint16*)RomPtr(0xa786c7))
-#define kKraid_BgTargetPalette3 ((uint16*)RomPtr(0xa7aaa6))
-#define g_word_A7ACB3 ((uint16*)RomPtr(0xa7acb3))
-#define g_off_A7ACC5 ((uint16*)RomPtr(0xa7acc5))
+
+
+
+
 
 static const uint16 g_word_A7A916 = 0x120;
 static const uint16 g_word_A7A918 = 0xa0;
@@ -22,31 +59,7 @@ static const uint16 g_word_A7A922 = 4;
 static const uint16 g_word_A7A926 = 0x8000;
 static const uint16 g_word_A7A928 = 3;
 
-#define g_stru_A796D2 (*(KraidInstrList*)RomPtr(0xa796d2))
-#define g_stru_A796DA (*(KraidInstrList*)RomPtr(0xa796da))
-#define g_word_A7B161 ((uint16*)RomPtr(0xa7b161))
 
-#define kKraid_BgPalette7 ((uint16*)RomPtr(0xa7b3d3))
-#define kKraid_BgPalette7_KraidDeath ((uint16*)RomPtr(0xa7b4f3))
-#define kKraid_SprPalette7_KraidDeath ((uint16*)RomPtr(0xa7b513))
-#define g_stru_A7974A ((KraidInstrList*)RomPtr(0xa7974a))
-#define g_stru_A79764 ((KraidInstrList*)RomPtr(0xa79764))
-#define g_stru_A792B7 (*(Hitbox*)RomPtr(0xa792b7))
-#define g_word_A7BA7D ((uint16*)RomPtr(0xa7ba7d))
-#define g_word_A7BC65 ((uint16*)RomPtr(0xa7bc65))
-#define kKraid_Ilist_8B0A (*(SpriteDrawInstr*)RomPtr(0xa78b0a))
-#define g_off_A7BE3E ((uint16*)RomPtr(0xa7be3e))
-#define g_off_A7BE46 ((uint16*)RomPtr(0xa7be46))
-#define g_word_A7BF1D ((uint16*)RomPtr(0xa7bf1d))
-#define kKraidSinkEntry ((KraidSinkTable*)RomPtr(0xa7c5e7))
-#define g_off_A7CE8E ((uint16*)RomPtr(0xa7ce8e))
-#define g_word_A7CDED ((uint16*)RomPtr(0xa7cded))
-#define g_stru_A7902D ((ExtendedSpriteMap*)RomPtr(0xa7902d))
-#define g_byte_A7CFC2 ((uint8*)RomPtr(0xa7cfc2))
-#define g_off_A7CCFD ((uint16*)RomPtr(0xa7ccfd))
-#define g_word_A7CD41 ((uint16*)RomPtr(0xa7cd41))
-#define g_word_A7CD53 ((uint16*)RomPtr(0xa7cd53))
-#define g_word_A7CD63 ((uint16*)RomPtr(0xa7cd63))
 static const uint16 g_word_A7CD73 = 0x600;
 static const uint16 g_word_A7CD75 = 0;
 static const uint16 g_word_A7CD77 = 0x1000;
@@ -61,16 +74,12 @@ static const uint16 g_word_A7CD87 = 0;
 static const uint16 g_word_A7CD89 = 0xfffe;
 static const uint16 g_word_A7CD8B = 0xfff9;
 static const uint16 g_word_A7CD8D = 0;
-#define g_off_A7D40D ((uint16*)RomPtr(0xa7d40d))
 static const uint16 g_word_A7CD9B = 0x40;
 static const uint16 g_word_A7CD9D = 0xc00;
 static const uint16 g_word_A7CD9F = 0x100;
 static const uint16 g_word_A7CDA1 = 0xf000;
 static const uint16 g_word_A7CDA3 = 8;
 static const uint8 g_byte_A7CDA5[8] = { 6, 6, 8, 8, 6, 8, 6, 8 };
-#define g_word_A7CDAD ((uint16*)RomPtr(0xa7cdad))
-#define g_byte_A7DA1D ((uint8*)RomPtr(0xa7da1d))
-#define g_off_A7DC4A ((uint16*)RomPtr(0xa7dc4a))
 static const uint16 g_word_A7E900 = 0xfffd;
 static const uint16 g_word_A7E902 = 0;
 static const uint16 g_word_A7E906 = 0;
@@ -90,10 +99,6 @@ static const uint16 g_word_A7F4D5 = 8;
 static const uint16 g_word_A7F4D7 = 0;
 static const uint16 g_word_A7F4D9 = 0;
 static const uint16 g_word_A7F4DB = 0x1000;
-#define g_off_A7F787 ((uint16*)RomPtr(0xa7f787))
-#define g_off_A7F92D ((uint16*)RomPtr(0xa7f92d))
-#define g_word_A7CA41 ((uint16*)RomPtr(0xa7ca41))
-#define g_word_A7CA61 ((uint16*)RomPtr(0xa7ca61))
 
 void CallEnemyInstrExtFunc(uint32 ea, uint16 k) {
   switch (ea) {
@@ -708,7 +713,7 @@ void Kraid_Shot_Mouth(void) {  // 0xA7AFAA
   Enemy_Kraid *E = Get_Kraid(0);
   if (!sign16(E->kraid_var_A + 0x3AC9))
     return;
-  uint8 *v2 = RomPtr_A7(E->kraid_var_B - 8);
+  const uint8 *v2 = RomPtr_A7(E->kraid_var_B - 8);
   if (*((uint16 *)v2 + 3) == 0xFFFF) {
     v3 = 0;
     goto LABEL_14;
@@ -717,7 +722,7 @@ void Kraid_Shot_Mouth(void) {  // 0xA7AFAA
   v4 = *((uint16 *)v2 + 3);
   E->kraid_var_E = 1;
   v3 = 0;
-  uint8 *v5;
+  const uint8 *v5;
   v5 = RomPtr_A7(v4);
   R22_ = E->base.x_pos + *(uint16 *)v5;
   R20_ = E->base.y_pos + *((uint16 *)v5 + 1);
@@ -826,8 +831,8 @@ void Kraid_Shot_Body(void) {  // 0xA7B181
     E->kraid_var_E = 0;
     E->kraid_mouth_flags &= ~1u;
     R48 = 0;
-    uint8 *v2 = RomPtr_A7(E->kraid_var_B - 8);
-    uint8 *v3 = RomPtr_A7(*((uint16 *)v2 + 2));
+    const uint8 *v2 = RomPtr_A7(E->kraid_var_B - 8);
+    const uint8 *v3 = RomPtr_A7(*((uint16 *)v2 + 2));
     R22_ = E->base.x_pos + *(uint16 *)v3;
     R20_ = E->base.y_pos + *((uint16 *)v3 + 1);
     R18_ = E->base.y_pos + *((uint16 *)v3 + 3);
@@ -1442,7 +1447,7 @@ void KraidsFingernail_Init(void) {  // 0xA7BD60
     v2 = g_off_A7BE3E[(uint8)(random_number & 6) >> 1];
   else
     v2 = g_off_A7BE46[(uint8)(random_number & 6) >> 1];
-  uint8 *v3 = RomPtr_A7(v2);
+  const uint8 *v3 = RomPtr_A7(v2);
   Enemy_Kraid *E = Get_Kraid(cur_enemy_index);
   E->kraid_var_B = *(uint16 *)v3;
   E->kraid_var_C = *((uint16 *)v3 + 1);
@@ -2460,7 +2465,7 @@ void Phantoon_MoveInFigure8_LeftSideClockwise(uint16 j) {  // 0xA7D215
   Enemy_Phantoon *E = Get_Phantoon(0);
   for (R22_ = E->phant_var_C; R22_; --R22_) {
     R18_ = 2 * E->phant_var_A;
-    uint8 *v2 = RomPtr_A7(R18_ + j);
+    const uint8 *v2 = RomPtr_A7(R18_ + j);
     uint16 v3 = (int8)v2[0];
     R18_ = v3;
     E->base.x_pos += v3;
@@ -2483,7 +2488,7 @@ void Phantoon_MoveInFigure8_RightSideClockwise(uint16 j) {  // 0xA7D271
   if (!v2) {
     do {
       R18_ = 2 * E->phant_var_A;
-      uint8 *v4 = RomPtr_A7(R18_ + j);
+      const uint8 *v4 = RomPtr_A7(R18_ + j);
       uint16 v5 = (int8)*v4;
       R18_ = v5;
       E->base.x_pos -= v5;
@@ -3833,7 +3838,6 @@ void Dachora_Main(void) {  // 0xA7F52E
   Enemy_Dachora *E = Get_Dachora(cur_enemy_index);
   CallEnemyPreInstr(E->dachor_var_F | 0xA70000);
 }
-#define g_off_A7F55F ((uint16*)RomPtr(0xa7f55f))
 void Dachora_Func_1(uint16 j, uint16 k) {  // 0xA7F535
   uint16 v3;
 

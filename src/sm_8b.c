@@ -4,32 +4,37 @@
 #include "funcs.h"
 #include "variables.h"
 
-#define kPalettes_Intro ((uint16*)RomPtr(0x8ce3e9))
-#define kPalettes_Intro2 ((uint16*)RomPtr(0x8ce5e9))
-#define kPalettes_Intro4 ((uint16*)RomPtr(0x8ce7e9))
-#define kPalettes_Intro5 ((uint16*)RomPtr(0x8ce9e9))
-#define kPalettes_Intro6 ((uint16*)RomPtr(0x8cebe9))
-#define kPalettes_Intro3 ((uint16*)RomPtr(0x8cede9))
-#define g_word_8CD81B ((uint16*)RomPtr(0x8cd81b))
-#define g_word_8BA72B ((uint16*)RomPtr(0x8ba72b))
-#define kLevelData_MotherBrainRoomFromCutscene ((uint16*)RomPtr(0x8cbec3))
-#define kLevelData_RoomWithBabyMetroidHatching ((uint16*)RomPtr(0x8cc083))
-#define g_word_8CDC9B ((uint16*)RomPtr(0x8cdc9b))
-#define g_word_8CDEDB ((uint16*)RomPtr(0x8cdedb))
-#define g_word_8CEFE9 ((uint16*)RomPtr(0x8cefe9))
-#define g_off_8BE70D ((uint16*)RomPtr(0x8be70d))
-#define g_word_8BE717 ((uint16*)RomPtr(0x8be717))
-#define g_word_8BE721 ((uint16*)RomPtr(0x8be721))
-#define g_word_8BE737 ((uint16*)RomPtr(0x8be737))
-#define g_word_8BE741 ((uint16*)RomPtr(0x8be741))
-#define g_word_8BE9CF ((uint16*)RomPtr(0x8be9cf))
-#define kCinematicFunction_Intro_Func142_Tab0 ((uint16*)RomPtr(0x8be45a))
-#define kCinematicFunction_Intro_Func144_Tab0 ((uint16*)RomPtr(0x8be5e7))
-#define g_word_8CDF5B ((uint16*)RomPtr(0x8cdf5b))
-#define g_word_8BE9A7 ((uint16*)RomPtr(0x8be9a7))
-#define g_word_8BF6B8 ((uint16*)RomPtr(0x8bf6b8))
-#define g_word_8BF6D8 ((uint16*)RomPtr(0x8bf6d8))
-#define g_word_8CE1E9 ((uint16*)RomPtr(0x8ce1e9))
+
+#define kPalettes_Intro ((uint16*)RomFixedPtr(0x8ce3e9))
+#define kPalettes_Intro2 ((uint16*)RomFixedPtr(0x8ce5e9))
+#define kPalettes_Intro4 ((uint16*)RomFixedPtr(0x8ce7e9))
+#define kPalettes_Intro5 ((uint16*)RomFixedPtr(0x8ce9e9))
+#define kPalettes_Intro6 ((uint16*)RomFixedPtr(0x8cebe9))
+#define kPalettes_Intro3 ((uint16*)RomFixedPtr(0x8cede9))
+#define g_word_8CD81B ((uint16*)RomFixedPtr(0x8cd81b))
+#define g_word_8BA72B ((uint16*)RomFixedPtr(0x8ba72b))
+#define kLevelData_MotherBrainRoomFromCutscene ((uint16*)RomFixedPtr(0x8cbec3))
+#define kLevelData_RoomWithBabyMetroidHatching ((uint16*)RomFixedPtr(0x8cc083))
+#define g_word_8CDC9B ((uint16*)RomFixedPtr(0x8cdc9b))
+#define g_word_8CDEDB ((uint16*)RomFixedPtr(0x8cdedb))
+#define g_word_8CEFE9 ((uint16*)RomFixedPtr(0x8cefe9))
+#define g_off_8BE70D ((uint16*)RomFixedPtr(0x8be70d))
+#define g_word_8BE717 ((uint16*)RomFixedPtr(0x8be717))
+#define g_word_8BE721 ((uint16*)RomFixedPtr(0x8be721))
+#define g_word_8BE737 ((uint16*)RomFixedPtr(0x8be737))
+#define g_word_8BE741 ((uint16*)RomFixedPtr(0x8be741))
+#define g_word_8BE9CF ((uint16*)RomFixedPtr(0x8be9cf))
+#define kCinematicFunction_Intro_Func142_Tab0 ((uint16*)RomFixedPtr(0x8be45a))
+#define kCinematicFunction_Intro_Func144_Tab0 ((uint16*)RomFixedPtr(0x8be5e7))
+#define g_word_8CDF5B ((uint16*)RomFixedPtr(0x8cdf5b))
+#define g_word_8BE9A7 ((uint16*)RomFixedPtr(0x8be9a7))
+#define g_word_8BF6B8 ((uint16*)RomFixedPtr(0x8bf6b8))
+#define g_word_8BF6D8 ((uint16*)RomFixedPtr(0x8bf6d8))
+#define g_word_8CE1E9 ((uint16*)RomFixedPtr(0x8ce1e9))
+#define g_off_8CBC5D ((uint16*)RomFixedPtr(0x8cbc5d))
+
+
+
 
 void SetupPpuForTitleSequence(void) {  // 0x8B8000
   WriteReg(INIDISP, 0x80);
@@ -561,7 +566,7 @@ void ProcessCinematicBgObject_DrawChar(uint16 k, uint16 j) {  // 0x8B884D
 
   cinematicbg_var1 = cinematicbg_var1 == 0;
   SpawnTextGlowObject(j);
-  uint8 *v2 = RomPtr_8C(cinematicbg_instr_ptr[k >> 1]);
+  const uint8 *v2 = RomPtr_8C(cinematicbg_instr_ptr[k >> 1]);
   if (*((int16 *)v2 + 3) < 0) {
     cinematicbg_arr7[15] = 8;
     v3 = 8 * (v2[3] + 2);
@@ -579,7 +584,7 @@ void ProcessCinematicBgObject_DrawToTextTilemap(uint16 k, uint16 j) {  // 0x8B88
   uint16 jorg = j;
 
   uint16 TilemapOffsetForTile = CinematicGetTilemapOffsetForTile();
-  uint8 *v3 = RomPtr_8C(j);
+  const uint8 *v3 = RomPtr_8C(j);
   R18_ = v3[2];
   R24_ = R18_;
   R20_ = v3[3];
@@ -605,7 +610,7 @@ void ProcessCinematicBgObject_DrawToBgTilemap(uint16 k, uint16 j) {  // 0x8B88FD
   uint16 jorg = j;
 
   uint16 TilemapOffsetForTile = CinematicGetTilemapOffsetForTile();
-  uint8 *v3 = RomPtr_8C(j);
+  const uint8 *v3 = RomPtr_8C(j);
   R18_ = v3[2];
   R24_ = R18_;
   R20_ = v3[3];
@@ -632,7 +637,7 @@ uint16 CinematicGetTilemapOffsetForTile(void) {  // 0x8B8943
 
 void ProcessCinematicBgObject_Unk1(uint16 k, uint16 j) {  // 0x8B896B
   Mult0x80Add();
-  uint8 *v2 = RomPtr_8C(j);
+  const uint8 *v2 = RomPtr_8C(j);
   R18_ = v2[2];
   R20_ = v2[3];
   uint16 v3 = j + 4;
@@ -654,7 +659,7 @@ void ProcessCinematicBgObject_Unk1(uint16 k, uint16 j) {  // 0x8B896B
 
 void ProcessCinematicBgObject_Unk2(uint16 k, uint16 j) {  // 0x8B89CF
   Mult0x80Add();
-  uint8 *v2 = RomPtr_8C(j);
+  const uint8 *v2 = RomPtr_8C(j);
   R18_ = v2[2];
   R20_ = v2[3];
   uint16 v3 = j + 4;
@@ -1302,7 +1307,7 @@ void CallCinematicSpriteObjectSetup(uint32 ea, uint16 j) {
 }
 
 uint8 SpawnCimenaticSpriteObjectInner(uint16 k, uint16 j) {  // 0x8B93AC
-  uint8 *v2 = RomPtr_8B(k);
+  const uint8 *v2 = RomPtr_8B(k);
   int v3 = j >> 1;
   cinematicspr_preinstr_func[v3] = *((uint16 *)v2 + 1);
   cinematicspr_instr_ptr[v3] = *((uint16 *)v2 + 2);
@@ -1637,7 +1642,7 @@ void ProcessMode7ObjectInstructions(uint16 k) {  // 0x8B9537
         return;
     }
     mode7_obj_instr_timer[v1 >> 1] = v6;
-    uint8 *v7 = RomPtr_8B(v4);
+    const uint8 *v7 = RomPtr_8B(v4);
     QueueMode7Transfers(0x8b, *((uint16 *)v7 + 1));
     mode7_obj_instr_ptr[v1 >> 1] = v4 + 4;
   }
@@ -1719,7 +1724,7 @@ uint8 SpawnCinematicBgObject(uint16 j, uint16 a) {  // 0x8B95F0
     if ((v3 & 0x8000u) != 0)
       return 1;
   }
-  uint8 *v5 = RomPtr_8B(j);
+  const uint8 *v5 = RomPtr_8B(j);
   int v6 = v3 >> 1;
   cinematicbg_preinstr[v6] = *((uint16 *)v5 + 1);
   cinematicbg_instr_ptr[v6] = *((uint16 *)v5 + 2);
@@ -1798,7 +1803,7 @@ void ProcessCinematicBgObjectsInstrs(uint16 k) {  // 0x8B9659
     }
     int v7 = v1 >> 1;
     cinematicbg_instr_timer[v7] = v6;
-    uint8 *v8 = RomPtr_8C(v4);
+    const uint8 *v8 = RomPtr_8C(v4);
     R18_ = *((uint16 *)v8 + 1);
     cinematicbg_arr1[v7] = *((uint16 *)v8 + 2);
     ProcessCinematicBgObject(v1);
@@ -1895,7 +1900,7 @@ void ProcessTextGlowObject(void) {  // 0x8B9849
     R20_ = 2 * LOBYTE(enemy_projectile_pre_instr[v1 + 10]);
     R22_ = R20_ + Mult8x8(*((uint8 *)enemy_projectile_1A27 + v0), 0x40);
     uint16 v4 = R22_;
-    uint8 *v5 = RomPtr_8C(v3);
+    const uint8 *v5 = RomPtr_8C(v3);
     R18_ = v5[2];
     R24_ = R18_;
     R20_ = v5[3];
@@ -1956,7 +1961,7 @@ void CallCreditsObjectFunc(uint32 ea, uint16 k) {
 }
 
 void CreditsObject_Init(uint16 j) {  // 0x8B9932
-  uint8 *v1 = RomPtr_8B(j);
+  const uint8 *v1 = RomPtr_8B(j);
   cinematic_var24 = *((uint16 *)v1 + 1);
   cinematic_var21 = *((uint16 *)v1 + 2);
   cinematic_var22 = 1;
@@ -2590,7 +2595,6 @@ void CinematicFunc_Func9(void) {  // 0x8B9FAE
 }
 
 void ConfigureTitleSequenceGradientHDMA(void) {  // 0x8BA00A
-#define g_off_8CBC5D ((uint16*)RomPtr(0x8cbc5d))
   uint16 v0 = g_off_8CBC5D[(uint16)((uint8)(cinematic_var6 & 0xF0) >> 3) >> 1];
   for (int i = 0; ; i += 2) {
     uint16 v2 = *(uint16 *)RomPtr_8C(v0);

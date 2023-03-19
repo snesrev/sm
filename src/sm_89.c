@@ -4,7 +4,15 @@
 #include "variables.h"
 #include "funcs.h"
 
-#define g_word_89AA02 ((uint16*)RomPtr(0x89aa02))
+
+#define g_word_89AA02 ((uint16*)RomFixedPtr(0x89aa02))
+#define kFxTypeTilemapPtrs ((uint16*)RomFixedPtr(0x83abf0))
+#define kAreaPalFxListPointers ((uint16*)RomFixedPtr(0x83ac46))
+#define kAreaAnimtilesListPtrs ((uint16*)RomFixedPtr(0x83ac56))
+#define g_word_89AD5F ((uint16*)RomFixedPtr(0x89ad5f))
+
+
+
 void LoadFxEntry(uint16 v0) {  // 0x89AB02
   FxDef *FxDef;
 
@@ -30,7 +38,6 @@ void LoadFxEntry(uint16 v0) {  // 0x89AB02
 
 void nullsub_106(void) {}
 
-#define kFxTypeTilemapPtrs ((uint16*)RomPtr(0x83abf0))
 static Func_V *const kFxTypeFuncPtrs[23] = {  // 0x89AB82
   nullsub_106,
   FxTypeFunc_2_Lava,
@@ -56,8 +63,6 @@ static Func_V *const kFxTypeFuncPtrs[23] = {  // 0x89AB82
   FxTypeFunc_CeresElevator,
   FxTypeFunc_2C_Haze,
 };
-#define kAreaPalFxListPointers ((uint16*)RomPtr(0x83ac46))
-#define kAreaAnimtilesListPtrs ((uint16*)RomPtr(0x83ac56))
 void LoadFXHeader(void) {
   int i;
   FxDef *v6;
@@ -118,7 +123,7 @@ void LoadFXHeader(void) {
           current_fx_palette_fx_bitset >>= 1;
           if (!v10)
             break;
-          uint8 *v11 = RomPtr_83(current_region_animated_palette_fx);
+          const uint8 *v11 = RomPtr_83(current_region_animated_palette_fx);
           SpawnPalfxObject(*(uint16 *)&v11[j]);
           j += 2;
         }
@@ -134,7 +139,7 @@ void LoadFXHeader(void) {
           current_fx_palette_fx_bitset >>= 1;
           if (!v10)
             break;
-          uint8 *v14 = RomPtr_83(current_region_animated_palette_fx);
+          const uint8 *v14 = RomPtr_83(current_region_animated_palette_fx);
           SpawnAnimtiles(*(uint16 *)&v14[k]);
           k += 2;
         }
@@ -142,7 +147,6 @@ void LoadFXHeader(void) {
     }
   }
 }
-#define g_word_89AD5F ((uint16*)RomPtr(0x89ad5f))
 void RoomCode_CeresElevatorShaft(void) {  // 0x89ACC3
   int16 v1;
 

@@ -5,21 +5,25 @@
 #include "enemy_types.h"
 
 
-#define g_off_B3882B ((uint16*)RomPtr(0xb3882b))
-#define g_off_B38833 ((uint16*)RomPtr(0xb38833))
-#define g_word_B3949B ((uint16*)RomPtr(0xb3949b))
-#define g_word_B394BB ((uint16*)RomPtr(0xb394bb))
-#define g_word_B39675 ((uint16*)RomPtr(0xb39675))
-#define kBotwoonHealthThresForPalChange ((uint16*)RomPtr(0xb3981b))
-#define kBotwoonHealthBasedPalette ((uint16*)RomPtr(0xb3971b))
-#define g_off_B3946B ((uint16*)RomPtr(0xb3946b))
-#define g_off_B3948B ((uint16*)RomPtr(0xb3948b))
+#define g_off_B3882B ((uint16*)RomFixedPtr(0xb3882b))
+#define g_off_B38833 ((uint16*)RomFixedPtr(0xb38833))
+#define g_word_B3949B ((uint16*)RomFixedPtr(0xb3949b))
+#define g_word_B394BB ((uint16*)RomFixedPtr(0xb394bb))
+#define g_word_B39675 ((uint16*)RomFixedPtr(0xb39675))
+#define kBotwoonHealthThresForPalChange ((uint16*)RomFixedPtr(0xb3981b))
+#define kBotwoonHealthBasedPalette ((uint16*)RomFixedPtr(0xb3971b))
+#define g_off_B3946B ((uint16*)RomFixedPtr(0xb3946b))
+#define g_off_B3948B ((uint16*)RomFixedPtr(0xb3948b))
+#define g_word_B3E718 ((uint16*)RomFixedPtr(0xb3e718))
+#define g_word_B3E71E ((uint16*)RomFixedPtr(0xb3e71e))
+#define g_off_B3E72A ((uint16*)RomFixedPtr(0xb3e72a))
+#define g_off_B3E724 ((uint16*)RomFixedPtr(0xb3e724))
+#define g_word_B3E730 ((uint16*)RomFixedPtr(0xb3e730))
+
+
+
+
 static const int16 g_word_B39E77[3] = { 2, 3, 4 };
-#define g_word_B3E718 ((uint16*)RomPtr(0xb3e718))
-#define g_word_B3E71E ((uint16*)RomPtr(0xb3e71e))
-#define g_off_B3E72A ((uint16*)RomPtr(0xb3e72a))
-#define g_off_B3E724 ((uint16*)RomPtr(0xb3e724))
-#define g_word_B3E730 ((uint16*)RomPtr(0xb3e730))
 
 void Enemy_GrappleReact_NoInteract_B3(void) {  // 0xB38000
   SwitchEnemyAiToMainAi();
@@ -1379,7 +1383,7 @@ void Botwoon_Func_32(void) {  // 0xB3E250
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->botwoon_var_E = addr_loc_B3E28C;
   E->botwoon_var_3C = 0;
-  uint8 *v1 = RomPtr_B3(E->botwoon_var_40 + addr_stru_B3E150);
+  const uint8 *v1 = RomPtr_B3(E->botwoon_var_40 + addr_stru_B3E150);
   E->botwoon_var_42 = *(uint16 *)v1;
   E->botwoon_var_37 = *((uint16 *)v1 + 2);
   int16 v2 = *((uint16 *)v1 + 1);
@@ -1398,7 +1402,7 @@ void Botwoon_Func_33(void) {  // 0xB3E28C
   if ((E->botwoon_var_44 & 0x8000u) != 0)
     R22_ = -2;
   do {
-    uint8 *v6 = RomPtr_B3(E->botwoon_var_42);
+    const uint8 *v6 = RomPtr_B3(E->botwoon_var_42);
     uint16 v7 = SignExtend8(*v6), v8;
     if (v7 == 0xFF80 || (R18_ += v7, v8 = SignExtend8(v6[1]), v8 == 0xFF80)) {
       E->botwoon_var_41 = 0;

@@ -4,6 +4,34 @@
 #include "funcs.h"
 #include "sm_rtl.h"
 
+
+#define unk_91CAF2 (*(SpawnHdmaObject_Args*)RomFixedPtr(0x91caf2))
+#define stru_91D2D6 ((XrayBlockData*)RomFixedPtr(0x91d2d6))
+#define stru_91D2D6 ((XrayBlockData*)RomFixedPtr(0x91d2d6))
+#define off_91D727 ((uint16*)RomFixedPtr(0x91d727))
+#define kSamusPalette_HyperBeam ((uint16*)RomFixedPtr(0x91d829))
+#define kSamusPalette_NonPseudoScrew ((uint16*)RomFixedPtr(0x91d7d5))
+#define kSamusPalette_PseudoScrew ((uint16*)RomFixedPtr(0x91d7ff))
+#define word_9BA3C0 ((uint16*)RomFixedPtr(0x9ba3c0))
+#define kSamus_SpeedBoostingPalettes ((uint16*)RomFixedPtr(0x91d998))
+#define kSamus_HyperBeamPalettes ((uint16*)RomFixedPtr(0x91d99e))
+#define kSamusPal_ScrewAttack ((uint16*)RomFixedPtr(0x91da4a))
+#define kSamusPal_SpeedBoost ((uint16*)RomFixedPtr(0x91daa9))
+#define kSamusPal_SpeedBoostShine ((uint16*)RomFixedPtr(0x91db10))
+#define kSamusPal_Shinespark ((uint16*)RomFixedPtr(0x91db75))
+#define stru_91DC00 ((SamusCrystalFlashPalTable*)RomFixedPtr(0x91dc00))
+#define off_91DC28 ((uint16*)RomFixedPtr(0x91dc28))
+#define word_91E921 ((uint16*)RomFixedPtr(0x91e921))
+#define word_91E9F3 ((uint16*)RomFixedPtr(0x91e9f3))
+#define word_91EB74 ((uint16*)RomFixedPtr(0x91eb74))
+#define kSamusTurnPose_Standing ((uint8*)RomFixedPtr(0x91f9c2))
+#define kSamusTurnPose_Crouching ((uint8*)RomFixedPtr(0x91f9cc))
+#define kSamusTurnPose_Jumping ((uint8*)RomFixedPtr(0x91f9d6))
+#define kSamusTurnPose_Falling ((uint8*)RomFixedPtr(0x91f9e0))
+#define kSamusTurnPose_Moonwalk ((uint8*)RomFixedPtr(0x91f9ea))
+
+
+
 static Func_V *const kSamusInputHandlers[28] = {
   Samus_Input_00_Standing,
   Samus_Input_01_Running,
@@ -376,7 +404,7 @@ void ProcessDemoInputObject(void) {  // 0x9183F2
         return;
     }
     demo_input_instr_timer = *v1;
-    uint8 *v3 = RomPtr_91(v0);
+    const uint8 *v3 = RomPtr_91(v0);
     demo_input = *((uint16 *)v3 + 1);
     demo_input_new = *((uint16 *)v3 + 2);
     demo_input_instr_ptr = v0 + 6;
@@ -1844,7 +1872,6 @@ void XrayHdmaOnScreen_BeamHoriz(void) {  // 0x91C998
 }
 
 void XrayRunHandler(void) {  // 0x91CAD6
-#define unk_91CAF2 (*(SpawnHdmaObject_Args*)RomPtr(0x91caf2))
   if (!time_is_frozen_flag && (button_config_run_b & joypad1_lastkeys) != 0) {
     if (Xray_Initialize() & 1)
       SpawnHdmaObject(0x91, &unk_91CAF2);
@@ -2029,7 +2056,6 @@ uint16 Xray_Func21(uint16 j) {  // 0x91CDCB
   return j;
 }
 
-#define stru_91D2D6 ((XrayBlockData*)RomPtr(0x91d2d6))
 
 PairU16 Xray_HandleXrayedBlock(uint16 k) {  // 0x91CDD6
   uint16 value;
@@ -2143,7 +2169,6 @@ void Xray_Func6C(void) {  // 0x91CED0
   Xray_Func20();
 }
 
-#define stru_91D2D6 ((XrayBlockData*)RomPtr(0x91d2d6))
 
 void Xray_Func20(void) {  // 0x91CEFD
   int i;
@@ -2225,7 +2250,7 @@ uint16 Xray_Func11(uint16 j) {  // 0x91CF6F
 }
 
 void Xray_Func12(uint16 j) {  // 0x91CFBF
-  uint8 *v1 = RomPtr_91(R3_.addr);
+  const uint8 *v1 = RomPtr_91(R3_.addr);
   Xray_Func13(*(uint16 *)&v1[j]);
 }
 
@@ -2515,7 +2540,6 @@ void InitializeSuitPickupHdma(void) {  // 0x91D692
   *(uint16 *)((char *)&demo_backup_prev_controller_input + 1) = 0;
 }
 
-#define off_91D727 ((uint16*)RomPtr(0x91d727))
 
 static Func_U8 *const off_91D72D[11] = {  // 0x91D6F7
   Samus_HandleScrewAttackSpeedBoostingPals,
@@ -2539,9 +2563,6 @@ void Samus_HandlePalette(void) {
   }
   HandleMiscSamusPalette();
 }
-#define kSamusPalette_HyperBeam ((uint16*)RomPtr(0x91d829))
-#define kSamusPalette_NonPseudoScrew ((uint16*)RomPtr(0x91d7d5))
-#define kSamusPalette_PseudoScrew ((uint16*)RomPtr(0x91d7ff))
 uint8 HandleBeamChargePalettes(void) {  // 0x91D743
   if (charged_shot_glow_timer) {
     if (hyper_beam_flag) {
@@ -2582,7 +2603,6 @@ uint8 HandleBeamChargePalettes(void) {  // 0x91D743
   }
 }
 
-#define word_9BA3C0 ((uint16*)RomPtr(0x9ba3c0))
 uint8 HandleVisorPalette(void) {  // 0x91D83F
   int16 v2;
   uint16 v3;
@@ -2614,8 +2634,6 @@ uint8 HandleVisorPalette(void) {  // 0x91D83F
   }
 }
 
-#define kSamus_SpeedBoostingPalettes ((uint16*)RomPtr(0x91d998))
-#define kSamus_HyperBeamPalettes ((uint16*)RomPtr(0x91d99e))
 
 void HandleMiscSamusPalette(void) {  // 0x91D8A5
   if (!samus_special_super_palette_flags) {
@@ -2677,8 +2695,6 @@ LABEL_17:;
   }
 }
 
-#define kSamusPal_ScrewAttack ((uint16*)RomPtr(0x91da4a))
-#define kSamusPal_SpeedBoost ((uint16*)RomPtr(0x91daa9))
 
 uint8 Samus_HandleScrewAttackSpeedBoostingPals(void) {  // 0x91D9B2
   if ((samus_suit_palette_index & 4) == 0) {
@@ -2738,7 +2754,6 @@ LABEL_10:
   return 1;
 }
 
-#define kSamusPal_SpeedBoostShine ((uint16*)RomPtr(0x91db10))
 
 uint8 Samus_SpeedBoosterShinePals(void) {  // 0x91DAC7
   uint16 v0 = samus_shine_timer;
@@ -2764,7 +2779,6 @@ uint8 Samus_SpeedBoosterShinePals(void) {  // 0x91DAC7
   }
 }
 
-#define kSamusPal_Shinespark ((uint16*)RomPtr(0x91db75))
 uint8 Samus_HandleShinesparkingPals(void) {  // 0x91DB3A
   bool v0 = (--samus_shine_timer & 0x8000u) != 0;
   if (!samus_shine_timer || v0) {
@@ -2783,8 +2797,6 @@ uint8 Samus_HandleShinesparkingPals(void) {  // 0x91DB3A
   }
 }
 
-#define stru_91DC00 ((SamusCrystalFlashPalTable*)RomPtr(0x91dc00))
-#define off_91DC28 ((uint16*)RomPtr(0x91dc28))
 uint8 Samus_HandleCrystalFlashPals(void) {  // 0x91DB93
   if ((samus_shine_timer & 0x8000u) != 0) {
     WriteBeamPalette_A(equipped_beams);
@@ -3495,7 +3507,6 @@ void Samus_HandleTransFromBlockColl_4(void) {  // 0x91E8E5
   samus_momentum_routine_index = 5;
 }
 
-#define word_91E921 ((uint16*)RomPtr(0x91e921))
 
 uint8 nullsub_18_U8(void) {
   return 0;
@@ -3530,7 +3541,6 @@ void Samus_HandleTransFromBlockColl_1(void) {  // 0x91E931
       samus_momentum_routine_index = 5;
   }
 }
-#define word_91E9F3 ((uint16*)RomPtr(0x91e9f3))
 uint8 Samus_HandleTransFromBlockColl_1_0(void) {  // 0x91E95D
   int16 v0;
 
@@ -3642,7 +3652,6 @@ void Samus_HandleTransFromBlockColl_5(void) {  // 0x91EABE
   samus_momentum_routine_index = 5;
 }
 
-#define word_91EB74 ((uint16*)RomPtr(0x91eb74))
 
 uint8 Samus_CheckWalkedIntoSomething(void) {  // 0x91EADE
   int16 v0;
@@ -4771,11 +4780,6 @@ uint8 SamusFunc_F468_DamageBoost_(void) {  // 0x91F8CB
   return 0;
 }
 
-#define kSamusTurnPose_Standing ((uint8*)RomPtr(0x91f9c2))
-#define kSamusTurnPose_Crouching ((uint8*)RomPtr(0x91f9cc))
-#define kSamusTurnPose_Jumping ((uint8*)RomPtr(0x91f9d6))
-#define kSamusTurnPose_Falling ((uint8*)RomPtr(0x91f9e0))
-#define kSamusTurnPose_Moonwalk ((uint8*)RomPtr(0x91f9ea))
 uint8 SamusFunc_F468_TurningAroundOnGround(void) {  // 0x91F8D3
   if (samus_prev_pose && samus_prev_pose != kPose_9B_FaceF_VariaGravitySuit) {
     uint16 v0 = *(&kPoseParams[0].direction_shots_fired + (uint16)(8 * samus_prev_pose));

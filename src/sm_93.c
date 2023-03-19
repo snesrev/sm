@@ -3,15 +3,19 @@
 #include "variables.h"
 #include "funcs.h"
 
-#define kProjectileData_UnchargedBeams ((uint16*)RomPtr(0x9383c1))
-#define kProjectileData_ChargedBeams ((uint16*)RomPtr(0x9383d9))
-#define kProjectileData_NonBeams ((uint16*)RomPtr(0x9383f1))
-#define kShinesparkEchoSpazer_ProjectileData ((uint16*)RomPtr(0x938403))
-#define kRunInstrForSuperMissile ((uint16*)RomPtr(0x93842b))
-#define g_stru_938691 (*(ProjectileDamagesAndInstrPtr*)RomPtr(0x938691))
-#define g_stru_938679 (*(ProjectileDamagesAndInstrPtr*)RomPtr(0x938679))
-#define kProjInstrList_Explosion (*(ProjectileDamagesAndInstrPtr*)RomPtr(0x938681))
-#define g_off_938413 ((uint16*)RomPtr(0x938413))
+
+#define kProjectileData_UnchargedBeams ((uint16*)RomFixedPtr(0x9383c1))
+#define kProjectileData_ChargedBeams ((uint16*)RomFixedPtr(0x9383d9))
+#define kProjectileData_NonBeams ((uint16*)RomFixedPtr(0x9383f1))
+#define kShinesparkEchoSpazer_ProjectileData ((uint16*)RomFixedPtr(0x938403))
+#define kRunInstrForSuperMissile ((uint16*)RomFixedPtr(0x93842b))
+#define g_stru_938691 (*(ProjectileDamagesAndInstrPtr*)RomFixedPtr(0x938691))
+#define g_stru_938679 (*(ProjectileDamagesAndInstrPtr*)RomFixedPtr(0x938679))
+#define kProjInstrList_Explosion (*(ProjectileDamagesAndInstrPtr*)RomFixedPtr(0x938681))
+#define g_off_938413 ((uint16*)RomFixedPtr(0x938413))
+
+
+
 
 void InitializeProjectile(uint16 k) {  // 0x938000
   ProjectileDataTable *ProjectileDataTable;
@@ -32,10 +36,10 @@ void InitializeProjectile(uint16 k) {  // 0x938000
   projectile_damage[v1] = ProjectileDataTable->damage;
   if (damage < 0)
     InvalidInterrupt_Crash();
-  uint8 *v6 = RomPtr_93(R18_ + v3 + 2);
+  const uint8 *v6 = RomPtr_93(R18_ + v3 + 2);
   uint16 v7 = *(uint16 *)v6;
   projectile_bomb_instruction_ptr[v1] = *(uint16 *)v6;
-  uint8 *v8 = RomPtr_93(v7);
+  const uint8 *v8 = RomPtr_93(v7);
   projectile_x_radius[v1] = v8[4];
   projectile_y_radius[v1] = v8[5];
   projectile_bomb_instruction_timers[v1] = 1;
@@ -46,7 +50,7 @@ void InitializeInstrForSuperMissile(uint16 v0) {  // 0x938071
 
   int v1 = v0 >> 1;
   uint16 v2 = kRunInstrForSuperMissile[HIBYTE(projectile_type[v1]) & 0xF];
-  uint8 *v3 = RomPtr_93(v2);
+  const uint8 *v3 = RomPtr_93(v2);
   v4 = *(uint16 *)v3;
   projectile_damage[v1] = *(uint16 *)v3;
   if (v4 < 0)
@@ -60,7 +64,7 @@ void InitializeInstrForMissile(uint16 v0) {  // 0x9380A0
 
   int v1 = v0 >> 1;
   uint16 v2 = kProjectileData_NonBeams[HIBYTE(projectile_type[v1]) & 0xF];
-  uint8 *v3 = RomPtr_93(v2);
+  const uint8 *v3 = RomPtr_93(v2);
   v4 = *(uint16 *)v3;
   projectile_damage[v1] = *(uint16 *)v3;
   if (v4 < 0)
@@ -106,7 +110,7 @@ void InitializeShinesparkEchoOrSpazerSba(uint16 k) {  // 0x938163
   int v1 = k >> 1;
   R18_ = 2 * (projectile_dir[v1] & 0xF);
   uint16 v2 = kShinesparkEchoSpazer_ProjectileData[LOBYTE(projectile_type[v1]) - 34];
-  uint8 *v3 = RomPtr_93(v2);
+  const uint8 *v3 = RomPtr_93(v2);
   v4 = *(uint16 *)v3;
   projectile_damage[v1] = *(uint16 *)v3;
   if (v4 < 0)
@@ -119,7 +123,7 @@ void InitializeSbaProjectile(uint16 k) {  // 0x9381A4
   int16 v3;
 
   int v1 = k >> 1;
-  uint8 *v2 = RomPtr_93(g_off_938413[projectile_type[v1] & 0xF]);
+  const uint8 *v2 = RomPtr_93(g_off_938413[projectile_type[v1] & 0xF]);
   v3 = *(uint16 *)v2;
   projectile_damage[v1] = *(uint16 *)v2;
   if (v3 < 0)
@@ -181,7 +185,7 @@ uint16 Proj93Instr_Goto(uint16 k, uint16 j) {  // 0x938239
 }
 
 uint16 Proj93Instr_GotoIfLess(uint16 k, uint16 j) {  // 0x938240
-  uint8 *v2 = RomPtr_93(j);
+  const uint8 *v2 = RomPtr_93(j);
   if ((int16)(*(uint16 *)v2 - projectile_variables[k >> 1]) >= 0)
     return *((uint16 *)RomPtr_93(j) + 1);
   else

@@ -3,27 +3,56 @@
 #include "variables.h"
 #include "funcs.h"
 
-#define g_off_9BA4B3 ((uint16*)RomPtr(0x9ba4b3))
-#define g_off_9BA4CB ((uint16*)RomPtr(0x9ba4cb))
-#define g_off_9BA4E3 ((uint16*)RomPtr(0x9ba4e3))
+
+#define g_off_9BA4B3 ((uint16*)RomFixedPtr(0x9ba4b3))
+#define g_off_9BA4CB ((uint16*)RomFixedPtr(0x9ba4cb))
+#define g_off_9BA4E3 ((uint16*)RomFixedPtr(0x9ba4e3))
+#define g_off_9BB5C8 ((uint16*)RomFixedPtr(0x9bb5c8))
+#define g_byte_9BB823 ((uint8*)RomFixedPtr(0x9bb823))
+#define g_off_9BB6D2 ((uint16*)RomFixedPtr(0x9bb6d2))
+#define kDeathSequencePals_PowerSuit ((uint16*)RomFixedPtr(0x9bb7d3))
+#define kDeathSequencePals_VariaSuit ((uint16*)RomFixedPtr(0x9bb7e7))
+#define kDeathSequencePals_GravitySuit ((uint16*)RomFixedPtr(0x9bb7fb))
+#define kDeathSequencePals_Suitless ((uint16*)RomFixedPtr(0x9bb80f))
+#define g_off_9BC3C6 ((uint16*)RomFixedPtr(0x9bc3c6))
+#define g_off_9BC3EE ((uint16*)RomFixedPtr(0x9bc3ee))
+#define g_off_9BC416 ((uint16*)RomFixedPtr(0x9bc416))
+#define grapple_beam_special_angles ((GrappleBeamSpecialAngles*)RomFixedPtr(0x9bc43e))
+#define kGrappleBeam_SwingingData ((uint8*)RomFixedPtr(0x9bc1c2))
+#define kGrappleBeam_SwingingData2 ((uint8*)RomFixedPtr(0x9bc2c2))
+#define kGrappleBeam_SwingingData3 ((uint8*)RomFixedPtr(0x9bc302))
+#define kGrappleBeam_OriginX_NoRun ((uint16*)RomFixedPtr(0x9bc122))
+#define kGrappleBeam_OriginY_NoRun ((uint16*)RomFixedPtr(0x9bc136))
+#define kGrappleBeam_0x0d1a_offs_NoRun ((uint16*)RomFixedPtr(0x9bc14a))
+#define kGrappleBeam_0x0d1c_offs_NoRun ((uint16*)RomFixedPtr(0x9bc15e))
+#define kGrappleBeam_OriginX_Run ((uint16*)RomFixedPtr(0x9bc172))
+#define kGrappleBeam_OriginY_Run ((uint16*)RomFixedPtr(0x9bc186))
+#define kGrappleBeam_0x0d1a_offs_Run ((uint16*)RomFixedPtr(0x9bc19a))
+#define kGrappleBeam_0x0d1c_offs_Run ((uint16*)RomFixedPtr(0x9bc1ae))
+#define g_off_9BC344 (*(uint16*)RomFixedPtr(0x9bc344))
+#define g_off_9BC342 (*(uint16*)RomFixedPtr(0x9bc342))
+#define g_off_9BC346 ((uint16*)RomFixedPtr(0x9bc346))
+#define kFlareAnimDelays ((uint16*)RomFixedPtr(0x90c481))
+#define kFlareAnimDelays_Main ((uint8*)RomFixedPtr(0x90c487))
+#define kFlareAnimDelays_SlowSparks ((uint8*)RomFixedPtr(0x90c4a7))
+#define kFlareAnimDelays_FastSparks ((uint8*)RomFixedPtr(0x90c4ae))
+#define g_word_93A22B ((uint16*)RomFixedPtr(0x93a22b))
+#define g_word_93A225 ((uint16*)RomFixedPtr(0x93a225))
+#define g_byte_9BC9BA ((uint8*)RomFixedPtr(0x9bc9ba))
+#define g_byte_9BC9C4 ((uint8*)RomFixedPtr(0x9bc9c4))
+#define kGrappleBeam_Ext_Xvel ((uint16*)RomFixedPtr(0x9bc0db))
+#define kGrappleBeam_Ext_Yvel ((uint16*)RomFixedPtr(0x9bc0ef))
+#define kGrappleBeam_Init_EndAngle ((uint16*)RomFixedPtr(0x9bc104))
+
+
+
 static const uint8 kDeathAnimationFrames[28] = {
   5, 5, 5, 5, 1, 5, 5, 0, 1,
   0, 5, 5, 5, 5, 5, 5, 5, 1,
   1, 1, 5, 5, 5, 5, 5, 5, 5,
   5,
 };
-#define g_off_9BB5C8 ((uint16*)RomPtr(0x9bb5c8))
-#define g_byte_9BB823 ((uint8*)RomPtr(0x9bb823))
-#define g_off_9BB6D2 ((uint16*)RomPtr(0x9bb6d2))
 
-#define kDeathSequencePals_PowerSuit ((uint16*)RomPtr(0x9bb7d3))
-#define kDeathSequencePals_VariaSuit ((uint16*)RomPtr(0x9bb7e7))
-#define kDeathSequencePals_GravitySuit ((uint16*)RomPtr(0x9bb7fb))
-#define kDeathSequencePals_Suitless ((uint16*)RomPtr(0x9bb80f))
-#define g_off_9BC3C6 ((uint16*)RomPtr(0x9bc3c6))
-#define g_off_9BC3EE ((uint16*)RomPtr(0x9bc3ee))
-#define g_off_9BC416 ((uint16*)RomPtr(0x9bc416))
-#define grapple_beam_special_angles ((GrappleBeamSpecialAngles*)RomPtr(0x9bc43e))
 static const uint16 g_word_9BC118 = 24;
 static const uint16 g_word_9BC11A = 0xc;
 static const uint16 g_word_9BC11C = 5;
@@ -42,31 +71,6 @@ static const uint8 kIsGrappleBannedForMovementType[28] = {
   1, 0, 0, 1, 1, 1, 0, 1, 1, 1,
   1, 0, 0, 1, 1, 1, 0, 1,
 };
-#define kGrappleBeam_SwingingData ((uint8*)RomPtr(0x9bc1c2))
-#define kGrappleBeam_SwingingData2 ((uint8*)RomPtr(0x9bc2c2))
-#define kGrappleBeam_SwingingData3 ((uint8*)RomPtr(0x9bc302))
-#define kGrappleBeam_OriginX_NoRun ((uint16*)RomPtr(0x9bc122))
-#define kGrappleBeam_OriginY_NoRun ((uint16*)RomPtr(0x9bc136))
-#define kGrappleBeam_0x0d1a_offs_NoRun ((uint16*)RomPtr(0x9bc14a))
-#define kGrappleBeam_0x0d1c_offs_NoRun ((uint16*)RomPtr(0x9bc15e))
-#define kGrappleBeam_OriginX_Run ((uint16*)RomPtr(0x9bc172))
-#define kGrappleBeam_OriginY_Run ((uint16*)RomPtr(0x9bc186))
-#define kGrappleBeam_0x0d1a_offs_Run ((uint16*)RomPtr(0x9bc19a))
-#define kGrappleBeam_0x0d1c_offs_Run ((uint16*)RomPtr(0x9bc1ae))
-#define g_off_9BC344 (*(uint16*)RomPtr(0x9bc344))
-#define g_off_9BC342 (*(uint16*)RomPtr(0x9bc342))
-#define g_off_9BC346 ((uint16*)RomPtr(0x9bc346))
-#define kFlareAnimDelays ((uint16*)RomPtr(0x90c481))
-#define kFlareAnimDelays_Main ((uint8*)RomPtr(0x90c487))
-#define kFlareAnimDelays_SlowSparks ((uint8*)RomPtr(0x90c4a7))
-#define kFlareAnimDelays_FastSparks ((uint8*)RomPtr(0x90c4ae))
-#define g_word_93A22B ((uint16*)RomPtr(0x93a22b))
-#define g_word_93A225 ((uint16*)RomPtr(0x93a225))
-#define g_byte_9BC9BA ((uint8*)RomPtr(0x9bc9ba))
-#define g_byte_9BC9C4 ((uint8*)RomPtr(0x9bc9c4))
-#define kGrappleBeam_Ext_Xvel ((uint16*)RomPtr(0x9bc0db))
-#define kGrappleBeam_Ext_Yvel ((uint16*)RomPtr(0x9bc0ef))
-#define kGrappleBeam_Init_EndAngle ((uint16*)RomPtr(0x9bc104))
 
 void ProjectileTrail_Func5(uint16 k, uint16 j) {  // 0x9BA3CC
   ProjectileInsts_GetValue(k);
@@ -90,7 +94,7 @@ void ProjectileTrail_Func5(uint16 k, uint16 j) {  // 0x9BA3CC
     v5 = g_off_9BA4B3[projectile_type[v3] & 0xF] + 2 * (projectile_dir[v3] & 0xF);
   }
   uint16 v6 = *(uint16 *)RomPtr_9B(v5) + 4 * R22_;
-  uint8 *p = RomPtr_9B(v6);
+  const uint8 *p = RomPtr_9B(v6);
   int v7 = j >> 1;
   projectiletrail_left_y_pos[v7] = R20_ + (int8)p[1] - 4;
   projectiletrail_left_x_pos[v7] = R18_ + (int8)p[0] - 4;

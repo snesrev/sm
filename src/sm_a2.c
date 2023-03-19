@@ -5,11 +5,47 @@
 #include "enemy_types.h"
 #include "variables.h"
 
-#define kEnemyInit_BouncingGoofball_Tab0 ((uint16*)RomPtr(0xa286df))
-#define kEnemyInit_BouncingGoofball_Tab1 ((uint16*)RomPtr(0xa286ef))
-#define kBouncingGoofball_Tab0 ((uint8*)RomPtr(0xa28701))
-#define g_word_A28D56 (*(uint16*)RomPtr(0xa28d56))
-#define g_word_A28D58 (*(uint16*)RomPtr(0xa28d58))
+
+#define kEnemyInit_BouncingGoofball_Tab0 ((uint16*)RomFixedPtr(0xa286df))
+#define kEnemyInit_BouncingGoofball_Tab1 ((uint16*)RomFixedPtr(0xa286ef))
+#define kBouncingGoofball_Tab0 ((uint8*)RomFixedPtr(0xa28701))
+#define g_word_A28D56 (*(uint16*)RomFixedPtr(0xa28d56))
+#define g_word_A28D58 (*(uint16*)RomFixedPtr(0xa28d58))
+#define g_word_A29A07 (*(uint16*)RomFixedPtr(0xa29a07))
+#define g_word_A29A09 (*(uint16*)RomFixedPtr(0xa29a09))
+#define g_word_A29A0B (*(uint16*)RomFixedPtr(0xa29a0b))
+#define g_word_A29A0D (*(uint16*)RomFixedPtr(0xa29a0d))
+#define g_word_A29F36 ((uint16*)RomFixedPtr(0xa29f36))
+#define g_off_A29F42 ((uint16*)RomFixedPtr(0xa29f42))
+#define g_word_A2A3DD ((uint16*)RomFixedPtr(0xa2a3dd))
+#define g_word_A2A3ED ((uint16*)RomFixedPtr(0xa2a3ed))
+#define g_byte_A2A7CF ((uint8*)RomFixedPtr(0xa2a7cf))
+#define g_word_A2A622 ((uint16*)RomFixedPtr(0xa2a622))
+#define g_word_A2AC07 ((uint16*)RomFixedPtr(0xa2ac07))
+#define g_word_A2AC11 ((uint16*)RomFixedPtr(0xa2ac11))
+#define g_word_A2B520 ((uint16*)RomFixedPtr(0xa2b520))
+#define g_word_A2B530 ((uint16*)RomFixedPtr(0xa2b530))
+#define g_word_A2B550 ((uint16*)RomFixedPtr(0xa2b550))
+#define g_word_A2B75B ((uint16*)RomFixedPtr(0xa2b75b))
+#define g_word_A2BBBB (*(uint16*)RomFixedPtr(0xa2bbbb))
+#define g_word_A2BBBF (*(uint16*)RomFixedPtr(0xa2bbbf))
+#define g_word_A2BE86 ((uint16*)RomFixedPtr(0xa2be86))
+#define g_word_A2C1C1 ((uint16*)RomFixedPtr(0xa2c1c1))
+#define g_word_A2C1C5 (*(uint16*)RomFixedPtr(0xa2c1c5))
+#define g_word_A2C6CA (*(uint16*)RomFixedPtr(0xa2c6ca))
+#define g_word_A2C6CE (*(uint16*)RomFixedPtr(0xa2c6ce))
+#define g_off_A2CB77 ((uint16*)RomFixedPtr(0xa2cb77))
+#define g_off_A2DF5E ((uint16*)RomFixedPtr(0xa2df5e))
+#define g_off_A2DF6A ((uint16*)RomFixedPtr(0xa2df6a))
+#define g_off_A2E5EF ((uint16*)RomFixedPtr(0xa2e5ef))
+#define g_word_A2EA56 ((uint16*)RomFixedPtr(0xa2ea56))
+#define g_off_A2EA4E ((uint16*)RomFixedPtr(0xa2ea4e))
+#define g_off_A2EC3A ((uint16*)RomFixedPtr(0xa2ec3a))
+#define g_off_A2EDFB ((uint16*)RomFixedPtr(0xa2edfb))
+#define g_off_A2F107 ((uint16*)RomFixedPtr(0xa2f107))
+
+
+
 
 static const uint16 g_word_A28D50 = 0x30;
 static const uint16 g_word_A28D52 = 1;
@@ -30,38 +66,6 @@ static const int16 g_word_A28E80[48] = {
   -12, -11, -10,  -9,  -8,  -7,  -6,  -5,
    -4,  -3,  -3,  -2,   0,   0,   0,   0,
 };
-#define g_word_A29A07 (*(uint16*)RomPtr(0xa29a07))
-#define g_word_A29A09 (*(uint16*)RomPtr(0xa29a09))
-#define g_word_A29A0B (*(uint16*)RomPtr(0xa29a0b))
-#define g_word_A29A0D (*(uint16*)RomPtr(0xa29a0d))
-#define g_word_A29F36 ((uint16*)RomPtr(0xa29f36))
-#define g_off_A29F42 ((uint16*)RomPtr(0xa29f42))
-#define g_word_A2A3DD ((uint16*)RomPtr(0xa2a3dd))
-#define g_word_A2A3ED ((uint16*)RomPtr(0xa2a3ed))
-#define g_byte_A2A7CF ((uint8*)RomPtr(0xa2a7cf))
-#define g_word_A2A622 ((uint16*)RomPtr(0xa2a622))
-#define g_word_A2AC07 ((uint16*)RomPtr(0xa2ac07))
-#define g_word_A2AC11 ((uint16*)RomPtr(0xa2ac11))
-#define g_word_A2B520 ((uint16*)RomPtr(0xa2b520))
-#define g_word_A2B530 ((uint16*)RomPtr(0xa2b530))
-#define g_word_A2B550 ((uint16*)RomPtr(0xa2b550))
-#define g_word_A2B75B ((uint16*)RomPtr(0xa2b75b))
-#define g_word_A2BBBB (*(uint16*)RomPtr(0xa2bbbb))
-#define g_word_A2BBBF (*(uint16*)RomPtr(0xa2bbbf))
-#define g_word_A2BE86 ((uint16*)RomPtr(0xa2be86))
-#define g_word_A2C1C1 ((uint16*)RomPtr(0xa2c1c1))
-#define g_word_A2C1C5 (*(uint16*)RomPtr(0xa2c1c5))
-#define g_word_A2C6CA (*(uint16*)RomPtr(0xa2c6ca))
-#define g_word_A2C6CE (*(uint16*)RomPtr(0xa2c6ce))
-#define g_off_A2CB77 ((uint16*)RomPtr(0xa2cb77))
-#define g_off_A2DF5E ((uint16*)RomPtr(0xa2df5e))
-#define g_off_A2DF6A ((uint16*)RomPtr(0xa2df6a))
-#define g_off_A2E5EF ((uint16*)RomPtr(0xa2e5ef))
-#define g_word_A2EA56 ((uint16*)RomPtr(0xa2ea56))
-#define g_off_A2EA4E ((uint16*)RomPtr(0xa2ea4e))
-#define g_off_A2EC3A ((uint16*)RomPtr(0xa2ec3a))
-#define g_off_A2EDFB ((uint16*)RomPtr(0xa2edfb))
-#define g_off_A2F107 ((uint16*)RomPtr(0xa2f107))
 
 void Enemy_GrappleReact_CancelBeam_A2(void) {  // 0xA2800F
   Enemy_SwitchToFrozenAi();
@@ -3404,7 +3408,7 @@ void HirisingSlowfalling_Func_6(void) {  // 0xA2E06A
 
 void HirisingSlowfalling_Func_7(void) {  // 0xA2E0CD
   Enemy_HirisingSlowfalling *E = Get_HirisingSlowfalling(cur_enemy_index);
-  uint8 *v1 = RomPtr_A2(E->hsg_var_E + 4 * HIBYTE(E->hsg_var_C));
+  const uint8 *v1 = RomPtr_A2(E->hsg_var_E + 4 * HIBYTE(E->hsg_var_C));
   if (*(uint16 *)v1 == 0x8000) {
     E->hsg_var_05 += E->hsg_var_F;
     E->hsg_var_C = 0;

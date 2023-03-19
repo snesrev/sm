@@ -4,6 +4,10 @@
 #include "sm_rtl.h"
 #include "funcs.h"
 
+
+
+
+
 static const SpawnHardcodedPlmArgs unk_8F9198 = { 0x3d, 0x0b, 0xbb30 };
 static const SpawnHardcodedPlmArgs unk_8F91AD = { 0x10, 0x87, 0xb964 };
 static const SpawnHardcodedPlmArgs unk_8F91B6 = { 0x0f, 0x0a, 0xb9ed };
@@ -731,7 +735,7 @@ uint16 RoomDefStateSelect_Finish(uint16 k) {  // 0x8FE5E6
 }
 
 uint16 RoomDefStateSelect_Door(uint16 k) {  // 0x8FE5EB
-  uint8 *v1 = RomPtr_8F(k);
+  const uint8 *v1 = RomPtr_8F(k);
   if (*(uint16 *)v1 == door_def_ptr)
     return RoomDefStateSelect_Finish(*((uint16 *)v1 + 1));
   else
@@ -746,7 +750,7 @@ uint16 RoomDefStateSelect_TourianBoss01(uint16 k) {  // 0x8FE5FF
 }
 
 uint16 RoomDefStateSelect_IsEventSet(uint16 k) {  // 0x8FE612
-  uint8 *v1 = RomPtr_8F(k);
+  const uint8 *v1 = RomPtr_8F(k);
   if (CheckEventHappened(*v1))
     return RoomDefStateSelect_Finish(*(uint16 *)(v1 + 1));
   else
@@ -754,7 +758,7 @@ uint16 RoomDefStateSelect_IsEventSet(uint16 k) {  // 0x8FE612
 }
 
 uint16 RoomDefStateSelect_IsBossDead(uint16 k) {  // 0x8FE629
-  uint8 *v1 = RomPtr_8F(k);
+  const uint8 *v1 = RomPtr_8F(k);
   if (CheckBossBitForCurArea(*v1) & 1)
     return RoomDefStateSelect_Finish(*(uint16 *)(v1 + 1));
   else

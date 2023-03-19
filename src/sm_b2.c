@@ -4,8 +4,12 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
-#define kWallSpacePirates_Palette_3 ((uint16*)RomPtr(0xb28727))
-#define g_off_B2F959 ((uint16*)RomPtr(0xb2f959))
+
+#define kWallSpacePirates_Palette_3 ((uint16*)RomFixedPtr(0xb28727))
+#define g_off_B2F959 ((uint16*)RomFixedPtr(0xb2f959))
+
+
+
 
 void Enemy_GrappleReact_CancelBeam_B2(void) {  // 0xB2800F
   Enemy_SwitchToFrozenAi();

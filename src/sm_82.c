@@ -6,13 +6,64 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
-#define kDemoRoomData ((uint16*)RomPtr(0x82876c))
-#define kPauseScreenSpriteAnimationData_0 (*(PauseScreenSpriteAnimationData*)RomPtr(0x82c0b2))
-#define kPauseScreenSpriteAnimationData_1 (*(PauseScreenSpriteAnimationData*)RomPtr(0x82c0c4))
-#define kPauseScreenSpriteAnimationData_2 (*(PauseScreenSpriteAnimationData*)RomPtr(0x82c0d6))
-#define kPauseScreenSpriteAnimationData_3 (*(PauseScreenSpriteAnimationData*)RomPtr(0x82c0e8))
-#define kPAuseSpritePaletteIndexValues ((uint16*)RomPtr(0x82c0fa))
-#define kPausePtsToAnimationSpritemapBaseIds ((uint16*)RomPtr(0x82c1e4))
+
+#define kDemoRoomData ((uint16*)RomFixedPtr(0x82876c))
+#define kPauseScreenSpriteAnimationData_0 (*(PauseScreenSpriteAnimationData*)RomFixedPtr(0x82c0b2))
+#define kPauseScreenSpriteAnimationData_1 (*(PauseScreenSpriteAnimationData*)RomFixedPtr(0x82c0c4))
+#define kPauseScreenSpriteAnimationData_2 (*(PauseScreenSpriteAnimationData*)RomFixedPtr(0x82c0d6))
+#define kPauseScreenSpriteAnimationData_3 (*(PauseScreenSpriteAnimationData*)RomFixedPtr(0x82c0e8))
+#define kPAuseSpritePaletteIndexValues ((uint16*)RomFixedPtr(0x82c0fa))
+#define kPausePtsToAnimationSpritemapBaseIds ((uint16*)RomFixedPtr(0x82c1e4))
+#define kInitialPalette ((uint16*)RomFixedPtr(0x9a8000))
+#define kDemoRoomData ((uint16*)RomFixedPtr(0x82876c))
+#define kPauseScreenPalettes ((uint16*)RomFixedPtr(0xb6f000))
+#define kPauseLrHighlightAnimData ((uint8*)RomFixedPtr(0x82c10c))
+#define kPauseAreaLabelTilemap ((uint16*)RomFixedPtr(0x82965f))
+#define kPauseMenuMapTilemaps ((LongPtr*)RomFixedPtr(0x82964a))
+#define kPauseMenuMapData ((uint16*)RomFixedPtr(0x829717))
+#define kEquipmentTilemaps_Tanks ((uint16*)RomFixedPtr(0x82c088))
+#define kEquipmentTilemaps_Weapons ((uint16*)RomFixedPtr(0x82c08c))
+#define kEquipmentTilemaps_Suits ((uint16*)RomFixedPtr(0x82c096))
+#define kEquipmentTilemaps_Boots ((uint16*)RomFixedPtr(0x82c0a2))
+#define kHyperBeamWeaponsTilemaps ((uint16*)RomFixedPtr(0x82c0a8))
+#define kEquipmentBitmasks_Weapons ((uint16*)RomFixedPtr(0x82c04c))
+#define kEquipmentBitmasks_Suits ((uint16*)RomFixedPtr(0x82c056))
+#define kEquipmentBitmasks_Boots ((uint16*)RomFixedPtr(0x82c062))
+#define kPauseAnimatedPalette ((uint16*)RomFixedPtr(0x82a987))
+#define kPauseReserveTankAnimationData ((uint8*)RomFixedPtr(0x82c165))
+#define kEquipmentTilemapOffs_Tanks ((uint16*)RomFixedPtr(0x82c068))
+#define kEquipmentTilemapOffs_Weapons ((uint16*)RomFixedPtr(0x82c06c))
+#define kEquipmentTilemapOffs_Suits ((uint16*)RomFixedPtr(0x82c076))
+#define kEquipmentTilemapOffs_Boots ((uint16*)RomFixedPtr(0x82c082))
+#define kEquipmentTilemaps_Tanks ((uint16*)RomFixedPtr(0x82c088))
+#define kEquipmentTilemaps_Weapons ((uint16*)RomFixedPtr(0x82c08c))
+#define kEquipmentTilemaps_Suits ((uint16*)RomFixedPtr(0x82c096))
+#define kEquipmentTilemaps_Boots ((uint16*)RomFixedPtr(0x82c0a2))
+#define kEquipmentScreenWireframeCmp ((uint16*)RomFixedPtr(0x82b257))
+#define kEquipmentScreenWireframePtrs ((uint16*)RomFixedPtr(0x82b25f))
+#define kEquipmentScreenPtrsToItemXYpos ((uint16*)RomFixedPtr(0x82c18e))
+#define kEquipmentPtrsToRamTilemapOffsets ((uint16*)RomFixedPtr(0x82c02c))
+#define kEquipmentPtrsToBitmasks ((uint16*)RomFixedPtr(0x82c034))
+#define kEquipmentPtrsToBitsets ((uint16*)RomFixedPtr(0x82c03c))
+#define kEquipmentPtrsToEquipmentTilemaps ((uint16*)RomFixedPtr(0x82c044))
+#define kMapIconDataPointers ((MapIconDataPointers*)RomFixedPtr(0x82c7cb))
+#define g_stru_82B9A0 ((MapScrollArrowData*)RomFixedPtr(0x82b9a0))
+#define g_stru_82B9AA ((MapScrollArrowData*)RomFixedPtr(0x82b9aa))
+#define g_stru_82B9B4 ((MapScrollArrowData*)RomFixedPtr(0x82b9b4))
+#define g_stru_82B9BE (*(MapScrollArrowData*)RomFixedPtr(0x82b9be))
+#define file_copy_arrow_stuff ((FileCopyArrowStuff*)RomFixedPtr(0x82bb0c))
+#define kMapElevatorDests ((uint16*)RomFixedPtr(0x82c74d))
+#define kStateHeaderGraphicsSets ((uint16*)RomFixedPtr(0x8fe7a7))
+#define kCommonSpritesPalette1 ((uint16*)RomFixedPtr(0x9afc00))
+#define kMenuPalettes ((uint16*)RomFixedPtr(0x8ee400))
+#define kOptionsMenuSpecialPtrs ((uint16*)RomFixedPtr(0x82f0ae))
+#define off_82F2ED ((uint16*)RomFixedPtr(0x82f2ed))
+#define off_82F54A ((uint16*)RomFixedPtr(0x82f54a))
+#define g_word_82F639 ((uint16*)RomFixedPtr(0x82f639))
+#define g_off_82F647 ((uint16*)RomFixedPtr(0x82f647))
+
+
+
 
 void CallDemoRoomDataFunc(uint32 ea) {
   switch (ea) {
@@ -232,7 +283,6 @@ void InitPpuForGameplay(void) {  // 0x8281DD
   memset7E(ram4000.bg2_tilemap, 0x2C0F, 0xFE);
 }
 
-#define kInitialPalette ((uint16*)RomPtr(0x9a8000))
 
 void LoadInitialPalette(void) {  // 0x8282C5
   int16 v0;
@@ -478,7 +528,6 @@ CoroutineRet GameState_44_TransitionFromDemo(void) {  // 0x8285FB
   return kCoroutineNone;
 }
 
-#define kDemoRoomData ((uint16*)RomPtr(0x82876c))
 
 void CheckForNextDemo(void) {  // 0x828637
   R18_ = 2 * (demo_scene + 8 * demo_scene);
@@ -877,7 +926,7 @@ uint8 CreateOptionsMenuObject_(uint16 a, uint16 j) {
     if ((v3 & 0x8000u) != 0)
       return 1;
   }
-  uint8 *v5 = RomPtr_82(j);
+  const uint8 *v5 = RomPtr_82(j);
   int v6 = v3 >> 1;
   optionsmenu_arr1[v6] = *((uint16 *)v5 + 1);
   optionsmenu_instr_ptr[v6] = *((uint16 *)v5 + 2);
@@ -1194,7 +1243,6 @@ void LoadEqupmentScreenReserveHealthTilemap(void) {  // 0x828F70
   }
 }
 
-#define kPauseScreenPalettes ((uint16*)RomPtr(0xb6f000))
 void BackupGameplayPalettesAndLoadForPause(void) {  // 0x828FD4
   int16 v0;
   int16 v2;
@@ -1334,7 +1382,6 @@ void PauseMenu_5(void) {  // 0x829186
     ++menu_index;
   }
 }
-#define kPauseLrHighlightAnimData ((uint8*)RomPtr(0x82c10c))
 void PauseMenu_3_MapToEquipment_Load(void) {  // 0x8291AB
   DisplayMapElevatorDestinations();
   EquipmentScreenSetupReserveMode();
@@ -1508,7 +1555,6 @@ CoroutineRet GameState_18_Unpausing(void) {  // 0x8293A1
   return kCoroutineNone;
 }
 
-#define kPauseAreaLabelTilemap ((uint16*)RomPtr(0x82965f))
 void LoadPauseMenuMapTilemapAndAreaLabel(void) {  // 0x8293C3
   reg_BG1HOFS = reg_BG4HOFS;
   reg_BG1VOFS = reg_BG4VOFS;
@@ -1534,8 +1580,6 @@ void LoadPauseMenuMapTilemapAndAreaLabel(void) {  // 0x8293C3
   WriteReg(MDMAEN, 2u);
 }
 
-#define kPauseMenuMapTilemaps ((LongPtr*)RomPtr(0x82964a))
-#define kPauseMenuMapData ((uint16*)RomPtr(0x829717))
 void LoadPauseMenuMapTilemap(void) {  // 0x82943D
   uint16 v5;
   uint16 v6;
@@ -1729,7 +1773,7 @@ void DrawRoomSelectMap(void) {  // 0x829517
 }
 
 void DrawRoomSelectMapAreaLabel(void) {  // 0x829628
-  uint8 *v2 = RomPtr_82(kPauseAreaLabelTilemap[area_index]);
+  const uint8 *v2 = RomPtr_82(kPauseAreaLabelTilemap[area_index]);
   for(int i = 0; i < 24; i += 2)
     IndirWriteWord(&R0_, i, *(uint16 *)(v2 + i) & 0xEFFF);
 }
@@ -1922,14 +1966,6 @@ void ResetPauseMenuAnimations(void) {  // 0x82A0F7
   pausemenu_palette_animation_timer = 1;
   pausemenu_palette_animation_frame = 0;
 }
-#define kEquipmentTilemaps_Tanks ((uint16*)RomPtr(0x82c088))
-#define kEquipmentTilemaps_Weapons ((uint16*)RomPtr(0x82c08c))
-#define kEquipmentTilemaps_Suits ((uint16*)RomPtr(0x82c096))
-#define kEquipmentTilemaps_Boots ((uint16*)RomPtr(0x82c0a2))
-#define kHyperBeamWeaponsTilemaps ((uint16*)RomPtr(0x82c0a8))
-#define kEquipmentBitmasks_Weapons ((uint16*)RomPtr(0x82c04c))
-#define kEquipmentBitmasks_Suits ((uint16*)RomPtr(0x82c056))
-#define kEquipmentBitmasks_Boots ((uint16*)RomPtr(0x82c062))
 void LoadEquipmentScreenEquipmentTilemaps(void) {  // 0x82A12B
   if (samus_max_reserve_health) {
     R3_.addr = addr_kEquipmentTilemapOffs_Tanks;
@@ -2426,7 +2462,7 @@ void DrawPauseScreenSpriteAnim(uint16 a, uint16 input_k, uint16 input_j) {  // 0
   int t = a - 1;
   uint16 *v8 = (uint16*)RomPtr_RAM(kPauseScreenSpriteAnimationData_1.arr[t]);
   uint16 *v5 = (uint16*)RomPtr_RAM(kPauseScreenSpriteAnimationData_0.arr[t]);
-  uint8 *v3 = RomPtr_82(kPauseScreenSpriteAnimationData_3.arr[t]);
+  const uint8 *v3 = RomPtr_82(kPauseScreenSpriteAnimationData_3.arr[t]);
   if ((int16)--(*v5) <= 0) {
     uint16 v10 = v3[3 * ++(*v8)];
     if (v10 == 255) {
@@ -2438,10 +2474,9 @@ void DrawPauseScreenSpriteAnim(uint16 a, uint16 input_k, uint16 input_j) {  // 0
   R3_.addr = kPAuseSpritePaletteIndexValues[3];
   int r24 = v3[3 * *v8 + 2];
   int r26 = 2 * *RomPtr_RAM(kPauseScreenSpriteAnimationData_2.arr[t]);
-  uint8 *v11 = RomPtr_82(r26 + kPausePtsToAnimationSpritemapBaseIds[t]);
+  const uint8 *v11 = RomPtr_82(r26 + kPausePtsToAnimationSpritemapBaseIds[t]);
   DrawMenuSpritemap(r24 + *(uint16 *)v11, input_k, input_j - 1);
 }
-#define kPauseAnimatedPalette ((uint16*)RomPtr(0x82a987))
 void HandlePauseScreenPaletteAnimation(void) {  // 0x82A92B
   uint16 v2;
   uint16 j;
@@ -2468,7 +2503,6 @@ void HandlePauseScreenPaletteAnimation(void) {  // 0x82A92B
     }
   }
 }
-#define kPauseReserveTankAnimationData ((uint8*)RomPtr(0x82c165))
 void EquipmentScreenSetupReserveMode(void) {  // 0x82AB47
   VoidP v0;
   int16 v3;
@@ -2806,14 +2840,6 @@ void EquipmentScreenCategory_Weapons_MoveButtons(void) {  // 0x82AFDB
     }
   }
 }
-#define kEquipmentTilemapOffs_Tanks ((uint16*)RomPtr(0x82c068))
-#define kEquipmentTilemapOffs_Weapons ((uint16*)RomPtr(0x82c06c))
-#define kEquipmentTilemapOffs_Suits ((uint16*)RomPtr(0x82c076))
-#define kEquipmentTilemapOffs_Boots ((uint16*)RomPtr(0x82c082))
-#define kEquipmentTilemaps_Tanks ((uint16*)RomPtr(0x82c088))
-#define kEquipmentTilemaps_Weapons ((uint16*)RomPtr(0x82c08c))
-#define kEquipmentTilemaps_Suits ((uint16*)RomPtr(0x82c096))
-#define kEquipmentTilemaps_Boots ((uint16*)RomPtr(0x82c0a2))
 
 void EquipmentScreenCategory_Weapons_PlazmaSpazerCheck(void) {  // 0x82B068
   int t = equipped_beams & ~R36;
@@ -2905,8 +2931,6 @@ void WriteSamusWireframeTilemapAndQueue(void) {  // 0x82B1E0
   vram_write_queue_tail = v0 + 2;
 }
 
-#define kEquipmentScreenWireframeCmp ((uint16*)RomPtr(0x82b257))
-#define kEquipmentScreenWireframePtrs ((uint16*)RomPtr(0x82b25f))
 
 void WriteSamusWireframeTilemap(void) {  // 0x82B20C
   uint16 i;
@@ -2932,7 +2956,6 @@ void WriteSamusWireframeTilemap(void) {  // 0x82B20C
   } while (R20_);
 }
 
-#define kEquipmentScreenPtrsToItemXYpos ((uint16*)RomPtr(0x82c18e))
 
 void EquipmentScreenDrawItemSelector(void) {  // 0x82B267
   if (samus_max_reserve_health | (uint16)(collected_items | collected_beams)) {
@@ -3140,10 +3163,6 @@ uint16 EquipmentScreenCategory_Boots_MoveUpInBoots(uint16 k) {  // 0x82B53F
   pausemenu_equipment_category_item = result;
   return result;
 }
-#define kEquipmentPtrsToRamTilemapOffsets ((uint16*)RomPtr(0x82c02c))
-#define kEquipmentPtrsToBitmasks ((uint16*)RomPtr(0x82c034))
-#define kEquipmentPtrsToBitsets ((uint16*)RomPtr(0x82c03c))
-#define kEquipmentPtrsToEquipmentTilemaps ((uint16*)RomPtr(0x82c044))
 void EquipmentScreenCategory_ButtonResponse(void) {  // 0x82B568
   if ((joypad1_newkeys & kButton_A) != 0) {
     QueueSfx1_Max6(0x38u);
@@ -3208,7 +3227,6 @@ void DrawMapIcons(void) {  // 0x82B672
       kMap_Criteria_SavePoints[1] - reg_BG1VOFS);
   }
 }
-#define kMapIconDataPointers ((MapIconDataPointers*)RomPtr(0x82c7cb))
 void DrawFileSelectMapIcons(void) {  // 0x82B6DD
   int16 v0;
 
@@ -3345,7 +3363,7 @@ void DrawBossMapIcons(uint16 a, uint16 k) {  // 0x82B892
 void DrawMapScrollArrowAndCheckToScroll(uint8 db, uint16 k) {  // 0x82B90A
   uint16 *v1 = (uint16 *)RomPtrWithBank(db, k);
   DrawPauseScreenSpriteAnim(v1[2], *v1, v1[1]);
-  uint8 *v2 = RomPtrWithBank(db, k);
+  const uint8 *v2 = RomPtrWithBank(db, k);
   if ((joypad1_lastkeys & *((uint16 *)v2 + 3)) != 0 && !map_scrolling_direction)
     map_scrolling_direction = *((uint16 *)v2 + 4);
 }
@@ -3354,10 +3372,6 @@ void sub_82B932(void) {  // 0x82B932
   HandleMapScrollArrows();
 }
 
-#define g_stru_82B9A0 ((MapScrollArrowData*)RomPtr(0x82b9a0))
-#define g_stru_82B9AA ((MapScrollArrowData*)RomPtr(0x82b9aa))
-#define g_stru_82B9B4 ((MapScrollArrowData*)RomPtr(0x82b9b4))
-#define g_stru_82B9BE (*(MapScrollArrowData*)RomPtr(0x82b9be))
 
 void HandleMapScrollArrows(void) {  // 0x82B934
   if (sign16(map_min_x_scroll - 24 - reg_BG1HOFS))
@@ -3434,7 +3448,6 @@ void DrawMenuSelectionMissile(void) {  // 0x82BA6E
     enemy_projectile_id[5],
     enemy_projectile_id[10]);
 }
-#define file_copy_arrow_stuff ((FileCopyArrowStuff*)RomPtr(0x82bb0c))
 void DrawFileCopyArrow(void) {  // 0x82BABA
   uint16 v0;
   if ((int16)(enemy_projectile_id[16] - enemy_projectile_id[17]) >= 0) {
@@ -3458,12 +3471,11 @@ void DrawFileCopyArrow(void) {  // 0x82BABA
     file_copy_arrow_stuff[v0].xpos,
     file_copy_arrow_stuff[v0].ypos);
 }
-#define kMapElevatorDests ((uint16*)RomPtr(0x82c74d))
 void DisplayMapElevatorDestinations(void) {  // 0x82BB30
   R3_.addr = 0;
   if (map_station_byte_array[area_index]) {
     for (int i = kMapElevatorDests[area_index]; ; i += 6) {
-      uint8 *v1 = RomPtr_82(i);
+      const uint8 *v1 = RomPtr_82(i);
       if (*(uint16 *)v1 == 0xFFFF)
         break;
       DrawMenuSpritemap(*((uint16 *)v1 + 2), *(uint16 *)v1 - reg_BG1HOFS, *((uint16 *)v1 + 1) - reg_BG1VOFS);
@@ -3491,7 +3503,7 @@ void sub_82BB7F(uint16 a) {  // 0x82BB7F
   uint16 current_instruction = enemy_data[0].current_instruction;
   enemy_data[0].instruction_timer = a - 1;
   if (a == 1) {
-    uint8 *v2 = RomPtr_82(enemy_data[0].current_instruction);
+    const uint8 *v2 = RomPtr_82(enemy_data[0].current_instruction);
     if (*((uint16 *)v2 + 3) == 0xFFFF) {
       sub_82BBDD();
     } else if ((int16)(*((uint16 *)v2 + 3) + 1) >= 0) {
@@ -3518,7 +3530,7 @@ void DrawBabyMetroid(uint16 k) {  // 0x82BB9E
   for(int i = 0; i < 32; i += 2)
     palette_buffer[(i >> 1) + 192] = *(uint16 *)RomPtr_82(v1 + i);
   R3_.addr = 2048;
-  uint8 *v3 = RomPtr_82(k);
+  const uint8 *v3 = RomPtr_82(k);
   DrawMenuSpritemap(*((uint16 *)v3 + 1), 0x7C, 0x50);
   R3_.addr = 2560;
   DrawMenuSpritemap(0x64, 0x7C, 0x50);
@@ -3923,7 +3935,6 @@ void LoadRoomHeader(void) {  // 0x82DE6F
   uint16 prod = Mult8x8(room_width_in_blocks, room_height_in_blocks);
   room_size_in_blocks = 2 * prod;
 }
-#define kStateHeaderGraphicsSets ((uint16*)RomPtr(0x8fe7a7))
 void LoadStateHeader(void) {  // 0x82DEF2
   StateHeaderTiles *StateHeaderTiles; // r10
   RoomDefRoomstate *RoomDefRoomstate; // r11
@@ -4043,7 +4054,6 @@ void PlayRoomMusicTrackAfterAFrames(uint16 a) {  // 0x82E118
   }
 }
 
-#define kCommonSpritesPalette1 ((uint16*)RomPtr(0x9afc00))
 void LoadColorsForSpritesBeamsAndEnemies(void) {  // 0x82E139
   uint16 j;
   uint16 k;
@@ -4402,7 +4412,7 @@ uint16 UpdateBackgroundCommand_E_DoorDependentTransferToVRAM(uint16 j) {  // 0x8
 }
 
 uint16 UpdateBackgroundCommand_2_TransferToVram(uint16 j) {  // 0x82E5EB
-  uint8 *v1 = RomPtr_8F(j);
+  const uint8 *v1 = RomPtr_8F(j);
   door_transition_vram_update_dst = *(uint16 *)(v1 + 3);
   copy24(&door_transition_vram_update_src, (LongPtr *)v1);
   door_transition_vram_update_size = *(uint16 *)(v1 + 5);
@@ -4867,7 +4877,6 @@ void GameOptionsMenuFunc_0(void) {  // 0x82EBDB
   }
 }
 
-#define kMenuPalettes ((uint16*)RomPtr(0x8ee400))
 void GameOptionsMenu_1_LoadingOptionsScreen(void) {  // 0x82EC11
   uint16 j;
 
@@ -5157,7 +5166,6 @@ void GameOptionsMenu_8_SpecialSettings(void) {
     GameOptionsMenuItemFunc_4();
   }
 }
-#define kOptionsMenuSpecialPtrs ((uint16*)RomPtr(0x82f0ae))
 void GameOptionsMenuSpecialSettings_0(void) {  // 0x82F08E
   uint8 *v0 = RomPtr_RAM(kOptionsMenuSpecialPtrs[menu_option_index]);
   if (*(uint16 *)v0)
@@ -5292,7 +5300,6 @@ void sub_82F296(uint16 j) {  // 0x82F296
   enemy_projectile_x_vel[v1 + 3] = 56;
   enemy_projectile_x_vel[v1 + 11] = 3584;
 }
-#define off_82F2ED ((uint16*)RomPtr(0x82f2ed))
 void OptionsPreInstr_F2A9(uint16 v0) {  // 0x82F2A9
   if (game_state == kGameState_2_GameOptionsMenu) {
     int v2 = game_options_screen_index;
@@ -5395,7 +5402,6 @@ void OptionsPreInstr_F42C(uint16 k) {  // 0x82F42C
     enemy_projectile_y_vel[v1 + 17] = addr_off_82F4B6;
   }
 }
-#define off_82F54A ((uint16*)RomPtr(0x82f54a))
 void LoadControllerOptionsFromControllerBindings(void) {  // 0x82F4DC
   int16 v2;
 
@@ -5447,8 +5453,6 @@ uint8 OptionsMenuFunc8(void) {
   } while (v2 < 12);
   return 0;
 }
-#define g_word_82F639 ((uint16*)RomPtr(0x82f639))
-#define g_off_82F647 ((uint16*)RomPtr(0x82f647))
 static const uint16 g_word_82F6AD[6] = {  // 0x82F587
   0,
   0xe,

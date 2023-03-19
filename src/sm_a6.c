@@ -5,6 +5,66 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+
+#define g_byte_A6E269 ((uint8*)RomFixedPtr(0xa6e269))
+#define g_word_A6E2AA ((uint16*)RomFixedPtr(0xa6e2aa))
+#define g_word_A6E30A ((uint16*)RomFixedPtr(0xa6e30a))
+#define g_word_A6E46A ((uint16*)RomFixedPtr(0xa6e46a))
+#define g_off_A6A4EB ((uint16*)RomFixedPtr(0xa6a4eb))
+#define g_off_A6A743 ((uint16*)RomFixedPtr(0xa6a743))
+#define g_word_A6AE4D ((uint16*)RomFixedPtr(0xa6ae4d))
+#define g_word_A6AF2F ((uint16*)RomFixedPtr(0xa6af2f))
+#define g_word_A6B00F ((uint16*)RomFixedPtr(0xa6b00f))
+#define g_off_A6ACDA ((uint16*)RomFixedPtr(0xa6acda))
+#define g_off_A6AD45 ((uint16*)RomFixedPtr(0xa6ad45))
+#define g_word_A6B60D ((uint16*)RomFixedPtr(0xa6b60d))
+#define g_word_A6B63B ((uint16*)RomFixedPtr(0xa6b63b))
+#define g_word_A6B6C8 ((uint16*)RomFixedPtr(0xa6b6c8))
+#define g_word_A6B9D5 ((uint16*)RomFixedPtr(0xa6b9d5))
+#define g_word_A6B9DB ((uint16*)RomFixedPtr(0xa6b9db))
+#define g_off_A6B965 ((uint16*)RomFixedPtr(0xa6b965))
+#define g_off_A6B96D ((uint16*)RomFixedPtr(0xa6b96d))
+#define g_word_A6B9D5 ((uint16*)RomFixedPtr(0xa6b9d5))
+#define g_word_A6B9DB ((uint16*)RomFixedPtr(0xa6b9db))
+#define g_word_A6B94D ((uint16*)RomFixedPtr(0xa6b94d))
+#define g_word_A6B959 ((uint16*)RomFixedPtr(0xa6b959))
+#define g_word_A6BB48 ((uint16*)RomFixedPtr(0xa6bb48))
+#define g_word_A6BB4E ((uint16*)RomFixedPtr(0xa6bb4e))
+#define g_word_A6C1DF ((uint16*)RomFixedPtr(0xa6c1df))
+#define g_off_A6C7BA ((uint16*)RomFixedPtr(0xa6c7ba))
+#define g_word_A6C804 ((uint16*)RomFixedPtr(0xa6c804))
+#define g_off_A6C808 ((uint16*)RomFixedPtr(0xa6c808))
+#define g_word_A6C836 ((uint16*)RomFixedPtr(0xa6c836))
+#define g_off_A6C83A ((uint16*)RomFixedPtr(0xa6c83a))
+#define g_word_A6C868 ((uint16*)RomFixedPtr(0xa6c868))
+#define g_off_A6C86C ((uint16*)RomFixedPtr(0xa6c86c))
+#define g_word_A6C89A ((uint16*)RomFixedPtr(0xa6c89a))
+#define g_off_A6C89E ((uint16*)RomFixedPtr(0xa6c89e))
+#define g_word_A6C8CC ((uint16*)RomFixedPtr(0xa6c8cc))
+#define g_off_A6C8D0 ((uint16*)RomFixedPtr(0xa6c8d0))
+#define g_word_A6C6CE ((uint16*)RomFixedPtr(0xa6c6ce))
+#define g_off_A6C6E6 ((uint16*)RomFixedPtr(0xa6c6e6))
+#define g_word_A6CC12 ((uint16*)RomFixedPtr(0xa6cc12))
+#define g_word_A6CC18 ((uint16*)RomFixedPtr(0xa6cc18))
+#define g_off_A6DB02 ((uint16*)RomFixedPtr(0xa6db02))
+#define kRidley_Ilist_DCBA ((uint16*)RomFixedPtr(0xa6dcba))
+#define g_off_A6EFF5 ((uint16*)RomFixedPtr(0xa6eff5))
+#define g_off_A6F001 ((uint16*)RomFixedPtr(0xa6f001))
+#define g_off_A6F72B ((uint16*)RomFixedPtr(0xa6f72b))
+#define g_off_A6F52C ((uint16*)RomFixedPtr(0xa6f52c))
+#define g_word_A6F840 ((uint16*)RomFixedPtr(0xa6f840))
+#define g_off_A6F900 ((uint16*)RomFixedPtr(0xa6f900))
+#define g_word_A6FC03 ((uint16*)RomFixedPtr(0xa6fc03))
+#define g_word_A6FC0B ((uint16*)RomFixedPtr(0xa6fc0b))
+#define g_off_A6FC13 ((uint16*)RomFixedPtr(0xa6fc13))
+#define g_word_A6FC1B ((uint16*)RomFixedPtr(0xa6fc1b))
+#define g_word_A6FC23 ((uint16*)RomFixedPtr(0xa6fc23))
+#define g_word_A6FC2B ((uint16*)RomFixedPtr(0xa6fc2b))
+#define g_off_A6FD4A ((uint16*)RomFixedPtr(0xa6fd4a))
+#define g_off_A6FD54 ((uint16*)RomFixedPtr(0xa6fd54))
+
+
+
 int BabyMetroid_DBCB_DoubleRetEx(uint16 a);
 uint8 Ridley_Func_40_Carry();
 uint8 Ridley_Func_40_Sign();
@@ -59,70 +119,14 @@ static const uint16 g_word_A695FE[4] = { 0xffe8, 0xfff4, 0x18, 0xc };
 static const uint16 g_word_A69606[4] = { 0x180, 0x100, 0x100, 0x180 };
 static const uint16 g_word_A69A48[8] = { 0xfe00, 0xfb00, 0xfc00, 0xfb00, 0x200, 0xfb00, 0x400, 0xfb00 };
 
-#define g_byte_A6E269 ((uint8*)RomPtr(0xa6e269))
-#define g_word_A6E2AA ((uint16*)RomPtr(0xa6e2aa))
-#define g_word_A6E30A ((uint16*)RomPtr(0xa6e30a))
-#define g_word_A6E46A ((uint16*)RomPtr(0xa6e46a))
-#define g_off_A6A4EB ((uint16*)RomPtr(0xa6a4eb))
-#define g_off_A6A743 ((uint16*)RomPtr(0xa6a743))
-#define g_word_A6AE4D ((uint16*)RomPtr(0xa6ae4d))
-#define g_word_A6AF2F ((uint16*)RomPtr(0xa6af2f))
-#define g_word_A6B00F ((uint16*)RomPtr(0xa6b00f))
-#define g_off_A6ACDA ((uint16*)RomPtr(0xa6acda))
-#define g_off_A6AD45 ((uint16*)RomPtr(0xa6ad45))
 static const uint16 g_word_A6B288 = 8;
-#define g_word_A6B60D ((uint16*)RomPtr(0xa6b60d))
-#define g_word_A6B63B ((uint16*)RomPtr(0xa6b63b))
-#define g_word_A6B6C8 ((uint16*)RomPtr(0xa6b6c8))
-#define g_word_A6B9D5 ((uint16*)RomPtr(0xa6b9d5))
-#define g_word_A6B9DB ((uint16*)RomPtr(0xa6b9db))
-#define g_off_A6B965 ((uint16*)RomPtr(0xa6b965))
-#define g_off_A6B96D ((uint16*)RomPtr(0xa6b96d))
-#define g_word_A6B9D5 ((uint16*)RomPtr(0xa6b9d5))
-#define g_word_A6B9DB ((uint16*)RomPtr(0xa6b9db))
-#define g_word_A6B94D ((uint16*)RomPtr(0xa6b94d))
-#define g_word_A6B959 ((uint16*)RomPtr(0xa6b959))
-#define g_word_A6BB48 ((uint16*)RomPtr(0xa6bb48))
-#define g_word_A6BB4E ((uint16*)RomPtr(0xa6bb4e))
 static const uint16 g_word_A6BBEB[3] = { 0x40, 0, 0xd0 };
 static const uint16 g_word_A6BC62[3] = { 0xb0, 0, 0x50 };
-#define g_word_A6C1DF ((uint16*)RomPtr(0xa6c1df))
 static const int16 g_word_A6C66E[20] = { -24, -24, -20, 20, 16, -30, 30, -3, 14, -13, -2, 18, -2, -32, -31, 8, -4, -10, 19, 19 };
-#define g_off_A6C7BA ((uint16*)RomPtr(0xa6c7ba))
-#define g_word_A6C804 ((uint16*)RomPtr(0xa6c804))
-#define g_off_A6C808 ((uint16*)RomPtr(0xa6c808))
-#define g_word_A6C836 ((uint16*)RomPtr(0xa6c836))
-#define g_off_A6C83A ((uint16*)RomPtr(0xa6c83a))
-#define g_word_A6C868 ((uint16*)RomPtr(0xa6c868))
-#define g_off_A6C86C ((uint16*)RomPtr(0xa6c86c))
-#define g_word_A6C89A ((uint16*)RomPtr(0xa6c89a))
-#define g_off_A6C89E ((uint16*)RomPtr(0xa6c89e))
-#define g_word_A6C8CC ((uint16*)RomPtr(0xa6c8cc))
-#define g_off_A6C8D0 ((uint16*)RomPtr(0xa6c8d0))
-#define g_word_A6C6CE ((uint16*)RomPtr(0xa6c6ce))
-#define g_off_A6C6E6 ((uint16*)RomPtr(0xa6c6e6))
-#define g_word_A6CC12 ((uint16*)RomPtr(0xa6cc12))
-#define g_word_A6CC18 ((uint16*)RomPtr(0xa6cc18))
 static const int16 g_word_A6CF54[3] = { 0x20, 0, -0x20 };
 static const uint8 g_byte_A6D61F[16] = { 0x10, 0xf, 0xe, 0xd, 0xc, 0xb, 0xa, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 static const uint8 g_byte_A6D712[16] = { 0x10, 0xf, 0xe, 0xd, 0xc, 0xb, 0xa, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 static const uint16 g_word_A6D9ED[8] = { 0xc, 0xe, 0x10, 0x12, 0x1c, 0x20, 0x28, 0x30 };
-#define g_off_A6DB02 ((uint16*)RomPtr(0xa6db02))
-#define kRidley_Ilist_DCBA ((uint16*)RomPtr(0xa6dcba))
-#define g_off_A6EFF5 ((uint16*)RomPtr(0xa6eff5))
-#define g_off_A6F001 ((uint16*)RomPtr(0xa6f001))
-#define g_off_A6F72B ((uint16*)RomPtr(0xa6f72b))
-#define g_off_A6F52C ((uint16*)RomPtr(0xa6f52c))
-#define g_word_A6F840 ((uint16*)RomPtr(0xa6f840))
-#define g_off_A6F900 ((uint16*)RomPtr(0xa6f900))
-#define g_word_A6FC03 ((uint16*)RomPtr(0xa6fc03))
-#define g_word_A6FC0B ((uint16*)RomPtr(0xa6fc0b))
-#define g_off_A6FC13 ((uint16*)RomPtr(0xa6fc13))
-#define g_word_A6FC1B ((uint16*)RomPtr(0xa6fc1b))
-#define g_word_A6FC23 ((uint16*)RomPtr(0xa6fc23))
-#define g_word_A6FC2B ((uint16*)RomPtr(0xa6fc2b))
-#define g_off_A6FD4A ((uint16*)RomPtr(0xa6fd4a))
-#define g_off_A6FD54 ((uint16*)RomPtr(0xa6fd54))
 
 void Enemy_GrappleReact_NoInteract_A6(void) {  // 0xA68000
   SwitchEnemyAiToMainAi();
@@ -2394,7 +2398,7 @@ void Ridley_Func_29(void) {  // 0xA6B90F
   tilemap_stuff[7] = g_word_A6B94D[v3];
   tilemap_stuff[6] = g_word_A6B959[v3];
   E->ridley_var_C = *(uint16 *)&RomPtr_A6(R20_)[v2];
-  uint8 *v4 = RomPtr_A6(R18_);
+  const uint8 *v4 = RomPtr_A6(R18_);
   uint16 t = *(uint16 *)&v4[v2];
   E->ridley_var_B = sign16(E->ridley_var_B) ? -t : t;
 }
@@ -2919,7 +2923,7 @@ void Ridley_Func_59(void) {  // 0xA6C136
   VramWriteEntry *v2;
 
   uint16 v0 = vram_write_queue_tail;
-  uint8 *v1 = RomPtr_A6(addr_byte_A6C15D);
+  const uint8 *v1 = RomPtr_A6(addr_byte_A6C15D);
   v2 = gVramWriteEntry(vram_write_queue_tail);
   v2->size = *(uint16 *)v1;
   *(VoidP *)((char *)&v2->src.addr + 1) = *(uint16 *)(v1 + 3);
@@ -2972,7 +2976,7 @@ uint8 ProcessEscapeTimerTileTransfers(void) {  // 0xA6C26E
   EnemyData *v0 = gEnemyData(0);
   uint16 ai_var_E = v0->ai_var_E;
   uint16 v2 = vram_write_queue_tail;
-  uint8 *v3 = RomPtr_A6(ai_var_E);
+  const uint8 *v3 = RomPtr_A6(ai_var_E);
   uint8 result = 1;
   if (*(uint16 *)v3) {
     v4 = gVramWriteEntry(vram_write_queue_tail);
@@ -3062,7 +3066,7 @@ void Ridley_Func_62(void) {  // 0xA6C383
 
   uint16 v0 = addr_stru_A6C3B8;
   for (i = vram_write_queue_tail; ; i += 7) {
-    uint8 *v2 = RomPtr_A6(v0);
+    const uint8 *v2 = RomPtr_A6(v0);
     if (!*(uint16 *)v2)
       break;
     v3 = gVramWriteEntry(i);
@@ -3926,7 +3930,7 @@ uint8 Ridley_Func_97(void) {  // 0xA6D431
 
 void Ridley_Func_98(void) {  // 0xA6D453
   uint16 enemy_ptr = Get_Ridley(cur_enemy_index)->base.enemy_ptr;
-  uint8 *v1 = RomPtr_A0(enemy_ptr);
+  const uint8 *v1 = RomPtr_A0(enemy_ptr);
   uint16 v2 = SuitDamageDivision(*((uint16 *)v1 + 3));
   Samus_DealDamage(v2);
 }
@@ -4437,7 +4441,7 @@ void Ridley_Func_119(uint8 carry) {  // 0xA6DA8B
   v3 = gVramWriteEntry(vram_write_queue_tail);
   *(VoidP *)((char *)&v3->src.addr + 1) = -20480;
   *(VoidP *)((char *)&v3[1].src.addr + 1) = -20480;
-  uint8 *v4 = RomPtr_A6(v1);
+  const uint8 *v4 = RomPtr_A6(v1);
   v3->src.addr = *(uint16 *)v4;
   v3[1].src.addr = *((uint16 *)v4 + 1);
   v3->vram_dst = 31424;
@@ -4558,7 +4562,7 @@ void sub_A6DC13(uint16 j) {  // 0xA6DC13
   R24_ = *v1;
   uint16 v3 = oam_next_ptr;
   do {
-    uint8 *v4 = RomPtr_A6(v2);
+    const uint8 *v4 = RomPtr_A6(v2);
     v5 = (int16 *)v4;
     v6 = v4[2] << 8;
     if ((v4[2] & 0x80) != 0)

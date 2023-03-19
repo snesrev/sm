@@ -4,7 +4,11 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
-#define kCreateSprite_Ilists ((uint16*)RomPtr(0xb4bda8))
+
+#define kCreateSprite_Ilists ((uint16*)RomFixedPtr(0xb4bda8))
+
+
+
 
 void CreateSpriteAtPos(void) {  // 0xB4BC26
   int v0 = 62;
@@ -95,7 +99,7 @@ void DrawSpriteObjects(void) {  // 0xB4BD32
             if (sign16(v2 - 272)) {
               R3_.addr = sprite_palettes[v1] & 0xE00;
               R0_.addr = sprite_palettes[v1] & 0x1FF;
-              uint8 *v3 = RomPtr_B4(sprite_instr_list_ptrs[v1]);
+              const uint8 *v3 = RomPtr_B4(sprite_instr_list_ptrs[v1]);
               DrawSpritemapWithBaseTile(0xB4, *((uint16 *)v3 + 1));
             }
           }

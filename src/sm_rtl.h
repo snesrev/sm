@@ -8,6 +8,7 @@ extern void RtlApuWrite(uint32 adr, uint8 val);
 extern int snes_frame_counter;
 
 extern uint8 *g_sram;
+extern const uint8 *g_rom;
 extern bool g_use_my_apu_code;
 #define LONGPTR(t) {(t) & 0xffff, (t) >> 16}
 extern bool g_debug_flag;
@@ -31,10 +32,12 @@ typedef uint16 Func_XY_Y(uint16 k, uint16 j);
 typedef void FuncXY_V(uint16 k, uint16 j);
 typedef PairU16 Func_Y_To_PairU16(uint16 j);
 
-uint8_t *RomPtr(uint32_t addr);
-uint8_t *IndirPtr(void *ptr, uint16 offs);
+const uint8 *RomPtr(uint32_t addr);
+uint8 *IndirPtr(void *ptr, uint16 offs);
 void IndirWriteWord(void *ptr, uint16 offs, uint16 value);
 void IndirWriteByte(void *ptr, uint16 offs, uint8 value);
+
+static inline const uint8 *RomFixedPtr(uint32_t addr) { return &g_rom[(((addr >> 16) << 15) | (addr & 0x7fff)) & 0x3fffff]; }
 
 struct LongPtr;
 void mov24(LongPtr *dst, uint32 src);
@@ -42,6 +45,7 @@ void copy24(LongPtr *dst, LongPtr *src);
 uint32 Load24(void *a);
 void MemCpy(void *dst, const void *src, int size);
 void Call(uint32 addr);
+bool Unreachable();
 
 #define INSTR_RETURN_ADDR(x) ((const uint16*)(uintptr_t)(x))
 #define INSTR_INCR_BYTES(x, n) ((const uint16*)((uintptr_t)(x) + n))
@@ -52,67 +56,65 @@ void Call(uint32 addr);
 #define GET_WORD(p) (*(uint16*)(p))
 #define GET_BYTE(p) (*(uint8*)(p))
 
-static inline uint8_t *RomPtr_RAM(uint16_t addr) { assert(addr < 0x2000); return g_ram + addr; }
-static inline uint8_t *RomPtr_80(uint16_t addr) { return RomPtr(0x800000 | addr); }
-static inline uint8_t *RomPtr_81(uint16_t addr) { return RomPtr(0x810000 | addr); }
-static inline uint8_t *RomPtr_82(uint16_t addr) { return RomPtr(0x820000 | addr); }
-static inline uint8_t *RomPtr_83(uint16_t addr) { return RomPtr(0x830000 | addr); }
-static inline uint8_t *RomPtr_84(uint16_t addr) { return RomPtr(0x840000 | addr); }
-static inline uint8_t *RomPtr_85(uint16_t addr) { return RomPtr(0x850000 | addr); }
-static inline uint8_t *RomPtr_86(uint16_t addr) { return RomPtr(0x860000 | addr); }
-static inline uint8_t *RomPtr_87(uint16_t addr) { return RomPtr(0x870000 | addr); }
-static inline uint8_t *RomPtr_88(uint16_t addr) { return RomPtr(0x880000 | addr); }
-static inline uint8_t *RomPtr_89(uint16_t addr) { return RomPtr(0x890000 | addr); }
-static inline uint8_t *RomPtr_8A(uint16_t addr) { return RomPtr(0x8a0000 | addr); }
-static inline uint8_t *RomPtr_8B(uint16_t addr) { return RomPtr(0x8b0000 | addr); }
-static inline uint8_t *RomPtr_8C(uint16_t addr) { return RomPtr(0x8c0000 | addr); }
-static inline uint8_t *RomPtr_8D(uint16_t addr) { return RomPtr(0x8d0000 | addr); }
-static inline uint8_t *RomPtr_8E(uint16_t addr) { return RomPtr(0x8e0000 | addr); }
-static inline uint8_t *RomPtr_8F(uint16_t addr) { return RomPtr(0x8f0000 | addr); }
-static inline uint8_t *RomPtr_90(uint16_t addr) { return RomPtr(0x900000 | addr); }
-static inline uint8_t *RomPtr_91(uint16_t addr) { return RomPtr(0x910000 | addr); }
-static inline uint8_t *RomPtr_92(uint16_t addr) { return RomPtr(0x920000 | addr); }
-static inline uint8_t *RomPtr_93(uint16_t addr) { return RomPtr(0x930000 | addr); }
-static inline uint8_t *RomPtr_94(uint16_t addr) { return RomPtr(0x940000 | addr); }
-static inline uint8_t *RomPtr_95(uint16_t addr) { return RomPtr(0x950000 | addr); }
-static inline uint8_t *RomPtr_96(uint16_t addr) { return RomPtr(0x960000 | addr); }
-static inline uint8_t *RomPtr_97(uint16_t addr) { return RomPtr(0x970000 | addr); }
-static inline uint8_t *RomPtr_98(uint16_t addr) { return RomPtr(0x980000 | addr); }
-static inline uint8_t *RomPtr_99(uint16_t addr) { return RomPtr(0x990000 | addr); }
-static inline uint8_t *RomPtr_9A(uint16_t addr) { return RomPtr(0x9a0000 | addr); }
-static inline uint8_t *RomPtr_9B(uint16_t addr) { return RomPtr(0x9b0000 | addr); }
-static inline uint8_t *RomPtr_9C(uint16_t addr) { return RomPtr(0x9c0000 | addr); }
-static inline uint8_t *RomPtr_9D(uint16_t addr) { return RomPtr(0x9d0000 | addr); }
-static inline uint8_t *RomPtr_9E(uint16_t addr) { return RomPtr(0x9e0000 | addr); }
-static inline uint8_t *RomPtr_9F(uint16_t addr) { return RomPtr(0x9f0000 | addr); }
-static inline uint8_t *RomPtr_A0(uint16_t addr) { return RomPtr(0xa00000 | addr); }
-static inline uint8_t *RomPtr_A1(uint16_t addr) { return RomPtr(0xa10000 | addr); }
-static inline uint8_t *RomPtr_A2(uint16_t addr) { return RomPtr(0xa20000 | addr); }
-static inline uint8_t *RomPtr_A3(uint16_t addr) { return RomPtr(0xa30000 | addr); }
-static inline uint8_t *RomPtr_A4(uint16_t addr) { return RomPtr(0xa40000 | addr); }
-static inline uint8_t *RomPtr_A5(uint16_t addr) { return RomPtr(0xa50000 | addr); }
-static inline uint8_t *RomPtr_A6(uint16_t addr) { return RomPtr(0xa60000 | addr); }
-static inline uint8_t *RomPtr_A7(uint16_t addr) { return RomPtr(0xa70000 | addr); }
-static inline uint8_t *RomPtr_A8(uint16_t addr) { return RomPtr(0xa80000 | addr); }
-static inline uint8_t *RomPtr_A9(uint16_t addr) { return RomPtr(0xa90000 | addr); }
-static inline uint8_t *RomPtr_AA(uint16_t addr) { return RomPtr(0xaa0000 | addr); }
-static inline uint8_t *RomPtr_AB(uint16_t addr) { return RomPtr(0xab0000 | addr); }
-static inline uint8_t *RomPtr_AC(uint16_t addr) { return RomPtr(0xac0000 | addr); }
-static inline uint8_t *RomPtr_AD(uint16_t addr) { return RomPtr(0xad0000 | addr); }
-static inline uint8_t *RomPtr_AE(uint16_t addr) { return RomPtr(0xae0000 | addr); }
-static inline uint8_t *RomPtr_AF(uint16_t addr) { return RomPtr(0xaf0000 | addr); }
-static inline uint8_t *RomPtr_B2(uint16_t addr) { return RomPtr(0xb20000 | addr); }
-static inline uint8_t *RomPtr_B3(uint16_t addr) { return RomPtr(0xb30000 | addr); }
-static inline uint8_t *RomPtr_B4(uint16_t addr) { return RomPtr(0xb40000 | addr); }
-static inline uint8_t *RomPtr_B7(uint16_t addr) { return RomPtr(0xb70000 | addr); }
-
-static inline uint8_t *RomPtrWithBank(uint8 bank, uint16_t addr) { return RomPtr((bank << 16) | addr); }
+static inline uint8 *RomPtr_RAM(uint16_t addr) { assert(addr < 0x2000); return g_ram + addr; }
+static inline const uint8 *RomPtr_80(uint16_t addr) { return RomPtr(0x800000 | addr); }
+static inline const uint8 *RomPtr_81(uint16_t addr) { return RomPtr(0x810000 | addr); }
+static inline const uint8 *RomPtr_82(uint16_t addr) { return RomPtr(0x820000 | addr); }
+static inline const uint8 *RomPtr_83(uint16_t addr) { return RomPtr(0x830000 | addr); }
+static inline const uint8 *RomPtr_84(uint16_t addr) { return RomPtr(0x840000 | addr); }
+static inline const uint8 *RomPtr_85(uint16_t addr) { return RomPtr(0x850000 | addr); }
+static inline const uint8 *RomPtr_86(uint16_t addr) { return RomPtr(0x860000 | addr); }
+static inline const uint8 *RomPtr_87(uint16_t addr) { return RomPtr(0x870000 | addr); }
+static inline const uint8 *RomPtr_88(uint16_t addr) { return RomPtr(0x880000 | addr); }
+static inline const uint8 *RomPtr_89(uint16_t addr) { return RomPtr(0x890000 | addr); }
+static inline const uint8 *RomPtr_8A(uint16_t addr) { return RomPtr(0x8a0000 | addr); }
+static inline const uint8 *RomPtr_8B(uint16_t addr) { return RomPtr(0x8b0000 | addr); }
+static inline const uint8 *RomPtr_8C(uint16_t addr) { return RomPtr(0x8c0000 | addr); }
+static inline const uint8 *RomPtr_8D(uint16_t addr) { return RomPtr(0x8d0000 | addr); }
+static inline const uint8 *RomPtr_8E(uint16_t addr) { return RomPtr(0x8e0000 | addr); }
+static inline const uint8 *RomPtr_8F(uint16_t addr) { return RomPtr(0x8f0000 | addr); }
+static inline const uint8 *RomPtr_90(uint16_t addr) { return RomPtr(0x900000 | addr); }
+static inline const uint8 *RomPtr_91(uint16_t addr) { return RomPtr(0x910000 | addr); }
+static inline const uint8 *RomPtr_92(uint16_t addr) { return RomPtr(0x920000 | addr); }
+static inline const uint8 *RomPtr_93(uint16_t addr) { return RomPtr(0x930000 | addr); }
+static inline const uint8 *RomPtr_94(uint16_t addr) { return RomPtr(0x940000 | addr); }
+static inline const uint8 *RomPtr_95(uint16_t addr) { return RomPtr(0x950000 | addr); }
+static inline const uint8 *RomPtr_96(uint16_t addr) { return RomPtr(0x960000 | addr); }
+static inline const uint8 *RomPtr_97(uint16_t addr) { return RomPtr(0x970000 | addr); }
+static inline const uint8 *RomPtr_98(uint16_t addr) { return RomPtr(0x980000 | addr); }
+static inline const uint8 *RomPtr_99(uint16_t addr) { return RomPtr(0x990000 | addr); }
+static inline const uint8 *RomPtr_9A(uint16_t addr) { return RomPtr(0x9a0000 | addr); }
+static inline const uint8 *RomPtr_9B(uint16_t addr) { return RomPtr(0x9b0000 | addr); }
+static inline const uint8 *RomPtr_9C(uint16_t addr) { return RomPtr(0x9c0000 | addr); }
+static inline const uint8 *RomPtr_9D(uint16_t addr) { return RomPtr(0x9d0000 | addr); }
+static inline const uint8 *RomPtr_9E(uint16_t addr) { return RomPtr(0x9e0000 | addr); }
+static inline const uint8 *RomPtr_9F(uint16_t addr) { return RomPtr(0x9f0000 | addr); }
+static inline const uint8 *RomPtr_A0(uint16_t addr) { return RomPtr(0xa00000 | addr); }
+static inline const uint8 *RomPtr_A1(uint16_t addr) { return RomPtr(0xa10000 | addr); }
+static inline const uint8 *RomPtr_A2(uint16_t addr) { return RomPtr(0xa20000 | addr); }
+static inline const uint8 *RomPtr_A3(uint16_t addr) { return RomPtr(0xa30000 | addr); }
+static inline const uint8 *RomPtr_A4(uint16_t addr) { return RomPtr(0xa40000 | addr); }
+static inline const uint8 *RomPtr_A5(uint16_t addr) { return RomPtr(0xa50000 | addr); }
+static inline const uint8 *RomPtr_A6(uint16_t addr) { return RomPtr(0xa60000 | addr); }
+static inline const uint8 *RomPtr_A7(uint16_t addr) { return RomPtr(0xa70000 | addr); }
+static inline const uint8 *RomPtr_A8(uint16_t addr) { return RomPtr(0xa80000 | addr); }
+static inline const uint8 *RomPtr_A9(uint16_t addr) { return RomPtr(0xa90000 | addr); }
+static inline const uint8 *RomPtr_AA(uint16_t addr) { return RomPtr(0xaa0000 | addr); }
+static inline const uint8 *RomPtr_AB(uint16_t addr) { return RomPtr(0xab0000 | addr); }
+static inline const uint8 *RomPtr_AC(uint16_t addr) { return RomPtr(0xac0000 | addr); }
+static inline const uint8 *RomPtr_AD(uint16_t addr) { return RomPtr(0xad0000 | addr); }
+static inline const uint8 *RomPtr_AE(uint16_t addr) { return RomPtr(0xae0000 | addr); }
+static inline const uint8 *RomPtr_AF(uint16_t addr) { return RomPtr(0xaf0000 | addr); }
+static inline const uint8 *RomPtr_B2(uint16_t addr) { return RomPtr(0xb20000 | addr); }
+static inline const uint8 *RomPtr_B3(uint16_t addr) { return RomPtr(0xb30000 | addr); }
+static inline const uint8 *RomPtr_B4(uint16_t addr) { return RomPtr(0xb40000 | addr); }
+static inline const uint8 *RomPtr_B7(uint16_t addr) { return RomPtr(0xb70000 | addr); }
+static inline const uint8 *RomPtrWithBank(uint8 bank, uint16_t addr) { return RomPtr((bank << 16) | addr); }
 
 void WriteReg(uint16 reg, uint8 value);
 void WriteRegWord(uint16 reg, uint16 value);
 uint16 ReadRegWord(uint16 reg);
 uint8 ReadReg(uint16 reg);
-
 
 typedef void RunFrameFunc(uint16 input, int run_what);
 typedef void SyncAllFunc();
@@ -179,31 +181,27 @@ PairU16 MakePairU16(uint16 k, uint16 j);
 #define R3_ (*(LongPtr*)(g_ram+0x3))
 #define byte_7E0002 R0_.bank
 
-#define kPoseParams ((SamusPoseParams*)RomPtr(0x91b629))
-#define kAtmosphericGraphicAnimationTimers ((uint16*)RomPtr(0x908b93))
-#define kAtmosphericTypeNumFrames ((uint16*)RomPtr(0x908bef))
-#define g_off_908BFF ((uint16*)RomPtr(0x908bff))
-#define g_stru_90A83A ((DisableMinimapAndMarkBossRoomAsExploredEnt*)RomPtr(0x90a83a))
-#define kPlayerPoseToPtr ((uint16*)RomPtr(0x90c7df))
-#define kDrawArmCannon_Tab2 ((uint16*)RomPtr(0x90c7a5))
+#define kPoseParams ((SamusPoseParams*)RomFixedPtr(0x91b629))
+#define kAtmosphericGraphicAnimationTimers ((uint16*)RomFixedPtr(0x908b93))
+#define kAtmosphericTypeNumFrames ((uint16*)RomFixedPtr(0x908bef))
+#define g_off_908BFF ((uint16*)RomFixedPtr(0x908bff))
+#define g_stru_90A83A ((DisableMinimapAndMarkBossRoomAsExploredEnt*)RomFixedPtr(0x90a83a))
+#define kPlayerPoseToPtr ((uint16*)RomFixedPtr(0x90c7df))
+#define kDrawArmCannon_Tab2 ((uint16*)RomFixedPtr(0x90c7a5))
 extern const int16 kSinCosTable8bit_Sext[320];
-#define kPoseTransitionTable ((uint16*)RomPtr(0x919ee2))
-#define kDemoSetDefPtrs ((uint16*)RomPtr(0x918885))
-#define kSpeedBoostToCtr ((uint16*)RomPtr(0x91b61f))
-#define kSpeedBoostToAnimFramePtr ((uint16 *)RomPtr(0x91B5DE))
-#define kSamusPoseToBaseSpritemapIndexTop ((uint16*)RomPtr(0x929263))
-#define kSamusPoseToBaseSpritemapIndexBottom ((uint16*)RomPtr(0x92945d))
-#define kSamusAnimationDelayData ((uint16*)RomPtr(0x91b010))
-
-bool Unreachable();
-
-
-#define kCommonEnemySpeeds_Linear ((uint16*)RomPtr(0xa28187))
-#define kCommonEnemySpeeds_Quadratic ((uint16*)RomPtr(0xa2838f))
-#define kSine16bit ((uint16*)RomPtr(0xa0b1c3))
-#define kOamExtra_X8Small_And_Large ((uint16*)RomPtr(0x81839f))
-#define kOamExtra_Address_And_X8Large ((uint16*)RomPtr(0x81859f))
-#define kTanTable ((uint16*)RomPtr(0x91c9d4))
+#define kPoseTransitionTable ((uint16*)RomFixedPtr(0x919ee2))
+#define kDemoSetDefPtrs ((uint16*)RomFixedPtr(0x918885))
+#define kSpeedBoostToCtr ((uint16*)RomFixedPtr(0x91b61f))
+#define kSpeedBoostToAnimFramePtr ((uint16 *)RomFixedPtr(0x91B5DE))
+#define kSamusPoseToBaseSpritemapIndexTop ((uint16*)RomFixedPtr(0x929263))
+#define kSamusPoseToBaseSpritemapIndexBottom ((uint16*)RomFixedPtr(0x92945d))
+#define kSamusAnimationDelayData ((uint16*)RomFixedPtr(0x91b010))
+#define kCommonEnemySpeeds_Linear ((uint16*)RomFixedPtr(0xa28187))
+#define kCommonEnemySpeeds_Quadratic ((uint16*)RomFixedPtr(0xa2838f))
+#define kSine16bit ((uint16*)RomFixedPtr(0xa0b1c3))
+#define kOamExtra_X8Small_And_Large ((uint16*)RomFixedPtr(0x81839f))
+#define kOamExtra_Address_And_X8Large ((uint16*)RomFixedPtr(0x81859f))
+#define kTanTable ((uint16*)RomFixedPtr(0x91c9d4))
 
 void CallEnemyAi(uint32 ea);
 void CallEnemyPreInstr(uint32 ea);

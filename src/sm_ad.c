@@ -3,6 +3,18 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+
+#define kMotherBrain_HealthBasedPalettes_Brain ((uint16*)RomFixedPtr(0xade6a2))
+#define kMotherBrain_HealthBasedPalettes_BackLeg ((uint16*)RomFixedPtr(0xade742))
+#define kMotherBrain_FadePalToBlack ((uint16*)RomFixedPtr(0xade9e8))
+#define kMotherBrain_TransitionToFromGrey_Incr ((uint16*)RomFixedPtr(0xaded8a))
+#define kMotherBrain_TransitionToFromGrey_Decr ((uint16*)RomFixedPtr(0xaded9c))
+#define kMotherBrain_FadeToGray_Drained ((uint16*)RomFixedPtr(0xadef87))
+#define kMotherBrain_FadeToGray_RealDeath ((uint16*)RomFixedPtr(0xadf107))
+#define kMotherBrain_Phase3_TurnLightsBackOn ((uint16*)RomFixedPtr(0xadf273))
+
+
+
 void nullsub_341(void) {}
 
 static Func_V *const funcs_BE56D[16] = {
@@ -12,14 +24,6 @@ static Func_V *const funcs_BE56D[16] = {
   MotherBrain_CalcHdma_Down,                                    0,                                0, MotherBrain_CalcHdma_Down,
 };
 
-#define kMotherBrain_HealthBasedPalettes_Brain ((uint16*)RomPtr(0xade6a2))
-#define kMotherBrain_HealthBasedPalettes_BackLeg ((uint16*)RomPtr(0xade742))
-#define kMotherBrain_FadePalToBlack ((uint16*)RomPtr(0xade9e8))
-#define kMotherBrain_TransitionToFromGrey_Incr ((uint16*)RomPtr(0xaded8a))
-#define kMotherBrain_TransitionToFromGrey_Decr ((uint16*)RomPtr(0xaded9c))
-#define kMotherBrain_FadeToGray_Drained ((uint16*)RomPtr(0xadef87))
-#define kMotherBrain_FadeToGray_RealDeath ((uint16*)RomPtr(0xadf107))
-#define kMotherBrain_Phase3_TurnLightsBackOn ((uint16*)RomPtr(0xadf273))
 
 
 void MotherBrain_CalcHdma(void) {  // 0xADDE00

@@ -3,6 +3,10 @@
 #include "funcs.h"
 #include "variables.h"
 
+
+
+
+
 void EnableAnimtiles(void) {  // 0x878000
   animtiles_enable_flag |= 0x8000;
 }
@@ -136,31 +140,31 @@ uint16 AnimtilesInstr_SetTimer(uint16 k, uint16 j) {  // 0x8780E3
 }
 
 uint16 AnimtilesInstr_QueueMusic(uint16 k, uint16 j) {  // 0x8780F0
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   QueueMusic_Delayed8(*v2);
   return j + 1;
 }
 
 uint16 AnimtilesInstr_QueueSfx1(uint16 k, uint16 j) {  // 0x8780FC
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   QueueSfx1_Max6(*v2);
   return j + 1;
 }
 
 uint16 AnimtilesInstr_QueueSfx2(uint16 k, uint16 j) {  // 0x878108
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   QueueSfx2_Max6(*v2);
   return j + 1;
 }
 
 uint16 AnimtilesInstr_QueueSfx3(uint16 k, uint16 j) {  // 0x878114
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   QueueSfx3_Max6(*v2);
   return j + 1;
 }
 
 uint16 AnimtilesInstr_GotoIfBossBitSet(uint16 k, uint16 j) {  // 0x878120
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   uint16 v3 = j + 1;
   if (CheckBossBitForCurArea((uint8) * (uint16 *)v2) & 1)
     return AnimtilesInstr_Goto(k, v3);
@@ -169,7 +173,7 @@ uint16 AnimtilesInstr_GotoIfBossBitSet(uint16 k, uint16 j) {  // 0x878120
 }
 
 uint16 AnimtilesInstr_SetBossBit(uint16 k, uint16 j) {  // 0x878133
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   SetBossBitForCurArea(*v2);
   return j + 1;
 }
@@ -206,7 +210,7 @@ uint16 AnimtilesInstr_WaitUntilAreaBossDead_DoubleRet(uint16 k, uint16 j) {  // 
 }
 
 uint16 AnimtilesInstr_GotoIfBossBitSetInArea(uint16 k, uint16 j) {  // 0x878303
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   uint16 v3 = j + 2;
   if ((*v2 & boss_bits_for_area[v2[1]]) != 0)
     return AnimtilesInstr_Goto(k, v3);

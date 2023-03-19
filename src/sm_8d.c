@@ -3,6 +3,10 @@
 #include "variables.h"
 #include "funcs.h"
 
+
+
+
+
 void EnablePaletteFx(void) {  // 0x8DC4C2
   flag_for_palette_fx_objects |= 0x8000u;
 }
@@ -128,7 +132,7 @@ void PalFx_ProcessOne(uint16 k) {  // 0x8DC54A
     int v8 = v1 >> 1;
     palettefx_instr_timers[v8] = v6;
     uint16 v9 = palettefx_color_indexes[v8];
-    uint8 *v10;
+    const uint8 *v10;
     do {
       while (1) {
         v10 = RomPtr_8D(j);
@@ -232,7 +236,7 @@ PairU16 PalInstr_SetColorIndex(uint16 k, uint16 j) {  // 0x8DC655
 }
 
 PairU16 PalInstr_QueueMusic(uint16 k, uint16 j) {  // 0x8DC65E
-  uint8 *v2 = RomPtr_8D(j);
+  const uint8 *v2 = RomPtr_8D(j);
   QueueMusic_Delayed8(*v2);
   return MakePairU16(k, j + 1);
 }

@@ -4,22 +4,30 @@
 #include "sm_rtl.h"
 #include "funcs.h"
 
+
+#define kGoldenTorizoPalette1 ((uint16*)RomFixedPtr(0x848032))
+#define kGoldenTorizoPalette2 ((uint16*)RomFixedPtr(0x848132))
+#define kXrayBlockDrawingInstrs ((uint16*)RomFixedPtr(0x84839d))
+#define kGrayDoorPreInstrs ((uint16*)RomFixedPtr(0x84be4b))
+#define kDowardGatePlmListPtrs ((uint16*)RomFixedPtr(0x84c70a))
+#define kDowardGateLeftBlockBts ((uint16*)RomFixedPtr(0x84c71a))
+#define kDowardGateRightBlockBts ((uint16*)RomFixedPtr(0x84c72a))
+#define kUpwardGatePlmListPtrs ((uint16*)RomFixedPtr(0x84c764))
+#define kUpwardGateLeftBlockBts ((uint16*)RomFixedPtr(0x84c774))
+#define kUpwardGateRightBlockBts ((uint16*)RomFixedPtr(0x84c784))
+#define off_84DB28 ((uint16*)RomFixedPtr(0x84db28))
+#define off_84E05F ((uint16*)RomFixedPtr(0x84e05f))
+#define off_84E077 ((uint16*)RomFixedPtr(0x84e077))
+#define fnPlmPreInstr_Empty4 0x848AA6
+#define kPlmVramAddresses ((uint16*)RomFixedPtr(0x8487cd))
+#define kPlmTileDataOffs ((uint16*)RomFixedPtr(0x8487d5))
+#define kPlmStartingTileNumber ((uint16*)RomFixedPtr(0x8487dd))
+
+
+
 void CallPlmPreInstr(uint32 ea, uint16 k);
 const uint8 *CallPlmInstr(uint32 ea, const uint8 *j, uint16 k);
 
-#define kGoldenTorizoPalette1 ((uint16*)RomPtr(0x848032))
-#define kGoldenTorizoPalette2 ((uint16*)RomPtr(0x848132))
-#define kXrayBlockDrawingInstrs ((uint16*)RomPtr(0x84839d))
-#define kGrayDoorPreInstrs ((uint16*)RomPtr(0x84be4b))
-#define kDowardGatePlmListPtrs ((uint16*)RomPtr(0x84c70a))
-#define kDowardGateLeftBlockBts ((uint16*)RomPtr(0x84c71a))
-#define kDowardGateRightBlockBts ((uint16*)RomPtr(0x84c72a))
-#define kUpwardGatePlmListPtrs ((uint16*)RomPtr(0x84c764))
-#define kUpwardGateLeftBlockBts ((uint16*)RomPtr(0x84c774))
-#define kUpwardGateRightBlockBts ((uint16*)RomPtr(0x84c784))
-#define off_84DB28 ((uint16*)RomPtr(0x84db28))
-#define off_84E05F ((uint16*)RomPtr(0x84e05f))
-#define off_84E077 ((uint16*)RomPtr(0x84e077))
 
 void SetGoldenTorizoPalette(uint16 a) {  // 0x848000
   int16 v1;
@@ -99,7 +107,7 @@ void LoadXrayBlocks(void) {  // 0x84831A
       i = k;
       if ((bitmask & v2) == 0) {
         CalculatePlmBlockCoords(k);
-        uint8 *v3 = RomPtr_84(kXrayBlockDrawingInstrs[plm_variables[k >> 1] >> 1]);
+        const uint8 *v3 = RomPtr_84(kXrayBlockDrawingInstrs[plm_variables[k >> 1] >> 1]);
         LoadBlockToXrayTilemap(*((uint16 *)v3 + 1) & 0xFFF, plm_x_block, plm_y_block);
         i = k;
       }
@@ -108,7 +116,7 @@ void LoadXrayBlocks(void) {  // 0x84831A
   RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
   if (RoomDefRoomstate->xray_special_casing_ptr) {
     for (j = RoomDefRoomstate->xray_special_casing_ptr; ; j += 4) {
-      uint8 *v6 = RomPtr_8F(j);
+      const uint8 *v6 = RomPtr_8F(j);
       v7 = *(uint16 *)v6;
       if (!*(uint16 *)v6)
         break;
@@ -388,7 +396,6 @@ NEXT_PLM:;
   COROUTINE_END(0);
 }
 
-#define fnPlmPreInstr_Empty4 0x848AA6
 void CallPlmPreInstr(uint32 ea, uint16 k) {
   switch (ea) {
   case fnPlmPreInstr_nullsub_60: return;
@@ -568,9 +575,9 @@ const uint8 *CallPlmInstr(uint32 ea, const uint8 *j, uint16 k) {
   }
 }
 
-static inline uint8_t *RomPtr_84orRAM(uint16_t addr) {
+static inline uint8 *RomPtr_84orRAM(uint16_t addr) {
   if (addr & 0x8000) {
-    return RomPtr(0x840000 | addr);
+    return (uint8*)RomPtr(0x840000 | addr);
   } else {
     assert(addr < 0x2000);
     return RomPtr_RAM(addr);
@@ -598,7 +605,7 @@ void ProcessPlmDrawInstruction(uint16 v0) {  // 0x84861E
 }
 
 const uint8 *PlmInstr_Sleep(const uint8 *plmp, uint16 k) {  // 0x8486B4
-  uint8 *base = RomPtr_84(0x8000) - 0x8000;
+  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
   plm_instr_list_ptrs[k >> 1] = plmp - base - 2;
   return 0;
 }
@@ -649,9 +656,6 @@ const uint8 *PlmInstr_SetTimer(const uint8 *plmp, uint16 k) {  // 0x84874E
   return plmp + 1;
 }
 
-#define kPlmVramAddresses ((uint16*)RomPtr(0x8487cd))
-#define kPlmTileDataOffs ((uint16*)RomPtr(0x8487d5))
-#define kPlmStartingTileNumber ((uint16*)RomPtr(0x8487dd))
 
 const uint8 *PlmInstr_LoadItemPlmGfx(const uint8 *plmp, uint16 k) {  // 0x848764
   uint16 v2 = plm_item_gfx_index;
@@ -661,7 +665,7 @@ const uint8 *PlmInstr_LoadItemPlmGfx(const uint8 *plmp, uint16 k) {  // 0x848764
   int R18 = kPlmVramAddresses[v3];
   int R20 = kPlmTileDataOffs[v3];
   int R22 = kPlmStartingTileNumber[v3];
-  uint8 *base = RomPtr_84(0x8000) - 0x8000;
+  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
   plm_item_gfx_ptrs[v3] = plmp - base;
   int v4 = vram_write_queue_tail;
   VramWriteEntry *v5 = gVramWriteEntry(vram_write_queue_tail);
@@ -842,7 +846,7 @@ const uint8 *PlmInstr_SetLinkReg(const uint8 *plmp, uint16 k) {  // 0x848A24
 }
 
 const uint8 *PlmInstr_Call(const uint8 *plmp, uint16 k) {  // 0x848A2E
-  uint8 *base = RomPtr_84(0x8000) - 0x8000;
+  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
   plm_instruction_list_link_reg[k >> 1] = plmp - base + 2;
   return INSTRB_RETURN_ADDR(GET_WORD(plmp));
 }
@@ -907,7 +911,7 @@ const uint8 *PlmInstr_DrawPlmBlock_(const uint8 *plmp, uint16 k) {  // 0x848B17
   custom_draw_instr_zero_terminator = 0;
   plm_instruction_timer[v2] = 1;
   plm_instruction_draw_ptr[v2] = ADDR16_OF_RAM(custom_draw_instr_num_blocks);
-  uint8 *base = RomPtr_84(0x8000) - 0x8000;
+  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
   plm_instr_list_ptrs[v2] = plmp - base;
   ProcessPlmDrawInstruction(k);
   uint16 v4 = plm_id;
@@ -921,7 +925,7 @@ const uint8 *PlmInstr_ProcessAirScrollUpdate(const uint8 *plmp, uint16 k) {  // 
   plm_variable[v2] = 0;
   uint16 v3 = plm_room_arguments[v2];
   while (1) {
-    uint8 *v5 = RomPtr_8F(v3);
+    const uint8 *v5 = RomPtr_8F(v3);
     if (v5[0] & 0x80)
       break;
     scrolls[v5[0]] = v5[1];
@@ -937,7 +941,7 @@ const uint8 *PlmInstr_ProcessSolidScrollUpdate(const uint8 *plmp, uint16 k) {  /
   plm_variable[v2] = 0;
   uint16 v3 = plm_room_arguments[v2];
   while (1) {
-    uint8 *v5 = RomPtr_8F(v3);
+    const uint8 *v5 = RomPtr_8F(v3);
     if (v5[0] & 0x80)
       break;
     scrolls[v5[0]] = v5[1];

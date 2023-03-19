@@ -3,6 +3,11 @@
 #include "variables.h"
 #include "funcs.h"
 
+
+#define kMessageBoxDefs ((MsgBoxConfig*)RomFixedPtr(0x85869b))
+
+
+
 int DisplayMessageBox_Poll(uint16 a) {
   if (a == message_box_index) {
     message_box_index = 0;
@@ -130,7 +135,6 @@ void CallMsgBoxModify(uint32 ea) {
   default: Unreachable();
   }
 }
-#define kMessageBoxDefs ((MsgBoxConfig*)RomPtr(0x85869b))
 void InitializeMessageBox(void) {  // 0x858241
   bg3_tilemap_offset = 2 * (message_box_index - 1);
   uint16 v0 = message_box_index - 1;

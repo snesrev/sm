@@ -5,7 +5,18 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
-#define kEnemyLayerToQueuePtr ((uint16*)RomPtr(0xa0b133))
+
+#define kEnemyLayerToQueuePtr ((uint16*)RomFixedPtr(0xa0b133))
+#define kStandardSpriteTiles ((uint16*)RomFixedPtr(0x9ad200))
+#define kSine8bit ((uint8*)RomFixedPtr(0xa0b143))
+#define kEquationForQuarterCircle ((uint16*)RomFixedPtr(0xa0b7ee))
+#define g_off_A0C2DA ((uint16*)RomFixedPtr(0xa0c2da))
+#define CHECK_locret_A0C434(i) (byte_A0C435[i] & 0x80 ? -1 : 0)
+#define g_word_A0C49F ((uint16*)RomFixedPtr(0xa0c49f))
+#define kAlignYPos_Tab0 ((uint8*)RomFixedPtr(0x948b2b))
+
+
+
 
 void Enemy_GrappleReact_NoInteract_A0(void) {  // 0xA08000
   SwitchEnemyAiToMainAi();
@@ -130,14 +141,14 @@ const uint16 *EnemyInstr_Skip2bytes(uint16 k, const uint16 *jp) {  // 0xA0812C
 
 const uint16 *EnemyInstr_Sleep(uint16 k, const uint16 *jp) {  // 0xA2812F
   EnemyData *ED = gEnemyData(k);
-  uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
+  const uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
   ED->current_instruction = (const uint8 *)jp - 2 - base_ptr;
   return 0;
 }
 
 const uint16 *EnemyInstr_WaitNframes(uint16 k, const uint16 *jp) {  // 0xA0813A
   EnemyData *ED = gEnemyData(k);
-  uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
+  const uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
   ED->instruction_timer = jp[0];
   ED->current_instruction = (const uint8 *)jp + 2 - base_ptr;
   return 0;
@@ -471,7 +482,6 @@ void LoadEnemyGfxIndexes(uint16 k, uint16 j) {  // 0xA08BF3
   v9->vram_tiles_index = g_word_7E001E;
   v10->vram_tiles_index = v11;
 }
-#define kStandardSpriteTiles ((uint16*)RomPtr(0x9ad200))
 void LoadEnemyTileData(void) {  // 0xA08C6C
   for (int i = 510; i >= 0; i -= 2)
     gEnemySpawnData(i)->some_flag = kStandardSpriteTiles[(i >> 1) + 3072];
@@ -2083,7 +2093,7 @@ void NormalEnemyFrozenAI(void) {  // 0xA0957E
 }
 
 void ProcessExtendedTilemap(uint8 db) {  // 0xA096CA
-  uint8 *p = RomPtrWithBank(db, R22_ + 2);
+  const uint8 *p = RomPtrWithBank(db, R22_ + 2);
   while (1) {
     uint16 v2 = *(uint16 *)p;
     if (v2 == 0xFFFF)
@@ -3639,8 +3649,6 @@ uint16 SineMult8bitNegative(uint16 a) {  // 0xA0B0C6
   return SineMult8bit();
 }
 
-#define kSine8bit ((uint8*)RomPtr(0xa0b143))
-#define kEquationForQuarterCircle ((uint16*)RomPtr(0xa0b7ee))
 
 uint16 SineMult8bit(void) {  // 0xA0B0DA
   int16 v1;
@@ -4133,7 +4141,7 @@ void ProcessEnemyInstructions(void) {  // 0xA0C26A
   if ((ED->ai_handler_bits & 4) == 0) {
     if (ED->instruction_timer-- == 1) {
       assert(ED->current_instruction & 0x8000);
-      uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
+      const uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
       const uint16 *pc = (const uint16 *)(base_ptr + ED->current_instruction);
       while ((*pc & 0x8000u) != 0) {
         enemy_ai_pointer.addr = *pc;
@@ -4161,7 +4169,6 @@ uint8 SetCarry_4(void) {  // 0xA0C2BE
   return 1;
 }
 
-#define g_off_A0C2DA ((uint16*)RomPtr(0xa0c2da))
 
 uint8 EnemyBlockCollReact_Spike(void) {  // 0xA0C2C0
   uint16 v0 = g_off_A0C2DA[BTS[cur_block_index] & 0x7F];
@@ -4197,7 +4204,6 @@ static const uint8 byte_A0C435[20] = {  // 0xA0C32E
   0x80, 0x81, 0x82, 0x83,
 };
 
-#define CHECK_locret_A0C434(i) (byte_A0C435[i] & 0x80 ? -1 : 0)
 
 uint8 EnemyBlockCollHorizReact_Slope_Square(uint16 k, uint16 a) {
   EnemyData *v4;
@@ -4261,7 +4267,6 @@ uint8 Enemy_SetYpos_Aligned(uint16 j) {  // 0xA0C413
   v1->y_pos = v2;
   return 1;
 }
-#define g_word_A0C49F ((uint16*)RomPtr(0xa0c49f))
 uint8 EnemyBlockCollHorizReact_Slope_NonSquare(void) {  // 0xA0C449
   if ((R32 & 0x8000u) == 0)
     return (R32 & 0x4000) != 0;
@@ -4277,7 +4282,6 @@ uint8 EnemyBlockCollHorizReact_Slope_NonSquare(void) {  // 0xA0C449
   return 0;
 }
 
-#define kAlignYPos_Tab0 ((uint8*)RomPtr(0x948b2b))
 
 uint8 EnemyBlockCollVertReact_Slope_NonSquare(void) {  // 0xA0C51F
   int16 v3;

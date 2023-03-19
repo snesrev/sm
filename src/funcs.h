@@ -1491,9 +1491,9 @@ uint16 CalculateCrystalFlashHdmaDataTablesScaled_RightOfScreen(uint16 k, uint16 
 void CalculateCrystalFlashHdmaObjectTablePtrs(uint16 k);
 void CalculatePowerBombHdmaObjectTablePtrs(uint16 k);
 void CalculatePowerBombHdmaTablePointers(uint16 k);
-void CalculatePowerBombHdma_LeftOfScreen(uint16 k, uint8 *j);
-void CalculatePowerBombHdma_OnScreen(uint16 k, uint8 *j);
-void CalculatePowerBombHdma_RightOfScreen(uint16 k, uint8 *j);
+void CalculatePowerBombHdma_LeftOfScreen(uint16 k, const uint8 *j);
+void CalculatePowerBombHdma_OnScreen(uint16 k, const uint8 *j);
+void CalculatePowerBombHdma_RightOfScreen(uint16 k, const uint8 *j);
 void CalculateXrayHdmaTable(void);
 void CinematicFunction_Intro_Func133(void);
 void CrystalFlashCleanup(uint16 k);

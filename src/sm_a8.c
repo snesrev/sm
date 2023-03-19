@@ -6,9 +6,38 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+
+#define g_off_A890DA ((uint16*)RomFixedPtr(0xa890da))
+#define g_word_A8A0A7 (*(uint16*)RomFixedPtr(0xa8a0a7))
+#define g_word_A8A0A9 (*(uint16*)RomFixedPtr(0xa8a0a9))
+#define g_word_A8A0AB (*(uint16*)RomFixedPtr(0xa8a0ab))
+#define g_word_A8A0AD (*(uint16*)RomFixedPtr(0xa8a0ad))
+#define g_word_A8A0B3 (*(uint16*)RomFixedPtr(0xa8a0b3))
+#define g_word_A8A0B5 (*(uint16*)RomFixedPtr(0xa8a0b5))
+#define g_word_A8A0B7 (*(uint16*)RomFixedPtr(0xa8a0b7))
+#define g_word_A8A0B9 (*(uint16*)RomFixedPtr(0xa8a0b9))
+#define g_word_A8A0BB (*(uint16*)RomFixedPtr(0xa8a0bb))
+#define g_word_A8A0BD (*(uint16*)RomFixedPtr(0xa8a0bd))
+#define g_word_A8A0C3 (*(uint16*)RomFixedPtr(0xa8a0c3))
+#define g_word_A8A0C5 (*(uint16*)RomFixedPtr(0xa8a0c5))
+#define g_off_A8A097 ((uint16*)RomFixedPtr(0xa8a097))
+#define kNorfairLavaMan_Palette ((uint16*)RomFixedPtr(0xa8ac1c))
+#define g_word_A8AF79 ((uint16*)RomFixedPtr(0xa8af79))
+#define g_word_A8AF55 ((uint16*)RomFixedPtr(0xa8af55))
+#define g_off_A8AF67 ((uint16*)RomFixedPtr(0xa8af67))
+#define kBeetom_Ilist_B74E ((uint16*)RomFixedPtr(0xa8b74e))
+#define g_off_A8C599 ((uint16*)RomFixedPtr(0xa8c599))
+#define g_off_A8CC30 ((uint16*)RomFixedPtr(0xa8cc30))
+#define g_off_A8E380 ((uint16*)RomFixedPtr(0xa8e380))
+#define g_off_A8E682 ((uint16*)RomFixedPtr(0xa8e682))
+#define g_off_A8E688 ((uint16*)RomFixedPtr(0xa8e688))
+#define g_word_A8E7CC ((uint16*)RomFixedPtr(0xa8e7cc))
+#define g_off_A8F3B0 ((uint16*)RomFixedPtr(0xa8f3b0))
+
+
+
 static const int16 g_word_A890CA[4] = { -8, 8, 0, 0 };
 static const int16 g_word_A890D2[4] = { 0, 0, -8, 8 };
-#define g_off_A890DA ((uint16*)RomPtr(0xa890da))
 static const uint16 g_word_A89050 = 0x80;
 static const uint16 g_word_A89052 = 0xb0;
 static const uint16 g_word_A89054 = 0x80;
@@ -26,26 +55,8 @@ static const uint16 kWreckedShipGhost_Palette[16] = { 0x3800, 0x57ff, 0x42f7, 0x
 static const uint16 g_word_A89D32 = 1;
 static const uint16 g_word_A89D34 = 1;
 
-#define g_word_A8A0A7 (*(uint16*)RomPtr(0xa8a0a7))
-#define g_word_A8A0A9 (*(uint16*)RomPtr(0xa8a0a9))
-#define g_word_A8A0AB (*(uint16*)RomPtr(0xa8a0ab))
-#define g_word_A8A0AD (*(uint16*)RomPtr(0xa8a0ad))
-#define g_word_A8A0B3 (*(uint16*)RomPtr(0xa8a0b3))
-#define g_word_A8A0B5 (*(uint16*)RomPtr(0xa8a0b5))
-#define g_word_A8A0B7 (*(uint16*)RomPtr(0xa8a0b7))
-#define g_word_A8A0B9 (*(uint16*)RomPtr(0xa8a0b9))
-#define g_word_A8A0BB (*(uint16*)RomPtr(0xa8a0bb))
-#define g_word_A8A0BD (*(uint16*)RomPtr(0xa8a0bd))
-#define g_word_A8A0C3 (*(uint16*)RomPtr(0xa8a0c3))
-#define g_word_A8A0C5 (*(uint16*)RomPtr(0xa8a0c5))
 
-#define g_off_A8A097 ((uint16*)RomPtr(0xa8a097))
-#define kNorfairLavaMan_Palette ((uint16*)RomPtr(0xa8ac1c))
-#define g_word_A8AF79 ((uint16*)RomPtr(0xa8af79))
-#define g_word_A8AF55 ((uint16*)RomPtr(0xa8af55))
-#define g_off_A8AF67 ((uint16*)RomPtr(0xa8af67))
 
-#define kBeetom_Ilist_B74E ((uint16*)RomPtr(0xa8b74e))
 static const int16 g_word_A8C277[3] = { -12, -16, -20 };
 static const int16 g_word_A8C27D[3] = { -20, -16, -12 };
 static const uint16 g_word_A8C19F = 0x40;
@@ -59,8 +70,6 @@ static const uint16 g_word_A8C1C3 = 0;
 static const uint16 g_word_A8C1C5 = 0xffff;
 static const uint16 g_word_A8C1C7 = 0x8000;
 
-#define g_off_A8C599 ((uint16*)RomPtr(0xa8c599))
-#define g_off_A8CC30 ((uint16*)RomPtr(0xa8cc30))
 static const int16 g_word_A8CCC1[31] = {
   0x1f, 0x18,  0xf,    8, 0x40,
   0x18,  0xf,    8, 0x1f, 0x10,
@@ -88,11 +97,6 @@ static const int16 g_word_A8D895[26] = {
 };
 static const uint16 g_word_A8DCC7 = 0x50;
 static const uint16 g_word_A8DCCB = 0x70;
-#define g_off_A8E380 ((uint16*)RomPtr(0xa8e380))
-#define g_off_A8E682 ((uint16*)RomPtr(0xa8e682))
-#define g_off_A8E688 ((uint16*)RomPtr(0xa8e688))
-#define g_word_A8E7CC ((uint16*)RomPtr(0xa8e7cc))
-#define g_off_A8F3B0 ((uint16*)RomPtr(0xa8f3b0))
 static const uint16 g_word_A8F180 = 0x60;
 static const uint16 g_word_A8F182 = 0xe000;
 static const uint16 g_word_A8F184 = 0;

@@ -7,7 +7,14 @@
 #include "enemy_types.h"
 #include "spc_player.h"
 
-#define kMusicPointers (*(LongPtr*)RomPtr(0x8fe7e1))
+
+#define kMusicPointers (*(LongPtr*)RomFixedPtr(0x8fe7e1))
+#define kTimerDigitsSpritemapPtr ((uint16*)RomFixedPtr(0x809fd4))
+#define kLoadStationLists ((uint16*)RomFixedPtr(0x80c4b5))
+#define off_80CD46 ((uint16*)RomFixedPtr(0x80cd46))
+
+
+
 
 void APU_UploadBank(void) {  // 0x808028
   if (!g_use_my_apu_code)
@@ -413,7 +420,7 @@ void ClearOamExt(void) {  // 0x808B1A
 }
 
 void QueueMode7Transfers(uint8 db, uint16 k) {  // 0x808B4F
-  uint8 *p = RomPtrWithBank(db, k);
+  const uint8 *p = RomPtrWithBank(db, k);
   uint16 v2 = mode7_vram_write_queue_tail;
   for (;;) {
     int f = GET_BYTE(p);
@@ -1615,7 +1622,6 @@ void DrawTimer(void) {  // 0x809F6C
   DrawTwoTimerDigits(*(uint16 *)&timer_centiseconds, 0x14);
 }
 
-#define kTimerDigitsSpritemapPtr ((uint16*)RomPtr(0x809fd4))
 
 void DrawTwoTimerDigits(uint16 a, uint16 k) {  // 0x809F95
   char v2;
@@ -2773,7 +2779,6 @@ void DecompressToVRAM(void) {  // 0x80B271
   }
 }
 
-#define kLoadStationLists ((uint16*)RomPtr(0x80c4b5))
 
 void LoadFromLoadStation(void) {  // 0x80C437
   save_station_lockout_flag = 1;
@@ -2796,10 +2801,9 @@ void LoadFromLoadStation(void) {  // 0x80C437
   LOBYTE(debug_disable_minimap) = 0;
 }
 
-#define off_80CD46 ((uint16*)RomPtr(0x80cd46))
 
 void SetElevatorsAsUsed(void) {  // 0x80CD07
-  uint8 *v0 = RomPtr_80(off_80CD46[area_index] + 4 * (((uint8)elevator_door_properties_orientation & 0xF) - 1));
+  const uint8 *v0 = RomPtr_80(off_80CD46[area_index] + 4 * (((uint8)elevator_door_properties_orientation & 0xF) - 1));
   used_save_stations_and_elevators[v0[0]] |= v0[1];
   used_save_stations_and_elevators[v0[2]] |= v0[3];
 }

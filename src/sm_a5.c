@@ -4,23 +4,27 @@
 #include "variables.h"
 #include "funcs.h"
 #include "enemy_types.h"
-#define kDraygon_MorePalettes ((uint16*)RomPtr(0xa5a217))
-#define kDraygon_MorePalettes2 ((uint16*)RomPtr(0xa5a277))
-#define g_word_A5A297 ((uint16*)RomPtr(0xa5a297))
-#define g_word_A587DC ((uint16*)RomPtr(0xa587dc))
-#define g_word_A596AF ((uint16*)RomPtr(0xa596af))
-#define g_word_A596EF ((uint16*)RomPtr(0xa596ef))
-#define g_word_A5A19F ((uint16*)RomPtr(0xa5a19f))
-#define g_word_A5A1AF ((uint16*)RomPtr(0xa5a1af))
-#define g_word_A5A1C7 ((uint16*)RomPtr(0xa5a1c7))
-#define g_word_A5A1DF ((uint16*)RomPtr(0xa5a1df))
-#define g_byte_A5CE07 ((uint8*)RomPtr(0xa5ce07))
-#define g_word_A5E379 ((uint16*)RomPtr(0xa5e379))
-#define g_word_A5E3F9 ((uint16*)RomPtr(0xa5e3f9))
-#define g_word_A5E4F9 ((uint16*)RomPtr(0xa5e4f9))
-#define g_word_A5E5D9 ((uint16*)RomPtr(0xa5e5d9))
 
-#define kSporeSpawn_Palette ((uint16*)RomPtr(0xa5e359))
+
+#define kDraygon_MorePalettes ((uint16*)RomFixedPtr(0xa5a217))
+#define kDraygon_MorePalettes2 ((uint16*)RomFixedPtr(0xa5a277))
+#define g_word_A5A297 ((uint16*)RomFixedPtr(0xa5a297))
+#define g_word_A587DC ((uint16*)RomFixedPtr(0xa587dc))
+#define g_word_A596AF ((uint16*)RomFixedPtr(0xa596af))
+#define g_word_A596EF ((uint16*)RomFixedPtr(0xa596ef))
+#define g_word_A5A19F ((uint16*)RomFixedPtr(0xa5a19f))
+#define g_word_A5A1AF ((uint16*)RomFixedPtr(0xa5a1af))
+#define g_word_A5A1C7 ((uint16*)RomFixedPtr(0xa5a1c7))
+#define g_word_A5A1DF ((uint16*)RomFixedPtr(0xa5a1df))
+#define g_byte_A5CE07 ((uint8*)RomFixedPtr(0xa5ce07))
+#define g_word_A5E379 ((uint16*)RomFixedPtr(0xa5e379))
+#define g_word_A5E3F9 ((uint16*)RomFixedPtr(0xa5e3f9))
+#define g_word_A5E4F9 ((uint16*)RomFixedPtr(0xa5e4f9))
+#define g_word_A5E5D9 ((uint16*)RomFixedPtr(0xa5e5d9))
+#define kSporeSpawn_Palette ((uint16*)RomFixedPtr(0xa5e359))
+
+
+
 
 void Enemy_GrappleReact_NoInteract_A5(void) {  // 0xA58000
   SwitchEnemyAiToMainAi();
@@ -1189,7 +1193,7 @@ const uint16 *Draygon_Instr_5(uint16 k, const uint16 *jp) {  // 0xA598EF
 const uint16 *Draygon_Instr_15(uint16 k, const uint16 *jp) {  // 0xA59B9A
   Enemy_Draygon *E = Get_Draygon(0);
   E->draygon_var_0F = 24;
-  uint8 *v3 = RomPtr_A0(E->base.enemy_ptr);
+  const uint8 *v3 = RomPtr_A0(E->base.enemy_ptr);
   uint16 v4 = SuitDamageDivision(*((uint16 *)v3 + 3));
   Samus_DealDamage(v4);
   earthquake_timer = 32;
@@ -1467,7 +1471,7 @@ const uint16 *Draygon_Instr_24(uint16 k, const uint16 *jp) {  // 0xA5E771
 }
 
 void Draygon_Func_50(uint16 j) {  // 0xA5E811
-  uint8 *v1 = RomPtr_A5(j);
+  const uint8 *v1 = RomPtr_A5(j);
   Enemy_Draygon *E = Get_Draygon(0);
   E->draygon_var_0B = *(uint16 *)v1;
   E->draygon_var_0C = *((uint16 *)v1 + 1);

@@ -4,6 +4,28 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+
+#define g_word_A4B89D ((uint16*)RomFixedPtr(0xa4b89d))
+#define g_word_A4B8BD ((uint16*)RomFixedPtr(0xa4b8bd))
+#define g_word_A4B8DD ((uint16*)RomFixedPtr(0xa4b8dd))
+#define g_word_A4B8FD ((uint16*)RomFixedPtr(0xa4b8fd))
+#define g_word_A4B91D ((uint16*)RomFixedPtr(0xa4b91d))
+#define g_off_A48B79 ((uint16*)RomFixedPtr(0xa48b79))
+#define g_word_A49156 ((uint16*)RomFixedPtr(0xa49156))
+#define g_word_A49C79 ((uint16*)RomFixedPtr(0xa49c79))
+#define g_word_A49E7B ((uint16*)RomFixedPtr(0xa49e7b))
+#define g_word_A49BC5 (*(uint16*)RomFixedPtr(0xa49bc5))
+#define g_word_A49BC7 (*(uint16*)RomFixedPtr(0xa49bc7))
+#define g_word_A49BC9 (*(uint16*)RomFixedPtr(0xa49bc9))
+#define g_word_A49BCB (*(uint16*)RomFixedPtr(0xa49bcb))
+#define kCrocoVlineRandomPos ((uint8*)RomFixedPtr(0xa49697))
+#define g_word_A49BBD ((uint16*)RomFixedPtr(0xa49bbd))
+#define g_word_A498CA ((uint16*)RomFixedPtr(0xa498ca))
+#define g_word_A499CB ((uint16*)RomFixedPtr(0xa499cb))
+#define g_word_A499D9 ((uint16*)RomFixedPtr(0xa499d9))
+
+
+
 static const uint16 g_word_A48692 = 8;
 static const uint16 g_word_A48694 = 8;
 static const uint16 g_word_A48696 = 0;
@@ -14,24 +36,6 @@ static const uint16 g_word_A4869E = 3;
 static const uint16 g_word_A486A0 = 8;
 static const uint16 g_word_A486A2 = 0x300;
 static const uint16 g_word_A486A4 = 0x640;
-#define g_word_A4B89D ((uint16*)RomPtr(0xa4b89d))
-#define g_word_A4B8BD ((uint16*)RomPtr(0xa4b8bd))
-#define g_word_A4B8DD ((uint16*)RomPtr(0xa4b8dd))
-#define g_word_A4B8FD ((uint16*)RomPtr(0xa4b8fd))
-#define g_word_A4B91D ((uint16*)RomPtr(0xa4b91d))
-#define g_off_A48B79 ((uint16*)RomPtr(0xa48b79))
-#define g_word_A49156 ((uint16*)RomPtr(0xa49156))
-#define g_word_A49C79 ((uint16*)RomPtr(0xa49c79))
-#define g_word_A49E7B ((uint16*)RomPtr(0xa49e7b))
-#define g_word_A49BC5 (*(uint16*)RomPtr(0xa49bc5))
-#define g_word_A49BC7 (*(uint16*)RomPtr(0xa49bc7))
-#define g_word_A49BC9 (*(uint16*)RomPtr(0xa49bc9))
-#define g_word_A49BCB (*(uint16*)RomPtr(0xa49bcb))
-#define kCrocoVlineRandomPos ((uint8*)RomPtr(0xa49697))
-#define g_word_A49BBD ((uint16*)RomPtr(0xa49bbd))
-#define g_word_A498CA ((uint16*)RomPtr(0xa498ca))
-#define g_word_A499CB ((uint16*)RomPtr(0xa499cb))
-#define g_word_A499D9 ((uint16*)RomPtr(0xa499d9))
 
 void Enemy_GrappleReact_SamusLatchesOn_A4(void) {  // 0xA48005
   SamusLatchesOnWithGrapple();

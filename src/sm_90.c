@@ -5,6 +5,18 @@
 #include "sm_rtl.h"
 #include "funcs.h"
 
+
+#define kSamusFramesForUnderwaterSfx ((uint8*)RomFixedPtr(0x90a514))
+#define kPauseMenuMapData ((uint16*)RomFixedPtr(0x829717))
+#define kPauseMenuMapTilemaps ((LongPtr*)RomFixedPtr(0x82964a))
+#define kBeamTilePtrs ((uint16*)RomFixedPtr(0x90c3b1))
+#define kBeamPalettePtrs ((uint16*)RomFixedPtr(0x90c3c9))
+#define off_90B5BB ((uint16*)RomFixedPtr(0x90b5bb))
+#define off_90B609 ((uint16*)RomFixedPtr(0x90b609))
+#define kFlareAnimDelays ((uint16*)RomFixedPtr(0x90c481))
+
+
+
 static const uint16 kUnchargedProjectile_Sfx[12] = { 0xb, 0xd, 0xc, 0xe, 0xf, 0x12, 0x10, 0x11, 0x13, 0x16, 0x14, 0x15 };
 static const uint16 kChargedProjectile_Sfx[12] = { 0x17, 0x19, 0x18, 0x1a, 0x1b, 0x1e, 0x1c, 0x1d, 0x1f, 0x22, 0x20, 0x21 };
 static const uint16 kNonBeamProjectile_Sfx[9] = { 0, 3, 4, 0, 0, 0, 0, 0, 0 };
@@ -2124,7 +2136,6 @@ void Samus_Movement_02_NormalJumping(void) {  // 0x90A42E
 }
 
 // Warning: OOB
-#define kSamusFramesForUnderwaterSfx ((uint8*)RomPtr(0x90a514))
 
 void Samus_Movement_03_SpinJumping(void) {  // 0x90A436
   static const uint16 kSamusPhys_JumpMinYVelAir = 0x280;
@@ -2471,7 +2482,6 @@ void InitializeMiniMapBroken(void) {  // 0x90A8EF
 }
 
 
-#define kPauseMenuMapData ((uint16*)RomPtr(0x829717))
 void UpdateMinimap(void) {  // 0x90A91B
   int16 v4;
   uint16 v5;
@@ -2553,7 +2563,6 @@ void UpdateMinimap(void) {  // 0x90A91B
   }
 }
 
-#define kPauseMenuMapTilemaps ((LongPtr*)RomPtr(0x82964a))
 void UpdateMinimapInside(void) {  // 0x90AA43
   uint16 v0;
   int16 v1;
@@ -2697,8 +2706,6 @@ LABEL_3:
   return 0;
 }
 
-#define kBeamTilePtrs ((uint16*)RomPtr(0x90c3b1))
-#define kBeamPalettePtrs ((uint16*)RomPtr(0x90c3c9))
 
 void UpdateBeamTilesAndPalette(void) {  // 0x90AC8D
   uint16 v0 = 2 * (equipped_beams & 0xFFF);
@@ -3355,7 +3362,7 @@ void Missile_Func1(uint16 k) {  // 0x90B2F6
       v3 = R18_ - 0x3CD5;
     else
       v3 = R18_ - 0x3CFD;
-    uint8 *v4 = RomPtr_90(v3);
+    const uint8 *v4 = RomPtr_90(v3);
     projectile_bomb_x_speed[v1] += *(uint16 *)v4;
     projectile_bomb_y_speed[v1] += *((uint16 *)v4 + 1);
   } else {
@@ -3480,8 +3487,6 @@ void ProjInstr_MoveLeftProjectileTrailUp(uint16 j) {  // 0x90B5B3
 }
 
 void SpawnProjectileTrail(uint16 k) {  // 0x90B657
-#define off_90B5BB ((uint16*)RomPtr(0x90b5bb))
-#define off_90B609 ((uint16*)RomPtr(0x90b609))
   int16 v2;
 
   uint16 v1 = projectile_type[k >> 1];
@@ -3904,7 +3909,6 @@ uint8 InitProjectilePositionDirection(void) {  // 0x90BA56
 }
 
 void HandleChargingBeamGfxAudio(void) {  // 0x90BAFC
-#define kFlareAnimDelays ((uint16*)RomPtr(0x90c481))
   int16 v1;
   int16 v4;
   uint16 v9;
@@ -4553,7 +4557,7 @@ void Samus_ArmCannon_Draw(void) {  // 0x90C663
 
   if (arm_cannon_frame && (!samus_invincibility_timer || (nmi_frame_counter_word & 1) == 0)) {
     uint16 v0 = kPlayerPoseToPtr[samus_pose];
-    uint8 *v1 = RomPtr_90(v0);
+    const uint8 *v1 = RomPtr_90(v0);
     v2 = *v1;
     if ((v2 & 0x80) != 0) {
       if (samus_anim_frame)
@@ -4566,7 +4570,7 @@ void Samus_ArmCannon_Draw(void) {  // 0x90C663
       R22_ = v0 + 2;
     }
     R24_ = kDrawArmCannon_Char[v3 >> 1];
-    uint8 *v4 = RomPtr_90(R22_ + 2 * samus_anim_frame);
+    const uint8 *v4 = RomPtr_90(R22_ + 2 * samus_anim_frame);
     R18_ = (int8)v4[0];
     R20_ = (int8)v4[1];
     R22_ = *(&kPoseParams[0].y_offset_to_gfx + (uint16)(8 * samus_pose));
@@ -4586,7 +4590,7 @@ void Samus_ArmCannon_Draw(void) {  // 0x90C663
         }
       }
     }
-    uint8 *v11 = RomPtr_90(kPlayerPoseToPtr[samus_pose]);
+    const uint8 *v11 = RomPtr_90(kPlayerPoseToPtr[samus_pose]);
     v12 = *v11;
     if ((v12 & 0x80) != 0) {
       if (samus_anim_frame)
