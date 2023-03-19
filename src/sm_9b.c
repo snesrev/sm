@@ -148,10 +148,8 @@ uint16 HandleSamusDeathSequence(void) {  // 0x9BB441
 
 void HandleSamusDeathSequence_Helper2(void) {  // 0x9BB4B6
   uint16 *v0 = (uint16 *)RomPtr_9B(g_off_9BB5C8[samus_suit_palette_index >> 1]);
-  uint16 *v1 = (uint16 *)RomPtr_9B(*v0);
-  memcpy(&palette_buffer[192], v1, 32);
-  uint16 *v2 = (uint16 *)RomPtr_9B(0xA120);
-  memcpy(&palette_buffer[240], v2, 32);
+  memcpy(&palette_buffer[192], RomPtr_9B(*v0), 32);
+  memcpy(&palette_buffer[240], RomPtr_9B(addr_word_9BA120), 32);
   QueueTransferOfSamusDeathSequence(8);
   game_options_screen_index = g_byte_9BB823[0];
   g_word_7E0DE4 = 0;
@@ -161,12 +159,9 @@ void HandleSamusDeathSequence_Helper2(void) {  // 0x9BB4B6
 
 void CopyPalettesForSamusDeath(uint16 v0) {  // 0x9BB5CE
   int R20 = g_off_9BB6D2[samus_suit_palette_index >> 1];
-  int R18 = kDeathSequencePals_Suitless[v0 >> 1];
   uint16 *v1 = (uint16 *)RomPtr_9B(R20 + v0);
-  uint16 *v2 = (uint16 *)RomPtr_9B(*v1);
-  memcpy(&palette_buffer[192], v2, 32);
-  uint16 *v3 = (uint16 *)RomPtr_9B(R18);
-  memcpy(&palette_buffer[240], v3, 32);
+  memcpy(&palette_buffer[192], RomPtr_9B(*v1), 32);
+  memcpy(&palette_buffer[240], RomPtr_9B(kDeathSequencePals_Suitless[v0 >> 1]), 32);
 }
 
 void QueueTransferOfSamusDeathSequence(uint16 v0) {  // 0x9BB6D8
@@ -187,20 +182,13 @@ uint16 GameState_24_SamusNoHealth_Explosion_Helper(void) {  // 0x9BB701
 }
 
 void GameState_24_SamusNoHealth_Explosion_1(void) {  // 0x9BB710
-  *(VoidP *)((char *)&R0_.addr + 1) = 32256;
   if (!substate && g_word_7E0DE4) {
-    uint16 v0 = 2 * g_word_7E0DE6;
-    R0_.addr = -16384;
-    uint16 v1 = 0;
-    do {
-      IndirWriteWord(&R0_, v1, kShadesOfWhite[v0 >> 1]);
-      v1 += 2;
-    } while ((int16)(v1 - 384) < 0);
-    uint16 v2 = 416;
-    do {
-      IndirWriteWord(&R0_, v2, kShadesOfWhite[v0 >> 1]);
-      v2 += 2;
-    } while ((int16)(v2 - 480) < 0);
+    int v0 = g_word_7E0DE6;
+    uint16 *dst = (uint16*)(g_ram + 0xc000);
+    for(int i = 0; i < 384/2; i++)
+      dst[i] = kShadesOfWhite[v0];
+    for(int i = 416/2; i < 480/2; i++)
+      dst[i] = kShadesOfWhite[v0];
     if (sign16(g_word_7E0DE6 - 20))
       ++g_word_7E0DE6;
   }
@@ -273,36 +261,36 @@ int ProcessEnemyGrappleBeamColl(uint16 a) {  // 0x9BB907
   uint16 v3;
 
   v1 = 2 * a;
-  switch (v1) {
+  switch (a) {
   case 0:
-  case 4:
-    return -1;  // clc
-  case 6:
-    return 1;
   case 2:
-  case 8:
-  case 10:
+    return -1;  // clc
+  case 3:
+    return 1;
+  case 1:
+  case 4:
+  case 5:
+    return 0;
+  case 6:
+    R18_ = *((uint16 *)RomPtr_A0(R18_) + 3);
+    if ((equipped_items & 0x20) != 0) {
+      R18_ >>= 1;
+      R18_ >>= 1;
+      v3 = R18_;
+    } else {
+      if (equipped_items & 1)
+        R18_ >>= 1;
+      v3 = R18_;
+    }
+    Samus_DealDamage(v3);
+    samus_invincibility_timer = 96;
+    samus_knockback_timer = 5;
+    knockback_x_dir = samus_pose_x_dir == 4;
+    return 1;
+  default:
+    Unreachable();
     return 0;
   }
-  if (v1 != 12) {
-    Unreachable();
-    while (1);
-  }
-  R18_ = *((uint16 *)RomPtr_A0(R18_) + 3);
-  if ((equipped_items & 0x20) != 0) {
-    R18_ >>= 1;
-    R18_ >>= 1;
-    v3 = R18_;
-  } else {
-    if (equipped_items & 1)
-      R18_ >>= 1;
-    v3 = R18_;
-  }
-  Samus_DealDamage(v3);
-  samus_invincibility_timer = 96;
-  samus_knockback_timer = 5;
-  knockback_x_dir = samus_pose_x_dir == 4;
-  return 1;
 }
 
 void CallGrappleNextFunc(uint32 ea) {

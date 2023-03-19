@@ -2037,8 +2037,10 @@ enum Consts_9B {
   addr_kSamusPalette_PowerSuit = 0x9400,
   addr_kSamusPalette_VariaSuit = 0x9520,
   addr_kSamusPalette_GravitySuit = 0x9800,
+  addr_word_9BA120 = 0xA120,
   addr_word_9BA380 = 0xA380,
   addr_word_9BA3A0 = 0xA3A0,
+
 };
 enum Consts_A0 {
   addr_kSpritemap_Nothing_A0 = 0x804D,

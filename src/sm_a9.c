@@ -5164,8 +5164,10 @@ void Torizo_CorpseRottingInitFunc(void) {  // 0xA9DE18
   MemCpy(TILEMAP_ADDR(0xDC0), p + 5824, 0x140);
 }
 
+#define kDeadMonsters_TileData RomPtr_B7(addr_kDeadMonsters_TileData)
+
 void Sidehopper_CorpseRottingInitFunc_0(void) {  // 0xA9DEC1
-  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = kDeadMonsters_TileData;
   MemCpy(TILEMAP_ADDR(0x040), p + 64, 0x60);
   MemCpy(TILEMAP_ADDR(0x0A0), p + 512, 0xA0);
   MemCpy(TILEMAP_ADDR(0x140), p + 1024, 0xA0);
@@ -5174,7 +5176,7 @@ void Sidehopper_CorpseRottingInitFunc_0(void) {  // 0xA9DEC1
 }
 
 void Sidehopper_CorpseRottingInitFunc_2(void) {  // 0xA9DF08
-  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = kDeadMonsters_TileData;
   MemCpy(TILEMAP_ADDR(0x320), p + 288, 0x40);
   MemCpy(TILEMAP_ADDR(0x3C0), p + 800, 0xA0);
   MemCpy(TILEMAP_ADDR(0x460), p + 1312, 0xA0);
@@ -5183,37 +5185,37 @@ void Sidehopper_CorpseRottingInitFunc_2(void) {  // 0xA9DF08
 }
 
 void Zoomer_CorpseRottingInitFunc_0(void) {  // 0xA9DF4F
-  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = kDeadMonsters_TileData;
   MemCpy(TILEMAP_ADDR(0x940), p + 2656, 0x60);
   MemCpy(TILEMAP_ADDR(0x9A0), p + 3168, 0x60);
 }
 
 void Zoomer_CorpseRottingInitFunc_2(void) {  // 0xA9DF6C
-  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = kDeadMonsters_TileData;
   MemCpy(TILEMAP_ADDR(0xA00), p + 2752, 0x60);
   MemCpy(TILEMAP_ADDR(0xA60), p + 3264, 0x60);
 }
 
 void Zoomer_CorpseRottingInitFunc_4(void) {  // 0xA9DF89
-  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = kDeadMonsters_TileData;
   MemCpy(TILEMAP_ADDR(0xAC0), p + 2848, 0x60);
   MemCpy(TILEMAP_ADDR(0xB20), p + 3360, 0x60);
 }
 
 void Ripper_CorpseRottingInitFunc_0(void) {  // 0xA9DFA6
-  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = kDeadMonsters_TileData;
   MemCpy(TILEMAP_ADDR(0xB80), p + 2560, 0x60);
   MemCpy(TILEMAP_ADDR(0xBE0), p + 3072, 0x60);
 }
 
 void Ripper_CorpseRottingInitFunc_2(void) {  // 0xA9DFC3
-  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = kDeadMonsters_TileData;
   MemCpy(TILEMAP_ADDR(0xC40), p + 2944, 0x60);
   MemCpy(TILEMAP_ADDR(0xCA0), p + 3456, 0x60);
 }
 
 void Skree_CorpseRottingInitFunc_0(void) {  // 0xA9DFE0
-  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = kDeadMonsters_TileData;
   MemCpy(TILEMAP_ADDR(0x640), p + 672, 0x40);
   MemCpy(TILEMAP_ADDR(0x680), p + 1184, 0x40);
   MemCpy(TILEMAP_ADDR(0x6C0), p + 1696, 0x40);
@@ -5221,7 +5223,7 @@ void Skree_CorpseRottingInitFunc_0(void) {  // 0xA9DFE0
 }
 
 void Skree_CorpseRottingInitFunc_2(void) {  // 0xA9E019
-  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = kDeadMonsters_TileData;
   MemCpy(TILEMAP_ADDR(0x740), p + 224, 0x40);
   MemCpy(TILEMAP_ADDR(0x780), p + 736, 0x40);
   MemCpy(TILEMAP_ADDR(0x7C0), p + 1248, 0x40);
@@ -5229,7 +5231,7 @@ void Skree_CorpseRottingInitFunc_2(void) {  // 0xA9E019
 }
 
 void Skree_CorpseRottingInitFunc_4(void) {  // 0xA9E052
-  const uint8 *p = RomPtr_B7(addr_kDeadMonsters_TileData);
+  const uint8 *p = kDeadMonsters_TileData;
   MemCpy(TILEMAP_ADDR(0x840), p + 448, 0x40);
   MemCpy(TILEMAP_ADDR(0x880), p + 960, 0x40);
   MemCpy(TILEMAP_ADDR(0x8C0), p + 1472, 0x40);

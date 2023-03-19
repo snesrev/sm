@@ -579,63 +579,23 @@ static inline uint8_t *RomPtr_84orRAM(uint16_t addr) {
 
 void ProcessPlmDrawInstruction(uint16 v0) {  // 0x84861E
   int16 v4;
-  int16 v8;
-  int16 v9;
-  int16 v10;
-  uint16 v5;
 
   int v1 = v0 >> 1;
-  uint16 v2 = plm_instruction_draw_ptr[v1];
-  R18_ = plm_block_indices[v1];
-  uint16 v3 = R18_;
+  uint16 *p = (uint16 *)RomPtr_84orRAM(plm_instruction_draw_ptr[v1]);
+  uint16 dst = plm_block_indices[v1];
   while (1) {
-    v4 = *(uint16 *)RomPtr_84orRAM(v2);
-    if (v4 < 0) {
-      R22_ = (uint8)v4;
-      v5 = v2 + 2;
-      do {
-        level_data[v3 >> 1] = *(uint16 *)RomPtr_84orRAM(v5);
-        v5 += 2;
-        v3 += room_width_in_blocks * 2;
-        --R22_;
-      } while (R22_);
+    uint16 v4 = *p++;
+    if (v4 & 0x8000) {
+      for (int i = 0, t = room_width_in_blocks * 2; i < (uint8)v4; i++)
+        level_data[(dst + i * t) >> 1] = *p++;
     } else {
-      R22_ = (uint8)v4;
-      v5 = v2 + 2;
-      do {
-        level_data[v3 >> 1] = *(uint16 *)RomPtr_84orRAM(v5);
-        v5 += 2;
-        v3 += 2;
-        --R22_;
-      } while (R22_);
+      for (int i = 0; i < (uint8)v4; i++)
+        level_data[(dst + i * 2) >> 1] = *p++;
     }
-    if (!*(uint16 *)RomPtr_84orRAM(v5))
+    if (!*p)
       break;
-    uint16 v6 = v5 - 1;
-    uint8 *v7 = RomPtr_84orRAM(v6);
-    v8 = (int8)HIBYTE(*(uint16 *)v7);
-    R20_ = R18_ + 2 * v8;
-    LOBYTE(v8) = HIBYTE(*(uint16 *)(v7 + 1));
-    if ((v8 & 0x80) == 0) {
-      v8 = (uint8)v8;
-      if ((uint8)v8) {
-        v10 = (uint8)v8;
-        v8 = 0;
-        do {
-          v8 += room_width_in_blocks;
-          --v10;
-        } while (v10);
-      }
-    } else {
-      v9 = -(v8 | 0xFF00);
-      v8 = 0;
-      do {
-        v8 -= room_width_in_blocks;
-        --v9;
-      } while (v9);
-    }
-    v3 = R20_ + 2 * v8;
-    v2 = v6 + 3;
+    dst += 2 * ((int8)*p + (int8)(*p >> 8) * room_width_in_blocks);
+    p++;
   }
 }
 
