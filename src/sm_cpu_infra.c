@@ -326,6 +326,9 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
   } else if (FixBugHook(0x88AFF2)) {
     if (g_cpu->a < 256)  // RoomMainAsm_ScrollingSky reads oob
       g_cpu->a = 256;
+  } else if (FixBugHook(0x8189bd)) {
+    if (g_cpu->y == 0)  // DrawSamusSpritemap reads invalid ptr
+      return 0x818A35;
   }
 
   return 0;
