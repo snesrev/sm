@@ -81,9 +81,9 @@ void SpriteObject_Instr_Terminate(void) {  // 0xB4BD07
 }
 
 void SpriteObject_Instr_Goto(void) {  // 0xB4BD12
-  uint16 *v2 = ((uint16 *)RomPtr_B4(sprite_instr_list_ptrs[sprite_object_index >> 1]) + 1);
-  sprite_instr_list_ptrs[sprite_object_index >> 1] = v2[0];
-  sprite_instr_timer[sprite_object_index >> 1] = v2[1];
+  uint16 v2 = GET_WORD(RomPtr_B4(sprite_instr_list_ptrs[sprite_object_index >> 1]) + 2);
+  sprite_instr_list_ptrs[sprite_object_index >> 1] = v2;
+  sprite_instr_timer[sprite_object_index >> 1] = GET_WORD(RomPtr_B4(v2));
 }
 
 void DrawSpriteObjects(void) {  // 0xB4BD32
