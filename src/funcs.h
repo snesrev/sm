@@ -1416,34 +1416,33 @@ void SpawnAnimtiles(uint16 j);
 uint16 CalculatePowerBombHdmaScaled_LeftOfScreen(uint16 k, uint16 j, uint8 multval);
 uint16 CalculatePowerBombHdmaScaled_OnScreen(uint16 k, uint16 j, uint8 multval);
 uint16 CalculatePowerBombHdmaScaled_RightOfScreen(uint16 k, uint16 j, uint8 multval);
-uint16 HdmaobjInsr_ConfigTitleSequenceGradientHDMA(uint16 k, uint16 j);
-uint16 HdmaobjInstr_1938_RandomNumber(uint16 k, uint16 j);
-uint16 HdmaobjInstr_B3A9(uint16 k, uint16 j);
-uint16 HdmaobjInstr_CallFarFunc(uint8 db, uint16 k, uint16 j);
-uint16 HdmaobjInstr_ClearPreInstr(uint16 k, uint16 j);
-uint16 HdmaobjInstr_DecrementAndGoto(uint8 db, uint16 k, uint16 j);
-uint16 HdmaobjInstr_DecrementAndGotoRel(uint8 db, uint16 k, uint16 j);
-uint16 HdmaobjInstr_Delete(uint16 k, uint16 j);
-uint16 HdmaobjInstr_E4BD(uint16 k, uint16 j);
-uint16 HdmaobjInstr_EC9F_ClearVars(uint16 k, uint16 j);
-uint16 HdmaobjInstr_Goto(uint8 db, uint16 k, uint16 j);
-uint16 HdmaobjInstr_GotoIfEventHappened(uint16 k, uint16 j);
-uint16 HdmaobjInstr_GotoRel(uint8 db, uint16 k, uint16 j);
-uint16 HdmaobjInstr_InitMorphBallEyeBeamHdma(uint16 k, uint16 j);
-uint16 HdmaobjInstr_SetFlagB(uint16 k, uint16 j);
-uint16 HdmaobjInstr_SetFlagB_Copy(uint16 k, uint16 j);
-uint16 HdmaobjInstr_SetFlagB_Copy2(uint16 k, uint16 j);
-uint16 HdmaobjInstr_SetFlagB_Copy3(uint16 k, uint16 j);
-uint16 HdmaobjInstr_SetHdmaControl(uint8 db, uint16 k, uint16 j);
-uint16 HdmaobjInstr_SetHdmaTableBank(uint8 db, uint16 k, uint16 j);
-uint16 HdmaobjInstr_SetHdmaTablePtr(uint8 db, uint16 k, uint16 j);
-uint16 HdmaobjInstr_SetHdmaTarget(uint8 db, uint16 k, uint16 j);
-uint16 HdmaobjInstr_SetIndirectHdmaDataBank(uint8 db, uint16 k, uint16 j);
-uint16 HdmaobjInstr_SetPreInstr(uint8 db, uint16 k, uint16 j);
-uint16 HdmaobjInstr_SetTimer(uint8 db, uint16 k, uint16 j);
-uint16 HdmaobjInstr_SetVideoMode1(uint16 k, uint16 j);
-uint16 HdmaobjInstr_Skip(uint16 k, uint16 j);
-uint16 HdmaobjInstr_Sleep(uint16 k, uint16 j);
+const uint8 *HdmaobjInsr_ConfigTitleSequenceGradientHDMA(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_1938_RandomNumber(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_B3A9(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_CallFarFunc(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_ClearPreInstr(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_DecrementAndGoto(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_DecrementAndGotoRel(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_Delete(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_E4BD(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_EC9F_ClearVars(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_Goto(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_GotoIfEventHappened(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_GotoRel(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_InitMorphBallEyeBeamHdma(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_SetFlagB(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_SetFlagB_Copy(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_SetFlagB_Copy2(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_SetFlagB_Copy3(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_SetHdmaControl(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_SetHdmaTableBank(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_SetHdmaTablePtr(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_SetHdmaTarget(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_SetIndirectHdmaDataBank(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_SetPreInstr(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_SetTimer(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_SetVideoMode1(uint16 k, const uint8 *hdp);
+const uint8 *HdmaobjInstr_Sleep(uint16 k, const uint8 *hdp);
 uint16 LayerBlendFunc_10(uint16 j);
 uint16 LayerBlendFunc_14(uint16 j);
 uint16 LayerBlendFunc_16(uint16 j);
@@ -1533,7 +1532,7 @@ void Handle_LavaAcidBG2YScroll_Func2(uint16 k);
 void Handle_LavaAcidBG2YScroll_Func3(uint16 k);
 void HdmaFunc_A786(uint16 k);
 void HdmaObjectHandler(void);
-void HdmaobjInstructionHandler(uint16 k);
+void HdmaobjInstructionHandler(uint8 k);
 void HdmaobjPreInstr_BG3Xscroll(uint16 k);
 void HdmaobjPreInstr_Backdrop_TitleSequenceGradient(uint16 k);
 void HdmaobjPreInstr_BombTorizoHazeColorMathBgColor(uint16 k);
@@ -6719,7 +6718,6 @@ void VerifySRAM(void);
 #define fnHdmaobjInstr_SetHdmaTablePtr 0x88864C
 #define fnHdmaobjInstr_SetHdmaTableBank 0x888655
 #define fnHdmaobjInstr_SetIndirectHdmaDataBank 0x88866A
-#define fnHdmaobjInstr_Skip 0x88867F
 #define fnHdmaobjInstr_Sleep 0x888682
 #define fnHdmaobjPreInstr_Xray 0x8886EF
 #define fnHdmaobjPreInstr_XrayFunc0_NoBeam 0x888732

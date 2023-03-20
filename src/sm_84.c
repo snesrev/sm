@@ -634,8 +634,7 @@ void CallPlmInstrFunc(uint32 ea) {
 }
 
 const uint8 *PlmInstr_CallFunction(const uint8 *plmp, uint16 k) {  // 0x84870B
-  copy24((LongPtr *)&R18_, (LongPtr *)plmp);
-  CallPlmInstrFunc(Load24(&R18_));
+  CallPlmInstrFunc(Load24((LongPtr *)plmp));
   return plmp + 3;
 }
 

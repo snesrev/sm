@@ -43,7 +43,7 @@ static inline const uint8 *RomFixedPtr(uint32_t addr) { return &g_rom[(((addr >>
 struct LongPtr;
 void mov24(LongPtr *dst, uint32 src);
 void copy24(LongPtr *dst, LongPtr *src);
-uint32 Load24(void *a);
+uint32 Load24(const LongPtr *src);
 void MemCpy(void *dst, const void *src, int size);
 void Call(uint32 addr);
 bool Unreachable();

@@ -552,24 +552,23 @@ void CallHdmaobjPreInstr(uint32 ea, uint16 k) {
   }
 }
 
-uint16 CallHdmaobjInstr(uint32 ea, uint8 db, uint16 k, uint16 j) {
+const uint8 *CallHdmaobjInstr(uint32 ea, uint16 k, const uint8 *j) {
   switch (ea) {
   case fnnullsub_112: return j;
   case fnHdmaobjInstr_Delete: return HdmaobjInstr_Delete(k, j);
-  case fnHdmaobjInstr_SetPreInstr: return HdmaobjInstr_SetPreInstr(db, k, j);
+  case fnHdmaobjInstr_SetPreInstr: return HdmaobjInstr_SetPreInstr(k, j);
   case fnHdmaobjInstr_ClearPreInstr: return HdmaobjInstr_ClearPreInstr(k, j);
-  case fnHdmaobjInstr_CallFarFunc: return HdmaobjInstr_CallFarFunc(db, k, j);
-  case fnHdmaobjInstr_Goto: return HdmaobjInstr_Goto(db, k, j);
-  case fnHdmaobjInstr_GotoRel: return HdmaobjInstr_GotoRel(db, k, j);
-  case fnHdmaobjInstr_DecrementAndGoto: return HdmaobjInstr_DecrementAndGoto(db, k, j);
-  case fnHdmaobjInstr_DecrementAndGotoRel: return HdmaobjInstr_DecrementAndGotoRel(db, k, j);
-  case fnHdmaobjInstr_SetTimer: return HdmaobjInstr_SetTimer(db, k, j);
-  case fnHdmaobjInstr_SetHdmaControl: return HdmaobjInstr_SetHdmaControl(db, k, j);
-  case fnHdmaobjInstr_SetHdmaTarget: return HdmaobjInstr_SetHdmaTarget(db, k, j);
-  case fnHdmaobjInstr_SetHdmaTablePtr: return HdmaobjInstr_SetHdmaTablePtr(db, k, j);
-  case fnHdmaobjInstr_SetHdmaTableBank: return HdmaobjInstr_SetHdmaTableBank(db, k, j);
-  case fnHdmaobjInstr_SetIndirectHdmaDataBank: return HdmaobjInstr_SetIndirectHdmaDataBank(db, k, j);
-  case fnHdmaobjInstr_Skip: return HdmaobjInstr_Skip(k, j);
+  case fnHdmaobjInstr_CallFarFunc: return HdmaobjInstr_CallFarFunc(k, j);
+  case fnHdmaobjInstr_Goto: return HdmaobjInstr_Goto(k, j);
+  case fnHdmaobjInstr_GotoRel: return HdmaobjInstr_GotoRel(k, j);
+  case fnHdmaobjInstr_DecrementAndGoto: return HdmaobjInstr_DecrementAndGoto(k, j);
+  case fnHdmaobjInstr_DecrementAndGotoRel: return HdmaobjInstr_DecrementAndGotoRel(k, j);
+  case fnHdmaobjInstr_SetTimer: return HdmaobjInstr_SetTimer(k, j);
+  case fnHdmaobjInstr_SetHdmaControl: return HdmaobjInstr_SetHdmaControl(k, j);
+  case fnHdmaobjInstr_SetHdmaTarget: return HdmaobjInstr_SetHdmaTarget(k, j);
+  case fnHdmaobjInstr_SetHdmaTablePtr: return HdmaobjInstr_SetHdmaTablePtr(k, j);
+  case fnHdmaobjInstr_SetHdmaTableBank: return HdmaobjInstr_SetHdmaTableBank(k, j);
+  case fnHdmaobjInstr_SetIndirectHdmaDataBank: return HdmaobjInstr_SetIndirectHdmaDataBank(k, j);
   case fnHdmaobjInstr_Sleep: return HdmaobjInstr_Sleep(k, j);
   case fnHdmaobjInstr_SetFlagB: return HdmaobjInstr_SetFlagB(k, j);
   case fnHdmaobjInstr_SetFlagB_Copy: return HdmaobjInstr_SetFlagB_Copy(k, j);
@@ -584,53 +583,44 @@ uint16 CallHdmaobjInstr(uint32 ea, uint8 db, uint16 k, uint16 j) {
   case fnHdmaobjInstr_B3A9: return HdmaobjInstr_B3A9(k, j);
   case fnHdmaobjInsr_ConfigTitleSequenceGradientHDMA: return HdmaobjInsr_ConfigTitleSequenceGradientHDMA(k, j);
   case fnsub_88D916: sub_88D916(); return j;
-  default: return Unreachable();
+  default: Unreachable(); return NULL;
   }
 }
 
-void HdmaobjInstructionHandler(uint16 k) {  // 0x88851C
-  int v1 = (uint8)k >> 1;
-  R18_ = hdma_object_pre_instructions[v1];
-  R20_ = hdma_object_pre_instruction_bank[v1];
-  CallHdmaobjPreInstr(Load24(&R18_), k);
-  LOBYTE(k) = hdma_object_index;
-  int v2 = (uint8)hdma_object_index >> 1;
-  if (hdma_object_instruction_timers[v2]-- == 1) {
-    uint8 v8 = *((uint8 *)hdma_object_bank_slot + (uint8)k + 1);
-    uint16 v4 = hdma_object_instruction_list_pointers[v2];
-    uint16 v6;
-    while (1) {
-      const uint16 *v5 = (const uint16 *)RomPtrWithBank(v8, v4);
-      v6 = *v5;
-      if ((*v5 & 0x8000u) == 0)
-        break;
-      R18_ = *v5;
-      v4 = CallHdmaobjInstr(v6 | 0x880000, v8, k, v4 + 2);
-      if (!v4)
-        return;
+void HdmaobjInstructionHandler(uint8 k) {  // 0x88851C
+  int kh = k >> 1;
+  CallHdmaobjPreInstr(hdma_object_pre_instruction_bank[kh] << 16 | hdma_object_pre_instructions[kh], k);
+  if (hdma_object_instruction_timers[kh]-- == 1) {
+    const uint8 *base = RomPtrWithBank(*((uint8 *)hdma_object_bank_slot + k + 1), 0x8000) - 0x8000;
+    const uint8 *p = base + hdma_object_instruction_list_pointers[kh];
+    while (GET_WORD(p) & 0x8000) {
+      p = CallHdmaobjInstr(GET_WORD(p) | 0x880000, k, p + 2);
+      if ((uintptr_t)p < 0x10000) {
+        if (!p)
+          return;
+        p = base + (uintptr_t)p;
+      }
     }
-    int v7 = k >> 1;
-    hdma_object_instruction_timers[v7] = v6;
-    hdma_object_instruction_list_pointers[v7] = v4 + 4;
-    hdma_object_table_pointers[v7] = *((uint16 *)RomPtrWithBank(v8, v4) + 1);
+    hdma_object_instruction_timers[kh] = GET_WORD(p);
+    hdma_object_table_pointers[kh] = GET_WORD(p + 2);
+    hdma_object_instruction_list_pointers[kh] = p + 4 - base;
   }
 }
 
-uint16 HdmaobjInstr_Delete(uint16 k, uint16 j) {  // 0x888569
+const uint8 *HdmaobjInstr_Delete(uint16 k, const uint8 *hdp) {  // 0x888569
   hdma_object_channels_bitmask[k >> 1] = 0;
   return 0;
 }
 
-uint16 HdmaobjInstr_SetPreInstr(uint8 db, uint16 k, uint16 j) {  // 0x888570
-  const uint8 *v2 = RomPtrWithBank(db, j);
-  hdma_object_pre_instructions[k >> 1] = GET_WORD(v2);
-  *((uint8 *)hdma_object_pre_instruction_bank + k) = v2[2];
-  return j + 3;
+const uint8 *HdmaobjInstr_SetPreInstr(uint16 k, const uint8 *hdp) {  // 0x888570
+  hdma_object_pre_instructions[k >> 1] = GET_WORD(hdp);
+  *((uint8 *)hdma_object_pre_instruction_bank + k) = hdp[2];
+  return hdp + 3;
 }
 
-uint16 HdmaobjInstr_ClearPreInstr(uint16 k, uint16 j) {  // 0x888584
+const uint8 *HdmaobjInstr_ClearPreInstr(uint16 k, const uint8 *hdp) {  // 0x888584
   hdma_object_pre_instructions[k >> 1] = addr_locret_88858A;
-  return j;
+  return hdp;
 }
 
 void CallHdmaobjInstrFunc(uint32 ea, uint16 k) {
@@ -660,78 +650,68 @@ void CallHdmaobjInstrFunc(uint32 ea, uint16 k) {
   }
 }
 
-uint16 HdmaobjInstr_CallFarFunc(uint8 db, uint16 k, uint16 j) {  // 0x8885B4
-  const uint8 *v2 = RomPtrWithBank(db, j);
-  copy24((LongPtr *)&R18_, (LongPtr *)v2);
-  CallHdmaobjInstrFunc(Load24(&R18_), k);
-  return j + 3;
+const uint8 *HdmaobjInstr_CallFarFunc(uint16 k, const uint8 *hdp) {  // 0x8885B4
+  CallHdmaobjInstrFunc(Load24((LongPtr *)hdp), k);
+  return hdp + 3;
 }
 
-uint16 HdmaobjInstr_Goto(uint8 db, uint16 k, uint16 j) {  // 0x8885EC
-  return *(uint16 *)RomPtrWithBank(db, j);
+const uint8 *HdmaobjInstr_Goto(uint16 k, const uint8 *hdp) {  // 0x8885EC
+  return INSTRB_RETURN_ADDR(GET_WORD(hdp));
 }
 
-uint16 HdmaobjInstr_GotoRel(uint8 db, uint16 k, uint16 j) {  // 0x8885F1
-  R18_ = j;
-  return j + (int8)*RomPtrWithBank(db, j);
+const uint8 *HdmaobjInstr_GotoRel(uint16 k, const uint8 *hdp) {  // 0x8885F1
+  return hdp + (int8)*hdp;
 }
 
-uint16 HdmaobjInstr_DecrementAndGoto(uint8 db, uint16 k, uint16 j) {  // 0x888607
+const uint8 *HdmaobjInstr_DecrementAndGoto(uint16 k, const uint8 *hdp) {  // 0x888607
   int v2 = k >> 1;
   if (hdma_object_timers[v2]-- == 1)
-    return j + 2;
+    return hdp + 2;
   else
-    return HdmaobjInstr_Goto(db, k, j);
+    return INSTRB_RETURN_ADDR(GET_WORD(hdp));
 }
 
-uint16 HdmaobjInstr_DecrementAndGotoRel(uint8 db, uint16 k, uint16 j) {  // 0x88860F
+const uint8 *HdmaobjInstr_DecrementAndGotoRel(uint16 k, const uint8 *hdp) {  // 0x88860F
   int v2 = k >> 1;
   if (hdma_object_timers[v2]-- == 1)
-    return j + 1;
+    return hdp + 1;
   else
-    return HdmaobjInstr_GotoRel(db, k, j);
+    return hdp + (int8)*hdp;
 }
 
-uint16 HdmaobjInstr_SetTimer(uint8 db, uint16 k, uint16 j) {  // 0x888616
-  *((uint8 *)hdma_object_timers + k) = *RomPtrWithBank(db, j);
-  return j + 1;
+const uint8 *HdmaobjInstr_SetTimer(uint16 k, const uint8 *hdp) {  // 0x888616
+  *((uint8 *)hdma_object_timers + k) = *hdp;
+  return hdp + 1;
 }
 
-uint16 HdmaobjInstr_SetHdmaControl(uint8 db, uint16 k, uint16 j) {  // 0x888622
-  const uint8 *v2 = RomPtrWithBank(db, j);
-  WriteReg((SnesRegs)(LOBYTE(hdma_object_bank_slot[k >> 1]) + DMAP0), *v2);
-  return j + 1;
+const uint8 *HdmaobjInstr_SetHdmaControl(uint16 k, const uint8 *hdp) {  // 0x888622
+  WriteReg((SnesRegs)(LOBYTE(hdma_object_bank_slot[k >> 1]) + DMAP0), *hdp);
+  return hdp + 1;
 }
 
-uint16 HdmaobjInstr_SetHdmaTarget(uint8 db, uint16 k, uint16 j) {  // 0x888637
-  const uint8 *v2 = RomPtrWithBank(db, j);
-  WriteReg((SnesRegs)(LOBYTE(hdma_object_bank_slot[k >> 1]) + BBAD0), *v2);
-  return j + 1;
+const uint8 *HdmaobjInstr_SetHdmaTarget(uint16 k, const uint8 *hdp) {  // 0x888637
+  WriteReg((SnesRegs)(LOBYTE(hdma_object_bank_slot[k >> 1]) + BBAD0), *hdp);
+  return hdp + 1;
 }
 
-uint16 HdmaobjInstr_SetHdmaTablePtr(uint8 db, uint16 k, uint16 j) {  // 0x88864C
-  hdma_object_table_pointers[k >> 1] = *(uint16 *)RomPtrWithBank(db, j);
-  return j + 2;
+const uint8 *HdmaobjInstr_SetHdmaTablePtr(uint16 k, const uint8 *hdp) {  // 0x88864C
+  hdma_object_table_pointers[k >> 1] = GET_WORD(hdp);
+  return hdp + 2;
 }
 
-uint16 HdmaobjInstr_SetHdmaTableBank(uint8 db, uint16 k, uint16 j) {  // 0x888655
-  const uint8 *v2 = RomPtrWithBank(db, j);
-  WriteReg((SnesRegs)(LOBYTE(hdma_object_bank_slot[k >> 1]) + A1B0), *v2);
-  return j + 1;
+const uint8 *HdmaobjInstr_SetHdmaTableBank(uint16 k, const uint8 *hdp) {  // 0x888655
+  WriteReg((SnesRegs)(LOBYTE(hdma_object_bank_slot[k >> 1]) + A1B0), *hdp);
+  return hdp + 1;
 }
 
-uint16 HdmaobjInstr_SetIndirectHdmaDataBank(uint8 db, uint16 k, uint16 j) {  // 0x88866A
-  const uint8 *v2 = RomPtrWithBank(db, j);
-  WriteReg((SnesRegs)(LOBYTE(hdma_object_bank_slot[k >> 1]) + DAS00), *v2);
-  return j + 1;
+const uint8 *HdmaobjInstr_SetIndirectHdmaDataBank(uint16 k, const uint8 *hdp) {  // 0x88866A
+  WriteReg((SnesRegs)(LOBYTE(hdma_object_bank_slot[k >> 1]) + DAS00), *hdp);
+  return hdp + 1;
 }
 
-uint16 HdmaobjInstr_Skip(uint16 k, uint16 j) {  // 0x88867F
-  return j + 2;
-}
-
-uint16 HdmaobjInstr_Sleep(uint16 k, uint16 j) {  // 0x888682
-  hdma_object_instruction_list_pointers[k >> 1] = j - 2;
+const uint8 *HdmaobjInstr_Sleep(uint16 k, const uint8 *hdp) {  // 0x888682
+  const uint8 *base = RomPtrWithBank(*((uint8 *)hdma_object_bank_slot + k + 1), 0x8000) - 0x8000;
+  hdma_object_instruction_list_pointers[k >> 1] = hdp - base - 2;
   return 0;
 }
 
@@ -1621,9 +1601,9 @@ void HdmaobjPreInstr_FxType22_BG3Yscroll(uint16 k) {  // 0x88A643
   *(uint16 *)&mother_brain_indirect_hdma[k] = 0;
 }
 
-uint16 HdmaobjInstr_SetFlagB(uint16 k, uint16 j) {  // 0x88A66C
+const uint8 *HdmaobjInstr_SetFlagB(uint16 k, const uint8 *hdp) {  // 0x88A66C
   hdma_object_B[k >> 1] = 1;
-  return j;
+  return hdp;
 }
 static const int16 g_word_88C46E[16] = {  // 0x88A673
   0, 1, 1, 0, 0, -1, -1, 0,
@@ -2091,9 +2071,9 @@ void FxRisingFunction_LavaAcid_Raising(void) {  // 0x88B382
   }
 }
 
-uint16 HdmaobjInstr_B3A9(uint16 k, uint16 j) {  // 0x88B3A9
+const uint8 *HdmaobjInstr_B3A9(uint16 k, const uint8 *hdp) {  // 0x88B3A9
   hdma_object_C[k >> 1] = 112;
-  return j;
+  return hdp;
 }
 
 void CallFxRisingFunc(uint32 ea) {
@@ -2167,9 +2147,9 @@ LABEL_17:
   }
 }
 
-uint16 HdmaobjInstr_SetFlagB_Copy(uint16 k, uint16 j) {  // 0x88B4CE
+const uint8 *HdmaobjInstr_SetFlagB_Copy(uint16 k, const uint8 *hdp) {  // 0x88B4CE
   hdma_object_B[k >> 1] = 1;
-  return j;
+  return hdp;
 }
 
 void HdmaobjPreInstr_LavaAcidBG2YScroll(uint16 k) {  // 0x88B4D5
@@ -2266,9 +2246,9 @@ void FxRisingFunction_WaterRising(void) {  // 0x88C458
   }
 }
 
-uint16 HdmaobjInstr_SetFlagB_Copy2(uint16 k, uint16 j) {  // 0x88C467
+const uint8 *HdmaobjInstr_SetFlagB_Copy2(uint16 k, const uint8 *hdp) {  // 0x88C467
   hdma_object_B[k >> 1] = 1;
-  return j;
+  return hdp;
 }
 
 void CallFxRisingFunction(uint32 ea) {
@@ -2342,9 +2322,9 @@ LABEL_22:
   }
 }
 
-uint16 HdmaobjInstr_SetFlagB_Copy3(uint16 k, uint16 j) {  // 0x88C582
+const uint8 *HdmaobjInstr_SetFlagB_Copy3(uint16 k, const uint8 *hdp) {  // 0x88C582
   hdma_object_B[k >> 1] = 1;
-  return j;
+  return hdp;
 }
 
 void HdmaobjPreInstr_WaterBG2XScroll(uint16 k) {  // 0x88C589
@@ -2424,9 +2404,9 @@ void FxTypeFunc_CeresElevator(void) {  // 0x88D928
   SpawnHdmaObject(0x88, &unk_88D92C);
 }
 
-uint16 HdmaobjInstr_SetVideoMode1(uint16 k, uint16 j) {  // 0x88D949
+const uint8 *HdmaobjInstr_SetVideoMode1(uint16 k, const uint8 *hdp) {  // 0x88D949
   hdma_data_table_in_ceres = 9;
-  return j;
+  return hdp;
 }
 
 void FxTypeFunc_A_Rain(void) {  // 0x88D950
@@ -2438,9 +2418,9 @@ void FxTypeFunc_A_Rain(void) {  // 0x88D950
 }
 
 
-uint16 HdmaobjInstr_1938_RandomNumber(uint16 k, uint16 j) {  // 0x88D981
+const uint8 *HdmaobjInstr_1938_RandomNumber(uint16 k, const uint8 *hdp) {  // 0x88D981
   hdma_object_D[k >> 1] = g_word_88D992[(uint16)((random_number >> 1) & 6) >> 1];
-  return j;
+  return hdp;
 }
 
 void HdmaobjPreInstr_RainBg3Scroll(uint16 k) {  // 0x88D9A1
@@ -2604,19 +2584,19 @@ void HdmaobjPreInstr_DCBA(uint16 v0) {  // 0x88DCBA
   sub_88DBCB(v0);
 }
 
-uint16 HdmaobjInstr_GotoIfEventHappened(uint16 k, uint16 j) {  // 0x88DCCB
+const uint8 *HdmaobjInstr_GotoIfEventHappened(uint16 k, const uint8 *hdp) {  // 0x88DCCB
   int v2 = k >> 1;
   hdma_object_C[v2] = 0;
   hdma_object_A[v2] = 0;
   if (CheckEventHappened(0xAu)) {
     hdma_object_B[v2] = -240;
     *(uint16 *)&hdma_window_1_left_pos[0].field_0 = -240;
-    return *(uint16 *)RomPtr_88(j);
+    return INSTRB_RETURN_ADDR(GET_WORD(hdp));
   } else {
     hdma_object_B[v2] = 0;
     *(uint16 *)&hdma_window_1_left_pos[0].field_0 = 0;
     *(uint16 *)scrolls = 1;
-    return j + 2;
+    return hdp + 2;
   }
 }
 
@@ -3051,7 +3031,7 @@ void sub_88E487(uint16 v0) {  // 0x88E487
   SpawnHdmaObject(0x88, &unk_88E4A0);
 }
 
-uint16 HdmaobjInstr_E4BD(uint16 k, uint16 j) {  // 0x88E4BD
+const uint8 *HdmaobjInstr_E4BD(uint16 k, const uint8 *hdp) {  // 0x88E4BD
   unsigned int v2; // kr00_4
   unsigned int v3; // kr04_4
   unsigned int v4; // kr08_4
@@ -3096,7 +3076,7 @@ uint16 HdmaobjInstr_E4BD(uint16 k, uint16 j) {  // 0x88E4BD
   hdma_object_B[v6] = 1;
   hdma_object_C[v6] = 0;
   hdma_object_D[v6] = 0;
-  return j;
+  return hdp;
 }
 
 void HdmaobjPreInstr_E567(uint16 v0) {  // 0x88E567
@@ -3221,7 +3201,7 @@ void SpawnMorphBallEyeBeamHdma(void) {  // 0x88E8D9
   SpawnHdmaObject(0x88, &unk_88E8E4);
 }
 
-uint16 HdmaobjInstr_InitMorphBallEyeBeamHdma(uint16 k, uint16 j) {  // 0x88E917
+const uint8 *HdmaobjInstr_InitMorphBallEyeBeamHdma(uint16 k, const uint8 *hdp) {  // 0x88E917
   unsigned int v2; // kr00_4
   unsigned int v3; // kr04_4
 
@@ -3248,7 +3228,7 @@ uint16 HdmaobjInstr_InitMorphBallEyeBeamHdma(uint16 k, uint16 j) {  // 0x88E917
   g_word_7E9080 = 0;
   g_word_7E9082 = 0;
   g_word_7E9090 = 0;
-  return j;
+  return hdp;
 }
 
 void sub_88E987(uint16 v0) {  // 0x88E987
@@ -3347,10 +3327,10 @@ void SpawnTitleScreenGradientObjs(void) {  // 0x88EB58
   SpawnHdmaObject(0x88, &unk_88EB6B);
 }
 
-uint16 HdmaobjInsr_ConfigTitleSequenceGradientHDMA(uint16 k, uint16 j) {  // 0x88EB9F
+const uint8 *HdmaobjInsr_ConfigTitleSequenceGradientHDMA(uint16 k, const uint8 *hdp) {  // 0x88EB9F
   reg_CGWSEL = 0;
   ConfigureTitleSequenceGradientHDMA();
-  return j;
+  return hdp;
 }
 
 void HdmaobjPreInstr_Backdrop_TitleSequenceGradient(uint16 k) {  // 0x88EBB0
@@ -3405,13 +3385,13 @@ void CinematicFunction_Intro_Func133(void) {  // 0x88EC3B
   SpawnHdmaObject(0x88, &unk_88EC82);
 }
 
-uint16 HdmaobjInstr_EC9F_ClearVars(uint16 k, uint16 j) {  // 0x88EC9F
+const uint8 *HdmaobjInstr_EC9F_ClearVars(uint16 k, const uint8 *hdp) {  // 0x88EC9F
   int v2 = k >> 1;
   hdma_object_A[v2] = -2;
   hdma_object_B[v2] = 1;
   hdma_object_C[v2] = 0;
   hdma_object_D[v2] = 0;
-  return j;
+  return hdp;
 }
 
 void HdmaobjPreInstr_ECB6(uint16 k) {  // 0x88ECB6

@@ -511,8 +511,8 @@ void copy24(LongPtr *dst, LongPtr *src) {
   *dst = *src;
 }
 
-uint32 Load24(void *a) {
-  return *(uint32 *)a & 0xffffff;
+uint32 Load24(const LongPtr *src) {
+  return *(uint32 *)src & 0xffffff;
 }
 
 bool Unreachable(void) {
