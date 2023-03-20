@@ -598,8 +598,8 @@ uint16 EprojInstr_SetTimer(uint16 k, uint16 j) {  // 0x8681D5
 }
 
 uint16 EprojInstr_MoveRandomlyWithinRadius(uint16 k, uint16 j) {  // 0x8681DF
-  char Random;
-  char v4;
+  int8 Random;
+  int8 v4;
   int16 v6;
 
   R18_ = NextRandom();
@@ -1517,10 +1517,10 @@ static const int8 CrocomireSpikeWallPieces_Tab3[36] = {
 };
 
 void EprojPreInstr_CrocomireSpikeWallPieces(uint16 k) {
-  char v3;
-  char v6;
-  char v7;
-  char v8;
+  int8 v3;
+  int8 v6;
+  int8 v7;
+  int8 v8;
 
   int v1 = k >> 1;
   uint16 v2 = enemy_projectile_E[v1];
@@ -1860,7 +1860,7 @@ static const uint8 byte_869979[8] = { 0, 0x20, 0x40, 0x60, 0x80, 0xa0, 0xc0, 0xe
 
 
 void EprojInit_PhantoonDestroyableFireballs(uint16 j) {  // 0x869824
-  char v1;
+  int8 v1;
 
   v1 = (uint16)(enemy_projectile_init_param & 0xFF00) >> 8;
   if (v1) {
@@ -2542,7 +2542,7 @@ void EprojInit_BombTorizoExplosiveSwipe(uint16 j) {  // 0x86A6F6
 }
 
 void EprojInit_BombTorizoStatueBreaking(uint16 j) {  // 0x86A764
-  char v1;
+  int8 v1;
 
   CalculatePlmBlockCoords(plm_id);
   v1 = enemy_projectile_init_param;
@@ -3633,9 +3633,9 @@ void EprojInit_MotherBrainRoomTurretBullets(uint16 j) {  // 0x86BF59
 void EprojPreInstr_MotherBrainRoomTurrets(uint16 k) {  // 0x86BFDF
   if (Eproj_MotherBrainRoomTurretBullets_CheckIfTurretOnScreen(k) & 1) {
     if (gRam7800_Default(0)->var_1D)
-      *(uint16 *)((char *)enemy_projectile_id + k) = 0;
+      *(uint16 *)((uint8 *)enemy_projectile_id + k) = 0;
   } else if (gRam7800_Default(0)->var_1D) {
-    *(uint16 *)((char *)enemy_projectile_id + k) = 0;
+    *(uint16 *)((uint8 *)enemy_projectile_id + k) = 0;
     int v5 = k >> 1;
     R18_ = enemy_projectile_x_pos[v5];
     R20_ = enemy_projectile_y_pos[v5];
@@ -3660,7 +3660,7 @@ void EprojPreInstr_MotherBrainRoomTurrets(uint16 k) {  // 0x86BFDF
 }
 
 void Eproj_MotherBrainRoomTurretBullets_Func2(uint16 v0) {  // 0x86C050
-  char v1;
+  int8 v1;
 
   LOBYTE(R20_) = (*((uint8 *)enemy_projectile_y_subpos + v0 + 1) + *((uint8 *)enemy_projectile_y_subpos + v0)) & 7;
   R18_ = enemy_projectile_1A27[v0 >> 1];
@@ -3843,7 +3843,7 @@ uint16 Math_MultBySinCos(uint16 a) {  // 0x86C27A
   R46 = kSinCosTable8bit_Sext[(a & 0xff) + 64];
   R40 = abs16(R46);
   Math_Mult16U();
-  uint16 r = *(uint16 *)((char *)&R42 + 1);
+  uint16 r = *(uint16 *)((uint8 *)&R42 + 1);
   return sign16(R46) ? -r : r;
 }
 
@@ -4610,7 +4610,7 @@ void EprojPreInstr_WreckedShipRobotLaser(uint16 k) {  // 0x86D3BF
 uint16 EprojInstr_AssignNewN00bTubeShardVelocity(uint16 k, uint16 j) {  // 0x86D5E1
   NextRandom();
   int v2 = k >> 1;
-  enemy_projectile_x_vel[v2] = *(uint16 *)((char *)&random_number + 1);
+  enemy_projectile_x_vel[v2] = *(uint16 *)((uint8 *)&random_number + 1);
   enemy_projectile_y_vel[v2] = 192;
   return j;
 }
@@ -4644,7 +4644,7 @@ uint16 EprojInstr_D62A(uint16 k, uint16 j) {  // 0x86D62A
 
 uint16 EprojInstr_SetXvelRandom(uint16 k, uint16 j) {  // 0x86D69A
   NextRandom();
-  enemy_projectile_x_vel[k >> 1] = *(uint16 *)((char *)&random_number + 1);
+  enemy_projectile_x_vel[k >> 1] = *(uint16 *)((uint8 *)&random_number + 1);
   return j;
 }
 
@@ -5230,7 +5230,7 @@ void EprojInit_EyeDoorSmoke(uint16 j) {  // 0x86E4A6
   enemy_projectile_instr_list_ptr[v1] = off_86E42C[(uint8)enemy_projectile_init_param];
   int v2 = (uint16)(8 * HIBYTE(enemy_projectile_init_param)) >> 1;
   R18_ = word_86E47E[v2 + 2] + (word_86E47E[v2] & random_number);
-  R20_ = word_86E47E[v2 + 3] + (word_86E47E[v2 + 1] & *(uint16 *)((char *)&random_number + 1));
+  R20_ = word_86E47E[v2 + 3] + (word_86E47E[v2 + 1] & *(uint16 *)((uint8 *)&random_number + 1));
   CalculatePlmBlockCoords(plm_id);
   enemy_projectile_x_pos[v1] = R18_ + 8 * (2 * plm_x_block + 1);
   enemy_projectile_y_pos[v1] = R20_ + 8 * (2 * plm_y_block + 1);
@@ -5721,7 +5721,7 @@ void Eproj_Pickup_SuperMissiles(void) {  // 0x86F0F7
 static const uint8 byte_86F25E[6] = { 1, 2, 4, 6, 5, 3 };
 
 uint16 RandomDropRoutine(uint16 k) {  // 0x86F106
-  char v9; // cf
+  int8 v9; // cf
 
   int v1 = k >> 1;
   varE2A = enemy_projectile_killed_enemy_index[v1] & 0x7FFF;

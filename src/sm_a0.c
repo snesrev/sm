@@ -162,7 +162,7 @@ const uint16 *EnemyInstr_CopyToVram(uint16 k, const uint16 *jp) {  // 0xA0814B
   v4 = gVramWriteEntry(vram_write_queue_tail);
   v4->size = GET_WORD(v3);
   v4->src.addr = GET_WORD(v3 + 2);
-  *(VoidP *)((char *)&v4->src.addr + 1) = GET_WORD(v3 + 3);
+  *(VoidP *)((uint8 *)&v4->src.addr + 1) = GET_WORD(v3 + 3);
   v4->vram_dst = GET_WORD(v3 + 5);
   vram_write_queue_tail = v2 + 7;
   return INSTR_INCR_BYTES(jp, 7);
@@ -1765,7 +1765,7 @@ const uint16 *CallEnemyInstr(uint32 ea, uint16 k, const uint16 *j) {
 void EnemyMain(void) {  // 0xA08FD4
   EnemyDef_A2 *EnemyDef_A2;
   int16 v6;
-  char v8; // cf
+  int8 v8; // cf
 
   if (first_free_enemy_index) {
     if (enemy_index_to_shake != 0xFFFF) {
@@ -2188,7 +2188,7 @@ void EprojSamusCollDetect(void) {  // 0xA09894
   if (!samus_invincibility_timer && !samus_contact_damage_index) {
     collision_detection_index = 34;
     do {
-      if (*(uint16 *)((char *)enemy_projectile_id + collision_detection_index)) {
+      if (*(uint16 *)((uint8 *)enemy_projectile_id + collision_detection_index)) {
         int v0 = collision_detection_index >> 1;
         if ((enemy_projectile_properties[v0] & 0x2000) == 0) {
           if (LOBYTE(enemy_projectile_radius[v0])) {
@@ -2218,7 +2218,7 @@ void EprojSamusCollDetect(void) {  // 0xA09894
 void HandleEprojCollWithSamus(uint16 k) {  // 0xA09923
   samus_invincibility_timer = 96;
   samus_knockback_timer = 5;
-  uint16 v1 = *((uint16 *)RomPtr_86(*(uint16 *)((char *)enemy_projectile_id + k)) + 5);
+  uint16 v1 = *((uint16 *)RomPtr_86(*(uint16 *)((uint8 *)enemy_projectile_id + k)) + 5);
   if (v1) {
     int v2 = k >> 1;
     enemy_projectile_instr_list_ptr[v2] = v1;
@@ -2226,7 +2226,7 @@ void HandleEprojCollWithSamus(uint16 k) {  // 0xA09923
   }
   int v3 = k >> 1;
   if ((enemy_projectile_properties[v3] & 0x4000) == 0)
-    *(uint16 *)((char *)enemy_projectile_id + k) = 0;
+    *(uint16 *)((uint8 *)enemy_projectile_id + k) = 0;
   uint16 v4 = SuitDamageDivision(enemy_projectile_properties[v3] & 0xFFF);
   Samus_DealDamage(v4);
   knockback_x_dir = (int16)(samus_x_pos - enemy_projectile_x_pos[v3]) >= 0;
@@ -2240,7 +2240,7 @@ void EprojProjCollDet(void) {  // 0xA0996C
     collision_detection_index = 34;
     do {
       uint16 v0 = collision_detection_index;
-      if (*(uint16 *)((char *)enemy_projectile_id + collision_detection_index)
+      if (*(uint16 *)((uint8 *)enemy_projectile_id + collision_detection_index)
           && (enemy_projectile_properties[collision_detection_index >> 1] & 0x8000u) != 0) {
         uint16 v1 = 0;
         do {
@@ -2286,7 +2286,7 @@ void HandleEprojCollWithProj(uint16 k, uint16 j) {  // 0xA099F9
   } else {
     int v3 = k >> 1;
     enemy_projectile_G[v3] = projectile_type[v2];
-    enemy_projectile_instr_list_ptr[v3] = get_EnemyProjectileDef(*(uint16 *)((char *)enemy_projectile_id + k))->shot_instruction_list;
+    enemy_projectile_instr_list_ptr[v3] = get_EnemyProjectileDef(*(uint16 *)((uint8 *)enemy_projectile_id + k))->shot_instruction_list;
     enemy_projectile_instr_timers[v3] = 1;
     enemy_projectile_pre_instr[v3] = FUNC16(EprojPreInstr_nullsub_83);
     enemy_projectile_properties[v3] &= 0xFFFu;

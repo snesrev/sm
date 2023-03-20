@@ -174,7 +174,7 @@ void Draygon_Func_2(void) {  // 0xA5878B
 }
 
 void Draygon_Func_3(void) {  // 0xA587AA
-  char Random;
+  int8 Random;
 
   if ((nmi_frame_counter_word & 0x3F) == 0) {
     Random = NextRandom();
@@ -213,7 +213,7 @@ void Draygon_Func_5(void) {  // 0xA58817
     if ((int16)(v1 - E->draygon_var_01) < 0)
       break;
     varE24 -= HIBYTE(draw_oam_x_offset);
-    *(uint16 *)((char *)&g_word_7E9002 + varE26++) = v1;
+    *(uint16 *)((uint8 *)&g_word_7E9002 + varE26++) = v1;
     ++varE26;
     ++varE26;
     if (!sign16(++varE26 - 2048)) {
@@ -237,7 +237,7 @@ void Draygon_Func_5(void) {  // 0xA58817
   E->draygon_var_D = R44;
   E->draygon_var_E = R42;
   uint16 v6 = varE26;
-  *(uint16 *)((char *)&g_word_7E9002 + varE26) = E->base.y_pos;
+  *(uint16 *)((uint8 *)&g_word_7E9002 + varE26) = E->base.y_pos;
   E->draygon_var_B = v6;
   E->draygon_var_C = v6;
 }
@@ -252,7 +252,7 @@ void Draygon_Func_6(void) {  // 0xA588B1
     E3->base.current_instruction = addr_kDraygon_Ilist_9C06;
     E3->base.instruction_timer = 1;
   }
-  Get_Draygon(cur_enemy_index)->base.y_pos = *(uint16 *)((char *)&g_word_7E9002 + draygon_var_B);
+  Get_Draygon(cur_enemy_index)->base.y_pos = *(uint16 *)((uint8 *)&g_word_7E9002 + draygon_var_B);
   E->draygon_var_B -= 4;
   if (E->draygon_var_B) {
     uint16 x_subpos = E->base.x_subpos;
@@ -296,7 +296,7 @@ void Draygon_Func_9(void) {  // 0xA58951
     E3->base.current_instruction = addr_kDraygon_Ilist_9BDA;
     E3->base.instruction_timer = 1;
   }
-  Get_Draygon(cur_enemy_index)->base.y_pos = *(uint16 *)((char *)&g_word_7E9002 + draygon_var_B);
+  Get_Draygon(cur_enemy_index)->base.y_pos = *(uint16 *)((uint8 *)&g_word_7E9002 + draygon_var_B);
   E->draygon_var_B += 4;
   if (E->draygon_var_B == E->draygon_var_C) {
     E->draygon_var_B = 0;
@@ -339,7 +339,7 @@ void Draygon_Func_11(void) {  // 0xA58A00
     E3->base.current_instruction = addr_kDraygon_Ilist_9813;
     E3->base.instruction_timer = 1;
   }
-  Get_Draygon(cur_enemy_index)->base.y_pos = *(uint16 *)((char *)&g_word_7E9002 + draygon_var_B);
+  Get_Draygon(cur_enemy_index)->base.y_pos = *(uint16 *)((uint8 *)&g_word_7E9002 + draygon_var_B);
   E->draygon_var_B -= 4;
   if (E->draygon_var_B) {
     uint16 x_subpos = E->base.x_subpos;
@@ -382,7 +382,7 @@ void Draygon_Func_13(void) {  // 0xA58A90
     E3->base.current_instruction = addr_kDraygon_Ilist_97E7;
     E3->base.instruction_timer = 1;
   }
-  Get_Draygon(cur_enemy_index)->base.y_pos = *(uint16 *)((char *)&g_word_7E9002 + draygon_var_B);
+  Get_Draygon(cur_enemy_index)->base.y_pos = *(uint16 *)((uint8 *)&g_word_7E9002 + draygon_var_B);
   ++E->draygon_var_B;
   ++E->draygon_var_B;
   ++E->draygon_var_B;
@@ -1818,7 +1818,7 @@ void SporeSpawn_Func_6(void) {  // 0xA5EDF3
     E->base.ai_handler_bits = 0;
     E->base.properties |= kEnemyProps_Tangible;
     for (int i = 26; i >= 0; i -= 2)
-      *(uint16 *)((char *)enemy_projectile_id + (uint16)i) = 0;
+      *(uint16 *)((uint8 *)enemy_projectile_id + (uint16)i) = 0;
     E0->base.current_instruction = addr_kDraygon_Ilist_E77D;
     E0->base.instruction_timer = 1;
     *(uint16 *)&boss_bits_for_area[area_index] |= 2u;

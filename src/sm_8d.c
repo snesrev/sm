@@ -348,7 +348,7 @@ PairU16 PalInstr_SetPalfxIndex(uint16 k, uint16 j) {  // 0x8DF1C6
 }
 
 void PalPreInstr_F621(uint16 k) {  // 0x8DF621
-  if (*(uint16 *)((char *)&flag_for_palette_fx_objects + k))
+  if (*(uint16 *)((uint8 *)&flag_for_palette_fx_objects + k))
     palettefx_ids[k >> 1] = 0;
 }
 

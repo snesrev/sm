@@ -647,7 +647,7 @@ void Crocomire_Func_37(void) {  // 0xA48D5E
       Get_Crocomire(0x100u)->crocom_var_01 = 0;
       Get_Crocomire(0x140u)->crocom_var_01 = 0;
       QueueSfx2_Max6(0x3Bu);
-      *(uint16 *)((char *)&g_word_7E9015 + 1) = 0;
+      *(uint16 *)((uint8 *)&g_word_7E9015 + 1) = 0;
       SpawnHardcodedPlm(&unk_A48EA3);
       EK->base.current_instruction = addr_kCrocomire_Ilist_BFB0;
       EK->base.instruction_timer = 1;
@@ -848,10 +848,10 @@ void Crocomire_Func_51(void) {  // 0xA49108
 }
 
 void Crocomire_Func_52(void) {  // 0xA49136
-  uint16 v0 = *(uint16 *)((char *)&g_word_7E9015 + 1);
-  if (sign16(*(uint16 *)((char *)&g_word_7E9015 + 1) - 22)) {
-    uint16 v1 = *(uint16 *)((char *)&g_word_7E9015 + 1);
-    *(uint16 *)((char *)&g_word_7E9015 + 1) += 2;
+  uint16 v0 = *(uint16 *)((uint8 *)&g_word_7E9015 + 1);
+  if (sign16(*(uint16 *)((uint8 *)&g_word_7E9015 + 1) - 22)) {
+    uint16 v1 = *(uint16 *)((uint8 *)&g_word_7E9015 + 1);
+    *(uint16 *)((uint8 *)&g_word_7E9015 + 1) += 2;
     SpawnEnemyProjectileWithGfx(g_word_A49156[v0 >> 1], v1, addr_stru_868F9D);
   }
   Crocomire_Func_54();
@@ -881,12 +881,12 @@ void Crocomire_Func_54(void) {  // 0xA491BA
 }
 
 void Crocomire_Func_55(void) {  // 0xA491C1
-  char crocom_var_D;
-  char v7;
-  char v9;
-  char crocom_var_E;
-  char crocom_var_E_high;
-  char v12;
+  int8 crocom_var_D;
+  int8 v7;
+  int8 v9;
+  int8 crocom_var_E;
+  int8 crocom_var_E_high;
+  int8 v12;
 
   Crocomire_Func_58();
   Enemy_Crocomire *E0 = Get_Crocomire(0);
@@ -976,7 +976,7 @@ void Crocomire_92CE(void) {  // 0xA492CE
 
 void Crocomire_92D8(void) {  // 0xA492D8
   int16 v3;
-  char v6;
+  int8 v6;
 
   Crocomire_Func_58();
   Enemy_Crocomire *EK = Get_Crocomire(cur_enemy_index);
@@ -1094,19 +1094,19 @@ void Crocomire_Func_60(void) {  // 0xA4943D
   ++E->crocom_var_A;
   g_word_7E0692 = 256;
   croco_cur_vline_idx = 0;
-  g_word_7E0698 = *(uint16 *)((char *)&g_word_A49BC5 + croco_word_7E069A);
+  g_word_7E0698 = *(uint16 *)((uint8 *)&g_word_A49BC5 + croco_word_7E069A);
   g_word_7E0694 = g_word_7E0698;
-  g_word_7E0696 = *(uint16 *)((char *)&g_word_A49BC7 + croco_word_7E069A);
-  g_word_7E068E = *(uint16 *)((char *)&g_word_A49BC9 + croco_word_7E069A);
+  g_word_7E0696 = *(uint16 *)((uint8 *)&g_word_A49BC7 + croco_word_7E069A);
+  g_word_7E068E = *(uint16 *)((uint8 *)&g_word_A49BC9 + croco_word_7E069A);
   R0_.addr = 0;
-  *(uint16 *)&R0_.bank = *(uint16 *)((char *)&g_word_A49BCB + croco_word_7E069A);
+  *(uint16 *)&R0_.bank = *(uint16 *)((uint8 *)&g_word_A49BCB + croco_word_7E069A);
   uint16 v6;
   for (i = croco_word_7E069A + 8; ; i = v6 + 4) {
-    uint16 v2 = *(uint16 *)((char *)&g_word_A49BC5 + i);
+    uint16 v2 = *(uint16 *)((uint8 *)&g_word_A49BC5 + i);
     if (v2 == 0xFFFF)
       break;
     v6 = i;
-    uint16 v3 = *(uint16 *)((char *)&g_word_A49BC7 + i);
+    uint16 v3 = *(uint16 *)((uint8 *)&g_word_A49BC7 + i);
     int n = g_word_7E068E;
     do {
       *(uint16 *)&g_ram[v3] = IndirReadWord(R0_, v2);
@@ -1128,17 +1128,17 @@ void Crocomire_Func_62(void) {  // 0xA494B6
 
   uint16 v0 = g_word_7E068A;
   uint16 v1 = vram_write_queue_tail;
-  if (*(uint16 *)((char *)&g_word_A49BC5 + g_word_7E068A) == 0xFFFF) {
+  if (*(uint16 *)((uint8 *)&g_word_A49BC5 + g_word_7E068A) == 0xFFFF) {
     Enemy_Crocomire *E = Get_Crocomire(cur_enemy_index);
     ++E->crocom_var_A;
     ++E->crocom_var_A;
     g_word_7E068A = 0;
   } else {
     v2 = gVramWriteEntry(vram_write_queue_tail);
-    v2->size = *(uint16 *)((char *)&g_word_A49BC5 + g_word_7E068A);
-    v2->src.addr = *(uint16 *)((char *)&g_word_A49BCB + v0);
-    *(uint16 *)&v2->src.bank = *(uint16 *)((char *)&g_word_A49BC9 + v0);
-    v2->vram_dst = *(uint16 *)((char *)&g_word_A49BC7 + v0);
+    v2->size = *(uint16 *)((uint8 *)&g_word_A49BC5 + g_word_7E068A);
+    v2->src.addr = *(uint16 *)((uint8 *)&g_word_A49BCB + v0);
+    *(uint16 *)&v2->src.bank = *(uint16 *)((uint8 *)&g_word_A49BC9 + v0);
+    v2->vram_dst = *(uint16 *)((uint8 *)&g_word_A49BC7 + v0);
     g_word_7E068A = v0 + 8;
     vram_write_queue_tail = v1 + 7;
   }
@@ -1206,7 +1206,7 @@ void Crocomire_Func_65(void) {  // 0xA49580
 LABEL_4:;
       Enemy_Crocomire *EK = Get_Crocomire(cur_enemy_index);
       EK->crocom_var_A += 2;
-      for (i = croco_word_7E069A; *(uint16 *)((char *)&g_word_A49BC5 + i) != 0xFFFF; i += 8)
+      for (i = croco_word_7E069A; *(uint16 *)((uint8 *)&g_word_A49BC5 + i) != 0xFFFF; i += 8)
         ;
       croco_word_7E069A = i + 2;
       hdma_object_channels_bitmask[E0->crocom_var_1F >> 1] = 0;
@@ -1302,15 +1302,15 @@ uint16 Crocomire_Func_67(void) {  // 0xA496C8
   while (1) {
     v7 = g_word_7E068A + croco_word_7E069A;
     v8 = vram_write_queue_tail;
-    if (*(uint16 *)((char *)&g_word_A49BC5 + v7) != 0xFFFF)
+    if (*(uint16 *)((uint8 *)&g_word_A49BC5 + v7) != 0xFFFF)
       break;
     g_word_7E068A = 0;
   }
   v9 = gVramWriteEntry(vram_write_queue_tail);
-  v9->size = *(uint16 *)((char *)&g_word_A49BC5 + v7);
-  v9->src.addr = *(uint16 *)((char *)&g_word_A49BCB + v7);
-  *(uint16 *)&v9->src.bank = *(uint16 *)((char *)&g_word_A49BC9 + v7);
-  v9->vram_dst = *(uint16 *)((char *)&g_word_A49BC7 + v7);
+  v9->size = *(uint16 *)((uint8 *)&g_word_A49BC5 + v7);
+  v9->src.addr = *(uint16 *)((uint8 *)&g_word_A49BCB + v7);
+  *(uint16 *)&v9->src.bank = *(uint16 *)((uint8 *)&g_word_A49BC9 + v7);
+  v9->vram_dst = *(uint16 *)((uint8 *)&g_word_A49BC7 + v7);
   vram_write_queue_tail = v8 + 7;
   g_word_7E068A += 8;
   return 1;

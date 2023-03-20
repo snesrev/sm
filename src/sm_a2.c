@@ -490,8 +490,8 @@ void MaridiaBeybladeTurtle_Func7(uint16 k) {  // 0xA28F8D
       uint16 v3 = 0;
       if ((int16)(E->base.x_pos - samus_x_pos) < 0)
         v3 = 4;
-      E->mte_var_01 = *(uint16 *)((char *)&g_word_A28D56 + v3);
-      E->mte_var_02 = *(uint16 *)((char *)&g_word_A28D58 + v3);
+      E->mte_var_01 = *(uint16 *)((uint8 *)&g_word_A28D56 + v3);
+      E->mte_var_02 = *(uint16 *)((uint8 *)&g_word_A28D58 + v3);
       E->mte_var_E = 0;
       E->mte_var_03 = 0;
       E->mte_var_A = FUNC16(MaridiaBeybladeTurtle_Func8);
@@ -911,7 +911,7 @@ void ThinHoppingBlobs_Func3(void) {  // 0xA29AAA
   }
   uint16 v3 = 8 * thbs_var_00;
   E->thbs_var_F = v3;
-  E->thbs_var_E = *(uint16 *)((char *)&g_word_A29A0D + v3);
+  E->thbs_var_E = *(uint16 *)((uint8 *)&g_word_A29A0D + v3);
 }
 
 void ThinHoppingBlobs_Func4(void) {  // 0xA29B06
@@ -926,12 +926,12 @@ void ThinHoppingBlobs_Func5(void) {  // 0xA29B1A
   R22_ = 0;
   R24_ = 0;
   do {
-    R22_ += *(uint16 *)((char *)&g_word_A29A09 + thbs_var_F);
-    R24_ += *(uint16 *)((char *)kCommonEnemySpeeds_Quadratic
+    R22_ += *(uint16 *)((uint8 *)&g_word_A29A09 + thbs_var_F);
+    R24_ += *(uint16 *)((uint8 *)kCommonEnemySpeeds_Quadratic
                         + (uint16)(8 * (uint8)((uint16)(R22_ & 0xFF00) >> 8))
                         + 1);
     thbs_var_F = E->thbs_var_F;
-    v2 = swap16(*(uint16 *)((char *)&g_word_A29A07 + thbs_var_F));
+    v2 = swap16(*(uint16 *)((uint8 *)&g_word_A29A07 + thbs_var_F));
   } while (!sign16(v2 - R24_));
   E->thbs_var_B = R22_;
   E->thbs_var_03 = 0;
@@ -982,7 +982,7 @@ void ThinHoppingBlobs_Func8(void) {  // 0xA29B88
     if (E->thbs_var_03) {
       E->thbs_var_D = FUNC16(ThinHoppingBlobs_Func6);
     } else {
-      E->thbs_var_04 = *(VoidP *)((char *)&R0_.addr + 1);
+      E->thbs_var_04 = *(VoidP *)((uint8 *)&R0_.addr + 1);
       E->thbs_var_05 = E->thbs_var_02 ^ 1;
       E->thbs_var_00 = 4;
       E->thbs_var_E = FUNC16(ThinHoppingBlobs_Func15);
@@ -992,16 +992,16 @@ void ThinHoppingBlobs_Func8(void) {  // 0xA29B88
     uint16 thbs_var_F = E->thbs_var_F;
     if (E->thbs_var_03) {
       ThinHoppingBlobs_Func10();
-      E->thbs_var_B += *(uint16 *)((char *)&g_word_A29A0B + thbs_var_F);
+      E->thbs_var_B += *(uint16 *)((uint8 *)&g_word_A29A0B + thbs_var_F);
     } else {
       ThinHoppingBlobs_Func9();
-      E->thbs_var_B -= *(uint16 *)((char *)&g_word_A29A0B + thbs_var_F);
+      E->thbs_var_B -= *(uint16 *)((uint8 *)&g_word_A29A0B + thbs_var_F);
     }
     if (sign16(E->thbs_var_B)) {
       E->thbs_var_03 = 1;
       E->thbs_var_B = 0;
     }
-    R20_ = (uint8)((uint16)(*(uint16 *)((char *)&g_word_A29A09 + E->thbs_var_F) & 0xFF00) >> 8);
+    R20_ = (uint8)((uint16)(*(uint16 *)((uint8 *)&g_word_A29A09 + E->thbs_var_F) & 0xFF00) >> 8);
     R18_ = 0;
     if (E->thbs_var_02)
       R20_ = -R20_;
@@ -1112,7 +1112,7 @@ void ThinHoppingBlobs_Func14(void) {  // 0xA29D6B
 void ThinHoppingBlobs_Func15(void) {  // 0xA29D98
   Enemy_ThinHoppingBlobs *E = Get_ThinHoppingBlobs(cur_enemy_index);
   uint16 thbs_var_F = E->thbs_var_F;
-  R20_ = (uint8)((uint16)(*(uint16 *)((char *)&g_word_A29A0B + thbs_var_F) & 0xFF00) >> 8);
+  R20_ = (uint8)((uint16)(*(uint16 *)((uint8 *)&g_word_A29A0B + thbs_var_F) & 0xFF00) >> 8);
   R18_ = *((uint8 *)&g_word_A29A0B + thbs_var_F) << 8;
   if (Enemy_MoveDown(cur_enemy_index) & 1) {
     ThinHoppingBlobs_Func4();

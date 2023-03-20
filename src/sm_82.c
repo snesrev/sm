@@ -500,9 +500,9 @@ CoroutineRet GameState_43_TransitionFromDemo(void) {  // 0x828593
   DisablePaletteFx();
   ClearPaletteFXObjects();
   for (int i = 656; i >= 0; i -= 2)
-    *(uint16 *)((char *)&enemy_projectile_enable_flag + i) = 0;
+    *(uint16 *)((uint8 *)&enemy_projectile_enable_flag + i) = 0;
   for (int j = 538; j >= 0; j -= 2)
-    *(uint16 *)((char *)&hud_item_tilemap_palette_bits + j) = 0;
+    *(uint16 *)((uint8 *)&hud_item_tilemap_palette_bits + j) = 0;
   next_gameplay_CGWSEL = 0;
   next_gameplay_CGADSUB = 0;
   reg_TM = 16;
@@ -1588,7 +1588,7 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
   if (!sign16(area_index - 7))
     v0 = 0;
   R18_ = v0;
-  R0_.addr = *(VoidP *)((char *)&kPauseMenuMapTilemaps[0].addr + (uint16)(3 * v0));
+  R0_.addr = *(VoidP *)((uint8 *)&kPauseMenuMapTilemaps[0].addr + (uint16)(3 * v0));
   *(uint16 *)&R0_.bank = *(uint16 *)(&kPauseMenuMapTilemaps[0].bank + (uint16)(3 * v0));
   R3_.addr = ADDR16_OF_RAM(ram4000);
   *(uint16 *)&R3_.bank = 126;
@@ -1664,7 +1664,7 @@ void DrawRoomSelectMap(void) {  // 0x829517
   if (!sign16(area_index - 7))
     v0 = 0;
   R18_ = v0;
-  R0_.addr = *(VoidP *)((char *)&kPauseMenuMapTilemaps[0].addr + (uint16)(3 * v0));
+  R0_.addr = *(VoidP *)((uint8 *)&kPauseMenuMapTilemaps[0].addr + (uint16)(3 * v0));
   *(uint16 *)&R0_.bank = *(uint16 *)(&kPauseMenuMapTilemaps[0].bank + (uint16)(3 * v0));
   R3_.addr = ADDR16_OF_RAM(ram3000);
   R3_.bank = 126;
@@ -2909,7 +2909,7 @@ void WriteSamusWireframeTilemap(void) {  // 0x82B20C
     uint16 v3 = v2;
     R18_ = 8;
     do {
-      *(uint16 *)((char *)ram3800.cinematic_bg_tilemap + v2) = IndirReadWord(R0_, v1);
+      *(uint16 *)((uint8 *)ram3800.cinematic_bg_tilemap + v2) = IndirReadWord(R0_, v1);
       v2 += 2;
       v1 += 2;
       --R18_;
@@ -3202,7 +3202,7 @@ void DrawFileSelectMapIcons(void) {  // 0x82B6DD
   R3_.addr = 3584;
   uint16 a = UpdateSamusPositionIndicatorAnimation();
   *(uint16 *)&R0_.bank = 130;
-  R0_.addr = *(VoidP *)((char *)&kMapIconDataPointers[4].crateria + (uint16)(2 * area_index));
+  R0_.addr = *(VoidP *)((uint8 *)&kMapIconDataPointers[4].crateria + (uint16)(2 * area_index));
   v0 = 4 * load_station_index;
   uint16 v1 = IndirReadWord(R0_, 4 * load_station_index) - reg_BG1HOFS;
   uint16 v2 = IndirReadWord(R0_, v0 + 2) - reg_BG1VOFS;
@@ -3261,7 +3261,7 @@ void DrawSimpleMapIcons(uint16 a, uint16 k) {  // 0x82B805
 }
 
 void DrawMapIconsOfType(uint16 a) {  // 0x82B81C
-  char v3; // cf
+  int8 v3; // cf
   int16 v4;
 
   while (1) {
@@ -4272,7 +4272,7 @@ CoroutineRet DoorTransitionFunction_LoadMoreThings_Async(void) {
   ResetProjectileData();
   Samus_LoadSuitTargetPalette();
   ClearFxTilemap();
-  *(VoidP *)((char *)&door_transition_vram_update_src.addr + 1) = -30208;
+  *(VoidP *)((uint8 *)&door_transition_vram_update_src.addr + 1) = -30208;
   if (fx_tilemap_ptr) {
     door_transition_vram_update_src.addr = fx_tilemap_ptr;
     door_transition_vram_update_dst = addr_unk_605BE0;
@@ -4469,10 +4469,10 @@ void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
   RoomDefRoomstate *RoomDefRoomstate;
   int16 rdf_scroll_ptr;
   uint16 m;
-  char v10;
-  char v11;
+  int8 v10;
+  int8 v11;
   uint16 n;
-  char v14;
+  int8 v14;
 
   for (int i = 25598; i >= 0; i -= 2)
     level_data[i >> 1] = 0x8000;
@@ -4618,11 +4618,11 @@ uint16 LoadLibraryBackgroundFunc_E_DoorDependentTransferToVram(uint16 j) {  // 0
 
 uint16 LoadLibraryBackgroundFunc_2_TransferToVram(uint16 j) {  // 0x82E9F9
   uint16 *LoadBg_28 = (uint16 *)RomPtr_8F(j);
-  WriteRegWord(VMADDL, *(uint16 *)((char *)LoadBg_28 + 3));
+  WriteRegWord(VMADDL, *(uint16 *)((uint8 *)LoadBg_28 + 3));
   WriteRegWord(DMAP1, 0x1801);
   WriteRegWord(A1T1L, *LoadBg_28);
   WriteRegWord(A1B1, LoadBg_28[1]);
-  WriteRegWord(DAS1L, *(uint16 *)((char *)LoadBg_28 + 5));
+  WriteRegWord(DAS1L, *(uint16 *)((uint8 *)LoadBg_28 + 5));
   WriteReg(VMAIN, 0x80);
   WriteReg(MDMAEN, 2u);
   return j + 7;
@@ -4662,9 +4662,9 @@ void LoadLevelScrollAndCre(void) {  // 0x82EA73
   RoomDefRoomstate *RoomDefRoomstate;
   int16 rdf_scroll_ptr;
   uint16 m;
-  char v10;
-  char v11;
-  char v12;
+  int8 v10;
+  int8 v11;
+  int8 v12;
 
 
   for (int i = 6398; i >= 0; i -= 2) {
@@ -4839,7 +4839,7 @@ void OptionsMenu_AddToVramQueue(void) {  // 0x82ECFF
 void OptionsMenuFunc5(uint16 a, uint16 k, uint16 j) {  // 0x82ED28
   R18_ = a;
   do {
-    *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + k) = R18_ | *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap
+    *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap + k) = R18_ | *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap
                                                                                  + k) & 0xE3FF;
     k += 2;
     j -= 2;
@@ -5357,12 +5357,12 @@ void OptionsMenuFunc6(void) {
     int v1 = v0 >> 1;
     uint16 v2 = g_word_82F639[v1];
     const uint16 *v3 = (const uint16 *)RomPtr_82(g_off_82F647[(uint16)(2 * enemy_projectile_F[v1 + 13]) >> 1]);
-    *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + v2) = *v3;
-    *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[1] + v2) = v3[1];
-    *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[2] + v2) = v3[2];
-    *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[32] + v2) = v3[3];
-    *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[33] + v2) = v3[4];
-    *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[34] + v2) = v3[5];
+    *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap + v2) = *v3;
+    *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[1] + v2) = v3[1];
+    *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[2] + v2) = v3[2];
+    *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[32] + v2) = v3[3];
+    *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[33] + v2) = v3[4];
+    *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[34] + v2) = v3[5];
     v0 = v4 + 2;
   } while ((int16)(v4 - 12) < 0);
   if (enemy_projectile_instr_list_ptr[0] != 5 && enemy_projectile_instr_list_ptr[0] != 6) {

@@ -425,14 +425,14 @@ void QueueMode7Transfers(uint8 db, uint16 k) {  // 0x808B4F
     int f = GET_BYTE(p);
     if (f & 0x80) {
       *(uint16 *)(&mode7_write_queue[0].field_0 + v2) = GET_WORD(p);
-      *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v2 + 1) = GET_WORD(p + 2);
+      *(uint16 *)((uint8 *)&mode7_write_queue[0].field_1 + v2 + 1) = GET_WORD(p + 2);
       *(uint16 *)&mode7_write_queue[0].gap3[v2 + 1] = GET_WORD(p + 4);
       *(uint16 *)&mode7_write_queue[0].gap3[v2 + 3] = GET_WORD(p + 6);
-      *(uint16 *)((char *)&mode7_write_queue[1].field_1 + v2) = p[8];
+      *(uint16 *)((uint8 *)&mode7_write_queue[1].field_1 + v2) = p[8];
       p += 9, v2 += 9;
     } else if (f & 0x40) {
       *(uint16 *)(&mode7_write_queue[0].field_0 + v2) = GET_WORD(p);
-      *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v2 + 1) = GET_WORD(p + 2);
+      *(uint16 *)((uint8 *)&mode7_write_queue[0].field_1 + v2 + 1) = GET_WORD(p + 2);
       *(uint16 *)&mode7_write_queue[0].gap3[v2 + 1] = GET_WORD(p + 4);
       *(uint16 *)&mode7_write_queue[0].gap3[v2 + 3] = p[6];
       p += 7, v2 += 7;
@@ -632,7 +632,7 @@ void NMI_ProcessVramReadQueue(void) {  // 0x808EA2
       ReadRegWord(RDVRAML);
       WriteRegWord(DMAP1, vram_read_queue[v0].dma_parameters);
       WriteRegWord(A1T1L, vram_read_queue[v0].src.addr);
-      WriteRegWord(A1T1H, *(VoidP *)((char *)&vram_read_queue[v0].src.addr + 1));
+      WriteRegWord(A1T1H, *(VoidP *)((uint8 *)&vram_read_queue[v0].src.addr + 1));
       WriteRegWord(DAS1L, vram_read_queue[v0].size);
       WriteRegWord(DAS10, 0);
       WriteRegWord(A2A1H, 0);
@@ -661,7 +661,7 @@ void HandleMusicQueue(void) {  // 0x808F0C
     if ((music_entry & 0x8000u) != 0) {
       music_data_index = (uint8)music_entry;
       cur_music_track = -1;
-      copy24(&R0_, (LongPtr *)((char *)&kMusicPointers + (uint8)music_entry));
+      copy24(&R0_, (LongPtr *)((uint8 *)&kMusicPointers + (uint8)music_entry));
       APU_UploadBank();
       cur_music_track = 0;
       int v5 = music_queue_read_pos;
@@ -691,7 +691,7 @@ void HandleMusicQueue(void) {  // 0x808F0C
 }
 
 void QueueMusic_Delayed8(uint16 a) {  // 0x808FC1
-  char v1;
+  int8 v1;
 
   if (game_state < kGameState_40_TransitionToDemo && (((uint8)music_queue_write_pos + 2) & 0xE) != music_queue_read_pos) {
     v1 = music_queue_write_pos;
@@ -1614,7 +1614,7 @@ void DrawTimer(void) {  // 0x809F6C
 
 
 void DrawTwoTimerDigits(uint16 a, uint16 k) {  // 0x809F95
-  char v2;
+  int8 v2;
 
   v2 = a;
   DrawTimerSpritemap(k, kTimerDigitsSpritemapPtr[(uint16)((uint8)(a & 0xF0) >> 3) >> 1]);
@@ -1729,7 +1729,7 @@ void DisplayViewablePartOfRoom(void) {  // 0x80A176
 
 void QueueClearingOfFxTilemap(void) {  // 0x80A211
   for (int i = 3838; i >= 0; i -= 2)
-    *(uint16 *)((char *)ram4000.xray_tilemaps + (uint16)i) = 6222;
+    *(uint16 *)((uint8 *)ram4000.xray_tilemaps + (uint16)i) = 6222;
   uint16 v1 = vram_write_queue_tail;
   VramWriteEntry *v2 = gVramWriteEntry(vram_write_queue_tail);
   v2->size = 3840;
@@ -2145,8 +2145,8 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
     copywithflip_src.addr = v2;
     copywithflip_src.bank = 127;
     uint16 v3 = (4 * (uint8)vram_blocks_to_update_y_block) & 0x3C;
-    *(uint16 *)((char *)&bg1_update_col_wrapped_size + k) = v3;
-    *(uint16 *)((char *)&bg1_update_col_unwrapped_size + k) = (v3 ^ 0x3F) + 1;
+    *(uint16 *)((uint8 *)&bg1_update_col_wrapped_size + k) = v3;
+    *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_size + k) = (v3 ^ 0x3F) + 1;
     prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40);
     x_block_of_vram_blocks_to_update = vram_blocks_to_update_x_block & 0x1F;
     uint16 v4 = 2 * x_block_of_vram_blocks_to_update;
@@ -2157,8 +2157,8 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
     if (k)
       v5 -= size_of_bg2;
     tmp_vram_base_addr = v5;
-    *(uint16 *)((char *)&bg1_update_col_unwrapped_dst + k) = temp933 + v5;
-    *(uint16 *)((char *)&bg1_update_col_wrapped_dst + k) = x_block_of_vram_blocks_to_update
+    *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_dst + k) = temp933 + v5;
+    *(uint16 *)((uint8 *)&bg1_update_col_wrapped_dst + k) = x_block_of_vram_blocks_to_update
       + x_block_of_vram_blocks_to_update
       + tmp_vram_base_addr;
     uint16 v6 = ADDR16_OF_RAM(*bg1_column_update_tilemap_left_halves);
@@ -2167,9 +2167,9 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
       v6 = ADDR16_OF_RAM(*bg2_column_update_tilemap_left_halves);
       v7 = 264;
     }
-    uint16 v8 = *(uint16 *)((char *)&bg1_update_col_unwrapped_size + k) + v6;
-    *(uint16 *)((char *)&bg1_update_col_wrapped_left_src + k) = v8;
-    *(uint16 *)((char *)&bg1_update_col_wrapped_right_src + k) = v8 + 64;
+    uint16 v8 = *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_size + k) + v6;
+    *(uint16 *)((uint8 *)&bg1_update_col_wrapped_left_src + k) = v8;
+    *(uint16 *)((uint8 *)&bg1_update_col_wrapped_right_src + k) = v8 + 64;
     tmp_vram_base_addr = v7;
     uint16 t2 = k;
     uint16 v9 = 0;
@@ -2214,7 +2214,7 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
       v9 = room_width_in_blocks * 2 + v17;
       --loopcounter;
     } while (loopcounter);
-    ++ *(uint16 *)((char *)&bg1_update_col_enable + t2);
+    ++ *(uint16 *)((uint8 *)&bg1_update_col_enable + t2);
   }
 }
 
@@ -2236,8 +2236,8 @@ void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
     copywithflip_src.addr = v2;
     copywithflip_src.bank = 127;
     temp933 = vram_blocks_to_update_x_block & 0xF;
-    *(uint16 *)((char *)&bg1_update_row_unwrapped_size + v0) = 4 * (16 - temp933);
-    *(uint16 *)((char *)&bg1_update_row_wrapped_size + v0) = 4 * (temp933 + 1);
+    *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_size + v0) = 4 * (16 - temp933);
+    *(uint16 *)((uint8 *)&bg1_update_row_wrapped_size + v0) = 4 * (temp933 + 1);
     prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40);
     x_block_of_vram_blocks_to_update = vram_blocks_to_update_x_block & 0x1F;
     uint16 v3 = 2 * x_block_of_vram_blocks_to_update;
@@ -2250,20 +2250,20 @@ void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
     }
     if (v0)
       v4 -= size_of_bg2;
-    *(uint16 *)((char *)&bg1_update_row_unwrapped_dst + v0) = temp933 + v4;
+    *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_dst + v0) = temp933 + v4;
     uint16 v5 = tmp_vram_base_addr;
     if (v0)
       v5 = tmp_vram_base_addr - size_of_bg2;
-    *(uint16 *)((char *)&bg1_update_row_wrapped_dst + v0) = prod + v5;
+    *(uint16 *)((uint8 *)&bg1_update_row_wrapped_dst + v0) = prod + v5;
     uint16 v6 = ADDR16_OF_RAM(*bg1_column_update_tilemap_top_halves);
     uint16 v7 = 0;
     if (v0) {
       v6 = ADDR16_OF_RAM(*bg2_column_update_tilemap_top_halves);
       v7 = 264;
     }
-    uint16 v8 = *(uint16 *)((char *)&bg1_update_row_unwrapped_size + v0) + v6;
-    *(uint16 *)((char *)&bg1_update_row_wrapped_top_src + v0) = v8;
-    *(uint16 *)((char *)&bg1_update_row_wrapped_bottom_src + v0) = v8 + 68;
+    uint16 v8 = *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_size + v0) + v6;
+    *(uint16 *)((uint8 *)&bg1_update_row_wrapped_top_src + v0) = v8;
+    *(uint16 *)((uint8 *)&bg1_update_row_wrapped_bottom_src + v0) = v8 + 68;
     tmp_vram_base_addr = v7;
     uint16 t2 = v0;
     uint16 v9 = 0;
@@ -2308,7 +2308,7 @@ void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
       v9 = v17 + 2;
       --loopcounter;
     } while (loopcounter);
-    ++ *(uint16 *)((char *)&bg1_update_row_enable + t2);
+    ++ *(uint16 *)((uint8 *)&bg1_update_row_enable + t2);
   }
 }
 

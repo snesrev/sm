@@ -88,7 +88,7 @@ void InitializePpuForMessageBoxes(void) {  // 0x858143
   WriteReg(BG3VOFS, 0);
   WriteReg(BG3VOFS, 0);
   for (int i = 128; i >= 0; i -= 2)
-    *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + (uint16)i) = 0;
+    *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap + (uint16)i) = 0;
   WriteRegWord(VMADDL, addr_unk_605880);
   ReadRegWord(RDVRAML);
   WriteRegWord(DMAP1, 0x3981);
@@ -105,7 +105,7 @@ void ClearMessageBoxBg3Tilemap(void) {  // 0x8581F3
   int16 v0;
   v0 = 1790;
   do {
-    *(uint16 *)((char *)ram3800.cinematic_bg_tilemap + (uint16)v0) = 0xe;
+    *(uint16 *)((uint8 *)ram3800.cinematic_bg_tilemap + (uint16)v0) = 0xe;
     v0 -= 2;
   } while (v0 >= 0);
   WriteRegWord(VMADDL, addr_unk_605880);
@@ -185,8 +185,8 @@ uint16 WriteMessageTilemap(void) {  // 0x8582B8
   for (int i = 0; i != 112; ++i)
     ram3000.pause_menu_map_tilemap[i] = 0;
   bg3_tilemap_offset = 2 * (message_box_index - 1);
-  R0_.addr = *(VoidP *)((char *)&kMessageBoxDefs[0].message_tilemap + (uint16)(6 * (message_box_index - 1)));
-  R9_.addr = *(VoidP *)((char *)&kMessageBoxDefs[1].message_tilemap
+  R0_.addr = *(VoidP *)((uint8 *)&kMessageBoxDefs[0].message_tilemap + (uint16)(6 * (message_box_index - 1)));
+  R9_.addr = *(VoidP *)((uint8 *)&kMessageBoxDefs[1].message_tilemap
                                              + (uint16)(6 * (message_box_index - 1)))
     - R0_.addr;
   R22_ = R9_.addr >> 1;
@@ -296,7 +296,7 @@ void DrawSpecialButtonAndSetupPpuForLargeMessageBox(uint16 a) {
       }
     }
   }
-  *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[256]
+  *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[256]
               + kMsgBoxSpecialButtonTilemapOffs[message_box_index - 1]) = kTileNumbersForButtonLetters[v1 >> 1];
   bg3_tilemap_offset = 416;
   SetupPpuForActiveMessageBox();
@@ -410,7 +410,7 @@ void MsgBoxMakeHdmaTable(void) {
   } while (R20_);
   uint16 v2 = v1 * 2;
   do {
-    *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + v2) = 0;
+    *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap + v2) = 0;
     v2 += 2;
   } while ((int16)(v2 - 480) < 0);
 }

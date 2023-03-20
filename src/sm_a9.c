@@ -491,7 +491,7 @@ void MotherBrainBody_0_Wait(void) {  // 0xA98949
   uint16 v0 = 0;
   v1 = 0;
   do {
-    if (!*(uint16 *)((char *)enemy_projectile_id + v0))
+    if (!*(uint16 *)((uint8 *)enemy_projectile_id + v0))
       ++v1;
     v0 += 2;
   } while ((int16)(v0 - 36) < 0);
@@ -2037,7 +2037,7 @@ void MotherBrain_ExplodeEscapeDoor(void) {  // 0xA9B3A3
 }
 
 void MotherBrain_SamusCollDetect(void) {  // 0xA9B3B6
-  char v1; // cf
+  int8 v1; // cf
 
   Enemy_MotherBrain *E0 = Get_MotherBrain(0);
   R26_ = E0->mbn_var_04;
@@ -2818,7 +2818,7 @@ void MotherBrain_HandleRainbowBeamPalette(void) {  // 0xA9BCFD
     } while (!mbn_var_01);
     uint16 v2 = v1 + 2;
     Get_MotherBrain(0x40)->mbn_var_01 = v2;
-    MotherBrain_WritePalette(*(uint16 *)((char *)MotherBrain_RainbowBeamPalettes + v2 - 2));
+    MotherBrain_WritePalette(*(uint16 *)((uint8 *)MotherBrain_RainbowBeamPalettes + v2 - 2));
   }
 }
 
@@ -3523,7 +3523,7 @@ uint8 ProcessSpriteTilesTransfers(uint8 db, uint16 k) {  // 0xA9C5BE
   if (GET_WORD(v5)) {
     v7 = gVramWriteEntry(vram_write_queue_tail);
     v7->size = v6;
-    *(VoidP *)((char *)&v7->src.addr + 1) = GET_WORD(v5 + 3);
+    *(VoidP *)((uint8 *)&v7->src.addr + 1) = GET_WORD(v5 + 3);
     v7->src.addr = GET_WORD(v5 + 2);
     v7->vram_dst = GET_WORD(v5 + 5);
     vram_write_queue_tail = v4 + 7;
@@ -4385,8 +4385,8 @@ void MotherBrain_SetupBrainPalForLaser(void) {  // 0xA9D1FF
 }
 
 void MotherBrain_HandleBrainPal(void) {  // 0xA9D206
-  char mbn_var_D_high;
-  char mbn_var_D;
+  int8 mbn_var_D_high;
+  int8 mbn_var_D;
 
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   if (E->mbn_var_00 != 1) {
@@ -4583,7 +4583,7 @@ void DeadTorizo_Func_1(void) {  // 0xA9D4CF
       v10 = gVramWriteEntry(v3);
       v10->size = v9;
       int v11 = v8 >> 1;
-      *(VoidP *)((char *)&v10->src.addr + 1) = g_word_A9D583[v11 + 1];
+      *(VoidP *)((uint8 *)&v10->src.addr + 1) = g_word_A9D583[v11 + 1];
       v10->src.addr = g_word_A9D583[v11 + 2];
       v10->vram_dst = g_word_A9D583[v11 + 3];
       v3 += 7;
@@ -4597,7 +4597,7 @@ void DeadTorizo_Func_1(void) {  // 0xA9D4CF
       v5 = gVramWriteEntry(v3);
       v5->size = v4;
       int v6 = v2 >> 1;
-      *(VoidP *)((char *)&v5->src.addr + 1) = g_word_A9D549[v6 + 1];
+      *(VoidP *)((uint8 *)&v5->src.addr + 1) = g_word_A9D549[v6 + 1];
       v5->src.addr = g_word_A9D549[v6 + 2];
       v5->vram_dst = g_word_A9D549[v6 + 3];
       v3 += 7;
@@ -5059,7 +5059,7 @@ void ProcessCorpseRottingVramTransfers(uint16 k) {  // 0xA9DCB9
   do {
     VramWriteEntry *v3 = gVramWriteEntry(v1);
     v3->size = v2;
-    *(VoidP *)((char *)&v3->src.addr + 1) = *((uint16 *)p + 1);
+    *(VoidP *)((uint8 *)&v3->src.addr + 1) = *((uint16 *)p + 1);
     v3->src.addr = *((uint16 *)p + 2);
     v3->vram_dst = *((uint16 *)p + 3);
     v1 += 7;
@@ -5902,86 +5902,86 @@ void MotherBrain_CorpseRottingMoveFunc(uint16 j, uint16 k) {  // 0xA9EA40
   Enemy_DeadMonsters *E = Get_DeadMonsters(0);
   if (E->dms_var_41 >= 0x10) {
     if (sign16(E->dms_var_41 - 46)) {
-      *(uint16 *)((char *)&g_word_7E9002 + j) = *(uint16 *)((char *)&kraid_unk9000 + k);
-      *(uint16 *)((char *)&g_word_7E9012 + j) = *(uint16 *)((char *)&g_word_7E900F + k + 1);
+      *(uint16 *)((uint8 *)&g_word_7E9002 + j) = *(uint16 *)((uint8 *)&kraid_unk9000 + k);
+      *(uint16 *)((uint8 *)&g_word_7E9012 + j) = *(uint16 *)((uint8 *)&g_word_7E900F + k + 1);
     }
-    *(uint16 *)((char *)&kraid_unk9000 + k) = 0;
-    *(uint16 *)((char *)&g_word_7E900F + k + 1) = 0;
+    *(uint16 *)((uint8 *)&kraid_unk9000 + k) = 0;
+    *(uint16 *)((uint8 *)&g_word_7E900F + k + 1) = 0;
   }
   if (E->dms_var_41 >= 8u) {
     if (sign16(E->dms_var_41 - 46)) {
-      *(uint16 *)((char *)&g_word_7E9022 + j) = *(uint16 *)((char *)&g_word_7E9020 + k);
-      *(uint16 *)((char *)&g_word_7E9032 + j) = *(uint16 *)((char *)&g_word_7E9030 + k);
+      *(uint16 *)((uint8 *)&g_word_7E9022 + j) = *(uint16 *)((uint8 *)&g_word_7E9020 + k);
+      *(uint16 *)((uint8 *)&g_word_7E9032 + j) = *(uint16 *)((uint8 *)&g_word_7E9030 + k);
     }
-    *(uint16 *)((char *)&g_word_7E9020 + k) = 0;
-    *(uint16 *)((char *)&g_word_7E9030 + k) = 0;
+    *(uint16 *)((uint8 *)&g_word_7E9020 + k) = 0;
+    *(uint16 *)((uint8 *)&g_word_7E9030 + k) = 0;
   }
   if (sign16(E->dms_var_41 - 46)) {
-    *(uint16 *)((char *)&g_word_7E9042 + j) = *(uint16 *)((char *)&g_word_7E9040 + k);
-    *(uint16 *)((char *)&g_word_7E9052 + j) = *(uint16 *)((char *)&g_word_7E9050 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9042 + j) = *(uint16 *)((uint8 *)&g_word_7E9040 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9052 + j) = *(uint16 *)((uint8 *)&g_word_7E9050 + k);
   }
-  *(uint16 *)((char *)&g_word_7E9040 + k) = 0;
-  *(uint16 *)((char *)&g_word_7E9050 + k) = 0;
+  *(uint16 *)((uint8 *)&g_word_7E9040 + k) = 0;
+  *(uint16 *)((uint8 *)&g_word_7E9050 + k) = 0;
   if (sign16(E->dms_var_41 - 46)) {
-    *(uint16 *)((char *)&g_word_7E9062 + j) = *(uint16 *)((char *)&g_word_7E9060 + k);
-    *(uint16 *)((char *)&g_word_7E9072 + j) = *(uint16 *)((char *)&g_word_7E9070 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9062 + j) = *(uint16 *)((uint8 *)&g_word_7E9060 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9072 + j) = *(uint16 *)((uint8 *)&g_word_7E9070 + k);
   }
-  *(uint16 *)((char *)&g_word_7E9060 + k) = 0;
-  *(uint16 *)((char *)&g_word_7E9070 + k) = 0;
+  *(uint16 *)((uint8 *)&g_word_7E9060 + k) = 0;
+  *(uint16 *)((uint8 *)&g_word_7E9070 + k) = 0;
   if (sign16(E->dms_var_41 - 46)) {
-    *(uint16 *)((char *)&g_word_7E9082 + j) = *(uint16 *)((char *)&g_word_7E9080 + k);
-    *(uint16 *)((char *)&g_word_7E9092 + j) = *(uint16 *)((char *)&g_word_7E9090 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9082 + j) = *(uint16 *)((uint8 *)&g_word_7E9080 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9092 + j) = *(uint16 *)((uint8 *)&g_word_7E9090 + k);
   }
-  *(uint16 *)((char *)&g_word_7E9080 + k) = 0;
-  *(uint16 *)((char *)&g_word_7E9090 + k) = 0;
+  *(uint16 *)((uint8 *)&g_word_7E9080 + k) = 0;
+  *(uint16 *)((uint8 *)&g_word_7E9090 + k) = 0;
   if (E->dms_var_41 >= 8u) {
     if (sign16(E->dms_var_41 - 46)) {
-      *(uint16 *)((char *)&g_word_7E90A2 + j) = *(uint16 *)((char *)&g_word_7E90A0 + k);
-      *(uint16 *)((char *)&g_word_7E90B2 + j) = *(uint16 *)((char *)&g_word_7E90B0 + k);
+      *(uint16 *)((uint8 *)&g_word_7E90A2 + j) = *(uint16 *)((uint8 *)&g_word_7E90A0 + k);
+      *(uint16 *)((uint8 *)&g_word_7E90B2 + j) = *(uint16 *)((uint8 *)&g_word_7E90B0 + k);
     }
-    *(uint16 *)((char *)&g_word_7E90A0 + k) = 0;
-    *(uint16 *)((char *)&g_word_7E90B0 + k) = 0;
+    *(uint16 *)((uint8 *)&g_word_7E90A0 + k) = 0;
+    *(uint16 *)((uint8 *)&g_word_7E90B0 + k) = 0;
   }
   if (E->dms_var_41 >= 0x20) {
     if (sign16(E->dms_var_41 - 46)) {
-      *(uint16 *)((char *)&g_word_7E90C2 + j) = *(uint16 *)((char *)&g_word_7E90C0 + k);
-      *(uint16 *)((char *)&g_word_7E90D2 + j) = *(uint16 *)((char *)&g_word_7E90D0 + k);
+      *(uint16 *)((uint8 *)&g_word_7E90C2 + j) = *(uint16 *)((uint8 *)&g_word_7E90C0 + k);
+      *(uint16 *)((uint8 *)&g_word_7E90D2 + j) = *(uint16 *)((uint8 *)&g_word_7E90D0 + k);
     }
-    *(uint16 *)((char *)&g_word_7E90C0 + k) = 0;
-    *(uint16 *)((char *)&g_word_7E90D0 + k) = 0;
+    *(uint16 *)((uint8 *)&g_word_7E90C0 + k) = 0;
+    *(uint16 *)((uint8 *)&g_word_7E90D0 + k) = 0;
   }
 }
 
 void MotherBrain_CorpseRottingCopyFunc(uint16 j, uint16 k) {  // 0xA9EB0B
   Enemy_DeadMonsters *E = Get_DeadMonsters(0);
   if (E->dms_var_41 >= 0x10u && sign16(E->dms_var_41 - 46)) {
-    *(uint16 *)((char *)&g_word_7E9002 + j) = *(uint16 *)((char *)&kraid_unk9000 + k);
-    *(uint16 *)((char *)&g_word_7E9012 + j) = *(uint16 *)((char *)&g_word_7E900F + k + 1);
+    *(uint16 *)((uint8 *)&g_word_7E9002 + j) = *(uint16 *)((uint8 *)&kraid_unk9000 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9012 + j) = *(uint16 *)((uint8 *)&g_word_7E900F + k + 1);
   }
   if (E->dms_var_41 >= 8u && sign16(E->dms_var_41 - 46)) {
-    *(uint16 *)((char *)&g_word_7E9022 + j) = *(uint16 *)((char *)&g_word_7E9020 + k);
-    *(uint16 *)((char *)&g_word_7E9032 + j) = *(uint16 *)((char *)&g_word_7E9030 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9022 + j) = *(uint16 *)((uint8 *)&g_word_7E9020 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9032 + j) = *(uint16 *)((uint8 *)&g_word_7E9030 + k);
   }
   if (sign16(E->dms_var_41 - 46)) {
-    *(uint16 *)((char *)&g_word_7E9042 + j) = *(uint16 *)((char *)&g_word_7E9040 + k);
-    *(uint16 *)((char *)&g_word_7E9052 + j) = *(uint16 *)((char *)&g_word_7E9050 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9042 + j) = *(uint16 *)((uint8 *)&g_word_7E9040 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9052 + j) = *(uint16 *)((uint8 *)&g_word_7E9050 + k);
   }
   if (sign16(E->dms_var_41 - 46)) {
-    *(uint16 *)((char *)&g_word_7E9062 + j) = *(uint16 *)((char *)&g_word_7E9060 + k);
-    *(uint16 *)((char *)&g_word_7E9072 + j) = *(uint16 *)((char *)&g_word_7E9070 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9062 + j) = *(uint16 *)((uint8 *)&g_word_7E9060 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9072 + j) = *(uint16 *)((uint8 *)&g_word_7E9070 + k);
   }
   if (sign16(E->dms_var_41 - 46)) {
-    *(uint16 *)((char *)&g_word_7E9082 + j) = *(uint16 *)((char *)&g_word_7E9080 + k);
-    *(uint16 *)((char *)&g_word_7E9092 + j) = *(uint16 *)((char *)&g_word_7E9090 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9082 + j) = *(uint16 *)((uint8 *)&g_word_7E9080 + k);
+    *(uint16 *)((uint8 *)&g_word_7E9092 + j) = *(uint16 *)((uint8 *)&g_word_7E9090 + k);
   }
   if (E->dms_var_41 >= 8u && sign16(E->dms_var_41 - 46)) {
-    *(uint16 *)((char *)&g_word_7E90A2 + j) = *(uint16 *)((char *)&g_word_7E90A0 + k);
-    *(uint16 *)((char *)&g_word_7E90B2 + j) = *(uint16 *)((char *)&g_word_7E90B0 + k);
+    *(uint16 *)((uint8 *)&g_word_7E90A2 + j) = *(uint16 *)((uint8 *)&g_word_7E90A0 + k);
+    *(uint16 *)((uint8 *)&g_word_7E90B2 + j) = *(uint16 *)((uint8 *)&g_word_7E90B0 + k);
   }
   if (E->dms_var_41 >= 0x20) {
     if (sign16(E->dms_var_41 - 46)) {
-      *(uint16 *)((char *)&g_word_7E90C2 + j) = *(uint16 *)((char *)&g_word_7E90C0 + k);
-      *(uint16 *)((char *)&g_word_7E90D2 + j) = *(uint16 *)((char *)&g_word_7E90D0 + k);
+      *(uint16 *)((uint8 *)&g_word_7E90C2 + j) = *(uint16 *)((uint8 *)&g_word_7E90C0 + k);
+      *(uint16 *)((uint8 *)&g_word_7E90D2 + j) = *(uint16 *)((uint8 *)&g_word_7E90D0 + k);
     }
   }
 }
@@ -6476,7 +6476,7 @@ void Shitroid_GraduallyAccelerateTowardsPt(uint16 k, uint16 j) {  // 0xA9F46B
 void Shitroid_GraduallyAccelerateHoriz(uint16 k) {  // 0xA9F4E6
   int16 v2;
   int16 v4;
-  char v5; // cf
+  int8 v5; // cf
   int16 v7;
   int16 shitr_var_B;
   int16 v11;
@@ -6633,7 +6633,7 @@ void Shitroid_HandleCutscenePalette_LowHealth(void) {  // 0xA9F68F
 }
 
 void Shitroid_HandleCutscenePalette_Common(void) {  // 0xA9F699
-  char shitro_var_D_high;
+  int8 shitro_var_D_high;
 
   Enemy_Shitroid *E = Get_Shitroid(cur_enemy_index);
   shitro_var_D_high = HIBYTE(E->shitr_var_D);

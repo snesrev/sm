@@ -2162,12 +2162,12 @@ LABEL_10:
     if (samus_y_dir != 2)
       goto LABEL_24;
     if (liquid_physics_type) {
-      if ((int16)(*(uint16 *)((char *)&samus_y_subspeed + 1) - kSamusPhys_JumpMinYVelWater) < 0
-          || (int16)(*(uint16 *)((char *)&samus_y_subspeed + 1) - kSamusPhys_JumpMaxYVelWater) >= 0) {
+      if ((int16)(*(uint16 *)((uint8 *)&samus_y_subspeed + 1) - kSamusPhys_JumpMinYVelWater) < 0
+          || (int16)(*(uint16 *)((uint8 *)&samus_y_subspeed + 1) - kSamusPhys_JumpMaxYVelWater) >= 0) {
         goto LABEL_24;
       }
-    } else if ((int16)(*(uint16 *)((char *)&samus_y_subspeed + 1) - kSamusPhys_JumpMinYVelAir) < 0
-               || (int16)(*(uint16 *)((char *)&samus_y_subspeed + 1) - kSamusPhys_JumpMaxYVelAir) >= 0) {
+    } else if ((int16)(*(uint16 *)((uint8 *)&samus_y_subspeed + 1) - kSamusPhys_JumpMinYVelAir) < 0
+               || (int16)(*(uint16 *)((uint8 *)&samus_y_subspeed + 1) - kSamusPhys_JumpMaxYVelAir) >= 0) {
       goto LABEL_24;
     }
     UNUSED_word_7E0DFA = UNUSED_word_7E0DFA & 0xFF00 | 1;
@@ -2516,7 +2516,7 @@ void UpdateMinimap(void) {  // 0x90A91B
     R28_ = kShr0xFc00[v6] & swap16(*(uint16 *)&map_tiles_explored[v3 + 8]);
     R9_.bank = 130;
     R9_.addr = kPauseMenuMapData[area_index];
-    *(uint16 *)((char *)&R14_ + 1) = R9_.addr;
+    *(uint16 *)((uint8 *)&R14_ + 1) = R9_.addr;
     R9_.addr += v3;
     R38 = swap16(IndirReadWord(R9_, 0));
     R9_.addr += 4;
@@ -2562,10 +2562,10 @@ void UpdateMinimapInside(void) {  // 0x90AA43
   else
     v1 = remaining_enemy_spritemap_entries - 34;
   uint16 v2 = 2 * v1;
-  *(uint16 *)&R0_.bank = *(uint16 *)((char *)kPauseMenuMapTilemaps + 2 + (uint16)(3 * area_index));
+  *(uint16 *)&R0_.bank = *(uint16 *)((uint8 *)kPauseMenuMapTilemaps + 2 + (uint16)(3 * area_index));
   R3_.bank = *(uint16 *)&R0_.bank;
   R6_.bank = *(uint16 *)&R0_.bank;
-  R0_.addr = *(uint16 *)((char *)kPauseMenuMapTilemaps + (uint16)(3 * area_index));
+  R0_.addr = *(uint16 *)((uint8 *)kPauseMenuMapTilemaps + (uint16)(3 * area_index));
   R3_.addr = R0_.addr + 64;
   R6_.addr = R0_.addr + 128;
   R18_ = 5;
@@ -2618,7 +2618,7 @@ void MarkMapTileAboveSamusAsExplored(void) {  // 0x90AB5F
 
 void AdjustMapBitsForMapPageSpill(void) {  // 0x90AB75
   uint16 v0 = (uint8)R48;
-  R9_.addr = *(uint16 *)((char *)&R14_ + 1) + (uint8)R48;
+  R9_.addr = *(uint16 *)((uint8 *)&R14_ + 1) + (uint8)R48;
   LOBYTE(R44) = map_tiles_explored[(uint8)R48];
   HIBYTE(R44) = IndirReadByte(R9_, 0);
   if ((uint8)R34 == 32) {
@@ -3261,7 +3261,7 @@ void InitializeProjectileSpeed(uint16 k) {  // 0x90B1F3
   case 18: {
     uint16 v3 = R18_;
     if ((uint8)projectile_init_speed_samus_moved_up)
-      R18_ = (*(uint16 *)((char *)&projectile_init_speed_samus_moved_right_fract + 1) >> 2) | 0xC000;
+      R18_ = (*(uint16 *)((uint8 *)&projectile_init_speed_samus_moved_right_fract + 1) >> 2) | 0xC000;
     else
       R18_ = 0;
     int v4 = v3 >> 1;
@@ -3272,54 +3272,54 @@ void InitializeProjectileSpeed(uint16 k) {  // 0x90B1F3
   case 2: {
     uint16 v5 = R18_;
     if ((uint8)projectile_init_speed_samus_moved_up)
-      R18_ = (*(uint16 *)((char *)&projectile_init_speed_samus_moved_right_fract + 1) >> 2) | 0xC000;
+      R18_ = (*(uint16 *)((uint8 *)&projectile_init_speed_samus_moved_right_fract + 1) >> 2) | 0xC000;
     else
       R18_ = 0;
     int v6 = v5 >> 1;
     projectile_bomb_y_speed[v6] = R18_ - R22_;
-    projectile_bomb_x_speed[v6] = *(uint16 *)((char *)&projectile_init_speed_samus_moved_left_fract + 1) + R22_;
+    projectile_bomb_x_speed[v6] = *(uint16 *)((uint8 *)&projectile_init_speed_samus_moved_left_fract + 1) + R22_;
     break;
   }
   case 4: {
     int v7 = R18_ >> 1;
     projectile_bomb_y_speed[v7] = 0;
-    projectile_bomb_x_speed[v7] = *(uint16 *)((char *)&projectile_init_speed_samus_moved_left_fract + 1) + R22_;
+    projectile_bomb_x_speed[v7] = *(uint16 *)((uint8 *)&projectile_init_speed_samus_moved_left_fract + 1) + R22_;
     break;
   }
   case 6: {
     int v8 = R18_ >> 1;
-    projectile_bomb_y_speed[v8] = *(uint16 *)((char *)&projectile_init_speed_samus_moved_up_fract + 1) + R22_;
-    projectile_bomb_x_speed[v8] = *(uint16 *)((char *)&projectile_init_speed_samus_moved_left_fract + 1) + R22_;
+    projectile_bomb_y_speed[v8] = *(uint16 *)((uint8 *)&projectile_init_speed_samus_moved_up_fract + 1) + R22_;
+    projectile_bomb_x_speed[v8] = *(uint16 *)((uint8 *)&projectile_init_speed_samus_moved_left_fract + 1) + R22_;
     break;
   }
   case 8:
   case 10: {
     int v9 = R18_ >> 1;
-    projectile_bomb_y_speed[v9] = *(uint16 *)((char *)&projectile_init_speed_samus_moved_up_fract + 1) + R22_;
+    projectile_bomb_y_speed[v9] = *(uint16 *)((uint8 *)&projectile_init_speed_samus_moved_up_fract + 1) + R22_;
     projectile_bomb_x_speed[v9] = 0;
     break;
   }
   case 12: {
     int v10 = R18_ >> 1;
-    projectile_bomb_y_speed[v10] = *(uint16 *)((char *)&projectile_init_speed_samus_moved_up_fract + 1) + R22_;
-    projectile_bomb_x_speed[v10] = *(uint16 *)((char *)&absolute_moved_last_frame_y_fract + 1) - R22_;
+    projectile_bomb_y_speed[v10] = *(uint16 *)((uint8 *)&projectile_init_speed_samus_moved_up_fract + 1) + R22_;
+    projectile_bomb_x_speed[v10] = *(uint16 *)((uint8 *)&absolute_moved_last_frame_y_fract + 1) - R22_;
     break;
   }
   case 14: {
     int v11 = R18_ >> 1;
     projectile_bomb_y_speed[v11] = 0;
-    projectile_bomb_x_speed[v11] = *(uint16 *)((char *)&absolute_moved_last_frame_y_fract + 1) - R22_;
+    projectile_bomb_x_speed[v11] = *(uint16 *)((uint8 *)&absolute_moved_last_frame_y_fract + 1) - R22_;
     break;
   }
   case 16: {
     uint16 v12 = R18_;
     if ((uint8)projectile_init_speed_samus_moved_up)
-      R18_ = (*(uint16 *)((char *)&projectile_init_speed_samus_moved_right_fract + 1) >> 2) | 0xC000;
+      R18_ = (*(uint16 *)((uint8 *)&projectile_init_speed_samus_moved_right_fract + 1) >> 2) | 0xC000;
     else
       R18_ = 0;
     int v13 = v12 >> 1;
     projectile_bomb_y_speed[v13] = R18_ - R22_;
-    projectile_bomb_x_speed[v13] = *(uint16 *)((char *)&absolute_moved_last_frame_y_fract + 1) - R22_;
+    projectile_bomb_x_speed[v13] = *(uint16 *)((uint8 *)&absolute_moved_last_frame_y_fract + 1) - R22_;
     break;
   }
   default:
@@ -3688,7 +3688,7 @@ static const uint16 kProjectileBombPreInstr[12] = {  // 0x90B887
 };
 
 void FireUnchargedBeam(void) {
-  char v3;
+  int8 v3;
 
   if (hyper_beam_flag) {
     FireHyperBeam();
@@ -3880,15 +3880,15 @@ void HandleChargingBeamGfxAudio(void) {  // 0x90BAFC
   if (hyper_beam_flag) {
     if (flare_counter) {
       for (int i = 4; i >= 0; i -= 2) {
-        bool v7 = *(uint16 *)((char *)&flare_animation_timer + i) == 1;
-        bool v8 = (-- * (uint16 *)((char *)&flare_animation_timer + i) & 0x8000u) != 0;
+        bool v7 = *(uint16 *)((uint8 *)&flare_animation_timer + i) == 1;
+        bool v8 = (-- * (uint16 *)((uint8 *)&flare_animation_timer + i) & 0x8000u) != 0;
         if (v7 || v8) {
-          v7 = (*(uint16 *)((char *)&flare_animation_frame + i))-- == 1;
+          v7 = (*(uint16 *)((uint8 *)&flare_animation_frame + i))-- == 1;
           if (v7) {
             if (i == 4)
               flare_counter = 0;
           } else {
-            *(uint16 *)((char *)&flare_animation_timer + i) = 3;
+            *(uint16 *)((uint8 *)&flare_animation_timer + i) = 3;
           }
         }
         DrawFlareAnimationComponent(i);
@@ -3909,24 +3909,24 @@ void HandleChargingBeamGfxAudio(void) {  // 0x90BAFC
       uint16 v0 = 0;
       do {
         R0_.bank = -112;
-        v1 = *(uint16 *)((char *)&flare_animation_timer + v0) - 1;
-        *(uint16 *)((char *)&flare_animation_timer + v0) = v1;
+        v1 = *(uint16 *)((uint8 *)&flare_animation_timer + v0) - 1;
+        *(uint16 *)((uint8 *)&flare_animation_timer + v0) = v1;
         if (v1 < 0) {
-          uint16 v2 = *(uint16 *)((char *)&flare_animation_frame + v0) + 1;
-          *(uint16 *)((char *)&flare_animation_frame + v0) = v2;
+          uint16 v2 = *(uint16 *)((uint8 *)&flare_animation_frame + v0) + 1;
+          *(uint16 *)((uint8 *)&flare_animation_frame + v0) = v2;
           uint16 v3 = v2;
           R0_.addr = kFlareAnimDelays[v0 >> 1];
           v4 = IndirReadByte(R0_, v2);
           if (v4 == 255) {
-            *(uint16 *)((char *)&flare_animation_frame + v0) = 0;
+            *(uint16 *)((uint8 *)&flare_animation_frame + v0) = 0;
             v3 = 0;
           } else if (v4 == 254) {
             R18_ = IndirReadByte(R0_, v3 + 1);
-            uint16 v5 = *(uint16 *)((char *)&flare_animation_frame + v0) - R18_;
-            *(uint16 *)((char *)&flare_animation_frame + v0) = v5;
+            uint16 v5 = *(uint16 *)((uint8 *)&flare_animation_frame + v0) - R18_;
+            *(uint16 *)((uint8 *)&flare_animation_frame + v0) = v5;
             v3 = v5;
           }
-          *(uint16 *)((char *)&flare_animation_timer + v0) = IndirReadByte(R0_, v3);
+          *(uint16 *)((uint8 *)&flare_animation_timer + v0) = IndirReadByte(R0_, v3);
         }
         v9 = v0;
         DrawFlareAnimationComponent(v0);
@@ -5110,7 +5110,7 @@ void ProjPreInstr_SpeedEcho(uint16 k) {  // 0x90D4D2
   projectile_bomb_x_speed[v1] += 8;
   Projectile_SinLookup(projectile_variables[v1], LOBYTE(projectile_bomb_x_speed[v1]));
   uint16 v2 = R20_ + samus_x_pos;
-  *(uint16 *)((char *)&speed_echoes_index + k) = R20_ + samus_x_pos;
+  *(uint16 *)((uint8 *)&speed_echoes_index + k) = R20_ + samus_x_pos;
   projectile_x_pos[v1] = v2;
   v3 = v2 - layer1_x_pos;
   if (v3 < 0
@@ -5122,7 +5122,7 @@ void ProjPreInstr_SpeedEcho(uint16 k) {  // 0x90D4D2
           v5 < 0)
       || !sign16(v5 - 256)) {
     speed_echo_ypos[v1 + 3] = 0;
-    *(uint16 *)((char *)&speed_echoes_index + k) = 0;
+    *(uint16 *)((uint8 *)&speed_echoes_index + k) = 0;
     speed_echo_xpos[v1 + 3] = 0;
     ClearProjectile(k);
   }
@@ -6716,15 +6716,15 @@ void Samus_HandlePeriodicDamage(void) {  // 0x90E9CE
   if (time_is_frozen_flag)
     goto LABEL_10;
   if ((equipped_items & 0x20) != 0) {
-    uint16 v4 = *(uint16 *)((char *)&samus_periodic_subdamage + 1) >> 2;
-    LOBYTE(v1) = (uint16)(*(uint16 *)((char *)&samus_periodic_subdamage + 1) >> 2) >> 8;
-    HIBYTE(v1) = *(uint16 *)((char *)&samus_periodic_subdamage + 1) >> 2;
+    uint16 v4 = *(uint16 *)((uint8 *)&samus_periodic_subdamage + 1) >> 2;
+    LOBYTE(v1) = (uint16)(*(uint16 *)((uint8 *)&samus_periodic_subdamage + 1) >> 2) >> 8;
+    HIBYTE(v1) = *(uint16 *)((uint8 *)&samus_periodic_subdamage + 1) >> 2;
     samus_periodic_subdamage = v1 & 0xFF00;
     samus_periodic_damage = HIBYTE(v4);
   } else if ((equipped_items & 1) != 0) {
-    uint16 v3 = *(uint16 *)((char *)&samus_periodic_subdamage + 1) >> 1;
-    LOBYTE(v0) = (uint16)(*(uint16 *)((char *)&samus_periodic_subdamage + 1) >> 1) >> 8;
-    HIBYTE(v0) = *(uint16 *)((char *)&samus_periodic_subdamage + 1) >> 1;
+    uint16 v3 = *(uint16 *)((uint8 *)&samus_periodic_subdamage + 1) >> 1;
+    LOBYTE(v0) = (uint16)(*(uint16 *)((uint8 *)&samus_periodic_subdamage + 1) >> 1) >> 8;
+    HIBYTE(v0) = *(uint16 *)((uint8 *)&samus_periodic_subdamage + 1) >> 1;
     samus_periodic_subdamage = v0 & 0xFF00;
     samus_periodic_damage = HIBYTE(v3);
   }

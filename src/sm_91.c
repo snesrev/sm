@@ -1164,7 +1164,7 @@ void XrayHdmaFunc_BeamAimedDDR(uint16 j) {  // 0x91C2BD
       goto LABEL_12;
     }
   }
-  IndirWriteWord(R0_, j, *(uint16 *)((char *)&R36 + 1));
+  IndirWriteWord(R0_, j, *(uint16 *)((uint8 *)&R36 + 1));
   uint16 v2;
   v2 = j + 2;
   if ((int16)(v2 - 460) < 0) {
@@ -1174,7 +1174,7 @@ void XrayHdmaFunc_BeamAimedDDR(uint16 j) {  // 0x91C2BD
       R36 += R32_;
       if (v1)
         break;
-      IndirWriteWord(R0_, v2, *(uint16 *)((char *)&R36 + 1));
+      IndirWriteWord(R0_, v2, *(uint16 *)((uint8 *)&R36 + 1));
       v2 += 2;
       if ((int16)(v2 - 460) >= 0)
         goto LABEL_12;
@@ -1244,7 +1244,7 @@ void XrayHdmaFunc_BeamAimedDD(uint16 j) {  // 0x91C381
         goto LABEL_15;
       }
     }
-    IndirWriteWord(R0_, j, *(uint16 *)((char *)&R36 + 1));
+    IndirWriteWord(R0_, j, *(uint16 *)((uint8 *)&R36 + 1));
     uint16 v2 = j + 2;
     if ((int16)(v2 - 460) < 0) {
       R18_ = v2 - 4;
@@ -1253,7 +1253,7 @@ void XrayHdmaFunc_BeamAimedDD(uint16 j) {  // 0x91C381
         R36 -= R32_;
         if (!v1)
           break;
-        IndirWriteWord(R0_, v2, *(uint16 *)((char *)&R36 + 1));
+        IndirWriteWord(R0_, v2, *(uint16 *)((uint8 *)&R36 + 1));
         v2 += 2;
         if ((int16)(v2 - 460) >= 0)
           goto LABEL_15;
@@ -1321,7 +1321,7 @@ void XrayHdmaFunc_BeamAimedDDL(uint16 j) {  // 0x91C446
       goto LABEL_12;
     }
   }
-  IndirWriteWord(R0_, j, *(uint16 *)((char *)&R36 + 1));
+  IndirWriteWord(R0_, j, *(uint16 *)((uint8 *)&R36 + 1));
   uint16 v2;
   v2 = j + 2;
   if ((int16)(v2 - 460) < 0) {
@@ -1331,7 +1331,7 @@ void XrayHdmaFunc_BeamAimedDDL(uint16 j) {  // 0x91C446
       R36 -= R32_;
       if (!v1)
         break;
-      IndirWriteWord(R0_, v2, *(uint16 *)((char *)&R36 + 1));
+      IndirWriteWord(R0_, v2, *(uint16 *)((uint8 *)&R36 + 1));
       v2 += 2;
       if ((int16)(v2 - 460) >= 0)
         goto LABEL_12;
@@ -1734,7 +1734,7 @@ void XrayHdmaOnScreen_BeamAimedDDR(uint16 j) {  // 0x91C87A
     R36 += R32_;
     if (v1)
       break;
-    IndirWriteWord(R0_, j, *(uint16 *)((char *)&R36 + 1));
+    IndirWriteWord(R0_, j, *(uint16 *)((uint8 *)&R36 + 1));
     j += 2;
     if ((int16)(j - 460) >= 0)
       goto LABEL_7;
@@ -1778,7 +1778,7 @@ void XrayHdmaOnScreen_BeamAimedDD(uint16 j) {  // 0x91C8E8
     R36 -= R32_;
     if (!v1)
       break;
-    IndirWriteWord(R0_, j, *(uint16 *)((char *)&R36 + 1));
+    IndirWriteWord(R0_, j, *(uint16 *)((uint8 *)&R36 + 1));
     j += 2;
     if ((int16)(j - 460) >= 0)
       goto LABEL_6;
@@ -1812,7 +1812,7 @@ void XrayHdmaOnScreen_BeamAimedDDL(uint16 j) {  // 0x91C939
     R36 -= R32_;
     if (!v1)
       break;
-    IndirWriteWord(R0_, j, *(uint16 *)((char *)&R36 + 1));
+    IndirWriteWord(R0_, j, *(uint16 *)((uint8 *)&R36 + 1));
     j += 2;
     if ((int16)(j - 460) >= 0)
       goto LABEL_6;
@@ -1886,12 +1886,12 @@ void Xray_SetupStage2_ReadBg1_2ndScreen(void) {  // 0x91CB1C
 
   uint16 v0 = vram_read_queue_tail;
   v1 = vram_read_queue_tail;
-  *(uint16 *)((char *)&vram_read_queue[0].vram_target + vram_read_queue_tail) = ((reg_BG1SC & 0xFC) << 8) + 1024;
-  *(uint16 *)((char *)&vram_read_queue[0].dma_parameters + v1) = 129;
-  *(uint16 *)((char *)&vram_read_queue[0].dma_parameters + v0 + 1) = 57;
-  *(VoidP *)((char *)&vram_read_queue[0].src.addr + v0) = ADDR16_OF_RAM(ram4000) + 0x2800;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].vram_target + vram_read_queue_tail) = ((reg_BG1SC & 0xFC) << 8) + 1024;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].dma_parameters + v1) = 129;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].dma_parameters + v0 + 1) = 57;
+  *(VoidP *)((uint8 *)&vram_read_queue[0].src.addr + v0) = ADDR16_OF_RAM(ram4000) + 0x2800;
   *(uint16 *)(&vram_read_queue[0].src.bank + v0) = 126;
-  *(uint16 *)((char *)&vram_read_queue[0].size + v0) = 2048;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].size + v0) = 2048;
   vram_read_queue_tail = v0 + 9;
 }
 
@@ -1900,12 +1900,12 @@ void Xray_SetupStage3_ReadBg1_1stScreen(void) {  // 0x91CB57
 
   uint16 v0 = vram_read_queue_tail;
   v1 = vram_read_queue_tail;
-  *(uint16 *)((char *)&vram_read_queue[0].vram_target + vram_read_queue_tail) = (reg_BG1SC & 0xFC) << 8;
-  *(uint16 *)((char *)&vram_read_queue[0].dma_parameters + v1) = 129;
-  *(uint16 *)((char *)&vram_read_queue[0].dma_parameters + v0 + 1) = 57;
-  *(VoidP *)((char *)&vram_read_queue[0].src.addr + v0) = ADDR16_OF_RAM(ram4000) + 0x2000;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].vram_target + vram_read_queue_tail) = (reg_BG1SC & 0xFC) << 8;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].dma_parameters + v1) = 129;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].dma_parameters + v0 + 1) = 57;
+  *(VoidP *)((uint8 *)&vram_read_queue[0].src.addr + v0) = ADDR16_OF_RAM(ram4000) + 0x2000;
   *(uint16 *)(&vram_read_queue[0].src.bank + v0) = 126;
-  *(uint16 *)((char *)&vram_read_queue[0].size + v0) = 2048;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].size + v0) = 2048;
   vram_read_queue_tail = v0 + 9;
 }
 
@@ -1936,10 +1936,10 @@ void Xray_SetupStage4(void) {  // 0x91CB8E
       uint16 v1 = ram4000.xray_tilemaps[v0 + 4129];
       uint16 v2 = R22_;
       v3 = R22_;
-      *(uint16 *)((char *)&ram4000.xray_tilemaps[33] + R22_) = v1;
-      *(uint16 *)((char *)&ram4000.xray_tilemaps[32] + v3) = v9;
-      *(uint16 *)((char *)&ram4000.xray_tilemaps[1] + v2) = v10;
-      *(uint16 *)((char *)ram4000.xray_tilemaps + v2) = v11;
+      *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[33] + R22_) = v1;
+      *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[32] + v3) = v9;
+      *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[1] + v2) = v10;
+      *(uint16 *)((uint8 *)ram4000.xray_tilemaps + v2) = v11;
       R22_ += 4;
       R30_ += 2;
       --R18_;
@@ -1972,12 +1972,12 @@ void Xray_SetupStage4(void) {  // 0x91CB8E
   LoadXrayBlocks();
   uint16 v7 = vram_read_queue_tail;
   v8 = vram_read_queue_tail;
-  *(uint16 *)((char *)&vram_read_queue[0].vram_target + vram_read_queue_tail) = (reg_BG2SC & 0xFC) << 8;
-  *(uint16 *)((char *)&vram_read_queue[0].dma_parameters + v8) = 129;
-  *(uint16 *)((char *)&vram_read_queue[0].dma_parameters + v7 + 1) = 57;
-  *(VoidP *)((char *)&vram_read_queue[0].src.addr + v7) = 0x5000;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].vram_target + vram_read_queue_tail) = (reg_BG2SC & 0xFC) << 8;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].dma_parameters + v8) = 129;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].dma_parameters + v7 + 1) = 57;
+  *(VoidP *)((uint8 *)&vram_read_queue[0].src.addr + v7) = 0x5000;
   *(uint16 *)(&vram_read_queue[0].src.bank + v7) = 126;
-  *(uint16 *)((char *)&vram_read_queue[0].size + v7) = 2048;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].size + v7) = 2048;
   vram_read_queue_tail = v7 + 9;
 }
 
@@ -1996,10 +1996,10 @@ void Xray_SetupStage4_Func1(void) {  // 0x91CCF1
   uint16 v4 = ram4000.xray_tilemaps[v1 + 4128];
   uint16 v3 = ram4000.xray_tilemaps[v1 + 4129];
   uint16 v2 = R22_ + 1984;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[33] + (uint16)(R22_ + 1984)) = v3;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[32] + v2) = v4;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[1] + v2) = v5;
-  *(uint16 *)((char *)ram4000.xray_tilemaps + v2) = v6;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[33] + (uint16)(R22_ + 1984)) = v3;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[32] + v2) = v4;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[1] + v2) = v5;
+  *(uint16 *)((uint8 *)ram4000.xray_tilemaps + v2) = v6;
 }
 
 void Xray_SetupStage4_Func2(void) {  // 0x91CD42
@@ -2007,7 +2007,7 @@ void Xray_SetupStage4_Func2(void) {  // 0x91CD42
   if (R34 == 0)
     return;
   PairU16 pay = Xray_HandleXrayedBlock(R34 - 1);
-  uint16 *dst = (uint16 *)((char *)ram4000.xray_tilemaps + R22_);
+  uint16 *dst = (uint16 *)((uint8 *)ram4000.xray_tilemaps + R22_);
 
   if (pay.k != FUNC16(Xray_Func9)) {
     if (pay.k != FUNC16(Xray_Func11))
@@ -2235,10 +2235,10 @@ uint16 Xray_Func11(uint16 j) {  // 0x91CF6F
     uint16 bottom_right = tile_table.tables[v5].bottom_right;
     uint16 v7 = R22_;
     v8 = R22_;
-    *(uint16 *)((char *)&ram4000.xray_tilemaps[99] + R22_) = bottom_right;
-    *(uint16 *)((char *)&ram4000.xray_tilemaps[98] + v8) = bottom_left;
-    *(uint16 *)((char *)&ram4000.xray_tilemaps[67] + v7) = top_right;
-    *(uint16 *)((char *)&ram4000.xray_tilemaps[66] + v7) = top_left;
+    *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[99] + R22_) = bottom_right;
+    *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[98] + v8) = bottom_left;
+    *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[67] + v7) = top_right;
+    *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[66] + v7) = top_left;
   }
   return Xray_Func21(v4);
 }
@@ -2257,10 +2257,10 @@ void Xray_Func13(uint16 a) {  // 0x91CFC1
   uint16 bottom_left = tile_table.tables[v1].bottom_left;
   uint16 v2 = R22_;
   v3 = R22_;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[33] + R22_) = tile_table.tables[v1].bottom_right;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[32] + v3) = bottom_left;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[1] + v2) = top_right;
-  *(uint16 *)((char *)ram4000.xray_tilemaps + v2) = top_left;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[33] + R22_) = tile_table.tables[v1].bottom_right;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[32] + v3) = bottom_left;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[1] + v2) = top_right;
+  *(uint16 *)((uint8 *)ram4000.xray_tilemaps + v2) = top_left;
 }
 
 void Xray_Func14(uint16 j) {  // 0x91CFEE
@@ -2273,10 +2273,10 @@ void Xray_Func14(uint16 j) {  // 0x91CFEE
   uint16 bottom_right = tile_table.tables[v1].bottom_right;
   uint16 v3 = R22_;
   v4 = R22_;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[35] + R22_) = bottom_right;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[34] + v4) = bottom_left;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[3] + v3) = top_right;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[2] + v3) = top_left;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[35] + R22_) = bottom_right;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[34] + v4) = bottom_left;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[3] + v3) = top_right;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[2] + v3) = top_left;
 }
 
 void Xray_Func15(uint16 j) {  // 0x91D01D
@@ -2289,10 +2289,10 @@ void Xray_Func15(uint16 j) {  // 0x91D01D
   uint16 bottom_right = tile_table.tables[v1].bottom_right;
   uint16 v3 = R22_;
   v4 = R22_;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[97] + R22_) = bottom_right;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[96] + v4) = bottom_left;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[65] + v3) = top_right;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[64] + v3) = top_left;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[97] + R22_) = bottom_right;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[96] + v4) = bottom_left;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[65] + v3) = top_right;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[64] + v3) = top_left;
 }
 
 void LoadBlockToXrayTilemap(uint16 a, uint16 k, uint16 j) {  // 0x91D04C
@@ -2325,10 +2325,10 @@ void Xray_Func16(uint16 a) {  // 0x91D0A6
   uint16 bottom_left = tile_table.tables[v1].bottom_left;
   uint16 v2 = R22_;
   v3 = R22_;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[1] + R22_) = tile_table.tables[v1].bottom_right;
-  *(uint16 *)((char *)ram4000.xray_tilemaps + v3) = bottom_left;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[33] + v2) = top_right;
-  *(uint16 *)((char *)&ram4000.xray_tilemaps[32] + v2) = top_left;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[1] + R22_) = tile_table.tables[v1].bottom_right;
+  *(uint16 *)((uint8 *)ram4000.xray_tilemaps + v3) = bottom_left;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[33] + v2) = top_right;
+  *(uint16 *)((uint8 *)&ram4000.xray_tilemaps[32] + v2) = top_left;
 }
 
 void Xray_SetupStage5(void) {  // 0x91D0D3
@@ -2345,11 +2345,11 @@ void Xray_SetupStage5(void) {  // 0x91D0D3
   }
   uint16 v0 = vram_read_queue_tail;
   v1 = vram_read_queue_tail;
-  *(uint16 *)((char *)&vram_read_queue[0].vram_target + vram_read_queue_tail) = ((reg_BG2SC & 0xFC) << 8) + 1024;
-  *(uint16 *)((char *)&vram_read_queue[0].dma_parameters + v1 + 1) = 57;
-  *(VoidP *)((char *)&vram_read_queue[0].src.addr + v0) = 0x5800;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].vram_target + vram_read_queue_tail) = ((reg_BG2SC & 0xFC) << 8) + 1024;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].dma_parameters + v1 + 1) = 57;
+  *(VoidP *)((uint8 *)&vram_read_queue[0].src.addr + v0) = 0x5800;
   *(uint16 *)(&vram_read_queue[0].src.bank + v0) = 126;
-  *(uint16 *)((char *)&vram_read_queue[0].size + v0) = 2048;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].size + v0) = 2048;
   vram_read_queue_tail = v0 + 9;
 }
 
@@ -2799,8 +2799,8 @@ uint8 Samus_HandleCrystalFlashPals(void) {  // 0x91DB93
     }
     bool v1 = (int16)-- * (uint16 *)&suit_pickup_color_math_B < 0;
     if (!*(uint16 *)&suit_pickup_color_math_B || v1) {
-      *(uint16 *)&suit_pickup_color_math_B = *(uint16 *)((char *)&stru_91DC00[0].timer + special_samus_palette_timer);
-      Samus_Copy10PalColors(*(VoidP *)((char *)&stru_91DC00[0].ptr + special_samus_palette_timer));
+      *(uint16 *)&suit_pickup_color_math_B = *(uint16 *)((uint8 *)&stru_91DC00[0].timer + special_samus_palette_timer);
+      Samus_Copy10PalColors(*(VoidP *)((uint8 *)&stru_91DC00[0].ptr + special_samus_palette_timer));
       uint16 v2 = special_samus_palette_timer + 4;
       if (!sign16(special_samus_palette_timer - 36))
         v2 = 0;
@@ -3097,7 +3097,7 @@ uint8 Xray_Initialize(void) {  // 0x91E16D
   DisableAnimtiles();
   DisablePaletteFx();
   mov24(&hdma_ptr_1, 0x980001);
-  *(uint16 *)((char *)&demo_num_input_frames + 1) = 0;
+  *(uint16 *)((uint8 *)&demo_num_input_frames + 1) = 0;
   demo_input_prev = -26424;
   mov24(&hdma_ptr_3, 0x999098);
   hdma_var_1 = 0;

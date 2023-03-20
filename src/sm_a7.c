@@ -1583,7 +1583,7 @@ void Kraid_HandleFirstPhase(void) {  // 0xA7C005
       }
     }
     E0->kraid_var_B = v3 - 26918;
-    E0->kraid_var_C = *(uint16 *)((char *)&g_stru_A796D2.timer + v3);
+    E0->kraid_var_C = *(uint16 *)((uint8 *)&g_stru_A796D2.timer + v3);
     earthquake_type = 4;
     earthquake_timer = 340;
     Enemy_Kraid *E5 = Get_Kraid(0x140u);
@@ -1695,12 +1695,12 @@ void PauseHook_Kraid(void) {  // 0xA7C325
 
   uint16 v0 = vram_read_queue_tail;
   v1 = vram_read_queue_tail;
-  *(uint16 *)((char *)&vram_read_queue[0].vram_target + vram_read_queue_tail) = ((reg_BG12NBA & 0xFC) << 8) + 15872;
-  *(uint16 *)((char *)&vram_read_queue[0].dma_parameters + v1) = 129;
-  *(uint16 *)((char *)&vram_read_queue[0].dma_parameters + v0 + 1) = 57;
-  *(VoidP *)((char *)&vram_read_queue[0].src.addr + v0) = 20480;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].vram_target + vram_read_queue_tail) = ((reg_BG12NBA & 0xFC) << 8) + 15872;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].dma_parameters + v1) = 129;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].dma_parameters + v0 + 1) = 57;
+  *(VoidP *)((uint8 *)&vram_read_queue[0].src.addr + v0) = 20480;
   *(uint16 *)(&vram_read_queue[0].src.bank + v0) = 126;
-  *(uint16 *)((char *)&vram_read_queue[0].size + v0) = 1024;
+  *(uint16 *)((uint8 *)&vram_read_queue[0].size + v0) = 1024;
   vram_read_queue_tail = v0 + 9;
 }
 
@@ -2149,7 +2149,7 @@ void Phantoon_Init(void) {  // 0xA7CDF3
   for (int i = 4094; i >= 0; i -= 2)
     tilemap_stuff[i >> 1] = 824;
   for (j = 2046; j >= 0; j -= 2)
-    *(uint16 *)((char *)&kraid_unk9000 + (uint16)j) = 0;
+    *(uint16 *)((uint8 *)&kraid_unk9000 + (uint16)j) = 0;
   for (k = 30; (k & 0x8000u) == 0; k -= 2)
     target_palettes[(k >> 1) + 112] = 0;
   enemy_bg2_tilemap_size = 864;
@@ -2220,7 +2220,7 @@ void Phantoon_Func_1(void) {  // 0xA7CEED
 
 void Phantoon_Func_2(uint16 k) {  // 0xA7CF0C
   if (!k && (joypad1_newkeys & 0x4000) != 0)
-    *(uint16 *)((char *)&g_stru_A7902D[0].ypos + 1) = *(uint16 *)((char *)&g_stru_A7902D[0].ypos + 1) == 0;
+    *(uint16 *)((uint8 *)&g_stru_A7902D[0].ypos + 1) = *(uint16 *)((uint8 *)&g_stru_A7902D[0].ypos + 1) == 0;
 }
 
 uint8 Phantoon_Func_3(void) {  // 0xA7CF27
@@ -2611,7 +2611,7 @@ void Phantoon_StartDeathSequence(uint16 k) {  // 0xA7D421
   v3 = 510;
   uint16 v4 = reg_BG2HOFS;
   do {
-    *(uint16 *)((char *)&g_word_7E9100 + (uint16)v3) = v4;
+    *(uint16 *)((uint8 *)&g_word_7E9100 + (uint16)v3) = v4;
     v3 -= 2;
   } while (v3 >= 0);
   phantom_related_layer_flag |= 0x4000u;
@@ -3813,7 +3813,7 @@ void Dachora_Main(void) {  // 0xA7F52E
   CallEnemyPreInstr(E->dachor_var_F | 0xA70000);
 }
 void Dachora_Func_1(uint16 j, uint16 k) {  // 0xA7F535
-  *(VoidP *)((char *)&R0_.addr + 1) = 32256;
+  *(VoidP *)((uint8 *)&R0_.addr + 1) = 32256;
   Enemy_Dachora *E = Get_Dachora(k);
   uint16 v3 = swap16(E->base.palette_index);
   R0_.addr = g_off_A7F55F[v3 >> 1];

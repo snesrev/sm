@@ -132,9 +132,9 @@ static const uint16 kBlockColl_Horiz_Slope_NonSquare_Tab[64] = {
 
 uint16 PostGrappleColl_Horiz_Slope_NonSquare(uint16 k) {  // 0x948000
   int16 v1;
-  char v3;
+  int8 v3;
   int16 v5;
-  char v6;
+  int8 v6;
   int16 v8;
 
   if (!(samus_collision_direction & 1)) {
@@ -180,10 +180,10 @@ uint16 PostGrappleColl_Horiz_Slope_NonSquare(uint16 k) {  // 0x948000
 uint16 PostGrappleColl_Vert_Slope_NonSquare(uint16 k) {  // 0x9480E0
   int16 v1;
   int16 v3;
-  char v4;
+  int8 v4;
   int16 v6;
   int16 v7;
-  char v8;
+  int8 v8;
   int16 v10;
 
   if (!(samus_collision_direction & 1)) {
@@ -485,13 +485,13 @@ uint8 BlockColl_Horiz_Slope_NonSquare(void) {  // 0x9484D6
 uint8 BlockColl_Vert_Slope_NonSquare(uint16 k) {  // 0x9486FE
   int16 v1;
   int16 v3;
-  char v4;
+  int8 v4;
   uint16 v5;
   int16 v6;
   int16 v7;
   int16 v8;
   int16 v9;
-  char v10;
+  int8 v10;
   uint16 v11;
   int16 v12;
   int16 v13;
@@ -1162,7 +1162,7 @@ uint8 Samus_CollDetectChangedPose(void) {  // 0x9496AB
 }
 
 uint8 CollDetectDueToPoseChange_SingleBlock(void) {  // 0x9496E3
-  char v0; // cf
+  int8 v0; // cf
 
   samus_collision_direction |= 0xFu;
   flag_samus_in_quicksand = 0;
@@ -2003,7 +2003,7 @@ uint8 BlockCollNoWaveBeamVert(uint16 k) {  // 0x94A2CA
 uint8 BlockCollWaveBeamHoriz(uint16 k) {  // 0x94A352
   int16 v2;
   int16 v8;
-  char v9;
+  int8 v9;
   int16 v10;
 
   R30_ = 0;
@@ -2050,7 +2050,7 @@ uint8 BlockCollWaveBeamVert(uint16 k) {  // 0x94A3E4
   int16 v2;
   int16 v8;
   int16 v9;
-  char v10;
+  int8 v10;
   int16 v11;
 
   R30_ = 0;
@@ -2343,7 +2343,7 @@ uint8 BlockReactGrapple_GrappleBlock(void) {  // 0x94A7D1
     0xd0d8,
   };
 
-  char v0;
+  int8 v0;
 
   grapple_beam_flags &= ~0x8000u;
   v0 = BTS[cur_block_index];
@@ -2372,7 +2372,7 @@ uint8 BlockReactGrapple_SpikeBlock(void) {  // 0x94A7FD
   0xd0e4,
   0xd0e4,
   };
-  char v0;
+  int8 v0;
 
   v0 = BTS[cur_block_index];
   if (v0 < 0)
@@ -2384,11 +2384,11 @@ uint8 BlockReactGrapple_SpikeBlock(void) {  // 0x94A7FD
 uint8 BlockCollGrappleBeam(void) {  // 0x94A85B
   uint8 result;
 
-  *(uint16 *)((char *)&grapple_beam_tmpD82 + 1) = grapple_beam_extension_x_velocity;
+  *(uint16 *)((uint8 *)&grapple_beam_tmpD82 + 1) = grapple_beam_extension_x_velocity;
   *(uint32 *)&grapple_beam_tmpD82 >>= 2;
   if ((grapple_beam_extension_x_velocity & 0x8000) != 0)
     grapple_beam_tmpD84 |= 0xFFC0u;
-  *(uint16 *)((char *)&grapple_beam_y_quarter_subvel + 1) = grapple_beam_extension_y_velocity;
+  *(uint16 *)((uint8 *)&grapple_beam_y_quarter_subvel + 1) = grapple_beam_extension_y_velocity;
 
   *(uint32 *)&grapple_beam_y_quarter_subvel >>= 2;
   if ((grapple_beam_extension_y_velocity & 0x8000) != 0)
@@ -2754,12 +2754,12 @@ uint8 HandleMovementAndCollForSamusGrapple(void) {  // 0x94ACFE
   uint16 v1 = grapple_beam_unkD2E + grapple_beam_unkD26;
   if ((int16)(grapple_beam_unkD2E + grapple_beam_unkD26) >= 0) {
     Multiply16x16(v1, v0);
-    if (!*(uint16 *)((char *)&mult_product_lo + 1))
+    if (!*(uint16 *)((uint8 *)&mult_product_lo + 1))
       return 0;
-    g_word_7E0D9C = *(uint16 *)((char *)&mult_product_lo + 1);
+    g_word_7E0D9C = *(uint16 *)((uint8 *)&mult_product_lo + 1);
     grapple_beam_y_quarter_vel = 2
       * ((uint16)(*(uint16 *)&grapple_beam_end_subangle
-                  + *(uint16 *)((char *)&mult_product_lo + 1)) >> 8);
+                  + *(uint16 *)((uint8 *)&mult_product_lo + 1)) >> 8);
     grapple_beam_tmpD84 = grapple_beam_length;
     uint16 v2;
     v2 = 2 * grapple_beam_end_angle;
@@ -2807,12 +2807,12 @@ LABEL_19:
     goto LABEL_19;
   }
   Multiply16x16(-v1, v0);
-  if (!*(uint16 *)((char *)&mult_product_lo + 1))
+  if (!*(uint16 *)((uint8 *)&mult_product_lo + 1))
     return 0;
-  g_word_7E0D9C = -*(uint16 *)((char *)&mult_product_lo + 1);
+  g_word_7E0D9C = -*(uint16 *)((uint8 *)&mult_product_lo + 1);
   grapple_beam_y_quarter_vel = 2
     * ((uint16)(*(uint16 *)&grapple_beam_end_subangle
-                - *(uint16 *)((char *)&mult_product_lo + 1)) >> 8);
+                - *(uint16 *)((uint8 *)&mult_product_lo + 1)) >> 8);
   grapple_beam_tmpD84 = grapple_beam_length;
   uint16 v5;
   v5 = 2 * grapple_beam_end_angle;
@@ -2885,9 +2885,9 @@ void GrappleFunc_AF87(void) {  // 0x94AF87
     grapple_segment_anim_instr_timers[v1 + 14] = addr_word_94B18F;
     grapple_segment_anim_instr_timers[v1 + 13] = addr_word_94B18B;
     grapple_segment_anim_instr_timers[v1] = 1;
-    *(uint16 *)((char *)&grapple_point_anim_ptr + i) = 1;
-    *(uint16 *)((char *)&grapple_point_anim_timer + i) = 1;
-    *(uint16 *)((char *)&grapple_beam_unkD3C + i) = 1;
+    *(uint16 *)((uint8 *)&grapple_point_anim_ptr + i) = 1;
+    *(uint16 *)((uint8 *)&grapple_point_anim_timer + i) = 1;
+    *(uint16 *)((uint8 *)&grapple_beam_unkD3C + i) = 1;
   }
 }
 
@@ -2910,13 +2910,13 @@ void HandleGrappleBeamGfx(void) {  // 0x94AFBA
   uint16 v2 = 8 * kSinCosTable8bit_Sext[v1 + 64];
   if ((kSinCosTable8bit_Sext[v1 + 64] & 0x1000) != 0)
     --R28_;
-  *(uint16 *)((char *)&R26_ + 1) = v2;
+  *(uint16 *)((uint8 *)&R26_ + 1) = v2;
   R30_ = 0;
   R32_ = 0;
   uint16 v3 = 8 * kSinCosTable8bit_Sext[v1];
   if ((kSinCosTable8bit_Sext[v1] & 0x1000) != 0)
     --R32_;
-  *(uint16 *)((char *)&R30_ + 1) = v3;
+  *(uint16 *)((uint8 *)&R30_ + 1) = v3;
   R38 = (uint16)(*(uint16 *)&grapple_beam_end_subangle & 0x8000) >> 1;
   R38 |= 2 * ((*(uint16 *)&grapple_beam_end_subangle ^ R38) & 0x4000 ^ 0x4000);
   R20_ = x_pos_of_start_of_grapple_beam_prevframe - layer1_x_pos - 4;

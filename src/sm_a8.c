@@ -440,7 +440,7 @@ void MorphBallEye_Init(void) {  // 0xA89058
     E->mbee_var_F = FUNC16(nullsub_244);
     E->base.current_instruction = g_off_A890DA[v1];
     for (int i = 510; i >= 0; i -= 2)
-      *(uint16 *)((char *)&g_word_7E9100 + (uint16)i) = 255;
+      *(uint16 *)((uint8 *)&g_word_7E9100 + (uint16)i) = 255;
   } else {
     E->mbee_var_F = FUNC16(MorphBallEye_Func_1);
     if ((E->mbee_parameter_1 & 1) != 0)
@@ -713,7 +713,7 @@ void WreckedShipGhost_Func_2(uint16 k) {  // 0xA89BAD
     E->wsgt_var_07 = v2;
     E->wsgt_var_08 = v2;
     E->wsgt_var_09 = 12;
-    uint16 v3 = *(uint16 *)((char *)&samus_y_pos + cur_enemy_index);
+    uint16 v3 = *(uint16 *)((uint8 *)&samus_y_pos + cur_enemy_index);
     E->wsgt_var_0A = v3;
     E->wsgt_var_0B = v3;
     E->wsgt_var_0C = v3;
@@ -814,7 +814,7 @@ void WreckedShipGhost_Func_7(uint16 k) {  // 0xA89D36
   Enemy_WreckedShipGhost *E = Get_WreckedShipGhost(k);
   if ((int16)(samus_x_pos - E->wsgt_var_07) < 0
       || (int16)(samus_x_pos - E->wsgt_var_08) >= 0
-      || (v2 = *(uint16 *)((char *)&samus_y_pos + k), (int16)(v2 - E->wsgt_var_0B) < 0)
+      || (v2 = *(uint16 *)((uint8 *)&samus_y_pos + k), (int16)(v2 - E->wsgt_var_0B) < 0)
       || (int16)(v2 - E->wsgt_var_0C) >= 0) {
     E->wsgt_var_0D = g_word_A89A9E;
     v4 = 0;
@@ -858,8 +858,8 @@ LABEL_13:
       E->wsgt_var_0D = g_word_A89A9E;
       E->wsgt_var_0E = g_word_A89A9C;
       int v6 = (uint16)(E->wsgt_var_09 + E->wsgt_var_05) >> 1;
-      E->base.x_pos = g_word_A89AA8[v6] + *(uint16 *)((char *)&samus_x_pos + k);
-      E->base.y_pos = g_word_A89AA8[v6 + 1] + *(uint16 *)((char *)&samus_y_pos + k);
+      E->base.x_pos = g_word_A89AA8[v6] + *(uint16 *)((uint8 *)&samus_x_pos + k);
+      E->base.y_pos = g_word_A89AA8[v6 + 1] + *(uint16 *)((uint8 *)&samus_y_pos + k);
       return;
     }
   }
@@ -1082,8 +1082,8 @@ void YappingMaw_Func_2(void) {  // 0xA8A28C
   E->base.current_instruction = g_off_A8A097[v2 >> 1];
   E->base.instruction_timer = 1;
   E->base.timer = 0;
-  E->ymw_var_32 = *(uint16 *)((char *)&g_word_A8A0A7 + (uint16)(2 * v2));
-  E->ymw_var_33 = *(uint16 *)((char *)&g_word_A8A0A9 + (uint16)(2 * v2));
+  E->ymw_var_32 = *(uint16 *)((uint8 *)&g_word_A8A0A7 + (uint16)(2 * v2));
+  E->ymw_var_33 = *(uint16 *)((uint8 *)&g_word_A8A0A9 + (uint16)(2 * v2));
   E->ymw_var_A = FUNC16(YappingMaw_Func_8);
 }
 
@@ -1383,10 +1383,10 @@ void YappingMaw_Shot(void) {  // 0xA8A7BD
       E->ymw_var_30 = 0;
     }
   } else {
-    *(uint16 *)((char *)enemy_projectile_id + E->ymw_var_40) = 0;
-    *(uint16 *)((char *)enemy_projectile_id + E->ymw_var_41) = 0;
-    *(uint16 *)((char *)enemy_projectile_id + E->ymw_var_42) = 0;
-    *(uint16 *)((char *)enemy_projectile_id + E->ymw_var_43) = 0;
+    *(uint16 *)((uint8 *)enemy_projectile_id + E->ymw_var_40) = 0;
+    *(uint16 *)((uint8 *)enemy_projectile_id + E->ymw_var_41) = 0;
+    *(uint16 *)((uint8 *)enemy_projectile_id + E->ymw_var_42) = 0;
+    *(uint16 *)((uint8 *)enemy_projectile_id + E->ymw_var_43) = 0;
     sprite_instr_list_ptrs[E->ymw_var_46 >> 1] = 0;
     if (samus_input_handler != FUNC16(Samus_InputHandler_E91D))
       samus_input_handler = FUNC16(Samus_InputHandler_E913);
@@ -1984,7 +1984,7 @@ uint16 Beetom_Func_2(void) {  // 0xA8B7EF
   R20_ = 0;
   do {
     R18_ += R24_;
-    R20_ += *(uint16 *)((char *)kCommonEnemySpeeds_Quadratic + (uint16)(8 * R18_) + 1);
+    R20_ += *(uint16 *)((uint8 *)kCommonEnemySpeeds_Quadratic + (uint16)(8 * R18_) + 1);
   } while (sign16(R20_ - R22_));
   return R18_;
 }
@@ -3842,7 +3842,7 @@ void WreckedShipSpark_Init(void) {  // 0xA8E637
   E->base.instruction_timer = 1;
   if ((boss_bits_for_area[area_index] & 1) == 0) {
     v3 = Get_WreckedShipSpark(cur_enemy_index);
-    v3->base.properties |= *(uint16 *)((char *)&gVramWriteEntry(0)[6].vram_dst + 1);
+    v3->base.properties |= *(uint16 *)((uint8 *)&gVramWriteEntry(0)[6].vram_dst + 1);
   }
 }
 
@@ -4399,7 +4399,7 @@ void KiHunter_Func_11(void) {  // 0xA8F7DB
   int16 v2;
 
   Enemy_KiHunter *E = Get_KiHunter(cur_enemy_index);
-  E->khr_var_F += *(uint16 *)((char *)&kCommonEnemySpeeds_Quadratic[2]
+  E->khr_var_F += *(uint16 *)((uint8 *)&kCommonEnemySpeeds_Quadratic[2]
                               + (uint16)(8 * HIBYTE(E->khr_var_B))
                               + 1);
   draw_enemy_layer = g_byte_A8F186;
@@ -4438,7 +4438,7 @@ void KiHunter_Func_14(void) {  // 0xA8F8AD
   int16 khr_var_07;
 
   Enemy_KiHunter *E = Get_KiHunter(cur_enemy_index);
-  E->khr_var_F += *(uint16 *)((char *)kCommonEnemySpeeds_Quadratic
+  E->khr_var_F += *(uint16 *)((uint8 *)kCommonEnemySpeeds_Quadratic
                               + (uint16)(8 * HIBYTE(E->khr_var_B))
                               + 1);
   draw_enemy_layer = g_byte_A8F186;
@@ -4494,7 +4494,7 @@ void KiHunter_Func_17(void) {  // 0xA8F98D
     uint16 v3 = E->khr_var_0A + 384;
     E->khr_var_0A = v3;
     v3 >>= 8;
-    v5 = *(uint16 *)((char *)kCommonEnemySpeeds_Quadratic + (uint16)(8 * v3) + 1) + E->khr_var_D;
+    v5 = *(uint16 *)((uint8 *)kCommonEnemySpeeds_Quadratic + (uint16)(8 * v3) + 1) + E->khr_var_D;
     E->khr_var_D = v5;
   } while (sign16(v5 - 0x2000));
 }

@@ -802,7 +802,7 @@ const uint16 *Torizo_Instr_58(uint16 k, const uint16 *jp) {  // 0xAAD0F3
   int16 v2;
 
   v2 = 34;
-  while (*(uint16 *)((char *)enemy_projectile_id + (uint16)v2) != 0xB1C0) {
+  while (*(uint16 *)((uint8 *)enemy_projectile_id + (uint16)v2) != 0xB1C0) {
     v2 -= 2;
     if (v2 < 0)
       return jp + 1;
@@ -1171,12 +1171,12 @@ const uint16 *Shaktool_Instr_3(uint16 k, const uint16 *jp) {  // 0xAAD93F
 
 const uint16 *Shaktool_Instr_4(uint16 k, const uint16 *jp) {  // 0xAAD94A
   Enemy_Shaktool *E = Get_Shaktool(k);
-  return Shaktool_D956(k, jp, *(uint16 *)((char *)&E->shakt_var_A + 1) ^ 0x80);
+  return Shaktool_D956(k, jp, *(uint16 *)((uint8 *)&E->shakt_var_A + 1) ^ 0x80);
 }
 
 const uint16 *Shaktool_Instr_5(uint16 k, const uint16 *jp) {  // 0xAAD953
   Enemy_Shaktool *E = Get_Shaktool(k);
-  return Shaktool_D956(k, jp, *(uint16 *)((char *)&E->shakt_var_A + 1));
+  return Shaktool_D956(k, jp, *(uint16 *)((uint8 *)&E->shakt_var_A + 1));
 }
 
 const uint16 *Shaktool_D956(uint16 k, const uint16 *jp, uint16 a) {  // 0xAAD956
@@ -1485,8 +1485,8 @@ void Shaktool_Init(void) {  // 0xAADE43
   int v3 = shakto_parameter_2 >> 1;
   E->base.properties |= g_word_AADE95[v3];
   E->shakt_var_E = cur_enemy_index - g_word_AADEA3[v3];
-  E->shakt_var_F = *(uint16 *)((char *)g_off_AADEDB + shakto_parameter_2);
-  E->shakt_var_C = *(uint16 *)((char *)g_word_AADEE9 + shakto_parameter_2) - g_word_AADEF7[v3];
+  E->shakt_var_F = *(uint16 *)((uint8 *)g_off_AADEDB + shakto_parameter_2);
+  E->shakt_var_C = *(uint16 *)((uint8 *)g_word_AADEE9 + shakto_parameter_2) - g_word_AADEF7[v3];
   E->shakt_var_B = g_word_AADEB1[v3];
   E->base.current_instruction = g_word_AADEB1[v3 + 7];
   E->base.layer = g_word_AADECD[v3];

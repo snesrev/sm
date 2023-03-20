@@ -583,7 +583,7 @@ void ProcessCinematicBgObject_DrawToTextTilemap(uint16 k, uint16 j) {  // 0x8B88
   R20_ = v3[3];
   while (1) {
     do {
-      *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + TilemapOffsetForTile) = *((uint16 *)RomPtr_8C(j) + 2);
+      *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap + TilemapOffsetForTile) = *((uint16 *)RomPtr_8C(j) + 2);
       j += 2;
       TilemapOffsetForTile += 2;
       --R18_;
@@ -609,7 +609,7 @@ void ProcessCinematicBgObject_DrawToBgTilemap(uint16 k, uint16 j) {  // 0x8B88FD
   R20_ = v3[3];
   while (1) {
     do {
-      *(uint16 *)((char *)ram3800.cinematic_bg_tilemap + TilemapOffsetForTile) = *((uint16 *)RomPtr_8C(j) + 2);
+      *(uint16 *)((uint8 *)ram3800.cinematic_bg_tilemap + TilemapOffsetForTile) = *((uint16 *)RomPtr_8C(j) + 2);
       j += 2;
       TilemapOffsetForTile += 2;
       --R18_;
@@ -637,11 +637,11 @@ void ProcessCinematicBgObject_Unk1(uint16 k, uint16 j) {  // 0x8B896B
   uint16 v4 = mode7_vram_write_queue_tail;
   do {
     *(uint16 *)(&mode7_write_queue[0].field_0 + v4) = 128;
-    *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v4) = v3;
+    *(uint16 *)((uint8 *)&mode7_write_queue[0].field_1 + v4) = v3;
     *(uint16 *)&mode7_write_queue[0].gap3[v4] = 139;
     *(uint16 *)&mode7_write_queue[0].gap3[v4 + 1] = R18_;
     *(uint16 *)&mode7_write_queue[0].gap3[v4 + 3] = R22_;
-    *(uint16 *)((char *)&mode7_write_queue[1].field_1 + v4) = 0;
+    *(uint16 *)((uint8 *)&mode7_write_queue[1].field_1 + v4) = 0;
     v4 += 9;
     v3 += R18_;
     R22_ += 128;
@@ -659,11 +659,11 @@ void ProcessCinematicBgObject_Unk2(uint16 k, uint16 j) {  // 0x8B89CF
   uint16 v4 = mode7_vram_write_queue_tail;
   do {
     *(uint16 *)(&mode7_write_queue[0].field_0 + v4) = 128;
-    *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v4) = v3;
+    *(uint16 *)((uint8 *)&mode7_write_queue[0].field_1 + v4) = v3;
     *(uint16 *)&mode7_write_queue[0].gap3[v4] = 139;
     *(uint16 *)&mode7_write_queue[0].gap3[v4 + 1] = R20_;
     *(uint16 *)&mode7_write_queue[0].gap3[v4 + 3] = R22_;
-    *(uint16 *)((char *)&mode7_write_queue[1].field_1 + v4) = 2;
+    *(uint16 *)((uint8 *)&mode7_write_queue[1].field_1 + v4) = 2;
     v4 += 9;
     v3 += R20_;
     ++R22_;
@@ -1629,7 +1629,7 @@ void ClearCinematicBgObjects(uint16 a) {  // 0x8B95CE
   uint16 j;
 
   for (int i = 2046; i >= 0; i -= 2)
-    *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + (uint16)i) = a;
+    *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap + (uint16)i) = a;
   for (j = 6; (j & 0x8000u) == 0; j -= 2) {
     int v3 = j >> 1;
     cinematicbg_arr1[v3] = 0;
@@ -1797,23 +1797,23 @@ void DrawCinematicSpriteObjects_Ending(void) {  // 0x8B9799
 
 void SpawnTextGlowObject(uint16 j) {  // 0x8B97F7
   uint16 v1 = 14;
-  while (*(uint16 *)((char *)&cinematic_var21 + v1)) {
+  while (*(uint16 *)((uint8 *)&cinematic_var21 + v1)) {
     v1 -= 2;
     if ((v1 & 0x8000u) != 0)
       return;
   }
-  *(uint16 *)((char *)&cinematic_var21 + v1) = j;
+  *(uint16 *)((uint8 *)&cinematic_var21 + v1) = j;
   int v2 = v1 >> 1;
   enemy_projectile_pre_instr[v2 + 2] = 1;
   enemy_projectile_pre_instr[v2 + 10] = (uint8)R18_;
-  *(uint16 *)((char *)enemy_projectile_1A27 + v1) = HIBYTE(R18_);
-  *(uint16 *)((char *)&cinematic_var20 + v1) = 0;
+  *(uint16 *)((uint8 *)enemy_projectile_1A27 + v1) = HIBYTE(R18_);
+  *(uint16 *)((uint8 *)&cinematic_var20 + v1) = 0;
 }
 
 void HandleTextGlowObjects(void) {  // 0x8B9828
   for (int i = 14; i >= 0; i -= 2) {
     cinematic_var19 = i;
-    if (*(uint16 *)((char *)&cinematic_var21 + (uint16)i)) {
+    if (*(uint16 *)((uint8 *)&cinematic_var21 + (uint16)i)) {
       ProcessTextGlowObject();
       i = cinematic_var19;
     }
@@ -1824,8 +1824,8 @@ void ProcessTextGlowObject(void) {  // 0x8B9849
   uint16 v0 = cinematic_var19;
   int v1 = cinematic_var19 >> 1;
   if (enemy_projectile_pre_instr[v1 + 2]-- == 1) {
-    R28_ = *(uint16 *)((char *)&cinematic_var20 + v0);
-    uint16 v3 = *(uint16 *)((char *)&cinematic_var21 + v0);
+    R28_ = *(uint16 *)((uint8 *)&cinematic_var20 + v0);
+    uint16 v3 = *(uint16 *)((uint8 *)&cinematic_var21 + v0);
     R20_ = 2 * LOBYTE(enemy_projectile_pre_instr[v1 + 10]);
     R22_ = R20_ + Mult8x8(*((uint8 *)enemy_projectile_1A27 + v0), 0x40);
     uint16 v4 = R22_;
@@ -1835,7 +1835,7 @@ void ProcessTextGlowObject(void) {  // 0x8B9849
     R20_ = v5[3];
     while (1) {
       do {
-        *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + v4) = R28_ | *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap
+        *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap + v4) = R28_ | *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap
                                                                                       + v4) & 0xE3FF;
         v3 += 2;
         v4 += 2;
@@ -1848,10 +1848,10 @@ void ProcessTextGlowObject(void) {  // 0x8B9849
       v4 = R22_;
     }
     uint16 v6 = cinematic_var19;
-    if (*(uint16 *)((char *)&cinematic_var20 + cinematic_var19) == 3072) {
-      *(uint16 *)((char *)&cinematic_var21 + cinematic_var19) = 0;
+    if (*(uint16 *)((uint8 *)&cinematic_var20 + cinematic_var19) == 3072) {
+      *(uint16 *)((uint8 *)&cinematic_var21 + cinematic_var19) = 0;
     } else {
-      *(uint16 *)((char *)&cinematic_var20 + cinematic_var19) += 1024;
+      *(uint16 *)((uint8 *)&cinematic_var20 + cinematic_var19) += 1024;
       enemy_projectile_pre_instr[(v6 >> 1) + 2] = 5;
     }
   }
@@ -1867,7 +1867,7 @@ void DisableTextGlowObjects_(void) {
 
 void CinematicFunction_Intro_Func128(uint16 a) {  // 0x8B98F9
   for (int i = 2046; i >= 0; i -= 2)
-    *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + (uint16)i) = a;
+    *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap + (uint16)i) = a;
   cinematic_var26 = 0;
   cinematic_var21 = 0;
   cinematic_var22 = 0;
@@ -1943,13 +1943,13 @@ void CreditsObject_ProcessOne(void) {  // 0x8B996A
 }
 
 void CreditsObject_Func1(uint16 j) {  // 0x8B99C1
-  *(VoidP *)((char *)&R0_.addr + 1) = 32512;
+  *(VoidP *)((uint8 *)&R0_.addr + 1) = 32512;
   R0_.addr = 0;
   uint16 RegWord = Mult8x8(cinematic_var26, 0x40);
   R20_ = 31;
   uint16 v2 = *((uint16 *)RomPtr_8C(j) + 1);
   do {
-    *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + RegWord) = IndirReadWord(R0_, v2);
+    *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap + RegWord) = IndirReadWord(R0_, v2);
     RegWord += 2;
     v2 += 2;
     --R20_;
@@ -2482,7 +2482,7 @@ void CinematicFunc_Func10(void) {  // 0x8B9F52
     DisablePaletteFx();
     ClearPaletteFXObjects();
     for (int i = 656; i >= 0; i -= 2)
-      *(uint16 *)((char *)&cinematic_var5 + (uint16)i) = 0;
+      *(uint16 *)((uint8 *)&cinematic_var5 + (uint16)i) = 0;
     for (j = 510; (j & 0x8000u) == 0; j -= 2)
       hdma_table_1[j >> 1] = 0;
     game_state = 4;
@@ -2507,7 +2507,7 @@ void CinematicFunc_Func9(void) {  // 0x8B9FAE
     DisablePaletteFx();
     ClearPaletteFXObjects();
     for (int i = 656; i >= 0; i -= 2)
-      *(uint16 *)((char *)&cinematic_var5 + (uint16)i) = 0;
+      *(uint16 *)((uint8 *)&cinematic_var5 + (uint16)i) = 0;
     for (j = 510; (j & 0x8000u) == 0; j -= 2)
       hdma_table_1[j >> 1] = 0;
     game_state = 40;
@@ -2607,7 +2607,7 @@ void CinematicFunction_Intro_Initial(void) {  // 0x8BA395
   samus_invincibility_timer = 0;
   samus_knockback_timer = 0;
   for (int i = 656; i >= 0; i -= 2)
-    *(uint16 *)((char *)&cinematic_var5 + (uint16)i) = 0;
+    *(uint16 *)((uint8 *)&cinematic_var5 + (uint16)i) = 0;
   uint16 v1 = 0;
   do {
     palette_buffer[v1 >> 1] = kPalettes_Intro[v1 >> 1];
@@ -2675,7 +2675,7 @@ void CinematicFunction_Intro_Initial(void) {  // 0x8BA395
   for (j = 1023; (j & 0x8000u) == 0; --j)
     ram3800.cinematic_bg_tilemap[j] = *(uint16 *)&BTS[j * 2 + 11262];
   for (k = 127; (k & 0x8000u) == 0; --k)
-    ram3000.pause_menu_map_tilemap[k] = *(uint16 *)((char *)g_word_8CD81B + k * 2);
+    ram3000.pause_menu_map_tilemap[k] = *(uint16 *)((uint8 *)g_word_8CD81B + k * 2);
   cinematic_var11 = -1;
   cinematic_function = FUNC16(CinematicFunction_Intro_FadeIn);
   QueueMusic_Delayed8(0);
@@ -3716,7 +3716,7 @@ void CinematicFunction_Intro_Func34(void) {  // 0x8BB72F
     reg_BG3VOFS = 0;
     cinematic_var5 = 0;
     for (int i = 656; i >= 0; i -= 2)
-      *(uint16 *)((char *)&cinematic_var5 + (uint16)i) = 0;
+      *(uint16 *)((uint8 *)&cinematic_var5 + (uint16)i) = 0;
     cinematic_function = FUNC16(CinematicFunction_Intro_Func54);
     RevertButtonConfig();
     samus_max_missiles = 0;
@@ -4317,7 +4317,7 @@ void CinematicFunction_Intro_Func72(void) {  // 0x8BC0C5
     reg_BG3VOFS = 0;
     cinematic_var5 = 0;
     for (int i = 656; i >= 0; i -= 2)
-      *(uint16 *)((char *)&cinematic_var5 + (uint16)i) = 0;
+      *(uint16 *)((uint8 *)&cinematic_var5 + (uint16)i) = 0;
     cinematic_function = FUNC16(CinematicFunction_Intro_Func73);
   }
 }
@@ -4336,7 +4336,7 @@ void CinematicFunctionBlackoutFromCeres(void) {  // 0x8BC11B
 
   SetupPpu_3_Mode7();
   for (j = 656; j >= 0; j -= 2)
-    *(uint16 *)((char *)&cinematic_var5 + (uint16)j) = 0;
+    *(uint16 *)((uint8 *)&cinematic_var5 + (uint16)j) = 0;
   door_def_ptr = 0;
   layer1_x_pos = 0;
   layer1_y_pos = 0;
@@ -4616,7 +4616,7 @@ void CinematicFunction_Intro_Func85(void) {  // 0x8BC627
 void CinematicFunction_Intro_Func86(void) {  // 0x8BC699
   SetupPpu_4_Mode1();
   for (int i = 656; i >= 0; i -= 2)
-    *(uint16 *)((char *)&cinematic_var5 + (uint16)i) = 0;
+    *(uint16 *)((uint8 *)&cinematic_var5 + (uint16)i) = 0;
   DecompressToMem(0x978ADB, g_ram + 0x19000);
   DecompressToMem(0x96EC76, g_ram + 0x15000);
   WriteReg(VMADDL, 0);
@@ -4909,7 +4909,7 @@ void CinematicFunction_Intro_Func108(void) {  // 0x8BCAD0
 void CinematicFunction_Intro_Func95(void) {  // 0x8BCADF
   reg_INIDISP = 0x80;
   for (int i = 656; i >= 0; i -= 2)
-    *(uint16 *)((char *)&cinematic_var5 + (uint16)i) = 0;
+    *(uint16 *)((uint8 *)&cinematic_var5 + (uint16)i) = 0;
   game_state = kGameState_6_LoadingGameData;
   samus_health = samus_max_health;
 }
@@ -4941,7 +4941,7 @@ void CinematicFunctionEscapeFromCebes(void) {  // 0x8BD480
   irqhandler_next_handler = 0;
   SetupPpu_5_Mode7();
   for (j = 656; j >= 0; j -= 2)
-    *(uint16 *)((char *)&cinematic_var5 + (uint16)j) = 0;
+    *(uint16 *)((uint8 *)&cinematic_var5 + (uint16)j) = 0;
   uint16 v2 = 0;
   do {
     palette_buffer[v2 >> 1] = kPalettes_Intro3[v2 >> 1];
@@ -4979,7 +4979,7 @@ void CinematicFunctionEscapeFromCebes(void) {  // 0x8BD480
   DecompressToMem(0x96fe69, g_ram + 0x14000);
   uint16 v3 = 768;
   do {
-    *(uint16 *)((char *)&g_ram[0x14000] + v3) = 0x8c8c;
+    *(uint16 *)((uint8 *)&g_ram[0x14000] + v3) = 0x8c8c;
     v3 += 2;
   } while ((int16)(v3 - 0x4000) < 0);
   DecompressToMem(0x98b5c1, g_ram + 0x1e000);
@@ -5276,19 +5276,19 @@ void CinematicFunction_Intro_Func118(void) {
   if (sign16(cinematic_var4 - 8)) {
     *(uint16 *)(&mode7_write_queue[0].field_0 + mode7_vram_write_queue_tail) = 192;
     int v3 = v0;
-    *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v2) = kCinematicFunction_Intro_Func118_Tab0[v3];
+    *(uint16 *)((uint8 *)&mode7_write_queue[0].field_1 + v2) = kCinematicFunction_Intro_Func118_Tab0[v3];
     *(uint16 *)&mode7_write_queue[0].gap3[v1] = 127;
     *(uint16 *)&mode7_write_queue[0].gap3[v1 + 1] = 2048;
     *(uint16 *)&mode7_write_queue[0].gap3[v1 + 3] = kCinematicFunction_Intro_Func118_Tab1[v3];
-    *(uint16 *)((char *)&mode7_write_queue[1].field_1 + v1) = 128;
+    *(uint16 *)((uint8 *)&mode7_write_queue[1].field_1 + v1) = 128;
   } else {
     *(uint16 *)(&mode7_write_queue[0].field_0 + mode7_vram_write_queue_tail) = 128;
     int v4 = v0;
-    *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v2) = kCinematicFunction_Intro_Func118_Tab0[v4];
+    *(uint16 *)((uint8 *)&mode7_write_queue[0].field_1 + v2) = kCinematicFunction_Intro_Func118_Tab0[v4];
     *(uint16 *)&mode7_write_queue[0].gap3[v1] = 127;
     *(uint16 *)&mode7_write_queue[0].gap3[v1 + 1] = 2048;
     *(uint16 *)&mode7_write_queue[0].gap3[v1 + 3] = kCinematicFunction_Intro_Func118_Tab1[v4];
-    *(uint16 *)((char *)&mode7_write_queue[1].field_1 + v1) = 0;
+    *(uint16 *)((uint8 *)&mode7_write_queue[1].field_1 + v1) = 0;
   }
   mode7_vram_write_queue_tail = v1 + 9;
   if (!sign16(++cinematic_var4 - 16)) {
@@ -5654,7 +5654,7 @@ void CinematicFunction_Intro_Func136(void) {  // 0x8BE265
 void CinematicFunction_Intro_Func135(void) {  // 0x8BE293
   if (sign16(--cinematic_var4 - 65)) {
     for (int i = 574; i >= 0; i -= 2)
-      *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[288] + (uint16)i) = 127;
+      *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[288] + (uint16)i) = 127;
     uint16 v1 = 0;
     do {
       ram3000.pause_menu_map_tilemap[v1 + 384] = g_word_8CDEDB[v1];
@@ -5799,7 +5799,7 @@ void CinematicFunction_Intro_Func141(void) {  // 0x8BE48A
     EnableCinematicBgTilemapUpdates();
     cinematicbg_var3 = 19456;
     for (int i = 126; i >= 0; i -= 2)
-      *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[384] + (uint16)i) = 127;
+      *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[384] + (uint16)i) = 127;
     CinematicUpdateSomeBg();
   }
 }
@@ -5909,7 +5909,7 @@ uint16 CinematicFunction_Intro_Func146(uint16 k, uint16 j) {  // 0x8BE769
 
 uint16 CinematicFunction_Intro_Func147(uint16 k, uint16 j) {  // 0x8BE780
   for (int i = 126; i >= 0; i -= 2)
-    *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[736] + (uint16)i) = 127;
+    *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[736] + (uint16)i) = 127;
   cinematic_function = FUNC16(CinematicFunction_Intro_Func148);
   return j;
 }

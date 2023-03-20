@@ -68,7 +68,7 @@ void LoadFXHeader(void) {
   FxDef *v6;
   FxDef *v8;
   uint16 j;
-  char v10; // cf
+  int8 v10; // cf
   FxDef *v12;
   uint16 k;
   FxDef *FxDef;

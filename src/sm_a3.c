@@ -125,7 +125,7 @@ void Waver_Main(void) {  // 0xA3874C
   R18_ = E->waver_var_A;
   R20_ = E->waver_var_B;
   if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index) & 1) {
-    R18_ = *(uint16 *)((char *)&E->waver_var_A + 1);
+    R18_ = *(uint16 *)((uint8 *)&E->waver_var_A + 1);
     E->waver_var_B = SignExtend8((uint8)((uint16)(-R18_ & 0xFF00) >> 8));
     LOBYTE(v2) = 0;
     HIBYTE(v2) = -(int8)R18_;
@@ -354,7 +354,7 @@ void Fireflea_Main(void) {  // 0xA38DEE
     E->base.x_pos = E->ffa_var_E + CosineMult8bit(HIBYTE(E->ffa_var_D));
     draw_enemy_layer = E->ffa_var_C;
     E->base.y_pos = E->ffa_var_F + SineMult8bitNegative(HIBYTE(E->ffa_var_D));
-    E->ffa_var_D += *(uint16 *)((char *)&E->ffa_var_A + 1);
+    E->ffa_var_D += *(uint16 *)((uint8 *)&E->ffa_var_A + 1);
   } else {
     uint16 y_subpos = E->base.y_subpos;
     int v2 = E->ffa_var_02 >> 1;
@@ -903,11 +903,11 @@ void Roach_Func_3(uint16 k) {  // 0xA3A1B0
 void Roach_Func_4(uint16 k) {  // 0xA3A1F3
   Enemy_Roach *E = Get_Roach(k);
   draw_enemy_layer = LOBYTE(E->roach_parameter_1);
-  CosineMult8bit((uint8)(*(uint16 *)((char *)&E->roach_parameter_1 + 1) - 32));
+  CosineMult8bit((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 32));
   E->roach_var_05 = loop_index_end;
   E->roach_var_04 = loop_index;
   draw_enemy_layer = LOBYTE(E->roach_parameter_1);
-  SineMult8bitNegative((uint8)(*(uint16 *)((char *)&E->roach_parameter_1 + 1) - 32));
+  SineMult8bitNegative((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 32));
   E->roach_var_07 = loop_index_end;
   E->roach_var_06 = loop_index;
 }
@@ -915,28 +915,28 @@ void Roach_Func_4(uint16 k) {  // 0xA3A1F3
 void Roach_Func_5(uint16 k) {  // 0xA3A23E
   Enemy_Roach *E = Get_Roach(k);
   draw_enemy_layer = LOBYTE(E->roach_parameter_1);
-  CosineMult8bit((uint8)(*(uint16 *)((char *)&E->roach_parameter_1 + 1) + 32));
+  CosineMult8bit((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) + 32));
   E->roach_var_09 = loop_index_end;
   E->roach_var_08 = loop_index;
   draw_enemy_layer = LOBYTE(E->roach_parameter_1);
-  SineMult8bitNegative((uint8)(*(uint16 *)((char *)&E->roach_parameter_1 + 1) + 32));
+  SineMult8bitNegative((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) + 32));
   E->roach_var_0B = loop_index_end;
   E->roach_var_0A = loop_index;
 }
 
 void Roach_Func_6(uint16 k) {  // 0xA3A289
   Enemy_Roach *E = Get_Roach(k);
-  E->roach_var_20 = 2 * ((uint8)(*(uint16 *)((char *)&E->roach_parameter_1 + 1) - 48) >> 5);
+  E->roach_var_20 = 2 * ((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 48) >> 5);
 }
 
 void Roach_Func_7(uint16 k) {  // 0xA3A29E
   Enemy_Roach *E = Get_Roach(k);
-  E->roach_var_21 = 2 * ((uint8)(*(uint16 *)((char *)&E->roach_parameter_1 + 1) - 80) >> 5);
+  E->roach_var_21 = 2 * ((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 80) >> 5);
 }
 
 void Roach_Func_8(uint16 k) {  // 0xA3A2B7
   Enemy_Roach *E = Get_Roach(k);
-  E->roach_var_22 = 2 * ((uint8)(*(uint16 *)((char *)&E->roach_parameter_1 + 1) - 48 + 32) >> 5);
+  E->roach_var_22 = 2 * ((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 48 + 32) >> 5);
 }
 void CallRoachFunc(uint32 ea) {
   switch (ea) {
@@ -1423,7 +1423,7 @@ uint16 Sidehopper_Func_2(void) {  // 0xA3AB9D
   R20_ = 0;
   do {
     R18_ += R24_;
-    R20_ += *(uint16 *)((char *)kCommonEnemySpeeds_Quadratic + (uint16)(8 * R18_) + 1);
+    R20_ += *(uint16 *)((uint8 *)kCommonEnemySpeeds_Quadratic + (uint16)(8 * R18_) + 1);
   } while (sign16(R20_ - R22_));
   return R18_;
 }
@@ -2223,7 +2223,7 @@ const uint16 *MaridiaSnail_Instr_2(uint16 k, const uint16 *jp) {  // 0xA3CC3F
 const uint16 *MaridiaSnail_Instr_4(uint16 k, const uint16 *jp) {  // 0xA3CC48
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   E->msl_var_07 = jp[0];
-  E->msl_var_C = *(uint16 *)((char *)&g_stru_A3CD42[0].field_6 + 8 * E->msl_var_07);
+  E->msl_var_C = *(uint16 *)((uint8 *)&g_stru_A3CD42[0].field_6 + 8 * E->msl_var_07);
   return jp + 1;
 }
 
@@ -2682,10 +2682,10 @@ uint8 MaridiaSnail_Func_19(uint16 k) {  // 0xA3D356
     return 0;
   uint16 v2 = g_word_A3CDC2[E->msl_var_07];
   E->msl_var_07 = v2;
-  E->base.current_instruction = *(VoidP *)((char *)&g_stru_A3CD42[0].field_0 + (uint16)(8 * v2));
-  E->base.properties = *(uint16 *)((char *)&g_stru_A3CD42[0].field_2 + (uint16)(8 * v2)) | E->base.properties & ~3u;
-  E->msl_var_D = *(VoidP *)((char *)&g_stru_A3CD42[0].field_4 + (uint16)(8 * v2));
-  E->msl_var_C = *(uint16 *)((char *)&g_stru_A3CD42[0].field_6 + (uint16)(8 * v2));
+  E->base.current_instruction = *(VoidP *)((uint8 *)&g_stru_A3CD42[0].field_0 + (uint16)(8 * v2));
+  E->base.properties = *(uint16 *)((uint8 *)&g_stru_A3CD42[0].field_2 + (uint16)(8 * v2)) | E->base.properties & ~3u;
+  E->msl_var_D = *(VoidP *)((uint8 *)&g_stru_A3CD42[0].field_4 + (uint16)(8 * v2));
+  E->msl_var_C = *(uint16 *)((uint8 *)&g_stru_A3CD42[0].field_6 + (uint16)(8 * v2));
   MaridiaSnail_Func_2(k, 8 * v2);
   MaridiaSnail_Func_3(k);
   E->msl_var_05 = 1;
@@ -3541,13 +3541,13 @@ void Metroid_Touch(void) {  // 0xA3EDEB
       if (v2 < 0)
         v1 = -256;
       E->metroid_var_B = v1;
-      *(uint16 *)((char *)&E->metroid_var_A + 1) = v2 << 6;
+      *(uint16 *)((uint8 *)&E->metroid_var_A + 1) = v2 << 6;
       v3 = 0;
       v4 = E->base.y_pos - draw_enemy_layer;
       if (v4 < 0)
         v3 = -256;
       E->metroid_var_D = v3;
-      *(uint16 *)((char *)&E->metroid_var_C + 1) = v4 << 6;
+      *(uint16 *)((uint8 *)&E->metroid_var_C + 1) = v4 << 6;
       E->metroid_var_F = 0;
       E->base.current_instruction = addr_kMetroid_Ilist_E9CF;
       E->base.instruction_timer = 1;
@@ -3636,13 +3636,13 @@ void Metroid_Shot(void) {  // 0xA3EF07
       if (v7 < 0)
         v6 = -256;
       E->metroid_var_B = v6;
-      *(uint16 *)((char *)&E->metroid_var_A + 1) = 32 * v7;
+      *(uint16 *)((uint8 *)&E->metroid_var_A + 1) = 32 * v7;
       v8 = 0;
       v9 = E->base.y_pos - projectile_y_pos[0];
       if (v9 < 0)
         v8 = -256;
       E->metroid_var_D = v8;
-      *(uint16 *)((char *)&E->metroid_var_C + 1) = 32 * v9;
+      *(uint16 *)((uint8 *)&E->metroid_var_C + 1) = 32 * v9;
       E->metroid_var_F = 0;
       E->base.current_instruction = addr_kMetroid_Ilist_E9CF;
       E->base.instruction_timer = 1;

@@ -32,7 +32,7 @@ void MotherBrain_CalcHdma(void) {  // 0xADDE00
   R18_ = HIBYTE(E->mbn_var_33) >> 1;
   E->mbn_var_3A = E->mbn_var_31 - R18_;
   E->mbn_var_3B = R18_ + E->mbn_var_31;
-  uint16 v2 = (*(uint16 *)((char *)&E1->base.enemy_ptr + 1) + 3584) & 0xFF00;
+  uint16 v2 = (*(uint16 *)((uint8 *)&E1->base.enemy_ptr + 1) + 3584) & 0xFF00;
   E->mbn_var_3C = v2;
   E->mbn_var_3E = v2;
   uint16 v3 = E1->base.y_pos + 5;

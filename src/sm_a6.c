@@ -1806,25 +1806,25 @@ void CeresRidley_Func_29(void) {  // 0xA6AB5F
   R38 = abs16(R24_);
   R40 = E->cry_var_30;
   CeresRidley_Func_32();
-  reg_M7A = MaybeNegate(R24_, *(uint16 *)((char *)&R42 + 1));
+  reg_M7A = MaybeNegate(R24_, *(uint16 *)((uint8 *)&R42 + 1));
 
   R24_ = CeresRidley_Func_30(0x100u);
   R38 = abs16(R24_);
   R40 = E->cry_var_30;
   CeresRidley_Func_32();
-  reg_M7B = MaybeNegate(R24_, *(uint16 *)((char *)&R42 + 1));
+  reg_M7B = MaybeNegate(R24_, *(uint16 *)((uint8 *)&R42 + 1));
 
   R24_ = -CeresRidley_Func_30(0x100u);
   R38 = abs16(R24_);
   R40 = E->cry_var_30;
   CeresRidley_Func_32();
-  reg_M7C = MaybeNegate(R24_, *(uint16 *)((char *)&R42 + 1));
+  reg_M7C = MaybeNegate(R24_, *(uint16 *)((uint8 *)&R42 + 1));
 
   R24_ = CeresRidley_Func_31(0x100u);
   R38 = abs16(R24_);
   R40 = E->cry_var_30;
   CeresRidley_Func_32();
-  reg_M7D = MaybeNegate(R24_, *(uint16 *)((char *)&R42 + 1));
+  reg_M7D = MaybeNegate(R24_, *(uint16 *)((uint8 *)&R42 + 1));
 }
 
 uint16 CeresRidley_Func_30(uint16 a) {  // 0xA6AC0E
@@ -1847,9 +1847,9 @@ uint16 CeresRidley_AC30(uint16 a) {  // 0xA6AC30
     R40 = abs16(result);
     CeresRidley_Func_32();
     if (((R22_ ^ R20_) & 0x8000u) != 0)
-      return -*(uint16 *)((char *)&R42 + 1);
+      return -*(uint16 *)((uint8 *)&R42 + 1);
     else
-      return *(uint16 *)((char *)&R42 + 1);
+      return *(uint16 *)((uint8 *)&R42 + 1);
   }
   return result;
 }
@@ -2922,7 +2922,7 @@ void Ridley_Func_59(void) {  // 0xA6C136
   const uint8 *v1 = RomPtr_A6(addr_byte_A6C15D);
   v2 = gVramWriteEntry(vram_write_queue_tail);
   v2->size = GET_WORD(v1);
-  *(VoidP *)((char *)&v2->src.addr + 1) = GET_WORD(v1 + 3);
+  *(VoidP *)((uint8 *)&v2->src.addr + 1) = GET_WORD(v1 + 3);
   v2->src.addr = GET_WORD(v1 + 2);
   v2->vram_dst = GET_WORD(v1 + 5);
   vram_write_queue_tail = v0 + 7;
@@ -2977,7 +2977,7 @@ uint8 ProcessEscapeTimerTileTransfers(void) {  // 0xA6C26E
   if (GET_WORD(v3)) {
     v4 = gVramWriteEntry(vram_write_queue_tail);
     v4->size = GET_WORD(v3);
-    *(VoidP *)((char *)&v4->src.addr + 1) = GET_WORD(v3 + 3);
+    *(VoidP *)((uint8 *)&v4->src.addr + 1) = GET_WORD(v3 + 3);
     v4->src.addr = GET_WORD(v3 + 2);
     v4->vram_dst = GET_WORD(v3 + 5);
     vram_write_queue_tail = v2 + 7;
@@ -3035,7 +3035,7 @@ uint8 HandleTypewriterText(void) {  // 0xA6C2B1
       uint16 v11 = vram_write_queue_tail;
       v12 = gVramWriteEntry(vram_write_queue_tail);
       v12->size = 2;
-      *(VoidP *)((char *)&v12->src.addr + 1) = 32256;
+      *(VoidP *)((uint8 *)&v12->src.addr + 1) = 32256;
       E->mbn_var_3A = R18_ + v4 - 65;
       v12->src.addr = ADDR16_OF_RAM(*extra_enemy_ram8000) + 52;
       uint16 mbn_var_3C = E->mbn_var_3C;
@@ -3067,7 +3067,7 @@ void Ridley_Func_62(void) {  // 0xA6C383
       break;
     v3 = gVramWriteEntry(i);
     v3->size = GET_WORD(v2);
-    *(VoidP *)((char *)&v3->src.addr + 1) = GET_WORD(v2 + 3);
+    *(VoidP *)((uint8 *)&v3->src.addr + 1) = GET_WORD(v2 + 3);
     v3->src.addr = GET_WORD(v2 + 2);
     v3->vram_dst = GET_WORD(v2 + 5);
     v0 += 7;
@@ -3755,8 +3755,8 @@ LABEL_25:
 
 void Ridley_Func_89(uint16 a) {  // 0xA6D19D
   uint16 v1;
-  char v2; // t0
-  char v4; // cf
+  int8 v2; // t0
+  int8 v4; // cf
 
   v2 = a;
   LOBYTE(v1) = 0;
@@ -4331,12 +4331,12 @@ void Ridley_Func_114(void) {  // 0xA6D955
   Enemy_Ridley *E = Get_Ridley(0);
   uint16 ridley_var_10 = E->ridley_var_10, v2;
   if (!ridley_var_10) {
-    if (*(int16 *)((char *)&E->base.enemy_ptr + 1) < 0)
+    if (*(int16 *)((uint8 *)&E->base.enemy_ptr + 1) < 0)
       return;
     v2 = addr_kRidley_Ilist_E6F0;
     goto LABEL_7;
   }
-  if (ridley_var_10 != 1 && *(int16 *)((char *)&E->base.enemy_ptr + 1) < 0) {
+  if (ridley_var_10 != 1 && *(int16 *)((uint8 *)&E->base.enemy_ptr + 1) < 0) {
     v2 = addr_kRidley_Ilist_E706;
 LABEL_7:
     E->base.current_instruction = v2;
@@ -4406,8 +4406,8 @@ void Ridley_Func_118(void) {  // 0xA6DA0C
     E->ridley_var_06 = i;
     uint16 v6 = vram_write_queue_tail;
     v7 = gVramWriteEntry(vram_write_queue_tail);
-    *(VoidP *)((char *)&v7->src.addr + 1) = -20480;
-    *(VoidP *)((char *)&v7[1].src.addr + 1) = -20480;
+    *(VoidP *)((uint8 *)&v7->src.addr + 1) = -20480;
+    *(VoidP *)((uint8 *)&v7[1].src.addr + 1) = -20480;
     v7->src.addr = v4[1];
     v7[1].src.addr = v4[2];
     v7->vram_dst = 29216;
@@ -4428,8 +4428,8 @@ void Ridley_Func_119(uint8 carry) {  // 0xA6DA8B
     v1 = addr_off_A6DAD4;
   uint16 v2 = vram_write_queue_tail;
   v3 = gVramWriteEntry(vram_write_queue_tail);
-  *(VoidP *)((char *)&v3->src.addr + 1) = -20480;
-  *(VoidP *)((char *)&v3[1].src.addr + 1) = -20480;
+  *(VoidP *)((uint8 *)&v3->src.addr + 1) = -20480;
+  *(VoidP *)((uint8 *)&v3[1].src.addr + 1) = -20480;
   const uint8 *v4 = RomPtr_A6(v1);
   v3->src.addr = GET_WORD(v4);
   v3[1].src.addr = GET_WORD(v4 + 2);
@@ -5064,7 +5064,7 @@ void CeresDoor_Func_1(uint16 k) {  // 0xA6F739
     uint16 v1 = vram_write_queue_tail;
     v2 = gVramWriteEntry(vram_write_queue_tail);
     v2->size = 1024;
-    *(VoidP *)((char *)&v2->src.addr + 1) = -20480;
+    *(VoidP *)((uint8 *)&v2->src.addr + 1) = -20480;
     v2->src.addr = -15360;
     v2->vram_dst = 28672;
     vram_write_queue_tail = v1 + 7;

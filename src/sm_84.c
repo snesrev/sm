@@ -678,7 +678,7 @@ const uint8 *PlmInstr_LoadItemPlmGfx(const uint8 *plmp, uint16 k) {  // 0x848764
   int v7 = R20;
   int R24 = R20 + 16;
   do {
-    *(uint16 *)((char *)&tile_table.tables[0].top_left + v7) = R22 + (plmp[0] << 10);
+    *(uint16 *)((uint8 *)&tile_table.tables[0].top_left + v7) = R22 + (plmp[0] << 10);
     ++R22;
     plmp++;
     v7 += 2;
@@ -1757,25 +1757,25 @@ void PlmSetup_QuicksandSurface_0(uint16 j) {  // 0x84B447
   samus_y_speed = 0;
   extra_samus_y_subdisplacement = 0;
   extra_samus_y_displacement = 0;
-  *(uint16 *)((char *)&extra_samus_y_subdisplacement + 1) = g_word_84B48F[j >> 1];
+  *(uint16 *)((uint8 *)&extra_samus_y_subdisplacement + 1) = g_word_84B48F[j >> 1];
 }
 
 void PlmSetup_QuicksandSurface_1(uint16 j) {  // 0x84B45A
   int v1 = j >> 1;
-  if (g_word_84B493[v1] < *(uint16 *)((char *)&samus_y_subspeed + 1)) {
+  if (g_word_84B493[v1] < *(uint16 *)((uint8 *)&samus_y_subspeed + 1)) {
     samus_y_subspeed = 0;
     samus_y_speed = 0;
-    *(uint16 *)((char *)&samus_y_subspeed + 1) = g_word_84B493[v1];
+    *(uint16 *)((uint8 *)&samus_y_subspeed + 1) = g_word_84B493[v1];
   }
   extra_samus_y_subdisplacement = 0;
   extra_samus_y_displacement = 0;
-  *(uint16 *)((char *)&extra_samus_y_subdisplacement + 1) = g_word_84B48B[v1];
+  *(uint16 *)((uint8 *)&extra_samus_y_subdisplacement + 1) = g_word_84B48B[v1];
 }
 
 void PlmSetup_QuicksandSurface_2(uint16 j) {  // 0x84B47B
   extra_samus_y_subdisplacement = 0;
   extra_samus_y_displacement = 0;
-  *(uint16 *)((char *)&extra_samus_y_subdisplacement + 1) = g_word_84B48B[j >> 1];
+  *(uint16 *)((uint8 *)&extra_samus_y_subdisplacement + 1) = g_word_84B48B[j >> 1];
   autojump_timer = 0;
 }
 
