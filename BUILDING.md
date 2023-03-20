@@ -85,8 +85,8 @@ Dependencies and requirements:
  Note: *You must have MINGW64 open and affirm you're in the `sm` root folder.*
 
 1. Make sure you've installed DevKitPro and Atmosphere.
-2. Type `(dkp-)pacman -S git switch-dev switch-sdl2 switch-tools` to install the Switch SDL2 deps.
-3. Now go to the `switch` folder inside MSYS2 `cd platform/switch/` 
+2. Type `pacman -S git switch-dev switch-sdl2 switch-tools` to install the Switch SDL2 deps.
+3. Now go to the `switch` folder inside MSYS2 `cd /src/platform/switch` 
 4. Type `make` to build the game.
 5. Copy the `.ini`, `nro` and the `smc` file and put them in your Switch.
 
