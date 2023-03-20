@@ -6,7 +6,65 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
-#define kDemoRoomData ((uint16*)RomPtr(0x82876c))
+
+#define kDemoRoomData ((uint16*)RomFixedPtr(0x82876c))
+#define kPauseScreenSpriteAnimationData_0 (*(PauseScreenSpriteAnimationData*)RomFixedPtr(0x82c0b2))
+#define kPauseScreenSpriteAnimationData_1 (*(PauseScreenSpriteAnimationData*)RomFixedPtr(0x82c0c4))
+#define kPauseScreenSpriteAnimationData_2 (*(PauseScreenSpriteAnimationData*)RomFixedPtr(0x82c0d6))
+#define kPauseScreenSpriteAnimationData_3 (*(PauseScreenSpriteAnimationData*)RomFixedPtr(0x82c0e8))
+#define kPAuseSpritePaletteIndexValues ((uint16*)RomFixedPtr(0x82c0fa))
+#define kPausePtsToAnimationSpritemapBaseIds ((uint16*)RomFixedPtr(0x82c1e4))
+#define kInitialPalette ((uint16*)RomFixedPtr(0x9a8000))
+#define kDemoRoomData ((uint16*)RomFixedPtr(0x82876c))
+#define kPauseScreenPalettes ((uint16*)RomFixedPtr(0xb6f000))
+#define kPauseLrHighlightAnimData ((uint8*)RomFixedPtr(0x82c10c))
+#define kPauseAreaLabelTilemap ((uint16*)RomFixedPtr(0x82965f))
+#define kPauseMenuMapTilemaps ((LongPtr*)RomFixedPtr(0x82964a))
+#define kPauseMenuMapData ((uint16*)RomFixedPtr(0x829717))
+#define kEquipmentTilemaps_Tanks ((uint16*)RomFixedPtr(0x82c088))
+#define kEquipmentTilemaps_Weapons ((uint16*)RomFixedPtr(0x82c08c))
+#define kEquipmentTilemaps_Suits ((uint16*)RomFixedPtr(0x82c096))
+#define kEquipmentTilemaps_Boots ((uint16*)RomFixedPtr(0x82c0a2))
+#define kHyperBeamWeaponsTilemaps ((uint16*)RomFixedPtr(0x82c0a8))
+#define kEquipmentBitmasks_Weapons ((uint16*)RomFixedPtr(0x82c04c))
+#define kEquipmentBitmasks_Suits ((uint16*)RomFixedPtr(0x82c056))
+#define kEquipmentBitmasks_Boots ((uint16*)RomFixedPtr(0x82c062))
+#define kPauseAnimatedPalette ((uint16*)RomFixedPtr(0x82a987))
+#define kPauseReserveTankAnimationData ((uint8*)RomFixedPtr(0x82c165))
+#define kEquipmentTilemapOffs_Tanks ((uint16*)RomFixedPtr(0x82c068))
+#define kEquipmentTilemapOffs_Weapons ((uint16*)RomFixedPtr(0x82c06c))
+#define kEquipmentTilemapOffs_Suits ((uint16*)RomFixedPtr(0x82c076))
+#define kEquipmentTilemapOffs_Boots ((uint16*)RomFixedPtr(0x82c082))
+#define kEquipmentTilemaps_Tanks ((uint16*)RomFixedPtr(0x82c088))
+#define kEquipmentTilemaps_Weapons ((uint16*)RomFixedPtr(0x82c08c))
+#define kEquipmentTilemaps_Suits ((uint16*)RomFixedPtr(0x82c096))
+#define kEquipmentTilemaps_Boots ((uint16*)RomFixedPtr(0x82c0a2))
+#define kEquipmentScreenWireframeCmp ((uint16*)RomFixedPtr(0x82b257))
+#define kEquipmentScreenWireframePtrs ((uint16*)RomFixedPtr(0x82b25f))
+#define kEquipmentScreenPtrsToItemXYpos ((uint16*)RomFixedPtr(0x82c18e))
+#define kEquipmentPtrsToRamTilemapOffsets ((uint16*)RomFixedPtr(0x82c02c))
+#define kEquipmentPtrsToBitmasks ((uint16*)RomFixedPtr(0x82c034))
+#define kEquipmentPtrsToBitsets ((uint16*)RomFixedPtr(0x82c03c))
+#define kEquipmentPtrsToEquipmentTilemaps ((uint16*)RomFixedPtr(0x82c044))
+#define kMapIconDataPointers ((MapIconDataPointers*)RomFixedPtr(0x82c7cb))
+#define g_stru_82B9A0 ((MapScrollArrowData*)RomFixedPtr(0x82b9a0))
+#define g_stru_82B9AA ((MapScrollArrowData*)RomFixedPtr(0x82b9aa))
+#define g_stru_82B9B4 ((MapScrollArrowData*)RomFixedPtr(0x82b9b4))
+#define g_stru_82B9BE (*(MapScrollArrowData*)RomFixedPtr(0x82b9be))
+#define file_copy_arrow_stuff ((FileCopyArrowStuff*)RomFixedPtr(0x82bb0c))
+#define kMapElevatorDests ((uint16*)RomFixedPtr(0x82c74d))
+#define kStateHeaderGraphicsSets ((uint16*)RomFixedPtr(0x8fe7a7))
+#define kCommonSpritesPalette1 ((uint16*)RomFixedPtr(0x9afc00))
+#define kMenuPalettes ((uint16*)RomFixedPtr(0x8ee400))
+#define kOptionsMenuSpecialPtrs ((uint16*)RomFixedPtr(0x82f0ae))
+#define off_82F2ED ((uint16*)RomFixedPtr(0x82f2ed))
+#define off_82F54A ((uint16*)RomFixedPtr(0x82f54a))
+#define g_word_82F639 ((uint16*)RomFixedPtr(0x82f639))
+#define g_off_82F647 ((uint16*)RomFixedPtr(0x82f647))
+
+
+
+
 void CallDemoRoomDataFunc(uint32 ea) {
   switch (ea) {
   case fnDemoRoom_ChargeBeamRoomScroll21: DemoRoom_ChargeBeamRoomScroll21(); return;
@@ -225,7 +283,6 @@ void InitPpuForGameplay(void) {  // 0x8281DD
   memset7E(ram4000.bg2_tilemap, 0x2C0F, 0xFE);
 }
 
-#define kInitialPalette ((uint16*)RomPtr(0x9a8000))
 
 void LoadInitialPalette(void) {  // 0x8282C5
   int16 v0;
@@ -471,7 +528,6 @@ CoroutineRet GameState_44_TransitionFromDemo(void) {  // 0x8285FB
   return kCoroutineNone;
 }
 
-#define kDemoRoomData ((uint16*)RomPtr(0x82876c))
 
 void CheckForNextDemo(void) {  // 0x828637
   R18_ = 2 * (demo_scene + 8 * demo_scene);
@@ -870,16 +926,16 @@ uint8 CreateOptionsMenuObject_(uint16 a, uint16 j) {
     if ((v3 & 0x8000u) != 0)
       return 1;
   }
-  uint8 *v5 = RomPtr_82(j);
+  const uint8 *v5 = RomPtr_82(j);
   int v6 = v3 >> 1;
-  optionsmenu_arr1[v6] = *((uint16 *)v5 + 1);
-  optionsmenu_instr_ptr[v6] = *((uint16 *)v5 + 2);
+  optionsmenu_arr1[v6] = GET_WORD(v5 + 2);
+  optionsmenu_instr_ptr[v6] = GET_WORD(v5 + 4);
   optionsmenu_instr_timer[v6] = 1;
   optionsmenu_cur_data[v6] = 0;
   optionsmenu_arr5[v6] = 0;
   optionsmenu_arr6[v6] = 0;
   optionsmenu_arr7[v6] = 0;
-  CallOptionsEntryFunc(*(uint16 *)v5 | 0x820000, v3);
+  CallOptionsEntryFunc(GET_WORD(v5) | 0x820000, v3);
   return 0;
 }
 
@@ -927,20 +983,19 @@ void OptionsMenuFunc2(uint16 k) {  // 0x828C2B
   uint16 v1 = optionsmenu_index;
   int v2 = optionsmenu_index >> 1;
   if (optionsmenu_instr_timer[v2]-- == 1) {
-    uint16 v4 = optionsmenu_instr_ptr[v2], v6;
+    uint16 v4 = optionsmenu_instr_ptr[v2];
+    uint16 *v5;
     while (1) {
-      uint16 *v5 = (uint16 *)RomPtr_82(v4);
-      v6 = *v5;
-      if ((*v5 & 0x8000u) == 0)
+      v5 = (uint16 *)RomPtr_82(v4);
+      if ((v5[0] & 0x8000u) == 0)
         break;
-      R18_ = *v5;
-      v4 = CallOptionsInstr(v6 | 0x820000, v1, v4 + 2);
+      v4 = CallOptionsInstr(v5[0] | 0x820000, v1, v4 + 2);
       if (!v4)
         return;
     }
     int v7 = v1 >> 1;
-    optionsmenu_instr_timer[v7] = v6;
-    optionsmenu_cur_data[v7] = *((uint16 *)RomPtr_82(v4) + 1);
+    optionsmenu_instr_timer[v7] = v5[0];
+    optionsmenu_cur_data[v7] = v5[1];
     optionsmenu_instr_ptr[v7] = v4 + 4;
   }
 }
@@ -1188,7 +1243,6 @@ void LoadEqupmentScreenReserveHealthTilemap(void) {  // 0x828F70
   }
 }
 
-#define kPauseScreenPalettes ((uint16*)RomPtr(0xb6f000))
 void BackupGameplayPalettesAndLoadForPause(void) {  // 0x828FD4
   int16 v0;
   int16 v2;
@@ -1328,7 +1382,6 @@ void PauseMenu_5(void) {  // 0x829186
     ++menu_index;
   }
 }
-#define kPauseLrHighlightAnimData ((uint8*)RomPtr(0x82c10c))
 void PauseMenu_3_MapToEquipment_Load(void) {  // 0x8291AB
   DisplayMapElevatorDestinations();
   EquipmentScreenSetupReserveMode();
@@ -1502,7 +1555,6 @@ CoroutineRet GameState_18_Unpausing(void) {  // 0x8293A1
   return kCoroutineNone;
 }
 
-#define kPauseAreaLabelTilemap ((uint16*)RomPtr(0x82965f))
 void LoadPauseMenuMapTilemapAndAreaLabel(void) {  // 0x8293C3
   reg_BG1HOFS = reg_BG4HOFS;
   reg_BG1VOFS = reg_BG4VOFS;
@@ -1528,13 +1580,9 @@ void LoadPauseMenuMapTilemapAndAreaLabel(void) {  // 0x8293C3
   WriteReg(MDMAEN, 2u);
 }
 
-#define kPauseMenuMapTilemaps ((LongPtr*)RomPtr(0x82964a))
-#define kPauseMenuMapData ((uint16*)RomPtr(0x829717))
 void LoadPauseMenuMapTilemap(void) {  // 0x82943D
-  uint16 v5;
   uint16 v6;
   int16 v9;
-  uint16 v13;
 
   uint16 v0 = area_index;
   if (!sign16(area_index - 7))
@@ -1544,28 +1592,20 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
   *(uint16 *)&R0_.bank = *(uint16 *)(&kPauseMenuMapTilemaps[0].bank + (uint16)(3 * v0));
   R3_.addr = ADDR16_OF_RAM(ram4000);
   *(uint16 *)&R3_.bank = 126;
-  R8_ = 130;
-  R6_ = kPauseMenuMapData[v0];
+  R6_.bank = 130;
+  R6_.addr = kPauseMenuMapData[v0];
   if (map_station_byte_array[area_index]) {
-    uint8 *v4 = IndirPtr(&R6_, 0);
-    LOBYTE(v5) = HIBYTE(*(uint16 *)v4);
-    HIBYTE(v5) = *(uint16 *)v4;
-    R38 = v5;
-    ++R6_;
-    ++R6_;
+    R38 = swap16(IndirReadWord(R6_, 0));
+    R6_.addr += 2;
     v6 = ADDR16_OF_RAM(*map_tiles_explored);
-    *(uint16 *)((char *)&R10_ + 1) = 0;
-    *(uint16 *)((char *)&R8_ + 1) = v6;
-    uint8 *v7 = IndirPtr((char *)&R8_ + 1, 0);
-    LOBYTE(v5) = HIBYTE(*(uint16 *)v7);
-    HIBYTE(v5) = *(uint16 *)v7;
-    R40 = v5;
-    ++ *(uint16 *)((char *)&R8_ + 1);
-    ++ *(uint16 *)((char *)&R8_ + 1);
+    R9_.bank = 0;
+    R9_.addr = v6;
+    R40 = swap16(IndirReadWord(R9_, 0));
+    R9_.addr += 2;
     uint16 v8 = 0;
     v9 = 16;
     do {
-      uint16 v10 = *(uint16 *)IndirPtr(&R0_, v8);
+      uint16 v10 = IndirReadWord(R0_, v8);
       bool v11 = R40 >> 15;
       R40 *= 2;
       if (v11) {
@@ -1577,21 +1617,13 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
         if (!v11)
           v10 = 31;
       }
-      IndirWriteWord(&R3_, v8, v10);
+      IndirWriteWord(R3_, v8, v10);
       if (!--v9) {
         v9 = 16;
-        uint8 *v12 = IndirPtr(&R6_, 0);
-        LOBYTE(v13) = HIBYTE(*(uint16 *)v12);
-        HIBYTE(v13) = *(uint16 *)v12;
-        R38 = v13;
-        ++R6_;
-        ++R6_;
-        uint8 *v14 = IndirPtr((char *)&R8_ + 1, 0);
-        LOBYTE(v13) = HIBYTE(*(uint16 *)v14);
-        HIBYTE(v13) = *(uint16 *)v14;
-        R40 = v13;
-        ++ *(uint16 *)((char *)&R8_ + 1);
-        ++ *(uint16 *)((char *)&R8_ + 1);
+        R38 = swap16(IndirReadWord(R6_, 0));
+        R6_.addr += 2;
+        R40 = swap16(IndirReadWord(R9_, 0));
+        R9_.addr += 2;
       }
       v8 += 2;
     } while ((int16)(v8 - 4096) < 0);
@@ -1603,11 +1635,10 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
       uint8 t = map_tiles_explored[v2];
       map_tiles_explored[v2] <<= 1;
       if (!(t & 0x80)) {
-        IndirWriteWord(&R3_, v1, 0x1F);
+        IndirWriteWord(R3_, v1, 0x1F);
       } else {
         ++map_tiles_explored[v2];
-        uint8 *v3 = IndirPtr(&R0_, v1);
-        IndirWriteWord(&R3_, v1, *(uint16 *)v3 & 0xFBFF);
+        IndirWriteWord(R3_, v1, IndirReadWord(R0_, v1) & 0xFBFF);
       }
       v1 += 2;
       LOBYTE(R18_) = R18_ + 1;
@@ -1622,10 +1653,8 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
 
 void DrawRoomSelectMap(void) {  // 0x829517
   uint16 v3; // r8
-  uint16 v6;
   unsigned int v7; // kr00_4
   int16 v10;
-  uint16 v14;
   VramWriteEntry *v17;
 
   reg_BG12NBA = 51;
@@ -1639,28 +1668,21 @@ void DrawRoomSelectMap(void) {  // 0x829517
   *(uint16 *)&R0_.bank = *(uint16 *)(&kPauseMenuMapTilemaps[0].bank + (uint16)(3 * v0));
   R3_.addr = ADDR16_OF_RAM(ram3000);
   R3_.bank = 126;
-  R8_ = 130;
-  R6_ = kPauseMenuMapData[v0];
+  R6_.bank = 130;
+  R6_.addr = kPauseMenuMapData[v0];
   if (map_station_byte_array[area_index]) {
-    uint8 *v5 = IndirPtr(&R6_, 0);
-    LOBYTE(v6) = HIBYTE(*(uint16 *)v5);
-    HIBYTE(v6) = *(uint16 *)v5;
-    R38 = v6;
-    ++R6_;
-    ++R6_;
+    R38 = swap16(IndirReadWord(R6_, 0));
+    ++R6_.addr;
+    ++R6_.addr;
     v7 = 2039;
-    *(uint16 *)((char *)&R10_ + 1) = HIWORD(v7);
-    *(uint16 *)((char *)&R8_ + 1) = v7;
-    uint8 *v8 = IndirPtr((char *)&R8_ + 1, 0);
-    LOBYTE(v6) = HIBYTE(*(uint16 *)v8);
-    HIBYTE(v6) = *(uint16 *)v8;
-    R40 = v6;
-    ++ *(uint16 *)((char *)&R8_ + 1);
-    ++ *(uint16 *)((char *)&R8_ + 1);
+    R9_.bank = HIWORD(v7);
+    R9_.addr = v7;
+    R40 = swap16(IndirReadWord(R9_, 0));
+    R9_.addr += 2;
     uint16 v9 = 0;
     v10 = 16;
     do {
-      uint16 v11 = *(uint16 *)IndirPtr(&R0_, v9);
+      uint16 v11 = IndirReadWord(R0_, v9);
       bool v12 = R40 >> 15;
       R40 *= 2;
       if (v12) {
@@ -1672,21 +1694,13 @@ void DrawRoomSelectMap(void) {  // 0x829517
         if (!v12)
           v11 = 31;
       }
-      IndirWriteWord(&R3_, v9, v11);
+      IndirWriteWord(R3_, v9, v11);
       if (!--v10) {
         v10 = 16;
-        uint8 *v13 = IndirPtr(&R6_, 0);
-        LOBYTE(v14) = HIBYTE(*(uint16 *)v13);
-        HIBYTE(v14) = *(uint16 *)v13;
-        R38 = v14;
-        ++R6_;
-        ++R6_;
-        uint8 *v15 = IndirPtr((char *)&R8_ + 1, 0);
-        LOBYTE(v14) = HIBYTE(*(uint16 *)v15);
-        HIBYTE(v14) = *(uint16 *)v15;
-        R40 = v14;
-        ++ *(uint16 *)((char *)&R8_ + 1);
-        ++ *(uint16 *)((char *)&R8_ + 1);
+        R38 = swap16(IndirReadWord(R6_, 0));
+        R6_.addr += 2;
+        R40 = swap16(IndirReadWord(R9_, 0));
+        R9_.addr += 2;
       }
       v9 += 2;
     } while ((int16)(v9 - 4096) < 0);
@@ -1698,10 +1712,10 @@ void DrawRoomSelectMap(void) {  // 0x829517
       uint8 what = map_tiles_explored[v2];
       map_tiles_explored[v2] <<= 1;
       if (!(what & 0x80)) {
-        IndirWriteWord(&R3_, v1, 0xF);
+        IndirWriteWord(R3_, v1, 0xF);
       } else {
         ++map_tiles_explored[v2];
-        IndirWriteWord(&R3_, v1, *(uint16 *)IndirPtr(&R0_, v1) & ~0x400);
+        IndirWriteWord(R3_, v1, IndirReadWord(R0_, v1) & ~0x400);
       }
       v1 += 2;
       LOBYTE(R18_) = R18_ + 1;
@@ -1723,14 +1737,9 @@ void DrawRoomSelectMap(void) {  // 0x829517
 }
 
 void DrawRoomSelectMapAreaLabel(void) {  // 0x829628
-  uint16 v0 = kPauseAreaLabelTilemap[area_index];
-  uint16 v1 = 0;
-  do {
-    uint8 *v2 = RomPtr_82(v0);
-    IndirWriteWord(&R0_, v1, *(uint16 *)v2 & 0xEFFF);
-    v0 += 2;
-    v1 += 2;
-  } while ((int16)(v1 - 24) < 0);
+  const uint8 *v2 = RomPtr_82(kPauseAreaLabelTilemap[area_index]);
+  for(int i = 0; i < 24; i += 2)
+    IndirWriteWord(R0_, i, *(uint16 *)(v2 + i) & 0xEFFF);
 }
 
 void SetupMapScrollingForPauseMenu(uint16 a) {  // 0x829E27
@@ -1763,26 +1772,26 @@ void SetupMapScrollingForPauseMenu(uint16 a) {  // 0x829E27
 
 void DetermineMapScrollLimits(void) {  // 0x829EC4
   if (has_area_map) {
-    R8_ = 130;
-    R6_ = addr_kPauseMenuMapData;
-    R6_ = *(uint16 *)IndirPtr(&R6_, 2 * area_index);
+    R6_.bank = 130;
+    R6_.addr = addr_kPauseMenuMapData;
+    R6_.addr = IndirReadWord(R6_, 2 * area_index);
   } else {
-    R8_ = 0;
-    R6_ = 2039;
+    R6_.bank = 0;
+    R6_.addr = 2039;
   }
-  R0_.bank = R8_;
-  R0_.addr = R6_;
+  R0_.bank = R6_.bank;
+  R0_.addr = R6_.addr;
   uint16 v0 = DetermineLeftmostMapColumn();
   map_min_x_scroll = MultiplyBy8(v0);
   if (area_index == 4)
     map_min_x_scroll -= 24;
-  R0_.addr = R6_ + 131;
+  R0_.addr = R6_.addr + 131;
   uint16 v1 = DetermineRightmostMapColumn();
   map_max_x_scroll = MultiplyBy8(v1);
-  R0_.addr = R6_;
+  R0_.addr = R6_.addr;
   uint16 v2 = DetermineTopmostMapColumn();
   map_min_y_scroll = MultiplyBy8(v2);
-  R0_.addr = R6_ + 124;
+  R0_.addr = R6_.addr + 124;
   uint16 v3 = DetermineBottommostMapColumn();
   map_max_y_scroll = MultiplyBy8(v3);
 }
@@ -1804,7 +1813,7 @@ LABEL_2:
   LOBYTE(v0) = result & 7;
   LOBYTE(R18_) = k0x80Shr[v0];
   uint16 v2 = 0;
-  while (((uint8)R18_ & *IndirPtr(&R0_, v2)) == 0) {
+  while (((uint8)R18_ & IndirReadByte(R0_, v2)) == 0) {
     v2 += 4;
     if ((int16)(v2 - 128) >= 0) {
       if ((int16)(++result - 64) >= 0)
@@ -1826,7 +1835,7 @@ uint16 DetermineRightmostMapColumn(void) {  // 0x829FA9
 LABEL_2:
   LOBYTE(R18_) = k0x80Shr_0[result & 7];
   uint16 v1 = 0;
-  while (((uint8)R18_ & *IndirPtr(&R0_, v1)) == 0) {
+  while (((uint8)R18_ & IndirReadByte(R0_, v1)) == 0) {
     v1 += 4;
     if ((int16)(v1 - 128) >= 0) {
       if ((--result & 0x8000u) != 0)
@@ -1848,7 +1857,7 @@ uint16 DetermineTopmostMapColumn(void) {  // 0x82A009
   R3_.bank = R0_.bank;
   uint16 result = 0;
   uint16 v1 = 0;
-  while (!*IndirPtr(&R0_, v1) && !*IndirPtr(&R3_, v1)) {
+  while (!IndirReadByte(R0_, v1) && !IndirReadByte(R3_, v1)) {
     if ((int16)(++v1 - 4) >= 0) {
       v1 = 0;
       R0_.addr += 4;
@@ -1865,7 +1874,7 @@ uint16 DetermineBottommostMapColumn(void) {  // 0x82A053
   R3_.bank = R0_.bank;
   uint16 result = 31;
   uint16 v1 = 0;
-  while (!*IndirPtr(&R0_, v1) && !*IndirPtr(&R3_, v1)) {
+  while (!IndirReadByte(R0_, v1) && !IndirReadByte(R3_, v1)) {
     if ((int16)(++v1 - 4) >= 0) {
       v1 = 0;
       R0_.addr -= 4;
@@ -1921,31 +1930,23 @@ void ResetPauseMenuAnimations(void) {  // 0x82A0F7
   pausemenu_palette_animation_timer = 1;
   pausemenu_palette_animation_frame = 0;
 }
-#define kEquipmentTilemaps_Tanks ((uint16*)RomPtr(0x82c088))
-#define kEquipmentTilemaps_Weapons ((uint16*)RomPtr(0x82c08c))
-#define kEquipmentTilemaps_Suits ((uint16*)RomPtr(0x82c096))
-#define kEquipmentTilemaps_Boots ((uint16*)RomPtr(0x82c0a2))
-#define kHyperBeamWeaponsTilemaps ((uint16*)RomPtr(0x82c0a8))
-#define kEquipmentBitmasks_Weapons ((uint16*)RomPtr(0x82c04c))
-#define kEquipmentBitmasks_Suits ((uint16*)RomPtr(0x82c056))
-#define kEquipmentBitmasks_Boots ((uint16*)RomPtr(0x82c062))
 void LoadEquipmentScreenEquipmentTilemaps(void) {  // 0x82A12B
   if (samus_max_reserve_health) {
     R3_.addr = addr_kEquipmentTilemapOffs_Tanks;
     *(uint16 *)&R3_.bank = 130;
-    R0_.addr = *(uint16 *)IndirPtr(&R3_, 0);
+    R0_.addr = IndirReadWord(R3_, 0);
     R22_ = 14;
     Copy_R22_Bytes(kEquipmentTilemaps_Tanks[0]);
     R3_.addr = addr_kEquipmentTilemapOffs_Tanks;
     *(uint16 *)&R3_.bank = 130;
-    R0_.addr = *(uint16 *)IndirPtr(&R3_, 2u);
+    R0_.addr = IndirReadWord(R3_, 2u);
     R22_ = 14;
     Copy_R22_Bytes(kEquipmentTilemaps_Tanks[1]);
   }
   uint16 v0 = 0;
   R3_.addr = addr_kEquipmentTilemapOffs_Weapons;
   *(uint16 *)&R3_.bank = 130;
-  R0_.addr = *(uint16 *)IndirPtr(&R3_, 0);
+  R0_.addr = IndirReadWord(R3_, 0);
   if (hyper_beam_flag) {
     uint16 v3 = 0;
     do {
@@ -1953,7 +1954,7 @@ void LoadEquipmentScreenEquipmentTilemaps(void) {  // 0x82A12B
       R22_ = 10;
       Copy_R22_Bytes(v4);
       v3 += 2;
-      R0_.addr = *(uint16 *)IndirPtr(&R3_, v3);
+      R0_.addr = IndirReadWord(R3_, v3);
     } while ((int16)(v3 - 10) < 0);
   } else {
     do {
@@ -1972,13 +1973,13 @@ void LoadEquipmentScreenEquipmentTilemaps(void) {  // 0x82A12B
         Copy_R22_Bytes(addr_kEquipmentScreenTilemap_Blank);
       }
       v0 += 2;
-      R0_.addr = *(uint16 *)IndirPtr(&R3_, v0);
+      R0_.addr = IndirReadWord(R3_, v0);
     } while ((int16)(v0 - 12) < 0);
   }
   uint16 v5 = 0;
   R3_.addr = addr_kEquipmentTilemapOffs_Suits;
   *(uint16 *)&R3_.bank = 130;
-  R0_.addr = *(uint16 *)IndirPtr(&R3_, 0);
+  R0_.addr = IndirReadWord(R3_, 0);
   do {
     int v6 = v5 >> 1;
     if ((collected_items & kEquipmentBitmasks_Suits[v6]) != 0) {
@@ -1995,12 +1996,12 @@ void LoadEquipmentScreenEquipmentTilemaps(void) {  // 0x82A12B
       Copy_R22_Bytes(addr_kEquipmentScreenTilemap_Blank);
     }
     v5 += 2;
-    R0_.addr = *(uint16 *)IndirPtr(&R3_, v5);
+    R0_.addr = IndirReadWord(R3_, v5);
   } while ((int16)(v5 - 12) < 0);
   uint16 v8 = 0;
   R3_.addr = addr_kEquipmentTilemapOffs_Boots;
   *(uint16 *)&R3_.bank = 130;
-  R0_.addr = *(uint16 *)IndirPtr(&R3_, 0);
+  R0_.addr = IndirReadWord(R3_, 0);
   do {
     int v9 = v8 >> 1;
     if ((collected_items & kEquipmentBitmasks_Boots[v9]) != 0) {
@@ -2016,32 +2017,29 @@ void LoadEquipmentScreenEquipmentTilemaps(void) {  // 0x82A12B
       Copy_R22_Bytes(addr_kEquipmentScreenTilemap_Blank);
     }
     v8 += 2;
-    R0_.addr = *(uint16 *)IndirPtr(&R3_, v8);
+    R0_.addr = IndirReadWord(R3_, v8);
   } while ((int16)(v8 - 6) < 0);
 }
 
 void Copy_R22_Bytes(uint16 k) {  // 0x82A27E
-  R0_.bank = 126;
+  R0_.bank = 0x7E;
   uint16 v1 = 0;
   do {
-    uint16 *v2 = (uint16 *)RomPtr_82(k);
-    IndirWriteWord(&R0_, v1, *v2);
+    const uint16 *v2 = (const uint16 *)RomPtr_82(k);
+    IndirWriteWord(R0_, v1, *v2);
     k += 2;
     v1 += 2;
-    --R22_;
-    --R22_;
+    R22_ -= 2;
   } while (R22_);
 }
 
 void SetPaletteOfR22TilemapBytesToR18(void) {  // 0x82A29D
-  R0_.bank = 126;
+  R0_.bank = 0x7E;
   uint16 v0 = 0;
   do {
-    uint8 *v1 = IndirPtr(&R0_, v0);
-    IndirWriteWord(&R0_, v0, R18_ | *(uint16 *)v1 & 0xE3FF);
+    IndirWriteWord(R0_, v0, R18_ | IndirReadWord(R0_, v0) & 0xE3FF);
     v0 += 2;
-    --R22_;
-    --R22_;
+    R22_ -= 2;
   } while (R22_);
 }
 
@@ -2423,47 +2421,25 @@ void UpdatePauseMenuLRStartVramTilemap(void) {  // 0x82A84D
   vram_write_queue_tail = v0 + 2;
 }
 
-#define kPauseScreenSpriteAnimationData_0 (*(PauseScreenSpriteAnimationData*)RomPtr(0x82c0b2))
-#define kPauseScreenSpriteAnimationData_1 (*(PauseScreenSpriteAnimationData*)RomPtr(0x82c0c4))
-#define kPauseScreenSpriteAnimationData_2 (*(PauseScreenSpriteAnimationData*)RomPtr(0x82c0d6))
-#define kPauseScreenSpriteAnimationData_3 (*(PauseScreenSpriteAnimationData*)RomPtr(0x82c0e8))
-#define kPAuseSpritePaletteIndexValues ((uint16*)RomPtr(0x82c0fa))
-#define kPausePtsToAnimationSpritemapBaseIds ((uint16*)RomPtr(0x82c1e4))
-
-void DrawPauseScreenSpriteAnim(uint16 a, uint16 k, uint16 j) {  // 0x82A881
-  int16 v9;
-  int16 v10;
-  int16 v12;
-
-  R18_ = k;
-  R20_ = j;
-  uint16 v3 = 2 * (a - 1);
-  uint16 v4 = *(VoidP *)((char *)&kPauseScreenSpriteAnimationData_0.unused + v3);
-  uint8 *v5 = RomPtr_RAM(v4);
-  bool v6 = *(uint16 *)v5 == 1;
-  bool v7 = (int16)-- * (uint16 *)v5 < 0;
-  if (v6 || v7) {
-    R24_ = v4;
-    uint8 *v8 = RomPtr_RAM(*(VoidP *)((char *)&kPauseScreenSpriteAnimationData_1.unused + v3));
-    v9 = *(uint16 *)v8 + 1;
-    *(uint16 *)v8 = v9;
-    R22_ = *(uint16 *)v8 + 2 * v9;
-    v10 = *RomPtr_82(R22_ + *(VoidP *)((char *)&kPauseScreenSpriteAnimationData_3.unused + v3));
+void DrawPauseScreenSpriteAnim(uint16 a, uint16 input_k, uint16 input_j) {  // 0x82A881
+  int t = a - 1;
+  uint16 *v8 = (uint16*)RomPtr_RAM(kPauseScreenSpriteAnimationData_1.arr[t]);
+  uint16 *v5 = (uint16*)RomPtr_RAM(kPauseScreenSpriteAnimationData_0.arr[t]);
+  const uint8 *v3 = RomPtr_82(kPauseScreenSpriteAnimationData_3.arr[t]);
+  if ((int16)--(*v5) <= 0) {
+    uint16 v10 = v3[3 * ++(*v8)];
     if (v10 == 255) {
-      *(uint16 *)RomPtr_RAM(*(VoidP *)((char *)&kPauseScreenSpriteAnimationData_1.unused + v3)) = 0;
-      v10 = *RomPtr_82(*(VoidP *)((char *)&kPauseScreenSpriteAnimationData_3.unused + v3));
+      *v8 = 0;
+      v10 = v3[0];
     }
-    *(uint16 *)RomPtr_RAM(R24_) = v10;
+    *v5 = v10;
   }
-  R24_ = 3 * *(uint16 *)RomPtr_RAM(*(VoidP *)((char *)&kPauseScreenSpriteAnimationData_1.unused + v3));
-  v12 = R24_ + *(VoidP *)((char *)&kPauseScreenSpriteAnimationData_3.unused + v3) + 1;
   R3_.addr = kPAuseSpritePaletteIndexValues[3];
-  R24_ = *RomPtr_82(v12 + 1);
-  R26_ = 2 * *RomPtr_RAM(*(VoidP *)((char *)&kPauseScreenSpriteAnimationData_2.unused + v3));
-  uint8 *v11 = RomPtr_82(R26_ + kPausePtsToAnimationSpritemapBaseIds[v3 >> 1]);
-  DrawMenuSpritemap(R24_ + *(uint16 *)v11, R18_, R20_ - 1);
+  int r24 = v3[3 * *v8 + 2];
+  int r26 = 2 * *RomPtr_RAM(kPauseScreenSpriteAnimationData_2.arr[t]);
+  const uint8 *v11 = RomPtr_82(r26 + kPausePtsToAnimationSpritemapBaseIds[t]);
+  DrawMenuSpritemap(r24 + GET_WORD(v11), input_k, input_j - 1);
 }
-#define kPauseAnimatedPalette ((uint16*)RomPtr(0x82a987))
 void HandlePauseScreenPaletteAnimation(void) {  // 0x82A92B
   uint16 v2;
   uint16 j;
@@ -2490,7 +2466,6 @@ void HandlePauseScreenPaletteAnimation(void) {  // 0x82A92B
     }
   }
 }
-#define kPauseReserveTankAnimationData ((uint8*)RomPtr(0x82c165))
 void EquipmentScreenSetupReserveMode(void) {  // 0x82AB47
   VoidP v0;
   int16 v3;
@@ -2513,7 +2488,7 @@ void EquipmentScreenSetupReserveMode(void) {  // 0x82AB47
     uint16 v2 = 0;
     do {
       v3 = ram3800.cinematic_bg_tilemap[v1 + 327] & 0xFC00;
-      ram3800.cinematic_bg_tilemap[v1 + 327] = *(uint16 *)IndirPtr(&R0_, v2) | v3;
+      ram3800.cinematic_bg_tilemap[v1 + 327] = IndirReadWord(R0_, v2) | v3;
       v2 += 2;
       ++v1;
       --R18_;
@@ -2748,10 +2723,11 @@ void EquipmentScreenCategory_Tanks_0(void) {
 }
 
 void EquipmentScreenHudReserveAutoTilemap_On_BUGGY(void) {  // 0x82AEFD
+  // loads garbage...
   uint16 v0 = -26229;
   if (!samus_reserve_health)
     v0 = -26217;
-  uint16 *v1 = (uint16 *)RomPtr_82(v0);
+  const uint16 *v1 = (const uint16 *)RomPtr_82(v0);
   hud_tilemap[8] = *v1;
   hud_tilemap[9] = v1[1];
   hud_tilemap[40] = v1[2];
@@ -2827,14 +2803,6 @@ void EquipmentScreenCategory_Weapons_MoveButtons(void) {  // 0x82AFDB
     }
   }
 }
-#define kEquipmentTilemapOffs_Tanks ((uint16*)RomPtr(0x82c068))
-#define kEquipmentTilemapOffs_Weapons ((uint16*)RomPtr(0x82c06c))
-#define kEquipmentTilemapOffs_Suits ((uint16*)RomPtr(0x82c076))
-#define kEquipmentTilemapOffs_Boots ((uint16*)RomPtr(0x82c082))
-#define kEquipmentTilemaps_Tanks ((uint16*)RomPtr(0x82c088))
-#define kEquipmentTilemaps_Weapons ((uint16*)RomPtr(0x82c08c))
-#define kEquipmentTilemaps_Suits ((uint16*)RomPtr(0x82c096))
-#define kEquipmentTilemaps_Boots ((uint16*)RomPtr(0x82c0a2))
 
 void EquipmentScreenCategory_Weapons_PlazmaSpazerCheck(void) {  // 0x82B068
   int t = equipped_beams & ~R36;
@@ -2926,8 +2894,6 @@ void WriteSamusWireframeTilemapAndQueue(void) {  // 0x82B1E0
   vram_write_queue_tail = v0 + 2;
 }
 
-#define kEquipmentScreenWireframeCmp ((uint16*)RomPtr(0x82b257))
-#define kEquipmentScreenWireframePtrs ((uint16*)RomPtr(0x82b25f))
 
 void WriteSamusWireframeTilemap(void) {  // 0x82B20C
   uint16 i;
@@ -2943,7 +2909,7 @@ void WriteSamusWireframeTilemap(void) {  // 0x82B20C
     uint16 v3 = v2;
     R18_ = 8;
     do {
-      *(uint16 *)((char *)ram3800.cinematic_bg_tilemap + v2) = *(uint16 *)IndirPtr(&R0_, v1);
+      *(uint16 *)((char *)ram3800.cinematic_bg_tilemap + v2) = IndirReadWord(R0_, v1);
       v2 += 2;
       v1 += 2;
       --R18_;
@@ -2953,14 +2919,12 @@ void WriteSamusWireframeTilemap(void) {  // 0x82B20C
   } while (R20_);
 }
 
-#define kEquipmentScreenPtrsToItemXYpos ((uint16*)RomPtr(0x82c18e))
 
 void EquipmentScreenDrawItemSelector(void) {  // 0x82B267
   if (samus_max_reserve_health | (uint16)(collected_items | collected_beams)) {
-    R18_ = kEquipmentScreenPtrsToItemXYpos[(uint16)(2 * (uint8)pausemenu_equipment_category_item) >> 1];
-    uint16 v0 = *(uint16 *)RomPtr_82(R18_ + 4 * HIBYTE(pausemenu_equipment_category_item)) - 1;
-    uint16 v1 = *(uint16 *)RomPtr_82(R18_ + 4 * HIBYTE(pausemenu_equipment_category_item) + 2);
-    DrawPauseScreenSpriteAnim(3u, v0, v1);
+    uint16 *t = (uint16*)RomPtr_82(kEquipmentScreenPtrsToItemXYpos[(uint8)pausemenu_equipment_category_item] + 
+        4 * HIBYTE(pausemenu_equipment_category_item));
+    DrawPauseScreenSpriteAnim(3, t[0] - 1, t[1]);
   }
 }
 
@@ -3162,10 +3126,6 @@ uint16 EquipmentScreenCategory_Boots_MoveUpInBoots(uint16 k) {  // 0x82B53F
   pausemenu_equipment_category_item = result;
   return result;
 }
-#define kEquipmentPtrsToRamTilemapOffsets ((uint16*)RomPtr(0x82c02c))
-#define kEquipmentPtrsToBitmasks ((uint16*)RomPtr(0x82c034))
-#define kEquipmentPtrsToBitsets ((uint16*)RomPtr(0x82c03c))
-#define kEquipmentPtrsToEquipmentTilemaps ((uint16*)RomPtr(0x82c044))
 void EquipmentScreenCategory_ButtonResponse(void) {  // 0x82B568
   if ((joypad1_newkeys & kButton_A) != 0) {
     QueueSfx1_Max6(0x38u);
@@ -3230,7 +3190,6 @@ void DrawMapIcons(void) {  // 0x82B672
       kMap_Criteria_SavePoints[1] - reg_BG1VOFS);
   }
 }
-#define kMapIconDataPointers ((MapIconDataPointers*)RomPtr(0x82c7cb))
 void DrawFileSelectMapIcons(void) {  // 0x82B6DD
   int16 v0;
 
@@ -3245,8 +3204,8 @@ void DrawFileSelectMapIcons(void) {  // 0x82B6DD
   *(uint16 *)&R0_.bank = 130;
   R0_.addr = *(VoidP *)((char *)&kMapIconDataPointers[4].crateria + (uint16)(2 * area_index));
   v0 = 4 * load_station_index;
-  uint16 v1 = *(uint16 *)IndirPtr(&R0_, 4 * load_station_index) - reg_BG1HOFS;
-  uint16 v2 = *(uint16 *)IndirPtr(&R0_, v0 + 2) - reg_BG1VOFS;
+  uint16 v1 = IndirReadWord(R0_, 4 * load_station_index) - reg_BG1HOFS;
+  uint16 v2 = IndirReadWord(R0_, v0 + 2) - reg_BG1VOFS;
   if ((samus_position_indicator_animation_loop_counter & 1) == 0)
     DrawMenuSpritemap(0x12, v1, v2);
   DrawMenuSpritemap(a, v1, v2);
@@ -3267,21 +3226,17 @@ void DrawFileSelectMapIcons(void) {  // 0x82B6DD
 
 void DrawSaveStationMapIcon(uint16 a, uint16 k) {  // 0x82B798
   static const uint8 kShlBit[8] = { 1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80 };
-
-
-  R32 = k;
   R34 = a;
   if (area_index == sram_area_index) {
     R36 = *(uint16 *)&used_save_stations_and_elevators[(uint16)(2 * area_index)];
     LOBYTE(R36) = R36 & kShlBit[load_station_index];
-    uint16 v2 = *(uint16 *)RomPtr_82(R32 + 2 * area_index);
+    uint16 v2 = *(uint16 *)RomPtr_82(k + 2 * area_index);
     if (v2)
       DrawMapIconsOfType(v2);
   }
 }
 
 void DrawDebugSaveMapIcons(uint16 a, uint16 k) {  // 0x82B7D1
-  R32 = k;
   R34 = a;
   R36 = *(uint16 *)&used_save_stations_and_elevators[(uint16)(2 * area_index)];
   uint16 v2 = *(uint16 *)RomPtr_82(k + 2 * area_index);
@@ -3290,7 +3245,6 @@ void DrawDebugSaveMapIcons(uint16 a, uint16 k) {  // 0x82B7D1
 }
 
 void DrawDebugElevatorMapIcons(uint16 a, uint16 k) {  // 0x82B7EB
-  R32 = k;
   R34 = a;
   R36 = *(uint16 *)&used_save_stations_and_elevators[(uint16)(2 * area_index) + 1];
   uint16 v2 = *(uint16 *)RomPtr_82(k + 2 * area_index);
@@ -3299,7 +3253,6 @@ void DrawDebugElevatorMapIcons(uint16 a, uint16 k) {  // 0x82B7EB
 }
 
 void DrawSimpleMapIcons(uint16 a, uint16 k) {  // 0x82B805
-  R32 = k;
   R34 = a;
   R36 = -1;
   uint16 v2 = *(uint16 *)RomPtr_82(k + 2 * area_index);
@@ -3312,17 +3265,15 @@ void DrawMapIconsOfType(uint16 a) {  // 0x82B81C
   int16 v4;
 
   while (1) {
-    uint16 *v2 = (uint16 *)RomPtr_82(a);
+    const uint16 *v2 = (const uint16 *)RomPtr_82(a);
     if ((*v2 & 0x8000u) != 0)
       break;
     v3 = R36 & 1;
     R36 >>= 1;
     if (v3) {
-      v4 = CheckIfMapPositionIsExplored(*v2, v2[1]);
-      if (v4) {
-        uint8 *v5 = RomPtr_82(a);
-        DrawMenuSpritemap(R34, *(uint16 *)v5 - reg_BG1HOFS, *((uint16 *)v5 + 1) - reg_BG1VOFS);
-      }
+      v4 = CheckIfMapPositionIsExplored(v2[0], v2[1]);
+      if (v4)
+        DrawMenuSpritemap(R34, v2[0] - reg_BG1HOFS, v2[1] - reg_BG1VOFS);
     }
     a += 4;
   }
@@ -3345,57 +3296,45 @@ uint16 CheckIfMapPositionIsExplored(uint16 k, uint16 j) {  // 0x82B855
 }
 
 void DrawBossMapIcons(uint16 a, uint16 k) {  // 0x82B892
-  int16 v4;
-  char v5; // cf
-
-  R32 = k;
-  R34 = a;
-  R36 = boss_bits_for_area[area_index];
-  uint8 *v2 = RomPtr_82(k + 2 * area_index);
-  if (*(uint16 *)v2) {
-    for (int i = *(uint16 *)v2; ; i += 4) {
-      v4 = *(uint16 *)RomPtr_82(i);
-      if (v4 == -1)
-        return;
-      if (v4 != -2) {
-        R3_.addr = 3584;
-        v5 = R36 & 1;
-        R36 >>= 1;
-        if (v5) {
-          {
-            uint8 *v7 = RomPtr_82(i);
-            DrawMenuSpritemap(0x62, *(uint16 *)v7 - reg_BG1HOFS, *((uint16 *)v7 + 1) - reg_BG1VOFS);
-            R3_.addr = 3072;
-          }
-LABEL_7:;
-          uint8 *v6 = RomPtr_82(i);
-          DrawMenuSpritemap(R34, *(uint16 *)v6 - reg_BG1HOFS, *((uint16 *)v6 + 1) - reg_BG1VOFS);
-          continue;
-        }
-        if (has_area_map)
-          goto LABEL_7;
+  int bits = boss_bits_for_area[area_index];
+  int t = *(uint16 *)RomPtr_82(k + 2 * area_index);
+  if (t == 0)
+    return;
+  const uint16 *v4 = (const uint16 *)RomPtr_82(t);
+  for (; ; v4 += 2) {
+    if (v4[0] == 0xffff)
+      return;
+    if (v4[0] != 0xfffe) {
+      R3_.addr = 3584;
+      int v5 = bits & 1;
+      bits >>= 1;
+      if (v5) {
+        DrawMenuSpritemap(0x62, v4[0] - reg_BG1HOFS, v4[1] - reg_BG1VOFS);
+        R3_.addr = 3072;
+        DrawMenuSpritemap(a, v4[0] - reg_BG1HOFS, v4[1] - reg_BG1VOFS);
+        continue;
       }
-      R36 >>= 1;
+      if (has_area_map) {
+        DrawMenuSpritemap(a, v4[0] - reg_BG1HOFS, v4[1] - reg_BG1VOFS);
+        continue;
+      }
     }
+    bits >>= 1;
   }
 }
 
 void DrawMapScrollArrowAndCheckToScroll(uint8 db, uint16 k) {  // 0x82B90A
-  uint16 *v1 = (uint16 *)RomPtrWithBank(db, k);
+  const uint16 *v1 = (const uint16 *)RomPtrWithBank(db, k);
   DrawPauseScreenSpriteAnim(v1[2], *v1, v1[1]);
-  uint8 *v2 = RomPtrWithBank(db, k);
-  if ((joypad1_lastkeys & *((uint16 *)v2 + 3)) != 0 && !map_scrolling_direction)
-    map_scrolling_direction = *((uint16 *)v2 + 4);
+  const uint8 *v2 = RomPtrWithBank(db, k);
+  if ((joypad1_lastkeys & GET_WORD(v2 + 6)) != 0 && !map_scrolling_direction)
+    map_scrolling_direction = GET_WORD(v2 + 8);
 }
 
 void sub_82B932(void) {  // 0x82B932
   HandleMapScrollArrows();
 }
 
-#define g_stru_82B9A0 ((MapScrollArrowData*)RomPtr(0x82b9a0))
-#define g_stru_82B9AA ((MapScrollArrowData*)RomPtr(0x82b9aa))
-#define g_stru_82B9B4 ((MapScrollArrowData*)RomPtr(0x82b9b4))
-#define g_stru_82B9BE (*(MapScrollArrowData*)RomPtr(0x82b9be))
 
 void HandleMapScrollArrows(void) {  // 0x82B934
   if (sign16(map_min_x_scroll - 24 - reg_BG1HOFS))
@@ -3472,7 +3411,6 @@ void DrawMenuSelectionMissile(void) {  // 0x82BA6E
     enemy_projectile_id[5],
     enemy_projectile_id[10]);
 }
-#define file_copy_arrow_stuff ((FileCopyArrowStuff*)RomPtr(0x82bb0c))
 void DrawFileCopyArrow(void) {  // 0x82BABA
   uint16 v0;
   if ((int16)(enemy_projectile_id[16] - enemy_projectile_id[17]) >= 0) {
@@ -3496,15 +3434,14 @@ void DrawFileCopyArrow(void) {  // 0x82BABA
     file_copy_arrow_stuff[v0].xpos,
     file_copy_arrow_stuff[v0].ypos);
 }
-#define kMapElevatorDests ((uint16*)RomPtr(0x82c74d))
 void DisplayMapElevatorDestinations(void) {  // 0x82BB30
   R3_.addr = 0;
   if (map_station_byte_array[area_index]) {
     for (int i = kMapElevatorDests[area_index]; ; i += 6) {
-      uint8 *v1 = RomPtr_82(i);
-      if (*(uint16 *)v1 == 0xFFFF)
+      const uint8 *v1 = RomPtr_82(i);
+      if (GET_WORD(v1) == 0xFFFF)
         break;
-      DrawMenuSpritemap(*((uint16 *)v1 + 2), *(uint16 *)v1 - reg_BG1HOFS, *((uint16 *)v1 + 1) - reg_BG1VOFS);
+      DrawMenuSpritemap(GET_WORD(v1 + 4), GET_WORD(v1) - reg_BG1HOFS, GET_WORD(v1 + 2) - reg_BG1VOFS);
     }
   }
 }
@@ -3529,15 +3466,15 @@ void sub_82BB7F(uint16 a) {  // 0x82BB7F
   uint16 current_instruction = enemy_data[0].current_instruction;
   enemy_data[0].instruction_timer = a - 1;
   if (a == 1) {
-    uint8 *v2 = RomPtr_82(enemy_data[0].current_instruction);
-    if (*((uint16 *)v2 + 3) == 0xFFFF) {
+    const uint8 *v2 = RomPtr_82(enemy_data[0].current_instruction);
+    if (GET_WORD(v2 + 6) == 0xFFFF) {
       sub_82BBDD();
-    } else if ((int16)(*((uint16 *)v2 + 3) + 1) >= 0) {
-      enemy_data[0].instruction_timer = *((uint16 *)v2 + 3);
+    } else if ((int16)(GET_WORD(v2 + 6) + 1) >= 0) {
+      enemy_data[0].instruction_timer = GET_WORD(v2 + 6);
       enemy_data[0].current_instruction += 6;
       DrawBabyMetroid(current_instruction + 6);
     } else {
-      R18_ = *((uint16 *)v2 + 3);
+      R18_ = GET_WORD(v2 + 6);
       CallBabyMetroidPlaySfx(R18_ | 0x820000);
     }
   } else {
@@ -3553,24 +3490,20 @@ void sub_82BBDD(void) {  // 0x82BBDD
 
 void DrawBabyMetroid(uint16 k) {  // 0x82BB9E
   uint16 v1 = *((uint16 *)RomPtr_82(k) + 2);
-  uint16 v2 = 0;
-  do {
-    palette_buffer[(v2 >> 1) + 192] = *(uint16 *)RomPtr_82(v1);
-    v1 += 2;
-    v2 += 2;
-  } while ((int16)(v2 - 32) < 0);
+  for(int i = 0; i < 32; i += 2)
+    palette_buffer[(i >> 1) + 192] = *(uint16 *)RomPtr_82(v1 + i);
   R3_.addr = 2048;
-  uint8 *v3 = RomPtr_82(k);
-  DrawMenuSpritemap(*((uint16 *)v3 + 1), 0x7C, 0x50);
+  const uint8 *v3 = RomPtr_82(k);
+  DrawMenuSpritemap(GET_WORD(v3 + 2), 0x7C, 0x50);
   R3_.addr = 2560;
   DrawMenuSpritemap(0x64, 0x7C, 0x50);
 }
 
 void FinishProcessingGameOverBabyMetroidAsm(void) {  // 0x82BBF0
-  uint16 current_instruction = enemy_data[0].current_instruction;
-  enemy_data[0].instruction_timer = *((uint16 *)RomPtr_82(enemy_data[0].current_instruction) + 4);
+  uint16 t = *((uint16 *)RomPtr_82(enemy_data[0].current_instruction) + 4);
+  enemy_data[0].instruction_timer = t;
   enemy_data[0].current_instruction += 8;
-  if (*(uint16 *)RomPtr_82(current_instruction + 8) == 0xFFFF)
+  if (t == 0xFFFF)
     sub_82BBDD();
   else
     DrawBabyMetroid(enemy_data[0].current_instruction);
@@ -3666,44 +3599,22 @@ uint8 AdvancePaletteFadeForAllPalettes(void) {  // 0x82DA02
 }
 
 uint16 CalculateNthTransitionColorFromXtoY(uint16 a, uint16 k, uint16 j) {  // 0x82DA4A
-  int16 v3;
-  char v4; // t0
-  int16 v8;
-
-  uint16 v7 = CalculateNthTransitionColorComponentFromXtoY(a, k & 0x1F, j & 0x1F);
-  v8 = v7 | (32 * CalculateNthTransitionColorComponentFromXtoY(a, (k >> 5) & 0x1F, (j >> 5) & 0x1F));
-  v3 = 4
-    * CalculateNthTransitionColorComponentFromXtoY(
-      a,
-      ((uint16)(k >> 2) >> 8) & 0x1F,
-      ((uint16)(j >> 2) >> 8) & 0x1F);
-  v4 = v3;
-  LOBYTE(v3) = HIBYTE(v3);
-  HIBYTE(v3) = v4;
-  return v8 | v3;
+  return CalculateNthTransitionColorComponentFromXtoY(a, k & 0x1F, j & 0x1F) |
+         CalculateNthTransitionColorComponentFromXtoY(a, (k >> 5) & 0x1F, (j >> 5) & 0x1F) << 5 |
+         CalculateNthTransitionColorComponentFromXtoY(a, (k >> 10) & 0x1F, (j >> 10) & 0x1F) << 10;
 }
 
 uint16 CalculateNthTransitionColorComponentFromXtoY(uint16 a, uint16 k, uint16 j) {  // 0x82DAA6
-  int16 v4;
-  char v6; // t0
-  int16 v8;
-
   if (!a)
     return k;
-  v4 = a - 1;
+  uint16 v4 = a - 1;
   if (v4 == palette_change_denom)
     return j;
   R20_ = v4 + 1;
   R18_ = j - k;
-  uint16 v5 = abs16(j - k);
-  v6 = v5;
-  LOBYTE(v5) = HIBYTE(v5);
-  HIBYTE(v5) = v6;
-  uint16 RegWord = SnesDivide(v5 & 0xFF00, palette_change_denom - R20_ + 1);
+  uint16 RegWord = SnesDivide((abs16(j - k) << 8) & 0xFF00, palette_change_denom - R20_ + 1);
   R18_ = sign16(R18_) ? -RegWord : RegWord;
-  LOBYTE(v8) = HIBYTE(k);
-  HIBYTE(v8) = k;
-  return (uint16)(R18_ + v8) >> 8;
+  return (uint16)(R18_ + (k << 8)) >> 8;
 }
 
 uint8 sub_82DAF7(uint16 a) {  // 0x82DAF7
@@ -3941,7 +3852,7 @@ void LoadDoorHeader(void) {  // 0x82DE12
     else
       samus_distance_from_door = 200;
   }
-  *(uint16 *)((char *)&R18_ + 1) = samus_distance_from_door;
+  R19_ = samus_distance_from_door;
   samus_door_transition_subspeed = R18_;
   samus_door_transition_speed = R20_;
 }
@@ -3965,7 +3876,6 @@ void LoadRoomHeader(void) {  // 0x82DE6F
   uint16 prod = Mult8x8(room_width_in_blocks, room_height_in_blocks);
   room_size_in_blocks = 2 * prod;
 }
-#define kStateHeaderGraphicsSets ((uint16*)RomPtr(0x8fe7a7))
 void LoadStateHeader(void) {  // 0x82DEF2
   StateHeaderTiles *StateHeaderTiles; // r10
   RoomDefRoomstate *RoomDefRoomstate; // r11
@@ -4085,7 +3995,6 @@ void PlayRoomMusicTrackAfterAFrames(uint16 a) {  // 0x82E118
   }
 }
 
-#define kCommonSpritesPalette1 ((uint16*)RomPtr(0x9afc00))
 void LoadColorsForSpritesBeamsAndEnemies(void) {  // 0x82E139
   uint16 j;
   uint16 k;
@@ -4292,9 +4201,6 @@ CoroutineRet DoorTransitionFunction_SetupScrolling(void) {  // 0x82E38E
 }
 
 CoroutineRet DoorTransitionFunction_PlaceSamusLoadTiles(void) {  // 0x82E3C0
-  static const LongPtr unk_82E421 = LONGPTR(0x7e7000);
-  static const LongPtr unk_82E432 = LONGPTR(0x7e2000);
-  static const LongPtr unk_82E443 = LONGPTR(0x7ec200);
   static const CopyToVramAtNextInterruptArgs unk_82E449 = { LONGPTR(0x7e2000), 0x0000, 0x2000 };
   static const CopyToVramAtNextInterruptArgs unk_82E453 = { LONGPTR(0x7e4000), 0x1000, 0x2000 };
   static const CopyToVramAtNextInterruptArgs unk_82E45D = { LONGPTR(0x7e6000), 0x2000, 0x1000 };
@@ -4315,18 +4221,15 @@ CoroutineRet DoorTransitionFunction_PlaceSamusLoadTiles(void) {  // 0x82E3C0
     v0 = 22;
   irqhandler_next_handler = v0;
   WaitUntilEndOfVblankAndEnableIrq();
-  if ((cre_bitset & 2) != 0 && door_def_ptr != (uint16)addr_kDoorDef_947a) {
-    mov24(&decompress_src, 0xb98000);
-    DecompressToMem_IpArg(&unk_82E421);
+  if ((cre_bitset & 2) != 0 && door_def_ptr != addr_kDoorDef_947a) {
+    DecompressToMem(0xb98000, g_ram + 0x7000);
   }
-  copy24(&decompress_src, &tileset_tiles_pointer);
-  DecompressToMem_IpArg(&unk_82E432);
-  copy24(&decompress_src, &tileset_compr_palette_ptr);
-  DecompressToMem_IpArg(&unk_82E443);
+  DecompressToMem(Load24(&tileset_tiles_pointer), g_ram + 0x2000);
+  DecompressToMem(Load24(&tileset_compr_palette_ptr), g_ram + 0xc200);
   CopyToVramAtNextInterrupt(&unk_82E449);
   CopyToVramAtNextInterrupt(&unk_82E453);
   CopyToVramAtNextInterrupt(&unk_82E45D);
-  if ((cre_bitset & 6) != 0 && door_def_ptr != (uint16)addr_kDoorDef_947a) {
+  if ((cre_bitset & 6) != 0 && door_def_ptr != addr_kDoorDef_947a) {
     CopyToVramAtNextInterrupt(&unk_82E477);
     CopyToVramAtNextInterrupt(&unk_82E481);
     CopyToVramAtNextInterrupt(&unk_82E48B);
@@ -4349,7 +4252,7 @@ static Func_Y_Y *const kUpdateBackgroundCommands[8] = {
 };
 
 CoroutineRet DoorTransitionFunction_LoadMoreThings_Async(void) {
-  int16 bg_data_ptr;
+  uint16 bg_data_ptr;
 
   COROUTINE_BEGIN(coroutine_state_1, 0);
 
@@ -4377,7 +4280,7 @@ CoroutineRet DoorTransitionFunction_LoadMoreThings_Async(void) {
     WaitForIrqDoorTransitionVramUpdate();
   }
   bg_data_ptr = get_RoomDefRoomstate(roomdefroomstate_ptr)->bg_data_ptr;
-  if (bg_data_ptr < 0) {
+  if (bg_data_ptr & 0x8000) {
     do {
       int v1 = *(uint16 *)RomPtr_8F(bg_data_ptr) >> 1;
       bg_data_ptr = kUpdateBackgroundCommands[v1](bg_data_ptr + 2);
@@ -4444,22 +4347,17 @@ uint16 UpdateBackgroundCommand_E_DoorDependentTransferToVRAM(uint16 j) {  // 0x8
 }
 
 uint16 UpdateBackgroundCommand_2_TransferToVram(uint16 j) {  // 0x82E5EB
-  uint8 *v1 = RomPtr_8F(j);
-  door_transition_vram_update_dst = *(uint16 *)(v1 + 3);
+  const uint8 *v1 = RomPtr_8F(j);
+  door_transition_vram_update_dst = GET_WORD(v1 + 3);
   copy24(&door_transition_vram_update_src, (LongPtr *)v1);
-  door_transition_vram_update_size = *(uint16 *)(v1 + 5);
+  door_transition_vram_update_size = GET_WORD(v1 + 5);
   WaitForIrqDoorTransitionVramUpdate();
   return j + 7;
 }
 
 uint16 UpdateBackgroundCommand_4_Decompression(uint16 j) {  // 0x82E616
-  LongPtr *v1;
-
-  v1 = (LongPtr *)RomPtr_8F(j);
-  copy24(&decompress_src, v1);
-  *(VoidP *)((char *)&decompress_dst.addr + 1) = 32256;
-  decompress_dst.addr = v1[1].addr;
-  DecompressToMem();
+  const uint8 *v1 = RomPtr_8F(j);
+  DecompressToMem(Load24((LongPtr *)v1), g_ram + GET_WORD(v1 + 3));
   return j + 5;
 }
 
@@ -4556,18 +4454,11 @@ void LoadDestinationRoomThings(void) {  // 0x82E76B
 void LoadCRETilesTilesetTilesAndPalette(void) {  // 0x82E783
   elevator_flags = 0;
   WriteRegWord(VMAIN, 0x80);
-  mov24(&decompress_src, 0xb98000);
-  decompress_dst.addr = addr_unk_605000;
-  WriteRegWord(VMADDL, 0x2800);
-  DecompressToVRAM();
-  copy24(&decompress_src, &tileset_tiles_pointer);
+  WriteRegWord(VMADDL, addr_unk_605000 >> 1);
+  DecompressToVRAM(0xb98000, addr_unk_605000);
   WriteRegWord(VMADDL, 0);
-  decompress_dst.addr = 0;
-  DecompressToVRAM();
-  *(VoidP *)((char *)&decompress_src.addr + 1) = *(VoidP *)((char *)&tileset_compr_palette_ptr.addr + 1);
-  decompress_src.addr = tileset_compr_palette_ptr.addr;
-  static const LongPtr unk_82E7CD = LONGPTR(0x7ec200);
-  DecompressToMem_IpArg(&unk_82E7CD);
+  DecompressToVRAM(Load24(&tileset_tiles_pointer), 0);
+  DecompressToMem(Load24(&tileset_compr_palette_ptr),  &g_ram[0xc200]);
 }
 
 void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
@@ -4580,19 +4471,12 @@ void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
   uint16 m;
   char v10;
   char v11;
-
   uint16 n;
   char v14;
 
-  static const LongPtr unk_82E849 = LONGPTR(0x7ea000);
-  static const LongPtr unk_82E85A = LONGPTR(0x7ea800);
-  static const LongPtr unk_82E86D = LONGPTR(0x7ea000);
-
   for (int i = 25598; i >= 0; i -= 2)
     level_data[i >> 1] = 0x8000;
-  copy24(&decompress_src, &room_compr_level_data_ptr);
-  static const DecompressToParams unk_82E7F8 = { LONGPTR(0x7f0000) };
-  DecompressToMem_IpArg(&unk_82E7F8);
+  DecompressToMem(Load24(&room_compr_level_data_ptr), g_ram + 0x10000);
   uint16 v1 = ram7F_start;
   for (j = ram7F_start + ram7F_start + (ram7F_start >> 1); ; custom_background[v1 >> 1] = level_data[j >> 1]) {
     j -= 2;
@@ -4608,13 +4492,10 @@ void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
       break;
   }
   if (area_index == 6) {
-    copy24(&decompress_src, &tileset_tile_table_pointer);
-    DecompressToMem_IpArg(&unk_82E86D);
+    DecompressToMem(Load24(&tileset_tile_table_pointer), g_ram + 0xa000);
   } else {
-    mov24(&decompress_src, 0xb9a09d);
-    DecompressToMem_IpArg(&unk_82E849);
-    copy24(&decompress_src, &tileset_tile_table_pointer);
-    DecompressToMem_IpArg(&unk_82E85A);
+    DecompressToMem(0xb9a09d, g_ram + 0xa000);
+    DecompressToMem(Load24(&tileset_tile_table_pointer), g_ram + 0xa800);
   }
   RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
   rdf_scroll_ptr = RoomDefRoomstate->rdf_scroll_ptr;
@@ -4654,7 +4535,7 @@ void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
 
 void SpawnDoorClosingPLM(void) {  // 0x82E8EB
   if (!CheckIfColoredDoorCapSpawned()) {
-    uint16 *v0 = (uint16 *)RomPtr_8F(2 * door_direction + addr_kDoorClosingPlmIds);
+    const uint16 *v0 = (const uint16 *)RomPtr_8F(2 * door_direction + addr_kDoorClosingPlmIds);
     if (*v0) {
       R18_ = *v0;
       R20_ = *(uint16 *)&get_DoorDef(door_def_ptr)->x_pos_plm;
@@ -4664,15 +4545,9 @@ void SpawnDoorClosingPLM(void) {  // 0x82E8EB
 }
 
 uint8 CheckIfColoredDoorCapSpawned(void) {  // 0x82E91C
-  DoorDef *DoorDef;
-  int16 x_pos_plm;
-  int16 v2;
-  int16 v6;
-
-  DoorDef = get_DoorDef(door_def_ptr);
-  uint16 prod = Mult8x8(DoorDef->y_pos_plm, room_width_in_blocks);
-  x_pos_plm = DoorDef->x_pos_plm;
-  v2 = 2 * (prod + x_pos_plm);
+  DoorDef *DD = get_DoorDef(door_def_ptr);
+  uint16 prod = Mult8x8(DD->y_pos_plm, room_width_in_blocks);
+  uint16 v2 = 2 * (prod + DD->x_pos_plm);
   uint16 v3 = 78;
   while (v2 != plm_block_indices[v3 >> 1]) {
     v3 -= 2;
@@ -4682,18 +4557,17 @@ uint8 CheckIfColoredDoorCapSpawned(void) {  // 0x82E91C
   int v5 = v3 >> 1;
   if (!plm_header_ptr[v5])
     return 0;
-  v6 = plm_room_arguments[v5];
+  int16 v6 = plm_room_arguments[v5];
   if (v6 >= 0) {
     int idx = PrepareBitAccess(v6);
     if ((bitmask & opened_door_bit_array[idx]) != 0)
       return 0;
   }
-  int v7 = v3 >> 1;
-  plm_instruction_timer[v7] = 1;
-  uint16 v8 = plm_header_ptr[v7];
+  plm_instruction_timer[v5] = 1;
+  uint16 v8 = plm_header_ptr[v5];
   if (!v8)
     return 0;
-  plm_instr_list_ptrs[v3 >> 1] = get_PlmHeader_Size4(v8)[1].func_ptr;
+  plm_instr_list_ptrs[v5] = get_PlmHeader_Size6(v8)->instr_list_2_ptr;
   return 1;
 }
 
@@ -4709,7 +4583,7 @@ static Func_Y_Y *const kLoadLibraryBackgroundFuncs[8] = {  // 0x82E97C
 };
 
 void LoadLibraryBackground(void) {
-  int16 bg_data_ptr;
+  uint16 bg_data_ptr;
 
   ClearFXTilemap();
   if (fx_tilemap_ptr) {
@@ -4722,7 +4596,7 @@ void LoadLibraryBackground(void) {
     WriteReg(MDMAEN, 2u);
   }
   bg_data_ptr = get_RoomDefRoomstate(roomdefroomstate_ptr)->bg_data_ptr;
-  if (bg_data_ptr < 0) {
+  if (bg_data_ptr & 0x8000) {
     do {
       uint16 v1 = *(uint16 *)RomPtr_8F(bg_data_ptr);
       bg_data_ptr += 2;
@@ -4743,7 +4617,7 @@ uint16 LoadLibraryBackgroundFunc_E_DoorDependentTransferToVram(uint16 j) {  // 0
 }
 
 uint16 LoadLibraryBackgroundFunc_2_TransferToVram(uint16 j) {  // 0x82E9F9
-  uint16 *LoadBg_28 = (uint16 *)get_LoadBg_28(j);
+  uint16 *LoadBg_28 = (uint16 *)RomPtr_8F(j);
   WriteRegWord(VMADDL, *(uint16 *)((char *)LoadBg_28 + 3));
   WriteRegWord(DMAP1, 0x1801);
   WriteRegWord(A1T1L, *LoadBg_28);
@@ -4755,13 +4629,8 @@ uint16 LoadLibraryBackgroundFunc_2_TransferToVram(uint16 j) {  // 0x82E9F9
 }
 
 uint16 LoadLibraryBackgroundFunc_4_Decompress(uint16 j) {  // 0x82EA2D
-  LongPtr *LoadBg_28;
-
-  LoadBg_28 = (LongPtr *)get_LoadBg_28(j);
-  copy24(&decompress_src, LoadBg_28);
-  *(VoidP *)((char *)&decompress_dst.addr + 1) = 32256;
-  decompress_dst.addr = LoadBg_28[1].addr;
-  DecompressToMem();
+  const uint8 *p = RomPtr_8F(j);
+  DecompressToMem(Load24((LongPtr *)p), g_ram + GET_WORD(p + 3));
   return j + 5;
 }
 
@@ -4797,10 +4666,6 @@ void LoadLevelScrollAndCre(void) {  // 0x82EA73
   char v11;
   char v12;
 
-  static const LongPtr unk_82EAA0 = LONGPTR(0x7f0000);
-  static const LongPtr unk_82EAF9 = LONGPTR(0x7ea000);
-  static const LongPtr unk_82EB0A = LONGPTR(0x7ea800);
-  static const LongPtr unk_82EB1D = LONGPTR(0x7ea000);
 
   for (int i = 6398; i >= 0; i -= 2) {
     level_data[i >> 1] = 0x8000;
@@ -4808,8 +4673,7 @@ void LoadLevelScrollAndCre(void) {  // 0x82EA73
     level_data[(i >> 1) + 3200 * 2] = 0x8000;
     level_data[(i >> 1) + 3200 * 3] = 0x8000;
   }
-  copy24(&decompress_src, &room_compr_level_data_ptr);
-  DecompressToMem_IpArg(&unk_82EAA0);
+  DecompressToMem(Load24(&room_compr_level_data_ptr), g_ram + 0x10000);
   uint16 v1 = ram7F_start;
   for (j = ram7F_start + ram7F_start + (ram7F_start >> 1); ; custom_background[v1 >> 1] = level_data[j >> 1]) {
     j -= 2;
@@ -4827,15 +4691,12 @@ void LoadLevelScrollAndCre(void) {  // 0x82EA73
       break;
   }
   if (area_index == 6) {
-    copy24(&decompress_src, &tileset_tile_table_pointer);
-    DecompressToMem_IpArg(&unk_82EB1D);
+    DecompressToMem(Load24(&tileset_tile_table_pointer), g_ram + 0xa000);
   } else {
     if ((cre_bitset & 2) != 0) {
-      mov24(&decompress_src, 0xb9a09d);
-      DecompressToMem_IpArg(&unk_82EAF9);
+      DecompressToMem(0xb9a09d, g_ram + 0xa000);
     }
-    copy24(&decompress_src, &tileset_tile_table_pointer);
-    DecompressToMem_IpArg(&unk_82EB0A);
+    DecompressToMem(Load24(&tileset_tile_table_pointer), g_ram + 0xa800);
   }
   RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
   rdf_scroll_ptr = RoomDefRoomstate->rdf_scroll_ptr;
@@ -4868,7 +4729,7 @@ void CreatePlmsExecuteDoorAsmRoomSetup(void) {  // 0x82EB6C
   RoomDefRoomstate *RoomDefRoomstate;
   RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
   if (RoomDefRoomstate->room_plm_header_ptr) {
-    for (int i = RoomDefRoomstate->room_plm_header_ptr; get_PlmHeader_Size6(i)->func_ptr; i += 6)
+    for (int i = RoomDefRoomstate->room_plm_header_ptr; get_RoomPlmEntry(i)->plm_header_ptr_; i += 6)
       SpawnRoomPLM(i);
   }
   RunDoorSetupCode();
@@ -4916,16 +4777,8 @@ void GameOptionsMenuFunc_0(void) {  // 0x82EBDB
   }
 }
 
-#define kMenuPalettes ((uint16*)RomPtr(0x8ee400))
 void GameOptionsMenu_1_LoadingOptionsScreen(void) {  // 0x82EC11
   uint16 j;
-
-  static const DecompressToParams unk_82EC74 = { LONGPTR(0x7fc000) };
-  static const DecompressToParams unk_82EC85 = { LONGPTR(0x7fc800) };
-  static const DecompressToParams unk_82EC96 = { LONGPTR(0x7fd000) };
-  static const DecompressToParams unk_82ECA7 = { LONGPTR(0x7fd800) };
-  static const DecompressToParams unk_82ECB8 = { LONGPTR(0x7fe000) };
-
   reg_BG12NBA = 0;
   reg_TM = 19;
   reg_TS = 0;
@@ -4948,16 +4801,11 @@ void GameOptionsMenu_1_LoadingOptionsScreen(void) {  // 0x82EC11
   debug_invincibility = 0;
   for (int i = 510; i >= 0; i -= 2)
     palette_buffer[i >> 1] = kMenuPalettes[i >> 1];
-  mov24(&decompress_src, 0x978DF4);
-  DecompressToMem_IpArg(&unk_82EC74);
-  mov24(&decompress_src, 0x978FCD);
-  DecompressToMem_IpArg(&unk_82EC85);
-  mov24(&decompress_src, 0x9791C4);
-  DecompressToMem_IpArg(&unk_82EC96);
-  mov24(&decompress_src, 0x97938D);
-  DecompressToMem_IpArg(&unk_82ECA7);
-  mov24(&decompress_src, 0x97953A);
-  DecompressToMem_IpArg(&unk_82ECB8);
+  DecompressToMem(0x978DF4, g_ram + 0x1c000);
+  DecompressToMem(0x978FCD, g_ram + 0x1c800);
+  DecompressToMem(0x9791C4, g_ram + 0x1d000);
+  DecompressToMem(0x97938D, g_ram + 0x1d800);
+  DecompressToMem(0x97953A, g_ram + 0x1e000);
   for (j = 1023; (j & 0x8000u) == 0; --j)
     ram3000.pause_menu_map_tilemap[j] = custom_background[j + 5375];
   menu_option_index = 0;
@@ -5206,10 +5054,9 @@ void GameOptionsMenu_8_SpecialSettings(void) {
     GameOptionsMenuItemFunc_4();
   }
 }
-#define kOptionsMenuSpecialPtrs ((uint16*)RomPtr(0x82f0ae))
 void GameOptionsMenuSpecialSettings_0(void) {  // 0x82F08E
   uint8 *v0 = RomPtr_RAM(kOptionsMenuSpecialPtrs[menu_option_index]);
-  if (*(uint16 *)v0)
+  if (GET_WORD(v0))
     *(uint16 *)v0 = 0;
   else
     *(uint16 *)v0 = 1;
@@ -5341,14 +5188,13 @@ void sub_82F296(uint16 j) {  // 0x82F296
   enemy_projectile_x_vel[v1 + 3] = 56;
   enemy_projectile_x_vel[v1 + 11] = 3584;
 }
-#define off_82F2ED ((uint16*)RomPtr(0x82f2ed))
 void OptionsPreInstr_F2A9(uint16 v0) {  // 0x82F2A9
   if (game_state == kGameState_2_GameOptionsMenu) {
     int v2 = game_options_screen_index;
     uint16 v3 = off_82F2ED[v2];
     if (v3) {
       R18_ = off_82F2ED[v2];
-      uint16 *v4 = (uint16 *)RomPtr_82(v3 + 4 * menu_option_index);
+      const uint16 *v4 = (const uint16 *)RomPtr_82(v3 + 4 * menu_option_index);
       int v5 = v0 >> 1;
       enemy_projectile_y_pos[v5 + 13] = *v4;
       enemy_projectile_x_vel[v5 + 3] = v4[1];
@@ -5444,7 +5290,6 @@ void OptionsPreInstr_F42C(uint16 k) {  // 0x82F42C
     enemy_projectile_y_vel[v1 + 17] = addr_off_82F4B6;
   }
 }
-#define off_82F54A ((uint16*)RomPtr(0x82f54a))
 void LoadControllerOptionsFromControllerBindings(void) {  // 0x82F4DC
   int16 v2;
 
@@ -5496,8 +5341,6 @@ uint8 OptionsMenuFunc8(void) {
   } while (v2 < 12);
   return 0;
 }
-#define g_word_82F639 ((uint16*)RomPtr(0x82f639))
-#define g_off_82F647 ((uint16*)RomPtr(0x82f647))
 static const uint16 g_word_82F6AD[6] = {  // 0x82F587
   0,
   0xe,
@@ -5513,7 +5356,7 @@ void OptionsMenuFunc6(void) {
     v4 = v0;
     int v1 = v0 >> 1;
     uint16 v2 = g_word_82F639[v1];
-    uint16 *v3 = (uint16 *)RomPtr_82(g_off_82F647[(uint16)(2 * enemy_projectile_F[v1 + 13]) >> 1]);
+    const uint16 *v3 = (const uint16 *)RomPtr_82(g_off_82F647[(uint16)(2 * enemy_projectile_F[v1 + 13]) >> 1]);
     *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + v2) = *v3;
     *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[1] + v2) = v3[1];
     *(uint16 *)((char *)&ram3000.pause_menu_map_tilemap[2] + v2) = v3[2];

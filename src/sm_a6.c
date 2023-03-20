@@ -5,6 +5,66 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+
+#define g_byte_A6E269 ((uint8*)RomFixedPtr(0xa6e269))
+#define g_word_A6E2AA ((uint16*)RomFixedPtr(0xa6e2aa))
+#define g_word_A6E30A ((uint16*)RomFixedPtr(0xa6e30a))
+#define g_word_A6E46A ((uint16*)RomFixedPtr(0xa6e46a))
+#define g_off_A6A4EB ((uint16*)RomFixedPtr(0xa6a4eb))
+#define g_off_A6A743 ((uint16*)RomFixedPtr(0xa6a743))
+#define g_word_A6AE4D ((uint16*)RomFixedPtr(0xa6ae4d))
+#define g_word_A6AF2F ((uint16*)RomFixedPtr(0xa6af2f))
+#define g_word_A6B00F ((uint16*)RomFixedPtr(0xa6b00f))
+#define g_off_A6ACDA ((uint16*)RomFixedPtr(0xa6acda))
+#define g_off_A6AD45 ((uint16*)RomFixedPtr(0xa6ad45))
+#define g_word_A6B60D ((uint16*)RomFixedPtr(0xa6b60d))
+#define g_word_A6B63B ((uint16*)RomFixedPtr(0xa6b63b))
+#define g_word_A6B6C8 ((uint16*)RomFixedPtr(0xa6b6c8))
+#define g_word_A6B9D5 ((uint16*)RomFixedPtr(0xa6b9d5))
+#define g_word_A6B9DB ((uint16*)RomFixedPtr(0xa6b9db))
+#define g_off_A6B965 ((uint16*)RomFixedPtr(0xa6b965))
+#define g_off_A6B96D ((uint16*)RomFixedPtr(0xa6b96d))
+#define g_word_A6B9D5 ((uint16*)RomFixedPtr(0xa6b9d5))
+#define g_word_A6B9DB ((uint16*)RomFixedPtr(0xa6b9db))
+#define g_word_A6B94D ((uint16*)RomFixedPtr(0xa6b94d))
+#define g_word_A6B959 ((uint16*)RomFixedPtr(0xa6b959))
+#define g_word_A6BB48 ((uint16*)RomFixedPtr(0xa6bb48))
+#define g_word_A6BB4E ((uint16*)RomFixedPtr(0xa6bb4e))
+#define g_word_A6C1DF ((uint16*)RomFixedPtr(0xa6c1df))
+#define g_off_A6C7BA ((uint16*)RomFixedPtr(0xa6c7ba))
+#define g_word_A6C804 ((uint16*)RomFixedPtr(0xa6c804))
+#define g_off_A6C808 ((uint16*)RomFixedPtr(0xa6c808))
+#define g_word_A6C836 ((uint16*)RomFixedPtr(0xa6c836))
+#define g_off_A6C83A ((uint16*)RomFixedPtr(0xa6c83a))
+#define g_word_A6C868 ((uint16*)RomFixedPtr(0xa6c868))
+#define g_off_A6C86C ((uint16*)RomFixedPtr(0xa6c86c))
+#define g_word_A6C89A ((uint16*)RomFixedPtr(0xa6c89a))
+#define g_off_A6C89E ((uint16*)RomFixedPtr(0xa6c89e))
+#define g_word_A6C8CC ((uint16*)RomFixedPtr(0xa6c8cc))
+#define g_off_A6C8D0 ((uint16*)RomFixedPtr(0xa6c8d0))
+#define g_word_A6C6CE ((uint16*)RomFixedPtr(0xa6c6ce))
+#define g_off_A6C6E6 ((uint16*)RomFixedPtr(0xa6c6e6))
+#define g_word_A6CC12 ((uint16*)RomFixedPtr(0xa6cc12))
+#define g_word_A6CC18 ((uint16*)RomFixedPtr(0xa6cc18))
+#define g_off_A6DB02 ((uint16*)RomFixedPtr(0xa6db02))
+#define kRidley_Ilist_DCBA ((uint16*)RomFixedPtr(0xa6dcba))
+#define g_off_A6EFF5 ((uint16*)RomFixedPtr(0xa6eff5))
+#define g_off_A6F001 ((uint16*)RomFixedPtr(0xa6f001))
+#define g_off_A6F72B ((uint16*)RomFixedPtr(0xa6f72b))
+#define g_off_A6F52C ((uint16*)RomFixedPtr(0xa6f52c))
+#define g_word_A6F840 ((uint16*)RomFixedPtr(0xa6f840))
+#define g_off_A6F900 ((uint16*)RomFixedPtr(0xa6f900))
+#define g_word_A6FC03 ((uint16*)RomFixedPtr(0xa6fc03))
+#define g_word_A6FC0B ((uint16*)RomFixedPtr(0xa6fc0b))
+#define g_off_A6FC13 ((uint16*)RomFixedPtr(0xa6fc13))
+#define g_word_A6FC1B ((uint16*)RomFixedPtr(0xa6fc1b))
+#define g_word_A6FC23 ((uint16*)RomFixedPtr(0xa6fc23))
+#define g_word_A6FC2B ((uint16*)RomFixedPtr(0xa6fc2b))
+#define g_off_A6FD4A ((uint16*)RomFixedPtr(0xa6fd4a))
+#define g_off_A6FD54 ((uint16*)RomFixedPtr(0xa6fd54))
+
+
+
 int BabyMetroid_DBCB_DoubleRetEx(uint16 a);
 uint8 Ridley_Func_40_Carry();
 uint8 Ridley_Func_40_Sign();
@@ -59,75 +119,14 @@ static const uint16 g_word_A695FE[4] = { 0xffe8, 0xfff4, 0x18, 0xc };
 static const uint16 g_word_A69606[4] = { 0x180, 0x100, 0x100, 0x180 };
 static const uint16 g_word_A69A48[8] = { 0xfe00, 0xfb00, 0xfc00, 0xfb00, 0x200, 0xfb00, 0x400, 0xfb00 };
 
-#define g_byte_A6E269 ((uint8*)RomPtr(0xa6e269))
-#define g_word_A6E2AA ((uint16*)RomPtr(0xa6e2aa))
-#define g_word_A6E30A ((uint16*)RomPtr(0xa6e30a))
-#define g_word_A6E46A ((uint16*)RomPtr(0xa6e46a))
-#define g_off_A6A4EB ((uint16*)RomPtr(0xa6a4eb))
-#define g_off_A6A743 ((uint16*)RomPtr(0xa6a743))
-#define g_word_A6AE4D ((uint16*)RomPtr(0xa6ae4d))
-#define g_word_A6AF2F ((uint16*)RomPtr(0xa6af2f))
-#define g_word_A6B00F ((uint16*)RomPtr(0xa6b00f))
-#define g_off_A6ACDA ((uint16*)RomPtr(0xa6acda))
-#define g_off_A6AD45 ((uint16*)RomPtr(0xa6ad45))
 static const uint16 g_word_A6B288 = 8;
-#define g_word_A6B60D ((uint16*)RomPtr(0xa6b60d))
-#define g_word_A6B63B ((uint16*)RomPtr(0xa6b63b))
-#define g_word_A6B6C8 ((uint16*)RomPtr(0xa6b6c8))
-#define g_word_A6B9D5 ((uint16*)RomPtr(0xa6b9d5))
-#define g_word_A6B9DB ((uint16*)RomPtr(0xa6b9db))
-#define g_off_A6B965 ((uint16*)RomPtr(0xa6b965))
-#define g_off_A6B96D ((uint16*)RomPtr(0xa6b96d))
-#define g_word_A6B9D5 ((uint16*)RomPtr(0xa6b9d5))
-#define g_word_A6B9DB ((uint16*)RomPtr(0xa6b9db))
-#define g_word_A6B94D ((uint16*)RomPtr(0xa6b94d))
-#define g_word_A6B959 ((uint16*)RomPtr(0xa6b959))
-#define g_word_A6BB48 ((uint16*)RomPtr(0xa6bb48))
-#define g_word_A6BB4E ((uint16*)RomPtr(0xa6bb4e))
 static const uint16 g_word_A6BBEB[3] = { 0x40, 0, 0xd0 };
 static const uint16 g_word_A6BC62[3] = { 0xb0, 0, 0x50 };
-#define g_word_A6C1DF ((uint16*)RomPtr(0xa6c1df))
 static const int16 g_word_A6C66E[20] = { -24, -24, -20, 20, 16, -30, 30, -3, 14, -13, -2, 18, -2, -32, -31, 8, -4, -10, 19, 19 };
-#define g_off_A6C7BA ((uint16*)RomPtr(0xa6c7ba))
-#define g_word_A6C804 ((uint16*)RomPtr(0xa6c804))
-#define g_off_A6C808 ((uint16*)RomPtr(0xa6c808))
-#define g_word_A6C836 ((uint16*)RomPtr(0xa6c836))
-#define g_off_A6C83A ((uint16*)RomPtr(0xa6c83a))
-#define g_word_A6C868 ((uint16*)RomPtr(0xa6c868))
-#define g_off_A6C86C ((uint16*)RomPtr(0xa6c86c))
-#define g_word_A6C89A ((uint16*)RomPtr(0xa6c89a))
-#define g_off_A6C89E ((uint16*)RomPtr(0xa6c89e))
-#define g_word_A6C8CC ((uint16*)RomPtr(0xa6c8cc))
-#define g_off_A6C8D0 ((uint16*)RomPtr(0xa6c8d0))
-#define g_word_A6C6CE ((uint16*)RomPtr(0xa6c6ce))
-#define g_off_A6C6E6 ((uint16*)RomPtr(0xa6c6e6))
-#define g_word_A6CC12 ((uint16*)RomPtr(0xa6cc12))
-#define g_word_A6CC18 ((uint16*)RomPtr(0xa6cc18))
 static const int16 g_word_A6CF54[3] = { 0x20, 0, -0x20 };
 static const uint8 g_byte_A6D61F[16] = { 0x10, 0xf, 0xe, 0xd, 0xc, 0xb, 0xa, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 static const uint8 g_byte_A6D712[16] = { 0x10, 0xf, 0xe, 0xd, 0xc, 0xb, 0xa, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 static const uint16 g_word_A6D9ED[8] = { 0xc, 0xe, 0x10, 0x12, 0x1c, 0x20, 0x28, 0x30 };
-#define g_off_A6DB02 ((uint16*)RomPtr(0xa6db02))
-#define kRidley_Ilist_DCBA ((uint16*)RomPtr(0xa6dcba))
-#define g_off_A6EFF5 ((uint16*)RomPtr(0xa6eff5))
-#define g_off_A6F001 ((uint16*)RomPtr(0xa6f001))
-#define g_off_A6F72B ((uint16*)RomPtr(0xa6f72b))
-#define g_off_A6F52C ((uint16*)RomPtr(0xa6f52c))
-#define g_word_A6F840 ((uint16*)RomPtr(0xa6f840))
-#define g_off_A6F900 ((uint16*)RomPtr(0xa6f900))
-#define g_word_A6FC03 ((uint16*)RomPtr(0xa6fc03))
-#define g_word_A6FC0B ((uint16*)RomPtr(0xa6fc0b))
-#define g_off_A6FC13 ((uint16*)RomPtr(0xa6fc13))
-#define g_word_A6FC1B ((uint16*)RomPtr(0xa6fc1b))
-#define g_word_A6FC23 ((uint16*)RomPtr(0xa6fc23))
-#define g_word_A6FC2B ((uint16*)RomPtr(0xa6fc2b))
-#define g_off_A6FD4A ((uint16*)RomPtr(0xa6fd4a))
-#define g_off_A6FD54 ((uint16*)RomPtr(0xa6fd54))
-
-uint16 EnemyInstr_Sleep_A6(uint16 k, uint16 j) {  // 0xA6812F
-  gEnemyData(k)->current_instruction = j - 2;
-  return 0;
-}
 
 void Enemy_GrappleReact_NoInteract_A6(void) {  // 0xA68000
   SwitchEnemyAiToMainAi();
@@ -148,11 +147,6 @@ void Enemy_NormalShotAI_A6(void) {  // 0xA6802D
 void Enemy_NormalFrozenAI_A6(void) {  // 0xA68041
   NormalEnemyFrozenAI();
 }
-
-uint16 EnemyInstr_Goto_A6(uint16 k, uint16 j) {  // 0xA680ED
-  return *(uint16 *)RomPtr_A6(j);
-}
-
 
 void Boulder_Init(void) {  // 0xA686F5
   int16 boulder_parameter_2_high;
@@ -496,189 +490,189 @@ uint16 SpikeyPlatform_Func_5(uint16 k) {  // 0xA68CA1
   return 0;
 }
 
-uint16 FireGeyser_Instr_1(uint16 k, uint16 j) {  // 0xA68DAF
+const uint16 *FireGeyser_Instr_1(uint16 k, const uint16 *jp) {  // 0xA68DAF
   QueueSfx2_Max6(0x61u);
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_2(uint16 k, uint16 j) {  // 0xA68E13
+const uint16 *FireGeyser_Instr_2(uint16 k, const uint16 *jp) {  // 0xA68E13
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DBB;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DE7;
   E->base.x_width = 8;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_3(uint16 k, uint16 j) {  // 0xA68E2D
+const uint16 *FireGeyser_Instr_3(uint16 k, const uint16 *jp) {  // 0xA68E2D
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DBD;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DE9;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_4(uint16 k, uint16 j) {  // 0xA68E41
+const uint16 *FireGeyser_Instr_4(uint16 k, const uint16 *jp) {  // 0xA68E41
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DBF;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DEB;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_5(uint16 k, uint16 j) {  // 0xA68E55
+const uint16 *FireGeyser_Instr_5(uint16 k, const uint16 *jp) {  // 0xA68E55
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DC1;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DED;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_6(uint16 k, uint16 j) {  // 0xA68E69
+const uint16 *FireGeyser_Instr_6(uint16 k, const uint16 *jp) {  // 0xA68E69
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DC3;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DEF;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_7(uint16 k, uint16 j) {  // 0xA68E7D
+const uint16 *FireGeyser_Instr_7(uint16 k, const uint16 *jp) {  // 0xA68E7D
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DC5;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DF1;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_8(uint16 k, uint16 j) {  // 0xA68E91
+const uint16 *FireGeyser_Instr_8(uint16 k, const uint16 *jp) {  // 0xA68E91
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DC7;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DF3;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_9(uint16 k, uint16 j) {  // 0xA68EA5
+const uint16 *FireGeyser_Instr_9(uint16 k, const uint16 *jp) {  // 0xA68EA5
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DC9;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DF5;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_10(uint16 k, uint16 j) {  // 0xA68EB9
+const uint16 *FireGeyser_Instr_10(uint16 k, const uint16 *jp) {  // 0xA68EB9
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DCB;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DF7;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_11(uint16 k, uint16 j) {  // 0xA68ECD
+const uint16 *FireGeyser_Instr_11(uint16 k, const uint16 *jp) {  // 0xA68ECD
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DCD;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DF9;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_12(uint16 k, uint16 j) {  // 0xA68EE1
+const uint16 *FireGeyser_Instr_12(uint16 k, const uint16 *jp) {  // 0xA68EE1
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DCF;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DFB;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_13(uint16 k, uint16 j) {  // 0xA68EF5
+const uint16 *FireGeyser_Instr_13(uint16 k, const uint16 *jp) {  // 0xA68EF5
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DD1;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DFD;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_14(uint16 k, uint16 j) {  // 0xA68F09
+const uint16 *FireGeyser_Instr_14(uint16 k, const uint16 *jp) {  // 0xA68F09
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DD3;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68DFF;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_15(uint16 k, uint16 j) {  // 0xA68F1D
+const uint16 *FireGeyser_Instr_15(uint16 k, const uint16 *jp) {  // 0xA68F1D
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DD5;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E01;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_16(uint16 k, uint16 j) {  // 0xA68F31
+const uint16 *FireGeyser_Instr_16(uint16 k, const uint16 *jp) {  // 0xA68F31
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DD7;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E03;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_17(uint16 k, uint16 j) {  // 0xA68F45
+const uint16 *FireGeyser_Instr_17(uint16 k, const uint16 *jp) {  // 0xA68F45
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DD9;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E05;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_18(uint16 k, uint16 j) {  // 0xA68F59
+const uint16 *FireGeyser_Instr_18(uint16 k, const uint16 *jp) {  // 0xA68F59
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DDB;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E07;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_19(uint16 k, uint16 j) {  // 0xA68F6D
+const uint16 *FireGeyser_Instr_19(uint16 k, const uint16 *jp) {  // 0xA68F6D
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DDD;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E09;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_20(uint16 k, uint16 j) {  // 0xA68F81
+const uint16 *FireGeyser_Instr_20(uint16 k, const uint16 *jp) {  // 0xA68F81
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DDF;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E0B;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_21(uint16 k, uint16 j) {  // 0xA68F95
+const uint16 *FireGeyser_Instr_21(uint16 k, const uint16 *jp) {  // 0xA68F95
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DE1;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E0D;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_22(uint16 k, uint16 j) {  // 0xA68FA9
+const uint16 *FireGeyser_Instr_22(uint16 k, const uint16 *jp) {  // 0xA68FA9
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DE3;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E0F;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_23(uint16 k, uint16 j) {  // 0xA68FBD
+const uint16 *FireGeyser_Instr_23(uint16 k, const uint16 *jp) {  // 0xA68FBD
   uint16 v2 = Get_FireGeyser(cur_enemy_index)->fgr_var_D - g_word_A68DE5;
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index + 64);
   E->base.y_pos = v2;
   E->base.y_height = g_word_A68E11;
-  return j;
+  return jp;
 }
 
-uint16 FireGeyser_Instr_24(uint16 k, uint16 j) {  // 0xA68FD1
+const uint16 *FireGeyser_Instr_24(uint16 k, const uint16 *jp) {  // 0xA68FD1
   Enemy_FireGeyser *E = Get_FireGeyser(cur_enemy_index);
   E->fgr_var_C = 1;
   Enemy_FireGeyser *E1 = Get_FireGeyser(cur_enemy_index + 64);
@@ -687,7 +681,7 @@ uint16 FireGeyser_Instr_24(uint16 k, uint16 j) {  // 0xA68FD1
   E->base.y_pos = E->fgr_var_D;
   E->base.properties |= kEnemyProps_Invisible;
   E1->base.properties |= 0x400u;
-  return j;
+  return jp;
 }
 
 void FireGeyser_Init(void) {  // 0xA68FFC
@@ -839,9 +833,9 @@ void NuclearWaffle_Func_1(void) {  // 0xA69615
 void NuclearWaffle_Func_2(void) {  // 0xA69682
   Enemy_NuclearWaffle *E = Get_NuclearWaffle(cur_enemy_index);
   draw_enemy_layer = E->nwe_var_D;
-  g_word_7E001E = NuclearWaffle_Func_6(E->nwe_var_21);
-  uint16 v8 = g_word_7E001E;
-  if (g_word_7E001E != E->nwe_var_33) {
+  R30_ = NuclearWaffle_Func_6(E->nwe_var_21);
+  uint16 v8 = R30_;
+  if (R30_ != E->nwe_var_33) {
     R18_ = E->base.x_pos;
     R20_ = E->base.y_pos;
     R22_ = 46;
@@ -876,9 +870,9 @@ void NuclearWaffle_Func_3(void) {  // 0xA69721
     R36 -= E->nwe_var_2B;
     Enemy_NuclearWaffle *ET = Get_NuclearWaffle(cur_enemy_index + E->nwe_var_2A);
     uint16 nwe_var_00 = ET->nwe_var_00;
-    g_word_7E001E = NuclearWaffle_Func_6(R36);
-    uint16 v13 = g_word_7E001E;
-    if (g_word_7E001E != ET->nwe_var_08) {
+    R30_ = NuclearWaffle_Func_6(R36);
+    uint16 v13 = R30_;
+    if (R30_ != ET->nwe_var_08) {
       int v5 = nwe_var_00 >> 1;
       R18_ = enemy_projectile_x_pos[v5];
       R20_ = enemy_projectile_y_pos[v5];
@@ -917,9 +911,9 @@ void NuclearWaffle_Func_4(void) {  // 0xA697E9
     R36 -= E->nwe_var_2B;
     Enemy_NuclearWaffle *ET = Get_NuclearWaffle(cur_enemy_index + E->nwe_var_2A);
     uint16 nwe_var_10 = ET->nwe_var_10;
-    g_word_7E001E = NuclearWaffle_Func_6(R36);
-    uint16 v13 = g_word_7E001E;
-    if (g_word_7E001E != ET->nwe_var_18) {
+    R30_ = NuclearWaffle_Func_6(R36);
+    uint16 v13 = R30_;
+    if (R30_ != ET->nwe_var_18) {
       R38 = E->nwe_var_34;
       int v5 = nwe_var_10 >> 1;
       R18_ = sprite_x_pos[v5];
@@ -937,10 +931,10 @@ void NuclearWaffle_Func_4(void) {  // 0xA697E9
     ET->nwe_var_18 = v13;
     uint16 v6 = NuclearWaffle_Func_5(R36);
     uint16 v7 = CosineMult8bit(v6);
-    R32 = E->nwe_var_26 + v7;
+    R32_ = E->nwe_var_26 + v7;
     uint16 v9 = NuclearWaffle_Func_5(R36);
     R34 = E->nwe_var_27 + SineMult8bitNegative(v9);
-    sprite_x_pos[nwe_var_10 >> 1] = R32;
+    sprite_x_pos[nwe_var_10 >> 1] = R32_;
     sprite_y_pos[nwe_var_10 >> 1] = R34;
     v12 = E->nwe_var_2A - 2;
     E->nwe_var_2A = v12;
@@ -991,7 +985,7 @@ uint16 NuclearWaffle_Func_6(uint16 a) {  // 0xA698E7
 }
 
 void NuclearWaffle_Func_7(void) {  // 0xA6993F
-  if (g_word_7E001E != 2)
+  if (R30_ != 2)
     QueueSfx2_Max6(0x5Eu);
 }
 
@@ -1050,7 +1044,7 @@ void FakeKraid_Func_1(uint16 k, uint16 j) {  // 0xA69ADC
   }
 }
 
-uint16 FakeKraid_Instr_2(uint16 k, uint16 j) {  // 0xA69B26
+const uint16 *FakeKraid_Instr_2(uint16 k, const uint16 *jp) {  // 0xA69B26
   Enemy_FakeKraid *E = Get_FakeKraid(cur_enemy_index);
   if (E->fkd_var_E)
     --E->fkd_var_E;
@@ -1067,40 +1061,38 @@ LABEL_7:
   E->fkd_var_C = -4;
   if ((int16)(E->base.x_pos - samus_x_pos) < 0)
     E->fkd_var_C = 4;
-  return j;
+  return jp;
 }
 
-uint16 FakeKraid_Instr_1(uint16 k, uint16 j) {  // 0xA69B74
+const uint16 *FakeKraid_Instr_1(uint16 k, const uint16 *jp) {  // 0xA69B74
   Enemy_FakeKraid *E = Get_FakeKraid(cur_enemy_index);
-  uint16 result;
   if (E->fkd_var_E) {
     if ((E->fkd_var_C & 0x8000u) != 0) {
-      result = addr_stru_A699AE;
       if ((Get_FakeKraid(cur_enemy_index)->fkd_var_B & 0x8000u) == 0)
-        return addr_stru_A699C6;
+        return INSTR_RETURN_ADDR(addr_stru_A699C6);
+      return INSTR_RETURN_ADDR(addr_stru_A699AE);
     } else {
-      result = addr_stru_A699FC;
       if ((E->fkd_var_B & 0x8000u) != 0)
-        return addr_stru_A69A14;
+        return INSTR_RETURN_ADDR(addr_stru_A69A14);
+      return INSTR_RETURN_ADDR(addr_stru_A699FC);
     }
   } else {
     E->fkd_var_E = (random_number & 3) + 3;
-    result = addr_kFakeKraid_Ilist_9A2A;
     if ((E->fkd_var_C & 0x8000u) != 0)
-      return addr_kFakeKraid_Ilist_99DC;
+      return INSTR_RETURN_ADDR(addr_kFakeKraid_Ilist_99DC);
+    return INSTR_RETURN_ADDR(addr_kFakeKraid_Ilist_9A2A);
   }
-  return result;
 }
 
-uint16 FakeKraid_Instr_3(uint16 k, uint16 j) {  // 0xA69BB2
+const uint16 *FakeKraid_Instr_3(uint16 k, const uint16 *jp) {  // 0xA69BB2
   if (CheckIfEnemyIsOnScreen() == 0)
     QueueSfx2_Max6(0x16u);
-  return j;
+  return jp;
 }
 
-uint16 FakeKraid_Instr_4(uint16 k, uint16 j) {  // 0xA69BC4
+const uint16 *FakeKraid_Instr_4(uint16 k, const uint16 *jp) {  // 0xA69BC4
   FakeKraid_InstrHelper_45(k, 0, 0xFFFC);
-  return j;
+  return jp;
 }
 
 void FakeKraid_InstrHelper_45(uint16 k, uint16 j, uint16 a) {  // 0xA69BCB
@@ -1118,9 +1110,9 @@ void FakeKraid_InstrHelper_45(uint16 k, uint16 j, uint16 a) {  // 0xA69BCB
   SpawnEnemyProjectileWithGfx(v8, ka, addr_kEproj_MiniKraidSpit);
 }
 
-uint16 FakeKraid_Instr_5(uint16 k, uint16 j) {  // 0xA69C02
+const uint16 *FakeKraid_Instr_5(uint16 k, const uint16 *jp) {  // 0xA69C02
   FakeKraid_InstrHelper_45(k, 8u, 4u);
-  return j;
+  return jp;
 }
 
 void sub_A69C0B(void) {  // 0xA69C0B
@@ -2039,7 +2031,7 @@ void Ridley_Func_6(void) {  // 0xA6B3F8
 
 uint16 Ridley_Func_7(void) {  // 0xA6B42E
   static const uint16 g_word_A6B439[4] = { 4, 8, 0xa, 0xc };
-  return g_word_A6B439[(uint16)(2 * Get_Ridley(0)->ridley_var_12) >> 1];
+  return g_word_A6B439[Get_Ridley(0)->ridley_var_12];
 }
 
 void Ridley_Func_8(void) {  // 0xA6B441
@@ -2406,7 +2398,7 @@ void Ridley_Func_29(void) {  // 0xA6B90F
   tilemap_stuff[7] = g_word_A6B94D[v3];
   tilemap_stuff[6] = g_word_A6B959[v3];
   E->ridley_var_C = *(uint16 *)&RomPtr_A6(R20_)[v2];
-  uint8 *v4 = RomPtr_A6(R18_);
+  const uint8 *v4 = RomPtr_A6(R18_);
   uint16 t = *(uint16 *)&v4[v2];
   E->ridley_var_B = sign16(E->ridley_var_B) ? -t : t;
 }
@@ -2787,29 +2779,25 @@ void DrawBabyMetroid_0(void) {  // 0xA6BF1A
 
 uint16 BabyMetroid_Instr_2(uint16 k) {  // 0xA6BFC9
   if (!Get_Ridley(0)->ridley_var_46 && (random_number & 1) != 0)
-    return BabyMetroid_Instr_4(k);
+    return BabyMetroid_Goto(k);
   QueueSfx3_Max6(0x24u);
-  return BabyMetroid_Incr2(k);
-}
-
-uint16 BabyMetroid_Incr2(uint16 k) {  // 0xA6BFDE
   return k + 2;
 }
 
 uint16 BabyMetroid_Instr_3(uint16 k) {  // 0xA6BFE1
   uint16 v1 = *(uint16 *)RomPtr_A6(k);
   WriteColorsToPalette(0x162, 0xa6, v1, 0xF);
-  return BabyMetroid_Incr2(k);
+  return k + 2;
 }
 
 uint16 BabyMetroid_Instr_1(uint16 k) {  // 0xA6BFF2
   if (Get_Ridley(0)->ridley_var_46)
-    return BabyMetroid_Instr_4(k);
+    return BabyMetroid_Goto(k);
   else
-    return BabyMetroid_Incr2(k);
+    return k + 2;
 }
 
-uint16 BabyMetroid_Instr_4(uint16 k) {  // 0xA6BFF8
+uint16 BabyMetroid_Goto(uint16 k) {  // 0xA6BFF8
   return *(uint16 *)RomPtr_A6(k);
 }
 
@@ -2931,12 +2919,12 @@ void Ridley_Func_59(void) {  // 0xA6C136
   VramWriteEntry *v2;
 
   uint16 v0 = vram_write_queue_tail;
-  uint8 *v1 = RomPtr_A6(addr_byte_A6C15D);
+  const uint8 *v1 = RomPtr_A6(addr_byte_A6C15D);
   v2 = gVramWriteEntry(vram_write_queue_tail);
-  v2->size = *(uint16 *)v1;
-  *(VoidP *)((char *)&v2->src.addr + 1) = *(uint16 *)(v1 + 3);
-  v2->src.addr = *((uint16 *)v1 + 1);
-  v2->vram_dst = *(uint16 *)(v1 + 5);
+  v2->size = GET_WORD(v1);
+  *(VoidP *)((char *)&v2->src.addr + 1) = GET_WORD(v1 + 3);
+  v2->src.addr = GET_WORD(v1 + 2);
+  v2->vram_dst = GET_WORD(v1 + 5);
   vram_write_queue_tail = v0 + 7;
 }
 
@@ -2984,14 +2972,14 @@ uint8 ProcessEscapeTimerTileTransfers(void) {  // 0xA6C26E
   EnemyData *v0 = gEnemyData(0);
   uint16 ai_var_E = v0->ai_var_E;
   uint16 v2 = vram_write_queue_tail;
-  uint8 *v3 = RomPtr_A6(ai_var_E);
+  const uint8 *v3 = RomPtr_A6(ai_var_E);
   uint8 result = 1;
-  if (*(uint16 *)v3) {
+  if (GET_WORD(v3)) {
     v4 = gVramWriteEntry(vram_write_queue_tail);
-    v4->size = *(uint16 *)v3;
-    *(VoidP *)((char *)&v4->src.addr + 1) = *(uint16 *)(v3 + 3);
-    v4->src.addr = *((uint16 *)v3 + 1);
-    v4->vram_dst = *(uint16 *)(v3 + 5);
+    v4->size = GET_WORD(v3);
+    *(VoidP *)((char *)&v4->src.addr + 1) = GET_WORD(v3 + 3);
+    v4->src.addr = GET_WORD(v3 + 2);
+    v4->vram_dst = GET_WORD(v3 + 5);
     vram_write_queue_tail = v2 + 7;
     v0->ai_var_E = ai_var_E + 7;
     if (*(uint16 *)RomPtr_A6(v0->ai_var_E))
@@ -3074,14 +3062,14 @@ void Ridley_Func_62(void) {  // 0xA6C383
 
   uint16 v0 = addr_stru_A6C3B8;
   for (i = vram_write_queue_tail; ; i += 7) {
-    uint8 *v2 = RomPtr_A6(v0);
-    if (!*(uint16 *)v2)
+    const uint8 *v2 = RomPtr_A6(v0);
+    if (!GET_WORD(v2))
       break;
     v3 = gVramWriteEntry(i);
-    v3->size = *(uint16 *)v2;
-    *(VoidP *)((char *)&v3->src.addr + 1) = *(uint16 *)(v2 + 3);
-    v3->src.addr = *((uint16 *)v2 + 1);
-    v3->vram_dst = *(uint16 *)(v2 + 5);
+    v3->size = GET_WORD(v2);
+    *(VoidP *)((char *)&v3->src.addr + 1) = GET_WORD(v2 + 3);
+    v3->src.addr = GET_WORD(v2 + 2);
+    v3->vram_dst = GET_WORD(v2 + 5);
     v0 += 7;
   }
   vram_write_queue_tail = i;
@@ -3885,14 +3873,15 @@ void Ridley_Func_93(uint16 j, uint16 k) {  // 0xA6D3B4
   int16 v3;
   int16 v5;
 
-  R20_ = 126;
-  R18_ = j;
+  LongPtr r18;
+  r18.bank = 126;
+  r18.addr = j;
   uint16 v2 = 0;
   v3 = 7;
   do {
     v5 = v3;
-    uint16 *v4 = (uint16 *)RomPtr_A6(k);
-    IndirWriteWord(&R18_, v2, *v4);
+    const uint16 *v4 = (const uint16 *)RomPtr_A6(k);
+    IndirWriteWord(r18, v2, *v4);
     k += 2;
     v2 += 20;
     --v3;
@@ -3938,8 +3927,8 @@ uint8 Ridley_Func_97(void) {  // 0xA6D431
 
 void Ridley_Func_98(void) {  // 0xA6D453
   uint16 enemy_ptr = Get_Ridley(cur_enemy_index)->base.enemy_ptr;
-  uint8 *v1 = RomPtr_A0(enemy_ptr);
-  uint16 v2 = SuitDamageDivision(*((uint16 *)v1 + 3));
+  const uint8 *v1 = RomPtr_A0(enemy_ptr);
+  uint16 v2 = SuitDamageDivision(GET_WORD(v1 + 6));
   Samus_DealDamage(v2);
 }
 
@@ -4373,25 +4362,17 @@ void Ridley_Func_115(void) {  // 0xA6D97D
 }
 
 void Ridley_Func_116(void) {  // 0xA6D9A8
-  int16 v1;
-  int16 v3;
-  char v4; // t0
-
   Enemy_Ridley *E = Get_Ridley(0);
   R18_ = abs16(E->ridley_var_B);
-  v1 = R18_ + abs16(E->ridley_var_C);
+  uint16 v1 = R18_ + abs16(E->ridley_var_C);
   if (v1) {
     uint16 v2 = v1 - R18_;
     if (sign16(v2 - R18_))
       v2 = R18_;
-    v3 = (4 * v2) & 0xF00;
-    v4 = v3;
-    LOBYTE(v3) = HIBYTE(v3);
-    HIBYTE(v3) = v4;
-    uint16 v5 = 2 * v3;
-    if (v5 >= 0xEu)
-      v5 = 14;
-    uint16 v6 = g_word_A6D9ED[v5 >> 1];
+    int v5 = (((4 * v2) & 0xF00) >> 8);
+    if (v5 >= 7)
+      v5 = 7;
+    uint16 v6 = g_word_A6D9ED[v5];
     if ((E->ridley_var_C & 0x8000u) == 0)
       v6 >>= 1;
     E->ridley_var_08 = v6;
@@ -4449,9 +4430,9 @@ void Ridley_Func_119(uint8 carry) {  // 0xA6DA8B
   v3 = gVramWriteEntry(vram_write_queue_tail);
   *(VoidP *)((char *)&v3->src.addr + 1) = -20480;
   *(VoidP *)((char *)&v3[1].src.addr + 1) = -20480;
-  uint8 *v4 = RomPtr_A6(v1);
-  v3->src.addr = *(uint16 *)v4;
-  v3[1].src.addr = *((uint16 *)v4 + 1);
+  const uint8 *v4 = RomPtr_A6(v1);
+  v3->src.addr = GET_WORD(v4);
+  v3[1].src.addr = GET_WORD(v4 + 2);
   v3->vram_dst = 31424;
   v3[1].vram_dst = 31680;
   v3->size = 128;
@@ -4514,95 +4495,64 @@ uint16 CallBabyMetroidInstr(uint32 ea, uint16 k) {
   case fnBabyMetroid_Instr_2: return BabyMetroid_Instr_2(k);
   case fnBabyMetroid_Instr_3: return BabyMetroid_Instr_3(k);
   case fnBabyMetroid_Instr_1: return BabyMetroid_Instr_1(k);
-  case fnBabyMetroid_Instr_4: return BabyMetroid_Instr_4(k);
+  case fnBabyMetroid_Instr_4: return BabyMetroid_Goto(k);
   default: return Unreachable();
   }
 }
+
+typedef struct BabyMetroidExecState {
+  uint16 ip;
+  uint16 timer;
+} BabyMetroidExecState;
+
 int BabyMetroid_DBCB_DoubleRetEx(uint16 a) {
-  int16 v3;
+  BabyMetroidExecState *st = (BabyMetroidExecState *)&g_ram[a];
 
-  R0_.addr = a;
-  R3_.addr = a + 2;
-  R0_.bank = 126;
-  R3_.bank = 126;
-
-  uint16 *instr_ptr = (uint16 *)IndirPtr(&R0_, 0);
-  uint16 *timer_ptr = (uint16 *)IndirPtr(&R3_, 0);
-
-  if ((*instr_ptr & 0x8000u) == 0)
+  if ((st->ip & 0x8000u) == 0)
     return -1;  // double ret
-
-  uint16 v2 = *instr_ptr;
-  v3 = *(uint16 *)RomPtr_A6(v2);
-  if (v3 < 0)
+  uint16 v2 = st->ip;
+  const uint16 *v3 = (uint16 *)RomPtr_A6(v2);
+  if (sign16(v3[0]))
     goto LABEL_7;
-  if (*timer_ptr != v3) {
-    (*timer_ptr)++;
-    return *((uint16 *)RomPtr_A6(v2) + 1);
+  if (st->timer != v3[0]) {
+    st->timer++;
+    return v3[1];
   }
   v2 += 4;
   for (; ; ) {
-    v3 = *(uint16 *)RomPtr_A6(v2);
-    if (v3 >= 0)
+    v3 = (uint16 *)RomPtr_A6(v2);
+    if (!sign16(v3[0]))
       break;
 LABEL_7:
-    R6_ = v3;
-    v2 = CallBabyMetroidInstr((uint16)v3 | 0xA60000, v2 + 2);
+    v2 = CallBabyMetroidInstr(v3[0] | 0xA60000, v2 + 2);
   }
-  *timer_ptr = 1;
-  *instr_ptr = v2;
-  return *((uint16 *)RomPtr_A6(v2) + 1);
+  st->timer = 1;
+  st->ip = v2;
+  return v3[1];
 }
 
 void sub_A6DC13(uint16 j) {  // 0xA6DC13
-  int16 *v5;
-  int16 v6;
-  int16 v7;
-  char v8; // t0
-  int16 v9;
-  int16 v10;
-  OamEnt *v11;
-  int16 v13;
-  int16 v15;
-
-  uint16 *v1 = (uint16 *)RomPtr_A6(j);
-  uint16 v2 = j + 2;
-  R24_ = *v1;
-  uint16 v3 = oam_next_ptr;
+  const uint8 *p = RomPtr_A6(j);
+  int n = GET_WORD(p);
+  p += 2;
+  int v3 = oam_next_ptr;
   do {
-    uint8 *v4 = RomPtr_A6(v2);
-    v5 = (int16 *)v4;
-    v6 = v4[2] << 8;
-    if ((v4[2] & 0x80) != 0)
-      v6 |= 0xFFu;
-    v8 = v6;
-    LOBYTE(v7) = HIBYTE(v6);
-    HIBYTE(v7) = v8;
-    v9 = R20_ + v7 - layer1_y_pos;
+    int16 v9 = R20_ + (int8)p[2] - layer1_y_pos;
     if (v9 >= 0 && sign16(v9 - 224)) {
-      R26_ = v9;
-      v10 = R18_ + *(uint16 *)v4 - layer1_x_pos;
-      v11 = gOamEnt(v3);
-      *(uint16 *)&v11->xcoord = v10;
-      if ((v10 & 0x100) != 0) {
-        int v12 = v3 >> 1;
-        R28_ = kOamExtra_Address_And_X8Large[v12];
-        v13 = kOamExtra_X8Small_And_Large[v12] | *(uint16 *)RomPtr_RAM(R28_);
-        *(uint16 *)RomPtr_RAM(R28_) = v13;
-      }
-      if (*v5 < 0) {
-        int v14 = v3 >> 1;
-        R28_ = kOamExtra_Address_And_X8Large[v14];
-        v15 = kOamExtra_X8Small_And_Large[v14 + 1] | *(uint16 *)RomPtr_RAM(R28_);
-        *(uint16 *)RomPtr_RAM(R28_) = v15;
-      }
-      *(uint16 *)&v11->ycoord = R26_;
-      *(uint16 *)&v11->charnum = R22_ | *(int16 *)((char *)v5 + 3);
+      uint16 v10 = R18_ + GET_WORD(p) - layer1_x_pos;
+      OamEnt *v11 = gOamEnt(v3);
+      v11->xcoord = v10;
+      int v12 = v3 >> 1;
+      if ((v10 & 0x100) != 0)
+        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v12]) |= kOamExtra_X8Small_And_Large[v12];
+      if (sign16(GET_WORD(p)))
+        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v12]) |= kOamExtra_X8Small_And_Large[v12 + 1];
+      v11->ycoord = v9;
+      *(uint16 *)&v11->charnum = R22_ | GET_WORD(p + 3);
       v3 = (v3 + 4) & 0x1FF;
     }
-    v2 += 5;
-    --R24_;
-  } while (R24_);
+    p += 5;
+  } while (--n);
   oam_next_ptr = v3;
 }
 
@@ -4795,84 +4745,74 @@ void Ridley_Func_129(void) {  // 0xA6E088
   }
 }
 
-uint16 Ridley_Instr_5(uint16 k, uint16 j) {  // 0xA6E4BE
+const uint16 *Ridley_Instr_5(uint16 k, const uint16 *jp) {  // 0xA6E4BE
   Get_Ridley(0)->ridley_var_0F = 89;
   QueueSfx2_Max6(0x59u);
-  return j;
+  return jp;
 }
 
-uint16 Ridley_Instr_6(uint16 k, uint16 j) {  // 0xA6E4CA
+const uint16 *Ridley_Instr_6(uint16 k, const uint16 *jp) {  // 0xA6E4CA
   Get_Ridley(0)->ridley_var_0F = 0;
-  return j;
+  return jp;
 }
 
-uint16 Ridley_Instr_10(uint16 k, uint16 j) {  // 0xA6E4D2
+const uint16 *Ridley_Instr_10(uint16 k, const uint16 *jp) {  // 0xA6E4D2
   if (area_index == 2 || !sign16(samus_health - 30))
-    return sub_A6E514(j);
+    return jp + 1;
   Get_Ridley(0)->ridley_var_00 = 8;
-  return sub_A6E4E9(j);
+  return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 sub_A6E4E9(uint16 j) {  // 0xA6E4E9
-  return *(uint16 *)RomPtr_A6(j);
-}
-
-uint16 Ridley_Instr_4(uint16 k, uint16 j) {  // 0xA6E4EE
+const uint16 *Ridley_Instr_4(uint16 k, const uint16 *jp) {  // 0xA6E4EE
   if (Get_Ridley(0)->ridley_var_1B)
-    return sub_A6E4E9(j);
+    return INSTR_RETURN_ADDR(jp[0]);
   else
-    return sub_A6E4E9(j + 2);
+    return INSTR_RETURN_ADDR(jp[1]);
 }
 
-uint16 Ridley_Instr_3(uint16 k, uint16 j) {  // 0xA6E4F8
+const uint16 *Ridley_Instr_3(uint16 k, const uint16 *jp) {  // 0xA6E4F8
   if (Get_Ridley(0)->ridley_var_1B)
-    return j + 2;
+    return jp + 1;
   else
-    return sub_A6E4E9(j);
+    return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 Ridley_Instr_2(uint16 k, uint16 j) {  // 0xA6E501
+const uint16 *Ridley_Instr_2(uint16 k, const uint16 *jp) {  // 0xA6E501
   samus_prev_x_pos = samus_x_pos;
   samus_prev_y_pos = samus_y_pos;
-  uint16 v2 = *(uint16 *)RomPtr_A6(j);
-  Get_Ridley(0)->ridley_var_1D = v2;
-  return sub_A6E514(j);
+  Get_Ridley(0)->ridley_var_1D = jp[0];
+  return jp + 1;
 }
 
-uint16 sub_A6E514(uint16 j) {  // 0xA6E514
-  return j + 2;
-}
-
-uint16 Ridley_Instr_1(uint16 k, uint16 j) {  // 0xA6E517
+const uint16 *Ridley_Instr_1(uint16 k, const uint16 *jp) {  // 0xA6E517
   if (Get_Ridley(0)->ridley_var_10)
-    return sub_A6E4E9(j);
+    return INSTR_RETURN_ADDR(jp[0]);
   else
-    return sub_A6E514(j);
+    return jp + 1;
 }
 
-uint16 Ridley_Instr_14(uint16 k, uint16 j) {  // 0xA6E51F
-  uint8 *v2 = RomPtr_A6(j);
+const uint16 *Ridley_Instr_14(uint16 k, const uint16 *jp) {  // 0xA6E51F
   Enemy_Ridley *E = Get_Ridley(0);
-  E->base.x_pos += *(uint16 *)v2;
-  E->base.y_pos += *((uint16 *)v2 + 1);
-  return j + 4;
+  E->base.x_pos += jp[0];
+  E->base.y_pos += jp[1];
+  return jp + 2;
 }
 
-uint16 Ridley_Instr_9(uint16 k, uint16 j) {  // 0xA6E71C
+const uint16 *Ridley_Instr_9(uint16 k, const uint16 *jp) {  // 0xA6E71C
   Get_Ridley(0)->ridley_var_10 = 0;
   Ridley_Func_96();
-  return j;
+  return jp;
 }
 
-uint16 Ridley_Instr_7(uint16 k, uint16 j) {  // 0xA6E727
+const uint16 *Ridley_Instr_7(uint16 k, const uint16 *jp) {  // 0xA6E727
   Get_Ridley(0)->ridley_var_10 = 1;
-  return j;
+  return jp;
 }
 
-uint16 Ridley_Instr_8(uint16 k, uint16 j) {  // 0xA6E72F
+const uint16 *Ridley_Instr_8(uint16 k, const uint16 *jp) {  // 0xA6E72F
   Get_Ridley(0)->ridley_var_10 = 2;
   Ridley_Func_96();
-  return j;
+  return jp;
 }
 
 void Ridley_Func_131(uint16 k) {  // 0xA6E828
@@ -4887,7 +4827,7 @@ void Ridley_Func_132(uint16 k, uint16 a) {  // 0xA6E840
   SpawnEnemyProjectileWithGfx(a, k, addr_stru_869634);
 }
 
-uint16 Ridley_Instr_11(uint16 k, uint16 j) {  // 0xA6E84D
+const uint16 *Ridley_Instr_11(uint16 k, const uint16 *jp) {  // 0xA6E84D
   Enemy_Ridley *E = Get_Ridley(0);
   if (E->ridley_var_10) {
     R18_ = E->base.x_pos + 25;
@@ -4928,37 +4868,37 @@ LABEL_7:
 LABEL_14:
   E->ridley_var_19 = Math_MultBySin(0x500u);
   E->ridley_var_1A = Math_MultByCos(0x500u);
-  return j;
+  return jp;
 }
 
-uint16 Ridley_Instr_12(uint16 k, uint16 j) {  // 0xA6E904
-  return Ridley_E90C(k, j, 0);
+const uint16 *Ridley_Instr_12(uint16 k, const uint16 *jp) {  // 0xA6E904
+  return Ridley_E90C(k, jp, 0);
 }
 
-uint16 Ridley_Instr_13(uint16 k, uint16 j) {  // 0xA6E909
-  return Ridley_E90C(k, j, 0xe);
+const uint16 *Ridley_Instr_13(uint16 k, const uint16 *jp) {  // 0xA6E909
+  return Ridley_E90C(k, jp, 0xe);
 }
 
-uint16 Ridley_E90C(uint16 k, uint16 j, uint16 a) {  // 0xA6E90C
+const uint16 *Ridley_E90C(uint16 k, const uint16 *jp, uint16 a) {  // 0xA6E90C
   enemy_projectile_unk1995 = a;
   Enemy_Ridley *E = Get_Ridley(0);
   SpawnEnemyProjectileWithRoomGfx(0x9642, E->ridley_var_10);
-  return j;
+  return jp;
 }
 
 
-uint16 Ridley_Instr_15(uint16 k, uint16 j) {  // 0xA6E969
+const uint16 *Ridley_Instr_15(uint16 k, const uint16 *jp) {  // 0xA6E969
   Enemy_Ridley *E = Get_Ridley(0);
   E->ridley_var_A = FUNC16(CeresRidley_Func_9);
   E->ridley_var_C = -352;
-  return j;
+  return jp;
 }
 
-uint16 Ridley_Instr_16(uint16 k, uint16 j) {  // 0xA6E976
+const uint16 *Ridley_Instr_16(uint16 k, const uint16 *jp) {  // 0xA6E976
   Enemy_Ridley *E = Get_Ridley(0);
   E->ridley_var_A = FUNC16(Ridley_Func_3);
   E->ridley_var_C = -352;
-  return j;
+  return jp;
 }
 
 void CeresSteam_Init(void) {  // 0xA6EFB1
@@ -5006,54 +4946,45 @@ void CeresSteam_Touch(void) {  // 0xA6F03F
   NormalEnemyTouchAi();
 }
 
-uint16 CeresSteam_Instr_1(uint16 k, uint16 j) {  // 0xA6F11D
+const uint16 *CeresSteam_Instr_1(uint16 k, const uint16 *jp) {  // 0xA6F11D
   Enemy_CeresSteam *E = Get_CeresSteam(k);
   E->base.properties |= kEnemyProps_Tangible | kEnemyProps_Invisible;
-  return j;
+  return jp;
 }
 
-uint16 CeresSteam_Instr_2(uint16 k, uint16 j) {  // 0xA6F127
+const uint16 *CeresSteam_Instr_2(uint16 k, const uint16 *jp) {  // 0xA6F127
   Enemy_CeresSteam *E = Get_CeresSteam(k);
   if (E->csm_var_D-- != 1)
-    return *(uint16 *)RomPtr_A6(j);
-  uint8 *v5 = RomPtr_A6(j);
-  return CeresSteam_Instr_3(k, *((uint16 *)v5 + 1));
+    return INSTR_RETURN_ADDR(jp[0]);
+  return CeresSteam_Instr_3(k, (uint16 *)RomPtr_A6(jp[1]));
 }
 
-uint16 CeresSteam_Instr_3(uint16 k, uint16 j) {  // 0xA6F135
+const uint16 *CeresSteam_Instr_3(uint16 k, const uint16 *jp) {  // 0xA6F135
   Enemy_CeresSteam *E = Get_CeresSteam(k);
   E->base.properties &= 0xFAFFu;
-  return j;
+  return jp;
 }
 
-uint16 CeresDoor_Instr_6(uint16 k, uint16 j) {  // 0xA6F63E
+const uint16 *CeresDoor_Instr_6(uint16 k, const uint16 *jp) {  // 0xA6F63E
   Enemy_CeresDoor *E = Get_CeresDoor(k);
   if (abs16(E->base.x_pos - samus_x_pos) >= 0x30u || abs16(E->base.y_pos - samus_y_pos) >= 0x30u)
-    return CeresDoor_Goto(j);
+    return INSTR_RETURN_ADDR(*jp);
   else
-    return CeresDoor_Incr(j);
+    return jp + 1;
 }
 
-uint16 CeresDoor_Incr(uint16 j) {  // 0xA6F662
-  return j + 2;
-}
-
-uint16 CeresDoor_Goto(uint16 j) {  // 0xA6F665
-  return *(uint16 *)RomPtr_A6(j);
-}
-
-uint16 CeresDoor_Instr_4(uint16 k, uint16 j) {  // 0xA6F66A
+const uint16 *CeresDoor_Instr_4(uint16 k, const uint16 *jp) {  // 0xA6F66A
   if (*(uint16 *)&boss_bits_for_area[area_index] & 1)
-    return CeresDoor_Incr(j);
+    return jp + 1;
   else
-    return CeresDoor_Goto(j);
+    return INSTR_RETURN_ADDR(*jp);
 }
 
-uint16 CeresDoor_Instr_8(uint16 k, uint16 j) {  // 0xA6F678
+const uint16 *CeresDoor_Instr_8(uint16 k, const uint16 *jp) {  // 0xA6F678
   if (ceres_status)
-    return CeresDoor_Incr(j);
+    return jp + 1;
   else
-    return CeresDoor_Goto(j);
+    return INSTR_RETURN_ADDR(*jp);
 }
 
 void CeresDoor_Func_6b(void) {  // 0xA6F67F
@@ -5061,43 +4992,43 @@ void CeresDoor_Func_6b(void) {  // 0xA6F67F
     ceres_status = FUNC16(Enemy_GrappleReact_NoInteract_A6);
 }
 
-uint16 CeresSteam_Instr_4(uint16 k, uint16 j) {  // 0xA6F68B
+const uint16 *CeresSteam_Instr_4(uint16 k, const uint16 *jp) {  // 0xA6F68B
   Enemy_CeresSteam *E = Get_CeresSteam(k);
   E->base.properties |= kEnemyProps_Tangible;
-  return j;
+  return jp;
 }
 
-uint16 CeresDoor_Instr_1(uint16 k, uint16 j) {  // 0xA6F695
+const uint16 *CeresDoor_Instr_1(uint16 k, const uint16 *jp) {  // 0xA6F695
   Enemy_CeresDoor *E = Get_CeresDoor(k);
   E->base.properties &= ~kEnemyProps_Tangible;
-  return j;
+  return jp;
 }
 
-uint16 CeresDoor_Instr_3(uint16 k, uint16 j) {  // 0xA6F69F
+const uint16 *CeresDoor_Instr_3(uint16 k, const uint16 *jp) {  // 0xA6F69F
   Get_CeresDoor(k)->cdr_var_B = 1;
-  return j;
+  return jp;
 }
 
-uint16 CeresSteam_Instr_5(uint16 k, uint16 j) {  // 0xA6F6A6
+const uint16 *CeresSteam_Instr_5(uint16 k, const uint16 *jp) {  // 0xA6F6A6
   Enemy_CeresSteam *E = Get_CeresSteam(k);
   E->base.properties |= kEnemyProps_Invisible;
-  return j;
+  return jp;
 }
 
-uint16 CeresDoor_Instr_5(uint16 k, uint16 j) {  // 0xA6F6B0
+const uint16 *CeresDoor_Instr_5(uint16 k, const uint16 *jp) {  // 0xA6F6B0
   Get_CeresDoor(k)->cdr_var_B = 0;
-  return CeresDoor_Instr_2(k, j);
+  return CeresDoor_Instr_2(k, jp);
 }
 
-uint16 CeresDoor_Instr_2(uint16 k, uint16 j) {  // 0xA6F6B3
+const uint16 *CeresDoor_Instr_2(uint16 k, const uint16 *jp) {  // 0xA6F6B3
   Enemy_CeresDoor *E = Get_CeresDoor(k);
   E->base.properties &= ~kEnemyProps_Invisible;
-  return j;
+  return jp;
 }
 
-uint16 CeresDoor_Instr_7(uint16 k, uint16 j) {  // 0xA6F6BD
+const uint16 *CeresDoor_Instr_7(uint16 k, const uint16 *jp) {  // 0xA6F6BD
   QueueSfx3_Max6(0x2Cu);
-  return j;
+  return jp;
 }
 
 void CeresDoor_Init(void) {  // 0xA6F6C5

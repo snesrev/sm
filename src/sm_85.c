@@ -3,6 +3,11 @@
 #include "variables.h"
 #include "funcs.h"
 
+
+#define kMessageBoxDefs ((MsgBoxConfig*)RomFixedPtr(0x85869b))
+
+
+
 int DisplayMessageBox_Poll(uint16 a) {
   if (a == message_box_index) {
     message_box_index = 0;
@@ -130,7 +135,6 @@ void CallMsgBoxModify(uint32 ea) {
   default: Unreachable();
   }
 }
-#define kMessageBoxDefs ((MsgBoxConfig*)RomPtr(0x85869b))
 void InitializeMessageBox(void) {  // 0x858241
   bg3_tilemap_offset = 2 * (message_box_index - 1);
   uint16 v0 = message_box_index - 1;
@@ -182,11 +186,11 @@ uint16 WriteMessageTilemap(void) {  // 0x8582B8
     ram3000.pause_menu_map_tilemap[i] = 0;
   bg3_tilemap_offset = 2 * (message_box_index - 1);
   R0_.addr = *(VoidP *)((char *)&kMessageBoxDefs[0].message_tilemap + (uint16)(6 * (message_box_index - 1)));
-  *(uint16 *)((char *)&R8_ + 1) = *(VoidP *)((char *)&kMessageBoxDefs[1].message_tilemap
+  R9_.addr = *(VoidP *)((char *)&kMessageBoxDefs[1].message_tilemap
                                              + (uint16)(6 * (message_box_index - 1)))
     - R0_.addr;
-  R22_ = *(uint16 *)((char *)&R8_ + 1) >> 1;
-  *(uint16 *)((char *)&R8_ + 1) += 128;
+  R22_ = R9_.addr >> 1;
+  R9_.addr += 128;
   uint16 v1 = 32;
   uint16 v2 = 0;
   do {
@@ -224,7 +228,7 @@ void SetupPpuForActiveMessageBox(void) {  // 0x85831E
   WriteRegWord(DMAP1, 0x1801);
   WriteRegWord(A1T1L, ADDR16_OF_RAM(ram3000) + 512);
   WriteRegWord(A1B1, 0x7E);
-  WriteRegWord(DAS1L, *(uint16 *)((char *)&R8_ + 1));
+  WriteRegWord(DAS1L, R9_.addr);
   WriteRegWord(DAS10, 0);
   WriteRegWord(A2A1H, 0);
   WriteReg(VMAIN, 0x80);

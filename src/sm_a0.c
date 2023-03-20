@@ -5,7 +5,18 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
-#define kEnemyLayerToQueuePtr ((uint16*)RomPtr(0xa0b133))
+
+#define kEnemyLayerToQueuePtr ((uint16*)RomFixedPtr(0xa0b133))
+#define kStandardSpriteTiles ((uint16*)RomFixedPtr(0x9ad200))
+#define kSine8bit ((uint8*)RomFixedPtr(0xa0b143))
+#define kEquationForQuarterCircle ((uint16*)RomFixedPtr(0xa0b7ee))
+#define g_off_A0C2DA ((uint16*)RomFixedPtr(0xa0c2da))
+#define CHECK_locret_A0C434(i) (byte_A0C435[i] & 0x80 ? -1 : 0)
+#define g_word_A0C49F ((uint16*)RomFixedPtr(0xa0c49f))
+#define kAlignYPos_Tab0 ((uint8*)RomFixedPtr(0x948b2b))
+
+
+
 
 void Enemy_GrappleReact_NoInteract_A0(void) {  // 0xA08000
   SwitchEnemyAiToMainAi();
@@ -75,106 +86,98 @@ void func_nullsub_170(void) {
   ;
 }
 
-uint16 EnemyInstr_SetAiPreInstr(uint16 k, uint16 j) {  // 0xA0806B
-  uint16 v2 = *(uint16 *)RomPtr_A0(j);
-  gEnemyData(k)->ai_preinstr = v2;
-  return j + 2;
+const uint16 *EnemyInstr_SetAiPreInstr(uint16 k, const uint16 *jp) {  // 0xA0806B
+  gEnemyData(k)->ai_preinstr = jp[0];
+  return jp + 1;
 }
 
-uint16 EnemyInstr_ClearAiPreInstr(uint16 k, uint16 j) {  // 0xA08074
+const uint16 *EnemyInstr_ClearAiPreInstr(uint16 k, const uint16 *jp) {  // 0xA08074
   gEnemyData(k)->ai_preinstr = FUNC16(nullsub_171);
-  return j;
+  return jp;
 }
 
 void func_nullsub_171(void) {
   ;
 }
 
-uint16 EnemyInstr_StopScript(uint16 k, uint16 j) {  // 0xA0807C
+const uint16 *EnemyInstr_StopScript(uint16 k, const uint16 *jp) {  // 0xA0807C
   EnemyData *v2 = gEnemyData(k);
   v2->properties |= kEnemyProps_Deleted;
   return 0;
 }
 
-uint16 EnemyInstr_Goto(uint16 k, uint16 j) {  // 0xA080ED
-  return *(uint16 *)RomPtr_A0(j);
+const uint16 *EnemyInstr_Goto(uint16 k, const uint16 *jp) {  // 0xA280ED
+  return INSTR_RETURN_ADDR(*jp);
 }
 
-uint16 EnemyInstr_GotoRel(uint16 k, uint16 j) {  // 0xA080F2
-  return j + (int8)*RomPtr_A0(j);
+const uint16 *EnemyInstr_GotoRel(uint16 k, const uint16 *jp) {  // 0xA080F2
+  return (const uint16 * )((uint8*)jp + *(int8*)jp);
 }
 
-uint16 EnemyInstr_DecTimerAndGoto(uint16 k, uint16 j) {  // 0xA08108
+const uint16 *EnemyInstr_DecTimerAndGoto(uint16 k, const uint16 *jp) {  // 0xA08108
   EnemyData *v2 = gEnemyData(k);
   if (v2->timer-- == 1)
-    return j + 2;
+    return jp + 1;
   else
-    return EnemyInstr_Goto(k, j);
+    return EnemyInstr_Goto(k, jp);
 }
 
-uint16 EnemyInstr_DecTimerAndGoto2(uint16 k, uint16 j) {  // 0xA08110
-  EnemyData *v2 = gEnemyData(k);
-  if (v2->timer-- == 1)
-    return j + 2;
-  else
-    return EnemyInstr_Goto(k, j);
-}
-
-uint16 EnemyInstr_DecTimerAndGotoRel(uint16 k, uint16 j) {  // 0xA08118
+const uint16 *EnemyInstr_DecTimerAndGotoRel(uint16 k, const uint16 *jp) {  // 0xA08118
   EnemyData *v2 = gEnemyData(k);
   if (LOBYTE(v2->timer)-- == 1)
-    return j + 1;
+    return (const uint16 *)((uint8 *)jp + 1);
   else
-    return EnemyInstr_GotoRel(k, j);
+    return EnemyInstr_GotoRel(k, jp);
 }
 
-uint16 EnemyInstr_SetTimer(uint16 k, uint16 j) {  // 0xA08123
-  uint16 v2 = *(uint16 *)RomPtr_A0(j);
-  gEnemyData(k)->timer = v2;
-  return j + 2;
+const uint16 *EnemyInstr_SetTimer(uint16 k, const uint16 *jp) {  // 0xA08123
+  gEnemyData(k)->timer = *jp;
+  return jp + 1;
 }
 
-uint16 EnemyInstr_Skip2bytes(uint16 k, uint16 j) {  // 0xA0812C
-  return j + 2;
+const uint16 *EnemyInstr_Skip2bytes(uint16 k, const uint16 *jp) {  // 0xA0812C
+  return jp + 1;
 }
 
-uint16 EnemyInstr_Sleep(uint16 k, uint16 j) {  // 0xA0812F
-  gEnemyData(k)->current_instruction = j - 2;
+const uint16 *EnemyInstr_Sleep(uint16 k, const uint16 *jp) {  // 0xA2812F
+  EnemyData *ED = gEnemyData(k);
+  const uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
+  ED->current_instruction = (const uint8 *)jp - 2 - base_ptr;
   return 0;
 }
 
-uint16 EnemyInstr_WaitNframes(uint16 k, uint16 j) {  // 0xA0813A
-  uint16 v2 = *(uint16 *)RomPtr_A0(j);
-  EnemyData *v3 = gEnemyData(k);
-  v3->instruction_timer = v2;
-  v3->current_instruction = j + 2;
+const uint16 *EnemyInstr_WaitNframes(uint16 k, const uint16 *jp) {  // 0xA0813A
+  EnemyData *ED = gEnemyData(k);
+  const uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
+  ED->instruction_timer = jp[0];
+  ED->current_instruction = (const uint8 *)jp + 2 - base_ptr;
   return 0;
 }
 
-uint16 EnemyInstr_CopyToVram(uint16 k, uint16 j) {  // 0xA0814B
+const uint16 *EnemyInstr_CopyToVram(uint16 k, const uint16 *jp) {  // 0xA0814B
   VramWriteEntry *v4;
 
   uint16 v2 = vram_write_queue_tail;
-  uint8 *v3 = RomPtr_A0(j);
+  uint8 *v3 = (uint8*)jp;
   v4 = gVramWriteEntry(vram_write_queue_tail);
-  v4->size = *(uint16 *)v3;
-  v4->src.addr = *((uint16 *)v3 + 1);
-  *(VoidP *)((char *)&v4->src.addr + 1) = *(uint16 *)(v3 + 3);
-  v4->vram_dst = *(uint16 *)(v3 + 5);
+  v4->size = GET_WORD(v3);
+  v4->src.addr = GET_WORD(v3 + 2);
+  *(VoidP *)((char *)&v4->src.addr + 1) = GET_WORD(v3 + 3);
+  v4->vram_dst = GET_WORD(v3 + 5);
   vram_write_queue_tail = v2 + 7;
-  return j + 7;
+  return INSTR_INCR_BYTES(jp, 7);
 }
 
-uint16 EnemyInstr_EnableOffScreenProcessing(uint16 k, uint16 j) {  // 0xA08173
+const uint16 *EnemyInstr_EnableOffScreenProcessing(uint16 k, const uint16 *jp) {  // 0xA08173
   EnemyData *v2 = gEnemyData(k);
   v2->properties |= 0x800u;
-  return j;
+  return jp;
 }
 
-uint16 EnemyInstr_DisableOffScreenProcessing(uint16 k, uint16 j) {  // 0xA0817D
+const uint16 *EnemyInstr_DisableOffScreenProcessing(uint16 k, const uint16 *jp) {  // 0xA0817D
   EnemyData *v2 = gEnemyData(k);
   v2->properties &= ~0x800u;
-  return j;
+  return jp;
 }
 
 static const uint16 kRoomShakes[144] = {  // 0xA08687
@@ -284,7 +287,7 @@ void DrawSamusEnemiesAndProjectiles(void) {  // 0xA0884D
       do {
         loop_index = v1;
         uint8 *v2 = RomPtr_RAM(enemy_drawing_queue_base + v1);
-        uint16 v3 = *(uint16 *)v2;
+        uint16 v3 = GET_WORD(v2);
         *(uint16 *)v2 = 0;
         cur_enemy_index = v3;
         WriteEnemyOams();
@@ -317,7 +320,7 @@ void RecordEnemySpawnData(uint16 j) {  // 0xA088D0
   R28_ = 0;
   uint16 name_ptr = get_EnemyDef_A2(v1->enemy_ptr)->name_ptr;
   if (name_ptr) {
-    uint16 *v4 = (uint16 *)RomPtr_B4(name_ptr);
+    const uint16 *v4 = (const uint16 *)RomPtr_B4(name_ptr);
     R18_ = *v4;
     R20_ = v4[1];
     R22_ = v4[2];
@@ -334,47 +337,7 @@ void RecordEnemySpawnData(uint16 j) {  // 0xA088D0
   *(uint16 *)&v5->name[10] = R28_;
 }
 
-void DebugLoadEnemySetData(void) {  // 0xA0896F
-  int16 v1;
-
-  uint16 v0 = 0;
-  v1 = 160;
-  do {
-    *(uint16 *)&debug_enemy_set_name[v0] = 0;
-    v0 += 2;
-    v1 -= 2;
-  } while (v1);
-  uint8 *v2 = RomPtr_B4(room_enemy_tilesets_ptr - 7);
-  *(uint16 *)debug_enemy_set_name = *(uint16 *)v2;
-  *(uint16 *)&debug_enemy_set_name[2] = *((uint16 *)v2 + 1);
-  *(uint16 *)&debug_enemy_set_name[4] = *((uint16 *)v2 + 2);
-  *(uint16 *)&debug_enemy_set_name[6] = *((uint16 *)v2 + 3);
-  uint16 v3 = 7;
-  for (int i = room_enemy_tilesets_ptr; ; i += 4) {
-    uint16 v5 = *(uint16 *)RomPtr_B4(i);
-    if (v5 == 0xFFFF)
-      break;
-    uint16 v6 = *((uint16 *)RomPtr_A0(v5) + 31);
-    if (!v6)
-      v6 = addr_asc_B4DD89;
-    uint16 *v7 = (uint16 *)RomPtr_B4(v6);
-    R18_ = *v7;
-    R20_ = v7[1];
-    R22_ = v7[2];
-    R24_ = v7[3];
-    R26_ = v7[4];
-    *(uint16 *)&debug_enemy_set_name[v3] = R18_;
-    *(uint16 *)&debug_enemy_set_name[v3 + 2] = R20_;
-    *(uint16 *)&debug_enemy_set_name[v3 + 4] = R22_;
-    *(uint16 *)&debug_enemy_set_name[v3 + 6] = R24_;
-    *(uint16 *)&debug_enemy_set_data[v3] = R26_;
-    *(uint16 *)&debug_enemy_set_data[v3 + 2] = *((uint16 *)RomPtr_B4(i) + 1);
-    v3 += 12;
-  }
-}
-
 void LoadEnemies(void) {  // 0xA08A1E
-  //  DebugLoadEnemySetData();
   debug_time_frozen_for_enemies = 0;
   *(uint16 *)&enemy_gfx_drawn_hook.bank = 160;
   enemy_gfx_drawn_hook.addr = FUNC16(nullsub_170);
@@ -490,7 +453,7 @@ void LoadEnemyGfxIndexes(uint16 k, uint16 j) {  // 0xA08BF3
   R18_ = k;
   R20_ = j;
   R28_ = room_enemy_tilesets_ptr;
-  g_word_7E001E = 0;
+  R30_ = 0;
   while (1) {
     enemy_ptr = get_EnemyPopulation(0xa1, R18_)->enemy_ptr;
     EnemyTileset = get_EnemyTileset(R28_);
@@ -506,7 +469,7 @@ void LoadEnemyGfxIndexes(uint16 k, uint16 j) {  // 0xA08BF3
       v6->palette_index = 2560;
       return;
     }
-    g_word_7E001E += get_EnemyDef_A2(EnemyTileset->enemy_def)->tile_data_size >> 5;
+    R30_ += get_EnemyDef_A2(EnemyTileset->enemy_def)->tile_data_size >> 5;
     R28_ += 4;
   }
   uint16 v7 = (get_EnemyTileset(R28_)->vram_dst & 0xF) << 9;
@@ -515,11 +478,10 @@ void LoadEnemyGfxIndexes(uint16 k, uint16 j) {  // 0xA08BF3
   v9->palette_index = v7;
   v10 = gEnemySpawnData(v8);
   v10->palette_index = v7;
-  uint16 v11 = g_word_7E001E;
-  v9->vram_tiles_index = g_word_7E001E;
+  uint16 v11 = R30_;
+  v9->vram_tiles_index = R30_;
   v10->vram_tiles_index = v11;
 }
-#define kStandardSpriteTiles ((uint16*)RomPtr(0x9ad200))
 void LoadEnemyTileData(void) {  // 0xA08C6C
   for (int i = 510; i >= 0; i -= 2)
     gEnemySpawnData(i)->some_flag = kStandardSpriteTiles[(i >> 1) + 3072];
@@ -576,7 +538,7 @@ void TransferEnemyTilesToVramAndInit(void) {  // 0xA08CD7
 
 void ProcessEnemyTilesets(void) {  // 0xA08D64
   enemy_tile_load_data_write_pos = 0;
-  g_word_7E001E = 2048;
+  R30_ = 2048;
   enemy_def_ptr[0] = 0;
   enemy_def_ptr[1] = 0;
   enemy_def_ptr[2] = 0;
@@ -600,7 +562,7 @@ void ProcessEnemyTilesets(void) {  // 0xA08D64
     varE2E = 0;
     LD->tile_data_size = ED->tile_data_size & 0x7FFF;
     LD->tile_data_ptr = ED->tile_data;
-    uint16 v10 = g_word_7E001E;
+    uint16 v10 = R30_;
     if ((ED->tile_data_size & 0x8000u) != 0)
       v10 = (uint16)(ET->vram_dst & 0x3000) >> 3;
     LD->offset_into_ram = v10;
@@ -612,7 +574,7 @@ void ProcessEnemyTilesets(void) {  // 0xA08D64
     enemy_gfxdata_vram_ptr[v11 >> 1] = ET->vram_dst;
     enemy_gfx_data_write_ptr += 2;
     next_enemy_tiles_index += ED->tile_data_size >> 5;
-    g_word_7E001E += ED->tile_data_size;
+    R30_ += ED->tile_data_size;
   }
 }
 
@@ -625,7 +587,7 @@ void DetermineWhichEnemiesToProcess(void) {  // 0xA08EB6
     do {
       uint16 v5 = cur_enemy_index;
       EnemyData *v6 = gEnemyData(cur_enemy_index);
-      if (v6->enemy_ptr && v6->enemy_ptr != (uint16)addr_kEnemyDef_DAFF) {
+      if (v6->enemy_ptr && v6->enemy_ptr != addr_kEnemyDef_DAFF) {
         if ((v6->properties & 0x200) != 0) {
           v6->enemy_ptr = 0;
         } else {
@@ -649,7 +611,7 @@ void DetermineWhichEnemiesToProcess(void) {  // 0xA08EB6
     do {
       uint16 v0 = cur_enemy_index;
       EnemyData *v1 = gEnemyData(cur_enemy_index);
-      if (v1->enemy_ptr && v1->enemy_ptr != (uint16)addr_kEnemyDef_DAFF) {
+      if (v1->enemy_ptr && v1->enemy_ptr != addr_kEnemyDef_DAFF) {
         uint16 properties = v1->properties;
         if ((properties & 0x200) != 0) {
           v1->enemy_ptr = 0;
@@ -1327,14 +1289,14 @@ void CallEnemyPreInstr(uint32 ea) {
   }
 }
 
-uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
+const uint16 *CallEnemyInstr(uint32 ea, uint16 k, const uint16 *j) {
   switch (ea) {
-  case fnEnemyInstr_Goto_A2: return EnemyInstr_Goto_A2(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_A2: return EnemyInstr_DecTimerAndGoto2_A2(k, j);
-  case fnEnemyInstr_SetTimer_A2: return EnemyInstr_SetTimer_A2(k, j);
-  case fnEnemyInstr_Sleep_A2: return EnemyInstr_Sleep_A2(k, j);
-  case fnEnemyInstr_EnableOffScreenProcessing_A2: return EnemyInstr_EnableOffScreenProcessing_A2(k, j);
-  case fnEnemyInstr_DisableOffScreenProcessing_A2: return EnemyInstr_DisableOffScreenProcessing_A2(k, j);
+  case fnEnemyInstr_Goto_A2: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_A2: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_A2: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_A2: return EnemyInstr_Sleep(k, j);
+  case fnEnemyInstr_EnableOffScreenProcessing_A2: return EnemyInstr_EnableOffScreenProcessing(k, j);
+  case fnEnemyInstr_DisableOffScreenProcessing_A2: return EnemyInstr_DisableOffScreenProcessing(k, j);
   case fnBouncingGoofball_Instr_88C5: return BouncingGoofball_Instr_88C5(k, j);
   case fnBouncingGoofball_Instr_88C6: return BouncingGoofball_Instr_88C6(k, j);
   case fnMiniCrocomire_Instr_897E: return MiniCrocomire_Instr_897E(k, j);
@@ -1378,10 +1340,10 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnMaridiaLargeSnail_Instr_CCBE: return MaridiaLargeSnail_Instr_CCBE(k, j);
   case fnMaridiaLargeSnail_Instr_CCC9: return MaridiaLargeSnail_Instr_CCC9(k, j);
   case fnLavaSeahorse_Instr_E5FB: return LavaSeahorse_Instr_E5FB(k, j);
-  case fnEnemyInstr_Goto_A3: return EnemyInstr_Goto_A3(k, j);
-  case fnEnemyInstr_Sleep_A3: return EnemyInstr_Sleep_A3(k, j);
-  case fnEnemyInstr_EnableOffScreenProcessing_A3: return EnemyInstr_EnableOffScreenProcessing_A3(k, j);
-  case fnEnemyInstr_DisableOffScreenProcessing_A3: return EnemyInstr_DisableOffScreenProcessing_A3(k, j);
+  case fnEnemyInstr_Goto_A3: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_Sleep_A3: return EnemyInstr_Sleep(k, j);
+  case fnEnemyInstr_EnableOffScreenProcessing_A3: return EnemyInstr_EnableOffScreenProcessing(k, j);
+  case fnEnemyInstr_DisableOffScreenProcessing_A3: return EnemyInstr_DisableOffScreenProcessing(k, j);
   case fnWaver_Instr_1: return Waver_Instr_1(k, j);
   case fnMetalee_Instr_1: return Metalee_Instr_1(k, j);
   case fnMaridiaFish_Instr_3: return MaridiaFish_Instr_3(k, j);
@@ -1409,8 +1371,8 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnZoomer_Instr_SetPreinstr: return Zoomer_Instr_SetPreinstr(k, j);
   case fnMetroid_Instr_2: return Metroid_Instr_2(k, j);
   case fnMetroid_Instr_1: return Metroid_Instr_1(k, j);
-  case fnEnemyInstr_Goto_A4: return EnemyInstr_Goto_A4(k, j);
-  case fnEnemyInstr_Sleep_A4: return EnemyInstr_Sleep_A4(k, j);
+  case fnEnemyInstr_Goto_A4: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_Sleep_A4: return EnemyInstr_Sleep(k, j);
   case fnCrocomire_Instr_1: return Crocomire_Instr_1(k, j);
   case fnCrocomire_Instr_14: return Crocomire_Instr_14(k, j);
   case fnCrocomire_Instr_11: return Crocomire_Instr_11(k, j);
@@ -1438,12 +1400,12 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnCrocomire_Instr_25: return Crocomire_Instr_25(k, j);
   case fnCrocomire_Instr_26: return Crocomire_Instr_26(k, j);
   case fnCrocomire_Instr_27: return Crocomire_Instr_27(k, j);
-  case fnEnemyInstr_StopScript_A5: return EnemyInstr_StopScript_A5(k, j);
-  case fnEnemyInstr_Goto_A5: return EnemyInstr_Goto_A5(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_A5: return EnemyInstr_DecTimerAndGoto2_A5(k, j);
-  case fnEnemyInstr_SetTimer_A5: return EnemyInstr_SetTimer_A5(k, j);
-  case fnEnemyInstr_Sleep_A5: return EnemyInstr_Sleep_A5(k, j);
-  case fnEnemyInstr_WaitNframes_A5: return EnemyInstr_WaitNframes_A5(k, j);
+  case fnEnemyInstr_StopScript_A5: return EnemyInstr_StopScript(k, j);
+  case fnEnemyInstr_Goto_A5: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_A5: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_A5: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_A5: return EnemyInstr_Sleep(k, j);
+  case fnEnemyInstr_WaitNframes_A5: return EnemyInstr_WaitNframes(k, j);
   case fnDraygon_Instr_1: return Draygon_Instr_1(k, j);
   case fnDraygon_Instr_13: return Draygon_Instr_13(k, j);
   case fnDraygon_Instr_8: return Draygon_Instr_8(k, j);
@@ -1474,8 +1436,8 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnDraygon_Instr_19: return Draygon_Instr_19(k, j);
   case fnDraygon_Instr_28: return Draygon_Instr_28(k, j);
   case fnDraygon_Instr_26: return Draygon_Instr_26(k, j);
-  case fnEnemyInstr_Goto_A6: return EnemyInstr_Goto_A6(k, j);
-  case fnEnemyInstr_Sleep_A6: return EnemyInstr_Sleep_A6(k, j);
+  case fnEnemyInstr_Goto_A6: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_Sleep_A6: return EnemyInstr_Sleep(k, j);
   case fnFireGeyser_Instr_1: return FireGeyser_Instr_1(k, j);
   case fnFireGeyser_Instr_2: return FireGeyser_Instr_2(k, j);
   case fnFireGeyser_Instr_3: return FireGeyser_Instr_3(k, j);
@@ -1535,10 +1497,10 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnCeresDoor_Instr_2: return CeresDoor_Instr_2(k, j);
   case fnCeresDoor_Instr_7: return CeresDoor_Instr_7(k, j);
   case fnEnemyInstr_Call_A7: return EnemyInstr_Call_A7(k, j);
-  case fnEnemyInstr_Goto_A7: return EnemyInstr_Goto_A7(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_A7: return EnemyInstr_DecTimerAndGoto2_A7(k, j);
-  case fnEnemyInstr_SetTimer_A7: return EnemyInstr_SetTimer_A7(k, j);
-  case fnEnemyInstr_Sleep_A7: return EnemyInstr_Sleep_A7(k, j);
+  case fnEnemyInstr_Goto_A7: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_A7: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_A7: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_A7: return EnemyInstr_Sleep(k, j);
   case fnKraid_Instr_9: return Kraid_Instr_9(k, j);
   case fnKraid_Instr_1: return Kraid_Instr_1(k, j);
   case fnKraid_Instr_DecYpos: return Kraid_Instr_DecYpos(k, j);
@@ -1548,12 +1510,12 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnKraid_Instr_XposMinus3b: return Kraid_Instr_XposMinus3b(k, j);
   case fnKraid_Instr_XposPlus3: return Kraid_Instr_XposPlus3(k, j);
   case fnKraid_Instr_MoveHimRight: return Kraid_Instr_MoveHimRight(k, j);
-  case fnEnemyInstr_Goto_A8: return EnemyInstr_Goto_A8(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_A8: return EnemyInstr_DecTimerAndGoto2_A8(k, j);
-  case fnEnemyInstr_SetTimer_A8: return EnemyInstr_SetTimer_A8(k, j);
-  case fnEnemyInstr_Sleep_A8: return EnemyInstr_Sleep_A8(k, j);
-  case fnEnemyInstr_EnableOffScreenProcessing_A8: return EnemyInstr_EnableOffScreenProcessing_A8(k, j);
-  case fnEnemyInstr_DisableOffScreenProcessing_A8: return EnemyInstr_DisableOffScreenProcessing_A8(k, j);
+  case fnEnemyInstr_Goto_A8: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_A8: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_A8: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_A8: return EnemyInstr_Sleep(k, j);
+  case fnEnemyInstr_EnableOffScreenProcessing_A8: return EnemyInstr_EnableOffScreenProcessing(k, j);
+  case fnEnemyInstr_DisableOffScreenProcessing_A8: return EnemyInstr_DisableOffScreenProcessing(k, j);
   case fnMiniDraygon_Instr_2: return MiniDraygon_Instr_2(k, j);
   case fnMiniDraygon_Instr_1: return MiniDraygon_Instr_1(k, j);
   case fnMiniDraygon_Instr_3: return MiniDraygon_Instr_3(k, j);
@@ -1620,7 +1582,7 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnKiHunter_Instr_3: return KiHunter_Instr_3(k, j);
   case fnKiHunter_Instr_4: return KiHunter_Instr_4(k, j);
   case fnKiHunter_Instr_5: return KiHunter_Instr_5(k, j);
-  case fnEnemyInstr_Sleep_A9: return EnemyInstr_Sleep_A9(k, j);
+  case fnEnemyInstr_Sleep_A9: return EnemyInstr_Sleep(k, j);
   case fnShitroid_Instr_1: return Shitroid_Instr_1(k, j);
   case fnShitroid_Instr_2: return Shitroid_Instr_2(k, j);
   case fnsub_A9ECD0: return sub_A9ECD0(k, j);
@@ -1630,13 +1592,13 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnShitroid_Instr_5: return Shitroid_Instr_5(k, j);
   case fnEnemy_SetAiPreInstr_AA: return Enemy_SetAiPreInstr_AA(k, j);
   case fnEnemy_ClearAiPreInstr_AA: return Enemy_ClearAiPreInstr_AA(k, j);
-  case fnEnemyInstr_StopScript_AA: return EnemyInstr_StopScript_AA(k, j);
-  case fnEnemyInstr_Goto_AA: return EnemyInstr_Goto_AA(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_AA: return EnemyInstr_DecTimerAndGoto2_AA(k, j);
-  case fnEnemyInstr_SetTimer_AA: return EnemyInstr_SetTimer_AA(k, j);
-  case fnEnemyInstr_Sleep_AA: return EnemyInstr_Sleep_AA(k, j);
-  case fnEnemyInstr_WaitNframes_AA: return EnemyInstr_WaitNframes_AA(k, j);
-  case fnEnemyInstr_CopyToVram_AA: return EnemyInstr_CopyToVram_AA(k, j);
+  case fnEnemyInstr_StopScript_AA: return EnemyInstr_StopScript(k, j);
+  case fnEnemyInstr_Goto_AA: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_AA: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_AA: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_AA: return EnemyInstr_Sleep(k, j);
+  case fnEnemyInstr_WaitNframes_AA: return EnemyInstr_WaitNframes(k, j);
+  case fnEnemyInstr_CopyToVram_AA: return EnemyInstr_CopyToVram(k, j);
   case fnTorizo_Instr_3: return Torizo_Instr_3(k, j);
   case fnTorizo_Instr_31: return Torizo_Instr_31(k, j);
   case fnTorizo_Instr_33: return Torizo_Instr_33(k, j);
@@ -1714,11 +1676,11 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnShaktool_Instr_12: return Shaktool_Instr_12(k, j);
   case fnShaktool_Instr_7: return Shaktool_Instr_7(k, j);
   case fnShaktool_Instr_14: return Shaktool_Instr_14(k, j);
-  case fnEnemyInstr_Goto_B2: return EnemyInstr_Goto_B2(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_B2: return EnemyInstr_DecTimerAndGoto2_B2(k, j);
-  case fnEnemyInstr_SetTimer_B2: return EnemyInstr_SetTimer_B2(k, j);
-  case fnEnemyInstr_Sleep_B2: return EnemyInstr_Sleep_B2(k, j);
-  case fnEnemyInstr_WaitNframes_B2: return EnemyInstr_WaitNframes_B2(k, j);
+  case fnEnemyInstr_Goto_B2: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_B2: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_B2: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_B2: return EnemyInstr_Sleep(k, j);
+  case fnEnemyInstr_WaitNframes_B2: return EnemyInstr_WaitNframes(k, j);
   case fnSpacePirates_Instr_MovePixelsDownAndChangeDirFaceRight: return SpacePirates_Instr_MovePixelsDownAndChangeDirFaceRight(k, j);
   case fnSpacePirates_Instr_MovePixelsDownAndChangeDirFaceLeft: return SpacePirates_Instr_MovePixelsDownAndChangeDirFaceLeft(k, j);
   case fnSpacePirates_Instr_RandomNewDirFaceR: return SpacePirates_Instr_RandomNewDirFaceR(k, j);
@@ -1742,10 +1704,10 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnSpacePirates_Instr_13: return SpacePirates_Instr_13(k, j);
   case fnEnemy_SetAiPreInstr_B3: return Enemy_SetAiPreInstr_B3(k, j);
   case fnEnemy_ClearAiPreInstr_B3: return Enemy_ClearAiPreInstr_B3(k, j);
-  case fnEnemyInstr_Goto_B3: return EnemyInstr_Goto_B3(k, j);
-  case fnEnemyInstr_DecTimerAndGoto2_B3: return EnemyInstr_DecTimerAndGoto2_B3(k, j);
-  case fnEnemyInstr_SetTimer_B3: return EnemyInstr_SetTimer_B3(k, j);
-  case fnEnemyInstr_Sleep_B3: return EnemyInstr_Sleep_B3(k, j);
+  case fnEnemyInstr_Goto_B3: return EnemyInstr_Goto(k, j);
+  case fnEnemyInstr_DecTimerAndGoto2_B3: return EnemyInstr_DecTimerAndGoto(k, j);
+  case fnEnemyInstr_SetTimer_B3: return EnemyInstr_SetTimer(k, j);
+  case fnEnemyInstr_Sleep_B3: return EnemyInstr_Sleep(k, j);
   case fnBotwoon_Instr_1: return Botwoon_Instr_1(k, j);
   case fnBotwoon_Instr_2: return Botwoon_Instr_2(k, j);
   case fnBotwoon_Instr_3: return Botwoon_Instr_3(k, j);
@@ -1796,7 +1758,7 @@ uint16 CallEnemyInstr(uint32 ea, uint16 k, uint16 j) {
   case fnMotherBrain_Instr_SpawnDeathBeamEproj: return MotherBrain_Instr_SpawnDeathBeamEproj(k, j);
   case fnMotherBrain_Instr_IncrBeamAttackPhase: return MotherBrain_Instr_IncrBeamAttackPhase(k, j);
 
-  default: return Unreachable();
+  default: Unreachable(); return NULL;
   }
 }
 
@@ -1810,7 +1772,6 @@ void EnemyMain(void) {  // 0xA08FD4
       gEnemyData(enemy_index_to_shake)->shake_timer = 64;
       enemy_index_to_shake = -1;
     }
-    interactive_enemy_indexes_index = 0;
     for (active_enemy_indexes_index = 0; ; ++active_enemy_indexes_index) {
       int v0 = active_enemy_indexes_index >> 1;
       uint16 v1 = active_enemy_indexes[v0];
@@ -1932,22 +1893,13 @@ void DeleteEnemyAndConnectedEnemies(void) {  // 0xA0922B
 }
 
 uint16 SpawnEnemy(uint8 db, uint16 k) {  // 0xA09275
-  int16 v3;
   VoidP v7;
-  int16 v12;
-  EnemyPopulation *v13;
-  EnemyPopulation *v16;
-  EnemyDef_A2 *v17;
-  EnemyDef_A2 *EnemyDef_A2;
-  EnemyPopulation *EnemyPopulation;
-
-  uint8 v19 = db;
   enemy_population_ptr = k;
   cur_enemy_index_backup = cur_enemy_index;
   enemy_ai_pointer_backup.addr = enemy_ai_pointer.addr;
   *(uint16 *)&enemy_ai_pointer_backup.bank = *(uint16 *)&enemy_ai_pointer.bank;
   uint16 enemy_ptr = get_EnemyPopulation(db, k)->enemy_ptr;
-  v3 = get_EnemyDef_A2(enemy_ptr)->num_parts - 1;
+  int16 v3 = get_EnemyDef_A2(enemy_ptr)->num_parts - 1;
   if (v3 < 0)
     v3 = 0;
   draw_oam_x_offset = v3;
@@ -1960,41 +1912,37 @@ uint16 SpawnEnemy(uint8 db, uint16 k) {  // 0xA09275
         if (!draw_oam_x_offset) {
           while (1) {
             uint16 v5 = new_enemy_index;
-            EnemyPopulation = get_EnemyPopulation(v19, enemy_population_ptr);
-            v7 = EnemyPopulation->enemy_ptr;
+            EnemyPopulation *EP = get_EnemyPopulation(db, enemy_population_ptr);
+            v7 = EP->enemy_ptr;
             uint16 v8 = 0;
-            if (EnemyPopulation->enemy_ptr == enemy_def_ptr[0]
+            if (EP->enemy_ptr == enemy_def_ptr[0]
                 || (v8 = 2, v7 == enemy_def_ptr[1])
                 || (v8 = 4, v7 == enemy_def_ptr[2])
                 || (v8 = 6, v7 == enemy_def_ptr[3])) {
               int v10 = v8 >> 1;
               EnemyData *v11 = gEnemyData(new_enemy_index);
               v11->vram_tiles_index = enemy_gfxdata_tiles_index[v10];
-              LOBYTE(v12) = HIBYTE(enemy_gfxdata_vram_ptr[v10]);
-              HIBYTE(v12) = enemy_gfxdata_vram_ptr[v10];
-              v11->palette_index = 2 * v12;
+              v11->palette_index = 2 * swap16(enemy_gfxdata_vram_ptr[v10]);
             } else {
               EnemyData *v9 = gEnemyData(new_enemy_index);
               v9->vram_tiles_index = 0;
               v9->palette_index = 0;
             }
-            v13 = get_EnemyPopulation(v19, enemy_population_ptr);
-            EnemyDef_A2 = get_EnemyDef_A2(v13->enemy_ptr);
+            EnemyDef_A2 * edef = get_EnemyDef_A2(EP->enemy_ptr);
             EnemyData *v15 = gEnemyData(v5);
-            v15->x_width = EnemyDef_A2->x_radius;
-            v15->y_height = EnemyDef_A2->y_radius;
-            v15->health = EnemyDef_A2->health;
-            v15->layer = EnemyDef_A2->layer;
-            *(uint16 *)&v15->bank = *(uint16 *)&EnemyDef_A2->bank;
-            v16 = get_EnemyPopulation(v19, enemy_population_ptr);
-            v15->enemy_ptr = v16->enemy_ptr;
-            v15->x_pos = v16->x_pos;
-            v15->y_pos = v16->y_pos;
-            v15->current_instruction = v16->init_param;
-            v15->properties = v16->properties;
-            v15->extra_properties = v16->extra_properties;
-            v15->parameter_1 = v16->parameter1;
-            v15->parameter_2 = v16->parameter2;
+            v15->x_width = edef->x_radius;
+            v15->y_height = edef->y_radius;
+            v15->health = edef->health;
+            v15->layer = edef->layer;
+            *(uint16 *)&v15->bank = *(uint16 *)&edef->bank;
+            v15->enemy_ptr = EP->enemy_ptr;
+            v15->x_pos = EP->x_pos;
+            v15->y_pos = EP->y_pos;
+            v15->current_instruction = EP->init_param;
+            v15->properties = EP->properties;
+            v15->extra_properties = EP->extra_properties;
+            v15->parameter_1 = EP->parameter1;
+            v15->parameter_2 = EP->parameter2;
             v15->frame_counter = 0;
             v15->timer = 0;
             v15->ai_var_A = 0;
@@ -2007,12 +1955,8 @@ uint16 SpawnEnemy(uint8 db, uint16 k) {  // 0xA09275
             v15->frame_counter = 0;
             RecordEnemySpawnData(v5);
             cur_enemy_index = v5;
-            v17 = get_EnemyDef_A2(v15->enemy_ptr);
-            if (!sign16(v17->ai_init + 0x8000)) {
-              enemy_ai_pointer.addr = v17->ai_init;
-              *(uint16 *)&enemy_ai_pointer.bank = *(uint16 *)&v17->bank;
-              CallEnemyAi(Load24(&enemy_ai_pointer));
-            }
+            if (sign16(edef->ai_init))
+              CallEnemyAi(edef->bank << 16 | edef->ai_init);
             EnemyData *v18 = gEnemyData(v5);
             if ((v18->properties & 0x2000) != 0)
               v18->spritemap_pointer = addr_kSpritemap_Nothing_A0;
@@ -2103,7 +2047,7 @@ void WriteEnemyOams(void) {  // 0xA0944A
           R18_ = enemy_population_ptr + ypos;
           if (((R18_ + 128) & 0xFE00) == 0) {
             if (HIBYTE(R18_))
-              DrawSpritemapWithBaseTileOffscreen(db, R22_);
+              DrawSpritemapWithBaseTileOffscreen(db, R22_, R20_, R18_);
             else
               DrawSpritemapWithBaseTile2(db, R22_);
           }
@@ -2132,7 +2076,7 @@ void NormalEnemyFrozenAI(void) {  // 0xA0957E
 }
 
 void ProcessExtendedTilemap(uint8 db) {  // 0xA096CA
-  uint8 *p = RomPtrWithBank(db, R22_ + 2);
+  const uint8 *p = RomPtrWithBank(db, R22_ + 2);
   while (1) {
     uint16 v2 = *(uint16 *)p;
     if (v2 == 0xFFFF)
@@ -2417,7 +2361,7 @@ void EnemySamusCollHandler_Multibox(void) {  // 0xA09A5A
   enemy_processing_stage = 6;
   if (v0[11]) {
     touch_ai = get_EnemyDef_A2(*v0)->touch_ai;
-    if (touch_ai != (uint16)FUNC16(nullsub_170) && touch_ai != (uint16)FUNC16(nullsub_169)) {
+    if (touch_ai != FUNC16(nullsub_170) && touch_ai != FUNC16(nullsub_169)) {
       if (samus_contact_damage_index) {
         samus_invincibility_timer = 0;
       } else if (samus_invincibility_timer) {
@@ -2483,13 +2427,13 @@ void EnemyProjectileCollHandler_Multibox(void) {  // 0xA09B7F
     EnemyData *v0 = gEnemyData(cur_enemy_index);
     uint16 spritemap_pointer = v0->spritemap_pointer;
     if (spritemap_pointer) {
-      if (spritemap_pointer != (uint16)addr_kExtendedSpritemap_Nothing_A0) {
+      if (spritemap_pointer != addr_kExtendedSpritemap_Nothing_A0) {
         shot_ai = get_EnemyDef_A2(v0->enemy_ptr)->shot_ai;
-        if (shot_ai != (uint16)FUNC16(nullsub_170) && shot_ai != (uint16)FUNC16(nullsub_169)) {
+        if (shot_ai != FUNC16(nullsub_170) && shot_ai != FUNC16(nullsub_169)) {
           EnemyData *v3 = gEnemyData(cur_enemy_index);
           if ((v3->properties & 0x400) == 0
               && !v3->invincibility_timer
-              && v3->enemy_ptr != (uint16)addr_kEnemyDef_DAFF) {
+              && v3->enemy_ptr != addr_kEnemyDef_DAFF) {
             collision_detection_index = 0;
             while (1) {
               uint16 v4;
@@ -2577,8 +2521,8 @@ void EnemyBombCollHandler_Multibox(void) {  // 0xA09D23
     if ((v0->properties & 0x400) == 0 && !v0->invincibility_timer) {
       uint16 enemy_ptr = gEnemyData(cur_enemy_index)->enemy_ptr;
       shot_ai = get_EnemyDef_A2(enemy_ptr)->shot_ai;
-      if (shot_ai != (uint16)FUNC16(nullsub_170)
-          && shot_ai != (uint16)FUNC16(nullsub_169)
+      if (shot_ai != FUNC16(nullsub_170)
+          && shot_ai != FUNC16(nullsub_169)
           && bomb_counter) {
         collision_detection_index = 5;
         while (1) {
@@ -2649,49 +2593,47 @@ LABEL_25:
 
 uint16 GrappleBeam_CollDetect_Enemy(void) {  // 0xA09E9A
   VoidP grapple_ai;
-  EnemyData *v4;
+  EnemyData *ED;
 
   CallSomeSamusCode(0xDu);
   collision_detection_index = 0;
-  for (interactive_enemy_indexes_index = 0; ; ++interactive_enemy_indexes_index) {
-    uint16 v2 = interactive_enemy_indexes[interactive_enemy_indexes_index >> 1];
-    cur_enemy_index = v2;
-    if (v2 == 0xFFFF) {
+  for (int i = 0; ; i++) {
+    cur_enemy_index = interactive_enemy_indexes[i];
+    if (cur_enemy_index == 0xFFFF) {
       R18_ = 0;
       return 0;
     }
-    v4 = gEnemyData(v2);
-    if (!v4->invincibility_timer) {
-      uint16 v5 = abs16(v4->x_pos - grapple_beam_end_x_pos);
-      bool v6 = v5 < v4->x_width;
-      uint16 v7 = v5 - v4->x_width;
+    ED = gEnemyData(cur_enemy_index);
+    if (!ED->invincibility_timer) {
+      uint16 v5 = abs16(ED->x_pos - grapple_beam_end_x_pos);
+      bool v6 = v5 < ED->x_width;
+      uint16 v7 = v5 - ED->x_width;
       if (v6 || v7 < 8u) {
-        uint16 v8 = abs16(v4->y_pos - grapple_beam_end_y_pos);
-        v6 = v8 < v4->y_height;
-        uint16 v9 = v8 - v4->y_height;
+        uint16 v8 = abs16(ED->y_pos - grapple_beam_end_y_pos);
+        v6 = v8 < ED->y_height;
+        uint16 v9 = v8 - ED->y_height;
         if (v6 || v9 < 8u)
           break;
       }
     }
-    ++interactive_enemy_indexes_index;
   }
-  v4->ai_handler_bits = 1;
+  ED->ai_handler_bits = 1;
   uint16 v0 = 0;
-  uint16 enemy_ptr = v4->enemy_ptr;
-  grapple_ai = get_EnemyDef_A2(v4->enemy_ptr)->grapple_ai;
-  if (grapple_ai + (uint16)FUNC16(Enemy_GrappleReact_NoInteract_A0)) {
+  uint16 enemy_ptr = ED->enemy_ptr;
+  grapple_ai = get_EnemyDef_A2(ED->enemy_ptr)->grapple_ai;
+  if (grapple_ai + FUNC16(Enemy_GrappleReact_NoInteract_A0)) {
     v0 = 1;
-    if (grapple_ai != (uint16)FUNC16(Enemy_GrappleReact_SamusLatchesOn_A0)) {
+    if (grapple_ai != FUNC16(Enemy_GrappleReact_SamusLatchesOn_A0)) {
       v0 = 2;
-      if (grapple_ai != (uint16)FUNC16(Enemy_GrappleReact_KillEnemy_A0)) {
+      if (grapple_ai != FUNC16(Enemy_GrappleReact_KillEnemy_A0)) {
         v0 = 3;
-        if (grapple_ai != (uint16)FUNC16(Enemy_GrappleReact_CancelBeam_A0)) {
+        if (grapple_ai != FUNC16(Enemy_GrappleReact_CancelBeam_A0)) {
           v0 = 4;
-          if (grapple_ai != (uint16)FUNC16(Enemy_GrappleReact_SamusLatchesNoInvinc_A0)) {
+          if (grapple_ai != FUNC16(Enemy_GrappleReact_SamusLatchesNoInvinc_A0)) {
             v0 = 5;
-            if (grapple_ai != (uint16)FUNC16(Enemy_GrappleReact_SamusLatchesParalyze_A0)) {
+            if (grapple_ai != FUNC16(Enemy_GrappleReact_SamusLatchesParalyze_A0)) {
               v0 = 6;
-              if (grapple_ai != (uint16)FUNC16(Enemy_GrappleReact_HurtSamus_A0))
+              if (grapple_ai != FUNC16(Enemy_GrappleReact_HurtSamus_A0))
                 v0 = 0;
             }
           }
@@ -2793,7 +2735,7 @@ void EnemySamusCollHandler(void) {  // 0xA0A07A
     if (samus_contact_damage_index) {
       samus_invincibility_timer = 0;
     } else if (samus_invincibility_timer) {
-      if (gEnemyData(cur_enemy_index)->enemy_ptr != (uint16)addr_kEnemyDef_DAFF)
+      if (gEnemyData(cur_enemy_index)->enemy_ptr != addr_kEnemyDef_DAFF)
         return;
       uint16 some_flag = gEnemySpawnData(cur_enemy_index)->some_flag;
       if (!some_flag || some_flag == 8)
@@ -2801,7 +2743,7 @@ void EnemySamusCollHandler(void) {  // 0xA0A07A
     }
     uint16 enemy_ptr = gEnemyData(cur_enemy_index)->enemy_ptr;
     touch_ai = get_EnemyDef_A2(enemy_ptr)->touch_ai;
-    if (touch_ai != (uint16)FUNC16(nullsub_170) && touch_ai != (uint16)FUNC16(nullsub_169)) {
+    if (touch_ai != FUNC16(nullsub_170) && touch_ai != FUNC16(nullsub_169)) {
       EnemyData *v3 = gEnemyData(cur_enemy_index);
       uint16 v4 = abs16(samus_x_pos - v3->x_pos);
       bool v5 = v4 < samus_x_radius;
@@ -2812,7 +2754,7 @@ void EnemySamusCollHandler(void) {  // 0xA0A07A
         uint16 v8 = v7 - samus_y_radius;
         if (v5 || v8 < v3->y_height) {
           R20_ = 2 * gEnemyData(cur_enemy_index)->spritemap_pointer;
-          if (gEnemyData(cur_enemy_index)->enemy_ptr == (uint16)addr_kEnemyDef_DAFF
+          if (gEnemyData(cur_enemy_index)->enemy_ptr == addr_kEnemyDef_DAFF
               || !gEnemyData(cur_enemy_index)->frozen_timer) {
             enemy_ptr = gEnemyData(cur_enemy_index)->enemy_ptr;
             enemy_ai_pointer.addr = get_EnemyDef_A2(enemy_ptr)->touch_ai;
@@ -2834,9 +2776,9 @@ void EnemyProjectileCollHandler(void) {  // 0xA0A143
     EnemyData *v0 = gEnemyData(cur_enemy_index);
     uint16 spritemap_pointer = v0->spritemap_pointer;
     if (spritemap_pointer) {
-      if (spritemap_pointer != (uint16)addr_kSpritemap_Nothing_A0
+      if (spritemap_pointer != addr_kSpritemap_Nothing_A0
           && (v0->properties & 0x400) == 0
-          && v0->enemy_ptr != (uint16)addr_kEnemyDef_DAFF
+          && v0->enemy_ptr != addr_kEnemyDef_DAFF
           && !v0->invincibility_timer) {
         collision_detection_index = 0;
         int v2;
@@ -2887,7 +2829,7 @@ void EnemyBombCollHandler(void) {  // 0xA0A236
   if (bomb_counter) {
     if (gEnemyData(cur_enemy_index)->spritemap_pointer) {
       EnemyData *v0 = gEnemyData(cur_enemy_index);
-      if (!v0->invincibility_timer && v0->enemy_ptr != (uint16)addr_kEnemyDef_DAFF) {
+      if (!v0->invincibility_timer && v0->enemy_ptr != addr_kEnemyDef_DAFF) {
         collision_detection_index = 5;
         while (1) {
           int v1 = collision_detection_index;
@@ -2934,7 +2876,7 @@ void ProcessEnemyPowerBombInteraction(void) {  // 0xA0A306
       if (!v0->invincibility_timer) {
         uint16 enemy_ptr = v0->enemy_ptr;
         if (v0->enemy_ptr) {
-          if (enemy_ptr != (uint16)addr_kEnemyDef_DAFF) {
+          if (enemy_ptr != addr_kEnemyDef_DAFF) {
             uint16 vulnerability_ptr = get_EnemyDef_A2(enemy_ptr)->vulnerability_ptr;
             if (!vulnerability_ptr)
               vulnerability_ptr = addr_stru_B4EC1C;
@@ -3329,47 +3271,8 @@ uint16 Samus_CheckSolidEnemyColl(void) {  // 0xA0A8F0
   if (!interactive_enemy_indexes_write_ptr)
     return 0;
   v1 = 2 * (samus_collision_direction & 3);
-  if (v1) {
-    switch (v1) {
-    case 2: {
-      samus_target_x_pos = samus_x_pos + R18_;
-      bool v3 = samus_x_subpos + R20_ == 0;
-      if (__CFADD__uint16(samus_x_subpos, R20_))
-        v3 = samus_target_x_pos++ == 0xFFFF;
-      if (!v3)
-        ++samus_target_x_pos;
-      samus_target_y_pos = samus_y_pos;
-      samus_target_y_subpos = samus_y_subpos;
-      break;
-    }
-    case 4: {
-      samus_target_y_pos = samus_y_pos - R18_;
-      bool v4 = samus_y_subpos == R20_;
-      if (samus_y_subpos < R20_)
-        v4 = samus_target_y_pos-- == 1;
-      if (!v4)
-        --samus_target_y_pos;
-      samus_target_x_pos = samus_x_pos;
-      samus_target_x_subpos = samus_x_subpos;
-      break;
-    }
-    case 6: {
-      samus_target_y_pos = samus_y_pos + R18_;
-      bool v5 = samus_y_subpos + R20_ == 0;
-      if (__CFADD__uint16(samus_y_subpos, R20_))
-        v5 = samus_target_y_pos++ == 0xFFFF;
-      if (!v5)
-        ++samus_target_y_pos;
-      samus_target_x_pos = samus_x_pos;
-      samus_target_x_subpos = samus_x_subpos;
-      break;
-    }
-    default:
-      Unreachable();
-      while (1)
-        ;
-    }
-  } else {
+  switch (v1) {
+  case 0: {
     samus_target_x_pos = samus_x_pos - R18_;
     bool v2 = samus_x_subpos == R20_;
     if (samus_x_subpos < R20_)
@@ -3378,117 +3281,147 @@ uint16 Samus_CheckSolidEnemyColl(void) {  // 0xA0A8F0
       --samus_target_x_pos;
     samus_target_y_pos = samus_y_pos;
     samus_target_y_subpos = samus_y_subpos;
+    break;
+  }
+  case 2: {
+    samus_target_x_pos = samus_x_pos + R18_;
+    bool v3 = samus_x_subpos + R20_ == 0;
+    if (__CFADD__uint16(samus_x_subpos, R20_))
+      v3 = samus_target_x_pos++ == 0xFFFF;
+    if (!v3)
+      ++samus_target_x_pos;
+    samus_target_y_pos = samus_y_pos;
+    samus_target_y_subpos = samus_y_subpos;
+    break;
+  }
+  case 4: {
+    samus_target_y_pos = samus_y_pos - R18_;
+    bool v4 = samus_y_subpos == R20_;
+    if (samus_y_subpos < R20_)
+      v4 = samus_target_y_pos-- == 1;
+    if (!v4)
+      --samus_target_y_pos;
+    samus_target_x_pos = samus_x_pos;
+    samus_target_x_subpos = samus_x_subpos;
+    break;
+  }
+  case 6: {
+    samus_target_y_pos = samus_y_pos + R18_;
+    bool v5 = samus_y_subpos + R20_ == 0;
+    if (__CFADD__uint16(samus_y_subpos, R20_))
+      v5 = samus_target_y_pos++ == 0xFFFF;
+    if (!v5)
+      ++samus_target_y_pos;
+    samus_target_x_pos = samus_x_pos;
+    samus_target_x_subpos = samus_x_subpos;
+    break;
+  }
+  default:
+    Unreachable();
+    while (1)
+      ;
   }
   samus_x_radius_mirror = samus_x_radius;
   samus_y_radius_mirror = samus_y_radius;
   collision_detection_index = 0;
-  for (interactive_enemy_indexes_index = 0; ; ++interactive_enemy_indexes_index) {
-    int v6 = interactive_enemy_indexes_index >> 1;
-    uint16 v7 = interactive_enemy_indexes[v6];
+  for (int i = 0; ;i++) {
+    uint16 v7 = interactive_enemy_indexes[i];
     if (v7 == 0xFFFF)
       break;
-    collision_detection_index = interactive_enemy_indexes[v6];
-    EnemyData *v8 = gEnemyData(v7);
-    if (v8->frozen_timer || (v8->properties & 0x8000u) != 0) {
-      uint8 *v9 = RomPtr_7E(v7 + 3962);
-      uint8 *v10 = (uint8*)&samus_target_x_pos;
-      uint16 v11 = abs16(*(uint16 *)v9 - *(uint16 *)v10);
-      bool v12 = v11 < *((uint16 *)v9 + 4);
-      uint16 v13 = v11 - *((uint16 *)v9 + 4);
-      if (v12 || v13 < *((uint16 *)v10 + 4)) {
-        uint16 v14 = abs16(*((uint16 *)v9 + 2) - *((uint16 *)v10 + 2));
-        v12 = v14 < *((uint16 *)v9 + 5);
-        uint16 v15 = v14 - *((uint16 *)v9 + 5);
-        if (v12 || v15 < *((uint16 *)v10 + 5)) {
-          v16 = 2 * (samus_collision_direction & 3);
-          if (v16) {
-            switch (v16) {
-            case 2: {
-              draw_enemy_layer = samus_x_radius + samus_x_pos;
-              EnemyData *v19 = gEnemyData(collision_detection_index);
-              v18 = v19->x_pos - v19->x_width - (samus_x_radius + samus_x_pos);
-              if (!v18)
-                goto LABEL_57;
-              if (v18 >= 0)
-                goto LABEL_58;
-              break;
-            }
-            case 4: {
-              EnemyData *v20 = gEnemyData(collision_detection_index);
-              draw_enemy_layer = v20->y_height + v20->y_pos;
-              v18 = samus_y_pos - samus_y_radius - draw_enemy_layer;
-              if (samus_y_pos - samus_y_radius == draw_enemy_layer)
-                goto LABEL_57;
-              if ((int16)(samus_y_pos - samus_y_radius - draw_enemy_layer) >= 0)
-                goto LABEL_58;
-              break;
-            }
-            case 6: {
-              draw_enemy_layer = samus_y_radius + samus_y_pos;
-              EnemyData *v21;
-              v21 = gEnemyData(collision_detection_index);
-              v18 = v21->y_pos - v21->y_height - (samus_y_radius + samus_y_pos);
-              if (!v18) {
+    collision_detection_index = v7;
+    EnemyData *ED = gEnemyData(v7);
+    if (!ED->frozen_timer && (ED->properties & 0x8000u) == 0)
+      continue;
+    uint16 *v9 = &ED->x_pos;
+    uint16 *v10 = &samus_target_x_pos;
+    uint16 v11 = abs16(*v9 - *v10);
+    bool v12 = v11 < *(v9 + 4);
+    uint16 v13 = v11 - *(v9 + 4);
+    if (v12 || v13 < *(v10 + 4)) {
+      uint16 v14 = abs16(*(v9 + 2) - *(v10 + 2));
+      v12 = v14 < *(v9 + 5);
+      uint16 v15 = v14 - *(v9 + 5);
+      if (v12 || v15 < *(v10 + 5)) {
+        v16 = 2 * (samus_collision_direction & 3);
+        switch (v16) {
+        case 0: {
+          draw_enemy_layer = ED->x_width + ED->x_pos;
+          v18 = samus_x_pos - samus_x_radius - draw_enemy_layer;
+          if (samus_x_pos - samus_x_radius == draw_enemy_layer)
+            goto LABEL_57;
+          if ((int16)(samus_x_pos - samus_x_radius - draw_enemy_layer) >= 0)
+            goto LABEL_58;
+          break;
+        }
+        case 2: {
+          draw_enemy_layer = samus_x_radius + samus_x_pos;
+          v18 = ED->x_pos - ED->x_width - (samus_x_radius + samus_x_pos);
+          if (!v18)
+            goto LABEL_57;
+          if (v18 >= 0)
+            goto LABEL_58;
+          break;
+        }
+        case 4: {
+          draw_enemy_layer = ED->y_height + ED->y_pos;
+          v18 = samus_y_pos - samus_y_radius - draw_enemy_layer;
+          if (samus_y_pos - samus_y_radius == draw_enemy_layer)
+            goto LABEL_57;
+          if ((int16)(samus_y_pos - samus_y_radius - draw_enemy_layer) >= 0)
+            goto LABEL_58;
+          break;
+        }
+        case 6: {
+          draw_enemy_layer = samus_y_radius + samus_y_pos;
+          v18 = ED->y_pos - ED->y_height - (samus_y_radius + samus_y_pos);
+          if (!v18) {
 LABEL_57:
-                samus_y_subpos = 0;
-                samus_x_pos_colliding_solid = samus_x_pos;
-                samus_x_subpos_colliding_solid = samus_x_subpos;
-                EnemyData *v22 = gEnemyData(collision_detection_index);
-                enemy_x_pos_colliding_solid = v22->x_pos;
-                enemy_x_subpos_colliding_solid = v22->x_subpos;
-                samus_pos_delta_colliding_solid = R18_;
-                samus_subpos_delta_colliding_solid = R20_;
-                samus_y_pos_colliding_solid = samus_y_pos;
-                samus_y_subpos_colliding_solid = 0;
-                solid_enemy_collision_type = 1;
-                R18_ = 0;
-                R20_ = 0;
-                R22_ = collision_detection_index;
-                int v23 = samus_collision_direction & 3;
-                enemy_index_colliding_dirs[v23] = collision_detection_index;
-                distance_to_enemy_colliding_dirs[v23] = 0;
-                return -1;
-              }
-              if (v18 >= 0) {
-LABEL_58:
-                samus_x_pos_colliding_solid = samus_x_pos;
-                samus_x_subpos_colliding_solid = samus_x_subpos;
-                EnemyData *v24 = gEnemyData(collision_detection_index);
-                enemy_x_pos_colliding_solid = v24->x_pos;
-                enemy_x_subpos_colliding_solid = v24->x_subpos;
-                samus_pos_delta_colliding_solid = R18_;
-                samus_subpos_delta_colliding_solid = R20_;
-                samus_y_pos_colliding_solid = samus_y_pos;
-                samus_y_subpos_colliding_solid = samus_y_subpos;
-                solid_enemy_collision_type = 2;
-                R18_ = v18;
-                int v25 = samus_collision_direction & 3;
-                distance_to_enemy_colliding_dirs[v25] = v18;
-                R20_ = 0;
-                R22_ = collision_detection_index;
-                enemy_index_colliding_dirs[v25] = collision_detection_index;
-                return -1;
-              }
-              break;
-            }
-            default:
-              Unreachable();
-              while (1)
-                ;
-            }
-          } else {
-            EnemyData *v17 = gEnemyData(collision_detection_index);
-            draw_enemy_layer = v17->x_width + v17->x_pos;
-            v18 = samus_x_pos - samus_x_radius - draw_enemy_layer;
-            if (samus_x_pos - samus_x_radius == draw_enemy_layer)
-              goto LABEL_57;
-            if ((int16)(samus_x_pos - samus_x_radius - draw_enemy_layer) >= 0)
-              goto LABEL_58;
+            samus_y_subpos = 0;
+            samus_x_pos_colliding_solid = samus_x_pos;
+            samus_x_subpos_colliding_solid = samus_x_subpos;
+            enemy_x_pos_colliding_solid = ED->x_pos;
+            enemy_x_subpos_colliding_solid = ED->x_subpos;
+            samus_pos_delta_colliding_solid = R18_;
+            samus_subpos_delta_colliding_solid = R20_;
+            samus_y_pos_colliding_solid = samus_y_pos;
+            samus_y_subpos_colliding_solid = 0;
+            solid_enemy_collision_type = 1;
+            R18_ = 0;
+            R20_ = 0;
+            R22_ = collision_detection_index;
+            int v23 = samus_collision_direction & 3;
+            enemy_index_colliding_dirs[v23] = collision_detection_index;
+            distance_to_enemy_colliding_dirs[v23] = 0;
+            return -1;
           }
+          if (v18 >= 0) {
+LABEL_58:
+            samus_x_pos_colliding_solid = samus_x_pos;
+            samus_x_subpos_colliding_solid = samus_x_subpos;
+            enemy_x_pos_colliding_solid = ED->x_pos;
+            enemy_x_subpos_colliding_solid = ED->x_subpos;
+            samus_pos_delta_colliding_solid = R18_;
+            samus_subpos_delta_colliding_solid = R20_;
+            samus_y_pos_colliding_solid = samus_y_pos;
+            samus_y_subpos_colliding_solid = samus_y_subpos;
+            solid_enemy_collision_type = 2;
+            R18_ = v18;
+            int v25 = samus_collision_direction & 3;
+            distance_to_enemy_colliding_dirs[v25] = v18;
+            R20_ = 0;
+            R22_ = collision_detection_index;
+            enemy_index_colliding_dirs[v25] = collision_detection_index;
+            return -1;
+          }
+          break;
+        }
+        default:
+          Unreachable();
+          while (1)
+            ;
         }
       }
     }
-    ++interactive_enemy_indexes_index;
   }
   return 0;
 }
@@ -3699,17 +3632,10 @@ uint16 SineMult8bitNegative(uint16 a) {  // 0xA0B0C6
   return SineMult8bit();
 }
 
-#define kSine8bit ((uint8*)RomPtr(0xa0b143))
-#define kEquationForQuarterCircle ((uint16*)RomPtr(0xa0b7ee))
-
 uint16 SineMult8bit(void) {  // 0xA0B0DA
-  int16 v1;
-
   uint16 RegWord = Mult8x8(kSine8bit[enemy_drawing_queue_index & 0x7F], draw_enemy_layer);
-  LOBYTE(v1) = HIBYTE(RegWord);
-  HIBYTE(v1) = RegWord;
-  loop_index_end = HIBYTE(RegWord);
-  loop_index = v1 & 0xFF00;
+  loop_index_end = RegWord >> 8;
+  loop_index = RegWord << 8;
   if ((enemy_drawing_queue_index & 0x80) != 0) {
     loop_index_end = -loop_index_end;
     loop_index = -loop_index;
@@ -4189,32 +4115,26 @@ uint8 IsEnemyLeavingScreen(uint16 k) {  // 0xA0C18E
 }
 
 void ProcessEnemyInstructions(void) {  // 0xA0C26A
-  VoidP *v4;
-  int16 v5;
-
-  EnemyData *v1 = gEnemyData(cur_enemy_index);
-  if ((v1->ai_handler_bits & 4) == 0) {
-    if (v1->instruction_timer-- == 1) {
-      uint8 bank = v1->bank;
-      uint16 current_instruction = v1->current_instruction;
-      while (1) {
-        v4 = (VoidP *)RomPtrWithBank(bank, current_instruction);
-        v5 = *v4;
-        if ((*v4 & 0x8000u) == 0)
-          break;
-        enemy_ai_pointer.addr = *v4;
-        current_instruction = CallEnemyInstr(Load24(&enemy_ai_pointer), cur_enemy_index, current_instruction + 2);
-        if (!current_instruction)
+  EnemyData *ED = gEnemyData(cur_enemy_index);
+  if ((ED->ai_handler_bits & 4) == 0) {
+    if (ED->instruction_timer-- == 1) {
+      assert(ED->current_instruction & 0x8000);
+      const uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
+      const uint16 *pc = (const uint16 *)(base_ptr + ED->current_instruction);
+      while ((*pc & 0x8000u) != 0) {
+        enemy_ai_pointer.addr = *pc;
+        pc = CallEnemyInstr(Load24(&enemy_ai_pointer), cur_enemy_index, pc + 1);
+        if (!pc)
           return;
+        if ((uintptr_t)pc < 0x10000)
+          pc = (const uint16*)(base_ptr + (uintptr_t)pc);
       }
-      EnemyData *v6 = gEnemyData(cur_enemy_index);
-      v6->instruction_timer = v5;
-      v6->spritemap_pointer = *((uint16 *)RomPtrWithBank(bank, current_instruction) + 1);
-      v6->current_instruction = current_instruction + 4;
-      v6->extra_properties |= 0x8000u;
+      ED->instruction_timer = pc[0];
+      ED->spritemap_pointer = pc[1];
+      ED->current_instruction = (uint8 *)pc + 4 - base_ptr;
+      ED->extra_properties |= 0x8000;
     } else {
-      EnemyData *v7 = gEnemyData(cur_enemy_index);
-      v7->extra_properties &= ~0x8000u;
+      ED->extra_properties &= ~0x8000;
     }
   }
 }
@@ -4227,7 +4147,6 @@ uint8 SetCarry_4(void) {  // 0xA0C2BE
   return 1;
 }
 
-#define g_off_A0C2DA ((uint16*)RomPtr(0xa0c2da))
 
 uint8 EnemyBlockCollReact_Spike(void) {  // 0xA0C2C0
   uint16 v0 = g_off_A0C2DA[BTS[cur_block_index] & 0x7F];
@@ -4263,13 +4182,12 @@ static const uint8 byte_A0C435[20] = {  // 0xA0C32E
   0x80, 0x81, 0x82, 0x83,
 };
 
-#define CHECK_locret_A0C434(i) (byte_A0C435[i] & 0x80 ? -1 : 0)
 
 uint8 EnemyBlockCollHorizReact_Slope_Square(uint16 k, uint16 a) {
   EnemyData *v4;
 
-  temp_collision_DD4 = 4 * a;
-  temp_collision_DD6 = BTS[k] >> 6;
+  uint16 temp_collision_DD4 = 4 * a;
+  uint16 temp_collision_DD6 = BTS[k] >> 6;
   uint16 v2 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R26_ & 8) >> 3));
   if (!R28_) {
     EnemyData *v3 = gEnemyData(cur_enemy_index);
@@ -4277,7 +4195,7 @@ uint8 EnemyBlockCollHorizReact_Slope_Square(uint16 k, uint16 a) {
       return CHECK_locret_A0C434(v2) < 0;
     goto LABEL_7;
   }
-  if (R28_ != g_word_7E001E || (v4 = gEnemyData(cur_enemy_index), ((v4->y_pos - v4->y_height) & 8) == 0)) {
+  if (R28_ != R30_ || (v4 = gEnemyData(cur_enemy_index), ((v4->y_pos - v4->y_height) & 8) == 0)) {
 LABEL_7:
     if (CHECK_locret_A0C434(v2) < 0)
       return 1;
@@ -4299,8 +4217,8 @@ void Enemy_SetXpos_Aligned(uint16 j) {  // 0xA0C390
 uint8 EnemyBlockCollVertReact_Slope_Square(uint16 a, uint16 k) {  // 0xA0C3B2
   EnemyData *v4;
 
-  temp_collision_DD4 = 4 * a;
-  temp_collision_DD6 = BTS[k] >> 6;
+  uint16 temp_collision_DD4 = 4 * a;
+  uint16 temp_collision_DD6 = BTS[k] >> 6;
   uint16 v2 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R26_ & 8) >> 2));
   if (!R28_) {
     EnemyData *v3 = gEnemyData(cur_enemy_index);
@@ -4308,7 +4226,7 @@ uint8 EnemyBlockCollVertReact_Slope_Square(uint16 a, uint16 k) {  // 0xA0C3B2
       return CHECK_locret_A0C434(v2) < 0;
     goto LABEL_7;
   }
-  if (R28_ != g_word_7E001E || (v4 = gEnemyData(cur_enemy_index), ((v4->x_pos - v4->x_width) & 8) == 0)) {
+  if (R28_ != R30_ || (v4 = gEnemyData(cur_enemy_index), ((v4->x_pos - v4->x_width) & 8) == 0)) {
 LABEL_7:
     if (CHECK_locret_A0C434(v2) < 0)
       return 1;
@@ -4327,23 +4245,21 @@ uint8 Enemy_SetYpos_Aligned(uint16 j) {  // 0xA0C413
   v1->y_pos = v2;
   return 1;
 }
-#define g_word_A0C49F ((uint16*)RomPtr(0xa0c49f))
 uint8 EnemyBlockCollHorizReact_Slope_NonSquare(void) {  // 0xA0C449
-  if ((R32 & 0x8000u) == 0)
-    return (R32 & 0x4000) != 0;
+  if ((R32_ & 0x8000u) == 0)
+    return (R32_ & 0x4000) != 0;
   uint16 v2 = 4 * (current_slope_bts & 0x1F);
   if ((R20_ & 0x8000u) == 0) {
-    Multiply16x16(*(uint16 *)((char *)&R18_ + 1), g_word_A0C49F[(v2 >> 1) + 1]);
+    Multiply16x16(R19_, g_word_A0C49F[(v2 >> 1) + 1]);
     R18_ = mult_product_lo;
     R20_ = mult_product_hi;
   } else {
-    Multiply16x16(-*(uint16 *)((char *)&R18_ + 1), g_word_A0C49F[(v2 >> 1) + 1]);
+    Multiply16x16(-R19_, g_word_A0C49F[(v2 >> 1) + 1]);
     Negate32(&mult_product_hi, &mult_product_lo, &R20_, &R18_);
   }
   return 0;
 }
 
-#define kAlignYPos_Tab0 ((uint8*)RomPtr(0x948b2b))
 
 uint8 EnemyBlockCollVertReact_Slope_NonSquare(void) {  // 0xA0C51F
   int16 v3;
@@ -4363,8 +4279,8 @@ uint8 EnemyBlockCollVertReact_Slope_NonSquare(void) {  // 0xA0C51F
     EnemyData *v10 = gEnemyData(cur_enemy_index);
     v11 = v10->x_pos >> 4;
     if (v11 == mod) {
-      temp_collision_DD4 = (R24_ - v10->y_height) & 0xF ^ 0xF;
-      temp_collision_DD6 = 16 * (BTS[v9] & 0x1F);
+      uint16 temp_collision_DD4 = (R24_ - v10->y_height) & 0xF ^ 0xF;
+      uint16 temp_collision_DD6 = 16 * (BTS[v9] & 0x1F);
       v12 = BTS[v9] << 8;
       if (v12 < 0
           && ((v12 & 0x4000) != 0 ? (x_pos = v10->x_pos ^ 0xF) : (x_pos = v10->x_pos),
@@ -4387,8 +4303,8 @@ uint8 EnemyBlockCollVertReact_Slope_NonSquare(void) {  // 0xA0C51F
     EnemyData *v2 = gEnemyData(cur_enemy_index);
     v3 = v2->x_pos >> 4;
     if (v3 == mod) {
-      temp_collision_DD4 = (LOBYTE(v2->y_height) + (uint8)R24_ - 1) & 0xF;
-      temp_collision_DD6 = 16 * (BTS[v1] & 0x1F);
+      uint16 temp_collision_DD4 = (LOBYTE(v2->y_height) + (uint8)R24_ - 1) & 0xF;
+      uint16 temp_collision_DD6 = 16 * (BTS[v1] & 0x1F);
       v5 = BTS[v1] << 8;
       if (v5 >= 0
           && ((v5 & 0x4000) != 0 ? (v6 = v2->x_pos ^ 0xF) : (v6 = v2->x_pos),
@@ -4421,14 +4337,14 @@ uint8 EnemyBlockCollReact_VertExt(void) {  // 0xA0C64F
   uint16 v0;
   if (BTS[cur_block_index]) {
     if ((BTS[cur_block_index] & 0x80) != 0) {
-      temp_collision_DD4 = BTS[cur_block_index] | 0xFF00;
+      uint16 temp_collision_DD4 = BTS[cur_block_index] | 0xFF00;
       v0 = cur_block_index;
       do {
         v0 -= room_width_in_blocks;
         ++temp_collision_DD4;
       } while (temp_collision_DD4);
     } else {
-      temp_collision_DD4 = BTS[cur_block_index];
+      uint16 temp_collision_DD4 = BTS[cur_block_index];
       v0 = cur_block_index;
       do {
         v0 += room_width_in_blocks;
@@ -4442,17 +4358,17 @@ uint8 EnemyBlockCollReact_VertExt(void) {  // 0xA0C64F
 }
 
 uint8 Enemy_MoveRight_SlopesAsWalls(uint16 k) {  // 0xA0C69D
-  R32 = 0x4000;
+  R32_ = 0x4000;
   return Enemy_MoveRight_IgnoreSlopes_Inner(k);
 }
 
 uint8 Enemy_MoveRight_ProcessSlopes(uint16 k) {  // 0xA0C6A4
-  R32 = 0x8000;
+  R32_ = 0x8000;
   return Enemy_MoveRight_IgnoreSlopes_Inner(k);
 }
 
 uint8 Enemy_MoveRight_IgnoreSlopes(uint16 k) {  // 0xA0C6AB
-  R32 = 0;
+  R32_ = 0;
   return Enemy_MoveRight_IgnoreSlopes_Inner(k);
 }
 
@@ -4462,7 +4378,7 @@ uint8 Enemy_MoveRight_IgnoreSlopes_Inner(uint16 k) {  // 0xA0C6AD
   EnemyData *v3 = gEnemyData(k);
   R28_ = (v3->y_pos - v3->y_height) & 0xFFF0;
   R28_ = (uint16)(v3->y_height + v3->y_pos - 1 - R28_) >> 4;
-  g_word_7E001E = R28_;
+  R30_ = R28_;
   uint16 prod = Mult8x8((uint16)(v3->y_pos - v3->y_height) >> 4, room_width_in_blocks);
   uint16 v4 = (__PAIR32__(R20_, R18_) + __PAIR32__(v3->x_pos, v3->x_subpos)) >> 16;
   R22_ = R18_ + v3->x_subpos;
@@ -4502,7 +4418,7 @@ uint8 Enemy_MoveRight_IgnoreSlopes_Inner(uint16 k) {  // 0xA0C6AD
 }
 
 uint8 Enemy_MoveDown(uint16 k) {  // 0xA0C786
-  R32 = 0;
+  R32_ = 0;
   return Enemy_MoveDownInner(k);
 }
 
@@ -4515,7 +4431,7 @@ uint8 Enemy_MoveDownInner(uint16 k) {  // 0xA0C788
   EnemyData *v3 = gEnemyData(k);
   R28_ = (v3->x_pos - v3->x_width) & 0xFFF0;
   R28_ = (uint16)(v3->x_width + v3->x_pos - 1 - R28_) >> 4;
-  g_word_7E001E = R28_;
+  R30_ = R28_;
   uint16 v4 = (__PAIR32__(R20_, R18_) + __PAIR32__(v3->y_pos, v3->y_subpos)) >> 16;
   R22_ = R18_ + v3->y_subpos;
   R24_ = v4;
@@ -4627,8 +4543,8 @@ uint8 EnemyFunc_C8AD(uint16 k) {  // 0xA0C8AD
   if ((level_data[cur_block_index] & 0xF000) == 4096
       && (BTS[cur_block_index] & 0x1Fu) >= 5) {
     result = 1;
-    temp_collision_DD4 = (LOBYTE(v1->y_height) + LOBYTE(v1->y_pos) - 1) & 0xF;
-    temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
+    uint16 temp_collision_DD4 = (LOBYTE(v1->y_height) + LOBYTE(v1->y_pos) - 1) & 0xF;
+    uint16 temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
     v2 = BTS[cur_block_index] << 8;
     if (v2 >= 0) {
       v3 = (v2 & 0x4000) != 0 ? v1->x_pos ^ 0xF : v1->x_pos;
@@ -4641,8 +4557,8 @@ uint8 EnemyFunc_C8AD(uint16 k) {  // 0xA0C8AD
   if ((level_data[cur_block_index] & 0xF000) == 4096
       && (BTS[cur_block_index] & 0x1Fu) >= 5) {
     result = 1;
-    temp_collision_DD4 = (v1->y_pos - v1->y_height) & 0xF ^ 0xF;
-    temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
+    uint16 temp_collision_DD4 = (v1->y_pos - v1->y_height) & 0xF ^ 0xF;
+    uint16 temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
     v5 = BTS[cur_block_index] << 8;
     if (v5 < 0) {
       if ((v5 & 0x4000) != 0)

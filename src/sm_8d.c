@@ -3,6 +3,10 @@
 #include "variables.h"
 #include "funcs.h"
 
+
+
+
+
 void EnablePaletteFx(void) {  // 0x8DC4C2
   flag_for_palette_fx_objects |= 0x8000u;
 }
@@ -114,7 +118,7 @@ void PalFx_ProcessOne(uint16 k) {  // 0x8DC54A
   if (palettefx_instr_timers[v2]-- == 1) {
     uint16 j = palettefx_instr_list_ptrs[v2], v6;
     while (1) {
-      uint16 *v5 = (uint16 *)RomPtr_8D(j);
+      const uint16 *v5 = (const uint16 *)RomPtr_8D(j);
       v6 = *v5;
       if ((*v5 & 0x8000u) == 0)
         break;
@@ -128,18 +132,18 @@ void PalFx_ProcessOne(uint16 k) {  // 0x8DC54A
     int v8 = v1 >> 1;
     palettefx_instr_timers[v8] = v6;
     uint16 v9 = palettefx_color_indexes[v8];
-    uint8 *v10;
+    const uint8 *v10;
     do {
       while (1) {
         v10 = RomPtr_8D(j);
-        v11 = *((uint16 *)v10 + 1);
+        v11 = GET_WORD(v10 + 2);
         if (v11 & 0x8000)
           break;
         palette_buffer[v9 >> 1] = v11;
         v9 += 2;
         j += 2;
       }
-      R18_ = *((uint16 *)v10 + 1);
+      R18_ = GET_WORD(v10 + 2);
       v12 = CallPalInstr((uint16)v11 | 0x8D0000, v9, j);
       v9 = v12.k;
       j = v12.j;
@@ -232,25 +236,25 @@ PairU16 PalInstr_SetColorIndex(uint16 k, uint16 j) {  // 0x8DC655
 }
 
 PairU16 PalInstr_QueueMusic(uint16 k, uint16 j) {  // 0x8DC65E
-  uint8 *v2 = RomPtr_8D(j);
+  const uint8 *v2 = RomPtr_8D(j);
   QueueMusic_Delayed8(*v2);
   return MakePairU16(k, j + 1);
 }
 
 PairU16 PalInstr_QueueSfx1(uint16 k, uint16 j) {  // 0x8DC66A
-  uint16 *v2 = (uint16 *)RomPtr_8D(j);
+  const uint16 *v2 = (const uint16 *)RomPtr_8D(j);
   QueueSfx1_Max6(*v2);
   return MakePairU16(k, j + 1);
 }
 
 PairU16 PalInstr_QueueSfx2(uint16 k, uint16 j) {  // 0x8DC673
-  uint16 *v2 = (uint16 *)RomPtr_8D(j);
+  const uint16 *v2 = (const uint16 *)RomPtr_8D(j);
   QueueSfx2_Max6(*v2);
   return MakePairU16(k, j + 1);
 }
 
 PairU16 PalInstr_QueueSfx3(uint16 k, uint16 j) {  // 0x8DC67C
-  uint16 *v2 = (uint16 *)RomPtr_8D(j);
+  const uint16 *v2 = (const uint16 *)RomPtr_8D(j);
   QueueSfx3_Max6(*v2);
   return MakePairU16(k, j + 1);
 }
@@ -260,7 +264,7 @@ void PalInit_E1BC(uint16 k, uint16 j) {  // 0x8DE204
 }
 
 void PalPreInstr_E1BC(uint16 k) {  // 0x8DE20B
-  if (cinematic_function == (uint16)FUNC16(CinematicFunction_Intro_Page2)) {
+  if (cinematic_function == FUNC16(CinematicFunction_Intro_Page2)) {
     int v1 = k >> 1;
     palettefx_instr_list_ptrs[v1] = addr_off_8DE192;
     palettefx_instr_timers[v1] = 1;

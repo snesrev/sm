@@ -5,21 +5,25 @@
 #include "enemy_types.h"
 
 
-#define g_off_B3882B ((uint16*)RomPtr(0xb3882b))
-#define g_off_B38833 ((uint16*)RomPtr(0xb38833))
-#define g_word_B3949B ((uint16*)RomPtr(0xb3949b))
-#define g_word_B394BB ((uint16*)RomPtr(0xb394bb))
-#define g_word_B39675 ((uint16*)RomPtr(0xb39675))
-#define kBotwoonHealthThresForPalChange ((uint16*)RomPtr(0xb3981b))
-#define kBotwoonHealthBasedPalette ((uint16*)RomPtr(0xb3971b))
-#define g_off_B3946B ((uint16*)RomPtr(0xb3946b))
-#define g_off_B3948B ((uint16*)RomPtr(0xb3948b))
+#define g_off_B3882B ((uint16*)RomFixedPtr(0xb3882b))
+#define g_off_B38833 ((uint16*)RomFixedPtr(0xb38833))
+#define g_word_B3949B ((uint16*)RomFixedPtr(0xb3949b))
+#define g_word_B394BB ((uint16*)RomFixedPtr(0xb394bb))
+#define g_word_B39675 ((uint16*)RomFixedPtr(0xb39675))
+#define kBotwoonHealthThresForPalChange ((uint16*)RomFixedPtr(0xb3981b))
+#define kBotwoonHealthBasedPalette ((uint16*)RomFixedPtr(0xb3971b))
+#define g_off_B3946B ((uint16*)RomFixedPtr(0xb3946b))
+#define g_off_B3948B ((uint16*)RomFixedPtr(0xb3948b))
+#define g_word_B3E718 ((uint16*)RomFixedPtr(0xb3e718))
+#define g_word_B3E71E ((uint16*)RomFixedPtr(0xb3e71e))
+#define g_off_B3E72A ((uint16*)RomFixedPtr(0xb3e72a))
+#define g_off_B3E724 ((uint16*)RomFixedPtr(0xb3e724))
+#define g_word_B3E730 ((uint16*)RomFixedPtr(0xb3e730))
+
+
+
+
 static const int16 g_word_B39E77[3] = { 2, 3, 4 };
-#define g_word_B3E718 ((uint16*)RomPtr(0xb3e718))
-#define g_word_B3E71E ((uint16*)RomPtr(0xb3e71e))
-#define g_off_B3E72A ((uint16*)RomPtr(0xb3e72a))
-#define g_off_B3E724 ((uint16*)RomPtr(0xb3e724))
-#define g_word_B3E730 ((uint16*)RomPtr(0xb3e730))
 
 void Enemy_GrappleReact_NoInteract_B3(void) {  // 0xB38000
   SwitchEnemyAiToMainAi();
@@ -57,38 +61,14 @@ void Enemy_NormalFrozenAI_B3(void) {  // 0xB38041
   NormalEnemyFrozenAI();
 }
 
-uint16 Enemy_SetAiPreInstr_B3(uint16 k, uint16 j) {  // 0xB3806B
-  uint16 v2 = *(uint16 *)RomPtr_B3(j);
-  gEnemyData(k)->ai_preinstr = v2;
-  return j + 2;
+const uint16 *Enemy_SetAiPreInstr_B3(uint16 k, const uint16 *jp) {  // 0xB3806B
+  gEnemyData(k)->ai_preinstr = jp[0];
+  return jp + 1;
 }
 
-uint16 Enemy_ClearAiPreInstr_B3(uint16 k, uint16 j) {  // 0xB38074
+const uint16 *Enemy_ClearAiPreInstr_B3(uint16 k, const uint16 *jp) {  // 0xB38074
   gEnemyData(k)->ai_preinstr = FUNC16(nullsub_171_B3);
-  return j;
-}
-
-uint16 EnemyInstr_Goto_B3(uint16 k, uint16 j) {  // 0xB380ED
-  return *(uint16 *)RomPtr_B3(j);
-}
-
-uint16 EnemyInstr_DecTimerAndGoto2_B3(uint16 k, uint16 j) {  // 0xB38110
-  EnemyData *v2 = gEnemyData(k);
-  if (v2->timer-- == 1)
-    return j + 2;
-  else
-    return EnemyInstr_Goto_B3(k, j);
-}
-
-uint16 EnemyInstr_SetTimer_B3(uint16 k, uint16 j) {  // 0xB38123
-  uint16 v2 = *(uint16 *)RomPtr_B3(j);
-  gEnemyData(k)->timer = v2;
-  return j + 2;
-}
-
-uint16 EnemyInstr_Sleep_B3(uint16 k, uint16 j) {  // 0xB3812F
-  gEnemyData(k)->current_instruction = j - 2;
-  return 0;
+  return jp;
 }
 
 void UnusedSpinningTurtleEye_Init(void) {  // 0xB386FB
@@ -257,10 +237,10 @@ void NorfairPipeBug_8BA8(void) {  // 0xB38BA8
 
 void NorfairPipeBug_Func_1(void) {  // 0xB38BCD
   if (LOBYTE(Get_PipeBug(cur_enemy_index)->pbg_parameter_2)
-      && Get_PipeBug(cur_enemy_index + 64)->pbg_var_A == (uint16)FUNC16(NorfairPipeBug_Func_1)
-      && Get_PipeBug(cur_enemy_index + 128)->pbg_var_A == (uint16)FUNC16(NorfairPipeBug_Func_1)
-      && Get_PipeBug(cur_enemy_index + 192)->pbg_var_A == (uint16)FUNC16(NorfairPipeBug_Func_1)
-      && Get_PipeBug(cur_enemy_index + 256)->pbg_var_A == (uint16)FUNC16(NorfairPipeBug_Func_1)) {
+      && Get_PipeBug(cur_enemy_index + 64)->pbg_var_A == FUNC16(NorfairPipeBug_Func_1)
+      && Get_PipeBug(cur_enemy_index + 128)->pbg_var_A == FUNC16(NorfairPipeBug_Func_1)
+      && Get_PipeBug(cur_enemy_index + 192)->pbg_var_A == FUNC16(NorfairPipeBug_Func_1)
+      && Get_PipeBug(cur_enemy_index + 256)->pbg_var_A == FUNC16(NorfairPipeBug_Func_1)) {
     Get_PipeBug(cur_enemy_index)->pbg_var_A = FUNC16(NorfairPipeBug_Func_2);
   }
 }
@@ -695,85 +675,85 @@ void BrinstarYellowPipeBug_Func_10(uint16 k) {  // 0xB3927A
   }
 }
 
-uint16 Botwoon_Instr_1(uint16 k, uint16 j) {  // 0xB394C7
+const uint16 *Botwoon_Instr_1(uint16 k, const uint16 *jp) {  // 0xB394C7
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->base.x_width = 8;
   E->base.y_height = 16;
-  return j;
+  return jp;
 }
 
-uint16 Botwoon_Instr_2(uint16 k, uint16 j) {  // 0xB394D7
+const uint16 *Botwoon_Instr_2(uint16 k, const uint16 *jp) {  // 0xB394D7
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->base.x_width = 12;
   E->base.y_height = 12;
-  return j;
+  return jp;
 }
 
-uint16 Botwoon_Instr_3(uint16 k, uint16 j) {  // 0xB394E7
+const uint16 *Botwoon_Instr_3(uint16 k, const uint16 *jp) {  // 0xB394E7
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->base.x_width = 16;
   E->base.y_height = 8;
-  return j;
+  return jp;
 }
 
-uint16 Botwoon_Instr_4(uint16 k, uint16 j) {  // 0xB394F7
+const uint16 *Botwoon_Instr_4(uint16 k, const uint16 *jp) {  // 0xB394F7
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->base.x_width = 12;
   E->base.y_height = 12;
-  return j;
+  return jp;
 }
 
-uint16 Botwoon_Instr_5(uint16 k, uint16 j) {  // 0xB39507
+const uint16 *Botwoon_Instr_5(uint16 k, const uint16 *jp) {  // 0xB39507
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->base.x_width = 8;
   E->base.y_height = 16;
-  return j;
+  return jp;
 }
 
-uint16 Botwoon_Instr_6(uint16 k, uint16 j) {  // 0xB39517
+const uint16 *Botwoon_Instr_6(uint16 k, const uint16 *jp) {  // 0xB39517
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->base.x_width = 8;
   E->base.y_height = 16;
-  return j;
+  return jp;
 }
 
-uint16 Botwoon_Instr_7(uint16 k, uint16 j) {  // 0xB39527
+const uint16 *Botwoon_Instr_7(uint16 k, const uint16 *jp) {  // 0xB39527
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->base.x_width = 12;
   E->base.y_height = 12;
-  return j;
+  return jp;
 }
 
-uint16 Botwoon_Instr_8(uint16 k, uint16 j) {  // 0xB39537
+const uint16 *Botwoon_Instr_8(uint16 k, const uint16 *jp) {  // 0xB39537
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->base.x_width = 16;
   E->base.y_height = 8;
-  return j;
+  return jp;
 }
 
-uint16 Botwoon_Instr_9(uint16 k, uint16 j) {  // 0xB39547
+const uint16 *Botwoon_Instr_9(uint16 k, const uint16 *jp) {  // 0xB39547
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->base.x_width = 12;
   E->base.y_height = 12;
-  return j;
+  return jp;
 }
 
-uint16 Botwoon_Instr_10(uint16 k, uint16 j) {  // 0xB39557
+const uint16 *Botwoon_Instr_10(uint16 k, const uint16 *jp) {  // 0xB39557
 
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->base.x_width = 8;
   E->base.y_height = 16;
-  return j;
+  return jp;
 }
 
-uint16 Botwoon_Instr_SetSpitting(uint16 k, uint16 j) {  // 0xB39567
+const uint16 *Botwoon_Instr_SetSpitting(uint16 k, const uint16 *jp) {  // 0xB39567
   Get_Botwoon(cur_enemy_index)->botwoon_var_5A = 1;
-  return j;
+  return jp;
 }
 
-uint16 Botwoon_Instr_QueueSpitSfx(uint16 k, uint16 j) {  // 0xB39572
+const uint16 *Botwoon_Instr_QueueSpitSfx(uint16 k, const uint16 *jp) {  // 0xB39572
   QueueSfx2_Max6(0x7Cu);
-  return j;
+  return jp;
 }
 
 void Botwoon_QueueExplosionSfx(void) {  // 0xB3957B
@@ -1403,10 +1383,10 @@ void Botwoon_Func_32(void) {  // 0xB3E250
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->botwoon_var_E = addr_loc_B3E28C;
   E->botwoon_var_3C = 0;
-  uint8 *v1 = RomPtr_B3(E->botwoon_var_40 - 7856);
-  E->botwoon_var_42 = *(uint16 *)v1;
-  E->botwoon_var_37 = *((uint16 *)v1 + 2);
-  int16 v2 = *((uint16 *)v1 + 1);
+  const uint8 *v1 = RomPtr_B3(E->botwoon_var_40 + addr_stru_B3E150);
+  E->botwoon_var_42 = GET_WORD(v1);
+  E->botwoon_var_37 = GET_WORD(v1 + 4);
+  int16 v2 = GET_WORD(v1 + 2);
   E->botwoon_var_44 = v2;
   if (v2 < 0)
     E->botwoon_var_42 -= 4;
@@ -1422,7 +1402,7 @@ void Botwoon_Func_33(void) {  // 0xB3E28C
   if ((E->botwoon_var_44 & 0x8000u) != 0)
     R22_ = -2;
   do {
-    uint8 *v6 = RomPtr_B3(E->botwoon_var_42);
+    const uint8 *v6 = RomPtr_B3(E->botwoon_var_42);
     uint16 v7 = SignExtend8(*v6), v8;
     if (v7 == 0xFF80 || (R18_ += v7, v8 = SignExtend8(v6[1]), v8 == 0xFF80)) {
       E->botwoon_var_41 = 0;
@@ -1441,17 +1421,17 @@ void Botwoon_Func_33(void) {  // 0xB3E28C
   E->base.y_pos += R20_;
 }
 
-uint16 EscapeEtecoon_Instr_1(uint16 k, uint16 j) {  // 0xB3E545
+const uint16 *EscapeEtecoon_Instr_1(uint16 k, const uint16 *jp) {  // 0xB3E545
   if (lava_acid_y_pos >= 0xCEu)
-    return j + 2;
+    return jp + 1;
   else
-    return *(uint16 *)RomPtr_B3(j);
+    return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 EscapeEtecoon_Instr_2(uint16 k, uint16 j) {  // 0xB3E610
+const uint16 *EscapeEtecoon_Instr_2(uint16 k, const uint16 *jp) {  // 0xB3E610
   Enemy_EscapeEtecoon *E = Get_EscapeEtecoon(k);
-  E->base.x_pos += *(uint16 *)RomPtr_B3(j);
-  return j + 2;
+  E->base.x_pos += jp[0];
+  return jp + 1;
 }
 
 void EscapeEtecoon_Main(void) {  // 0xB3E655
@@ -1480,7 +1460,7 @@ void EscapeEtecoon_E680(uint16 k) {  // 0xB3E680
   een_var_A = E->een_var_A;
   if (een_var_A < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = een_var_A;
+  R19_ = een_var_A;
   if (Enemy_MoveRight_IgnoreSlopes(k) & 1) {
     E->base.instruction_timer = 1;
     bool v3 = (-E->een_var_A & 0x8000u) != 0;
@@ -1513,30 +1493,30 @@ void EscapeEtecoon_Init(void) {  // 0xB3E6CB
   }
 }
 
-uint16 EscapeDachora_Instr_2(uint16 k, uint16 j) {  // 0xB3EAA8
+const uint16 *EscapeDachora_Instr_2(uint16 k, const uint16 *jp) {  // 0xB3EAA8
   if (lava_acid_y_pos >= 0xCEu)
-    return j + 2;
+    return jp + 1;
   else
-    return *(uint16 *)RomPtr_B3(j);
+    return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 EscapeDachora_Instr_3(uint16 k, uint16 j) {  // 0xB3EAB8
+const uint16 *EscapeDachora_Instr_3(uint16 k, const uint16 *jp) {  // 0xB3EAB8
   if (CheckEventHappened(0xFu))
-    return *(uint16 *)RomPtr_B3(j);
+    return INSTR_RETURN_ADDR(jp[0]);
   else
-    return j + 2;
+    return jp + 1;
 }
 
-uint16 EscapeDachora_Instr_1(uint16 k, uint16 j) {  // 0xB3EAC9
+const uint16 *EscapeDachora_Instr_1(uint16 k, const uint16 *jp) {  // 0xB3EAC9
   Enemy_EscapeDachora *E = Get_EscapeDachora(cur_enemy_index);
   E->base.x_pos -= 6;
-  return j;
+  return jp;
 }
 
-uint16 EscapeDachora_Instr_4(uint16 k, uint16 j) {  // 0xB3EAD7
+const uint16 *EscapeDachora_Instr_4(uint16 k, const uint16 *jp) {  // 0xB3EAD7
   Enemy_EscapeDachora *E = Get_EscapeDachora(cur_enemy_index);
   E->base.x_pos += 6;
-  return j;
+  return jp;
 }
 
 void EscapeDachora_Init(void) {  // 0xB3EAE5

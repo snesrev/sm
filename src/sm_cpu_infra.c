@@ -4,6 +4,10 @@
 #include "snes/snes.h"
 #include "tracing.h"
 
+
+
+
+
 #include "ida_types.h"
 #include "variables.h"
 #include "funcs.h"
@@ -56,8 +60,12 @@ void Call(uint32 addr) {
   RunAsmCode(addr, 0, 0, 0, 0);
 }
 
+uint8_t *SnesRomPtr(uint32 v) {
+  return (uint8*)RomPtr(v);
+}
+
 bool ProcessHook(uint32 v) {
-  uint8_t *rombyte = RomPtr(v);
+  uint8_t *rombyte = SnesRomPtr(v);
   switch (hookmode) {
   case 0: // remove hooks
     *rombyte = hook_orgbyte[hookcnt++];
@@ -79,7 +87,7 @@ bool ProcessHook(uint32 v) {
 bool FixBugHook(uint32 addr) {
   switch (hookmode) {
   case 1: { // install hooks
-    uint8_t *rombyte = RomPtr(addr);
+    uint8_t *rombyte = SnesRomPtr(addr);
     hook_fixbug_orgbyte[hookcnt++] = *rombyte;
     *rombyte = 0;
     return false;
@@ -166,6 +174,9 @@ static const  uint32 kPatchedCarrys[] = {
   0x818AA7,
   0x94B176,
   0x94B156,
+
+  // MotherBrain
+  0xA99413,
 
   // room_width_in_blocks etc
   0x80ab5d,
@@ -326,6 +337,9 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
   } else if (FixBugHook(0x88AFF2)) {
     if (g_cpu->a < 256)  // RoomMainAsm_ScrollingSky reads oob
       g_cpu->a = 256;
+  } else if (FixBugHook(0x8189bd)) {
+    if (g_cpu->y == 0)  // DrawSamusSpritemap reads invalid ptr
+      return 0x818A35;
   }
 
   return 0;
@@ -339,7 +353,7 @@ int RunPatchBugHook(uint32 addr) {
     } else {
       g_cpu->k = new_pc >> 16;
       g_cpu->pc = (new_pc & 0xffff) + 1;
-      return *RomPtr(new_pc);
+      return *SnesRomPtr(new_pc);
     }
   }
 
@@ -373,10 +387,9 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
   memcpy(&b->ram[0x0], &a->ram[0x0], 0x34);  // R18, R20, R22 etc
 
   memcpy(&b->ram[0x1f5b], &a->ram[0x1f5b], 0x100 - 0x5b);  // stacck
-  memcpy(&b->ram[0x44], &a->ram[0x44], 3);  // decompress_dst_tmp
+  memcpy(&b->ram[0x44], &a->ram[0x44], 13);  // decompress temp
   memcpy(&b->ram[0x19b3], &a->ram[0x19b3], 1);  // mode7_spawn_param
   memcpy(&b->ram[0x1993], &a->ram[0x1993], 2);  // enemy_projectile_init_param
-  memcpy(&b->ram[0x49], &a->ram[0x49], 1);  // decompress_src.bank
   memcpy(&b->ram[0x1B9D], &a->ram[0x1B9D], 2);  // cinematic_spawn_param
   memcpy(&b->ram[0x1a93], &a->ram[0x1a93], 2);  // cinematic_spawn_param
   memcpy(&b->ram[0xA82], &a->ram[0xA82], 2);  // xray_angle
@@ -389,13 +402,22 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
   memcpy(&a->ram[0x77e], &b->ram[0x77e], 5);  // my counter
   memcpy(&a->ram[0xe20], &b->ram[0xe20], 2);  // enemy_population_ptr
 
+  memcpy(&a->ram[0x1784], &b->ram[0x1784], 3);  // enemy_ai_pointer
+  memcpy(&a->ram[0x3c], &b->ram[0x3c], 2);  // nmicopy1_var_d
+  memcpy(&a->ram[0x17aa], &b->ram[0x17aa], 2);  // interactive_enemy_indexes_index
+  memcpy(&a->ram[0x60B], &b->ram[0x60B], 2);  // remaining_enemy_spritemap_entries
+
+  memcpy(&a->ram[0xdd4], &b->ram[0xdd4], 4);  // temp_collision_DD4
+  
+
+  
   if (memcmp(b->ram, a->ram, 0x20000)) {
     fprintf(stderr, "@%d: Memory compare failed (mine != theirs, prev):\n", snes_frame_counter);
     int j = 0;
     for (size_t i = 0; i < 0x20000; i++) {
       if (a->ram[i] != b->ram[i]) {
         if (++j < 256) {
-          if (/* (i & 1) == 0 && */a->ram[i + 1] != b->ram[i + 1]) {
+          if (((i & 1) == 0 || i < 0x10000) && a->ram[i + 1] != b->ram[i + 1]) {
             fprintf(stderr, "0x%.6X: %.4X != %.4X (%.4X)\n", (int)i,
                     WORD(b->ram[i]), WORD(a->ram[i]), WORD(prev->ram[i]));
             i++, j++;
@@ -553,12 +575,12 @@ static bool loadRom(const char *name, Snes *snes) {
 
 void PatchBytes(uint32 addr, const uint8 *value, size_t n) {
   for(size_t i = 0; i != n; i++)
-    RomPtr(addr)[i] = value[i];
+    SnesRomPtr(addr)[i] = value[i];
 }
 
 // Patches add/sub to ignore carry
 void FixupCarry(uint32 addr) {
-  *RomPtr(addr) = 0;
+  *SnesRomPtr(addr) = 0;
 }
 
 void RtlUpdateSnesPatchForBugfix() {
@@ -580,6 +602,7 @@ Snes *SnesInit(const char *filename) {
   }
 
   g_sram = g_snes->cart->ram;
+  g_rom = g_snes->cart->rom;
 
   RtlSetupEmuCallbacks(NULL, &RtlRunFrameCompare, NULL);
 
@@ -751,7 +774,7 @@ Snes *SnesInit(const char *filename) {
   RtlUpdateSnesPatchForBugfix();
 
   for (size_t i = 0; i != arraysize(kPatchedCarrys); i++) {
-    uint8 t = *RomPtr(kPatchedCarrys[i]);
+    uint8 t = *SnesRomPtr(kPatchedCarrys[i]);
     if (t) {
       kPatchedCarrysOrg[i] = t;
       FixupCarry(kPatchedCarrys[i]);
@@ -827,7 +850,7 @@ again_theirs:
   MakeSnapshot(&g_snapshot_theirs);
 
   // Run my version and snapshot
-again_mine:
+//again_mine:
   g_snes->ppu = g_snes->my_ppu;
   RestoreSnapshot(&g_snapshot_before);
 

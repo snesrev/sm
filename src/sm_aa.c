@@ -4,6 +4,33 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+
+#define g_off_AAC967 ((uint16*)RomFixedPtr(0xaac967))
+#define g_off_AAD810 ((uint16*)RomFixedPtr(0xaad810))
+#define g_word_AAD765 ((uint16*)RomFixedPtr(0xaad765))
+#define g_word_AAD785 ((uint16*)RomFixedPtr(0xaad785))
+#define g_off_AADF13 ((uint16*)RomFixedPtr(0xaadf13))
+#define g_off_AADF21 ((uint16*)RomFixedPtr(0xaadf21))
+#define kSine ((uint16*)RomFixedPtr(0xaae0bd))
+#define kCosine ((uint16*)RomFixedPtr(0xaae13d))
+#define kNegativeSine ((uint16*)RomFixedPtr(0xaae1bd))
+#define kNegativeCosine_0 ((uint16*)RomFixedPtr(0xaae23d))
+#define kNegativeCosine ((uint16*)RomFixedPtr(0xaae03d))
+#define g_off_AADD15 ((uint16*)RomFixedPtr(0xaadd15))
+#define g_word_AADE95 ((uint16*)RomFixedPtr(0xaade95))
+#define g_word_AADEA3 ((uint16*)RomFixedPtr(0xaadea3))
+#define g_word_AADEB1 ((uint16*)RomFixedPtr(0xaadeb1))
+#define g_off_AADEDB ((uint16*)RomFixedPtr(0xaadedb))
+#define g_word_AADEF7 ((uint16*)RomFixedPtr(0xaadef7))
+#define g_word_AADECD ((uint16*)RomFixedPtr(0xaadecd))
+#define g_word_AAE630 ((uint16*)RomFixedPtr(0xaae630))
+#define g_word_AAE670 ((uint16*)RomFixedPtr(0xaae670))
+#define g_word_AAE6B0 ((uint16*)RomFixedPtr(0xaae6b0))
+#define kN00bTubeCracks_Palette2 ((uint16*)RomFixedPtr(0xaae2dd))
+#define g_off_AAE7A2 ((uint16*)RomFixedPtr(0xaae7a2))
+
+
+
 static const uint16 g_word_AAB096 = 6;
 static const uint16 g_word_AAB098 = 5;
 static const uint16 g_word_AAB09A = 3;
@@ -22,7 +49,6 @@ static const int16 g_word_AAC532[20] = {
 };
 static const int16 g_word_AAC95F[2] = { 0xdb, 0x1a8 };
 static const int16 g_word_AAC963[2] = { 0xb3, 0x90 };
-#define g_off_AAC967 ((uint16*)RomPtr(0xaac967))
 static const int16 g_word_AAC96B[2] = { 0x2800, 0x2800 };
 static const int16 g_word_AAC96F[2] = { 0x12, 0x12 };
 static const int16 g_word_AAC973[2] = { 0x30, 0x29 };
@@ -41,29 +67,7 @@ static const int16 g_word_AAD59A[20] = {
   -5, 0, -5, -19, -16, -7, 0, -7, -17, -18, 5, 0, 5, 19, 16, 7,
    0, 7, 17,  18,
 };
-#define g_off_AAD810 ((uint16*)RomPtr(0xaad810))
-#define g_word_AAD765 ((uint16*)RomPtr(0xaad765))
-#define g_word_AAD785 ((uint16*)RomPtr(0xaad785))
-#define g_off_AADF13 ((uint16*)RomPtr(0xaadf13))
-#define g_off_AADF21 ((uint16*)RomPtr(0xaadf21))
-#define kSine ((uint16*)RomPtr(0xaae0bd))
-#define kCosine ((uint16*)RomPtr(0xaae13d))
-#define kNegativeSine ((uint16*)RomPtr(0xaae1bd))
-#define kNegativeCosine_0 ((uint16*)RomPtr(0xaae23d))
-#define kNegativeCosine ((uint16*)RomPtr(0xaae03d))
-#define g_off_AADD15 ((uint16*)RomPtr(0xaadd15))
-#define g_word_AADE95 ((uint16*)RomPtr(0xaade95))
-#define g_word_AADEA3 ((uint16*)RomPtr(0xaadea3))
-#define g_word_AADEB1 ((uint16*)RomPtr(0xaadeb1))
-#define g_off_AADEDB ((uint16*)RomPtr(0xaadedb))
 static const uint16 g_word_AADEE9[7] = { 0, 0x20, 0x60, 0xc0, 0x140, 0x1a0, 0x1e0 };
-#define g_word_AADEF7 ((uint16*)RomPtr(0xaadef7))
-#define g_word_AADECD ((uint16*)RomPtr(0xaadecd))
-#define g_word_AAE630 ((uint16*)RomPtr(0xaae630))
-#define g_word_AAE670 ((uint16*)RomPtr(0xaae670))
-#define g_word_AAE6B0 ((uint16*)RomPtr(0xaae6b0))
-#define kN00bTubeCracks_Palette2 ((uint16*)RomPtr(0xaae2dd))
-#define g_off_AAE7A2 ((uint16*)RomPtr(0xaae7a2))
 static const uint16 kChozoStatue_Palette[16] = { 0x3800, 0x633f, 0x4a9f, 0x2ddf, 0x6739, 0x4e73, 0x318c, 0x18c6, 0x27ff, 0x1af7, 0xdce, 0xc6, 0x3fff, 0x2b39, 0x7fff, 0 };
 static const int16 kChozoStatue_Palettes[16] = {
   0x3800, 0x633f, 0x4a9f, 0x2ddf, 0x4210, 0x318c, 0x2108, 0x1084,
@@ -86,74 +90,22 @@ void Enemy_NormalFrozenAI_AA(void) {  // 0xAA8041
   NormalEnemyFrozenAI();
 }
 
-uint16 Enemy_ClearAiPreInstr_AA(uint16 k, uint16 j) {  // 0xAA8074
+const uint16 *Enemy_ClearAiPreInstr_AA(uint16 k, const uint16 *jp) {  // 0xAA8074
   gEnemyData(k)->ai_preinstr = FUNC16(nullsub_171_AA);
-  return j;
+  return jp;
 }
 
-uint16 Enemy_SetAiPreInstr_AA(uint16 k, uint16 j) {  // 0xAA806B
-  gEnemyData(k)->ai_preinstr = *(uint16 *)RomPtr_AA(j);
-  return j + 2;
+const uint16 *Enemy_SetAiPreInstr_AA(uint16 k, const uint16 *jp) {  // 0xAA806B
+  gEnemyData(k)->ai_preinstr = jp[0];
+  return jp + 1;
 }
 
-uint16 EnemyInstr_StopScript_AA(uint16 k, uint16 j) {  // 0xAA807C
-  EnemyData *v2 = gEnemyData(k);
-  v2->properties |= kEnemyProps_Deleted;
-  return 0;
+const uint16 *Torizo_Instr_3(uint16 k, const uint16 *jp) {  // 0xAAB09C
+  Get_Torizo(k)->toriz_var_E = jp[0];
+  return jp + 1;
 }
 
-uint16 EnemyInstr_Goto_AA(uint16 k, uint16 j) {  // 0xAA80ED
-  return *(uint16 *)RomPtr_AA(j);
-}
-
-uint16 EnemyInstr_DecTimerAndGoto2_AA(uint16 k, uint16 j) {  // 0xAA8110
-  EnemyData *v2 = gEnemyData(k);
-  if (v2->timer-- == 1)
-    return j + 2;
-  else
-    return EnemyInstr_Goto_AA(k, j);
-}
-
-uint16 EnemyInstr_SetTimer_AA(uint16 k, uint16 j) {  // 0xAA8123
-  uint16 v2 = *(uint16 *)RomPtr_AA(j);
-  gEnemyData(k)->timer = v2;
-  return j + 2;
-}
-
-uint16 EnemyInstr_Sleep_AA(uint16 k, uint16 j) {  // 0xAA812F
-  gEnemyData(k)->current_instruction = j - 2;
-  return 0;
-}
-
-uint16 EnemyInstr_WaitNframes_AA(uint16 k, uint16 j) {  // 0xAA813A
-  uint16 v2 = *(uint16 *)RomPtr_AA(j);
-  EnemyData *v3 = gEnemyData(k);
-  v3->instruction_timer = v2;
-  v3->current_instruction = j + 2;
-  return 0;
-}
-
-uint16 EnemyInstr_CopyToVram_AA(uint16 k, uint16 j) {  // 0xAA814B
-  VramWriteEntry *v4;
-
-  uint16 v2 = vram_write_queue_tail;
-  uint8 *v3 = RomPtr_AA(j);
-  v4 = gVramWriteEntry(vram_write_queue_tail);
-  v4->size = *(uint16 *)v3;
-  v4->src.addr = *((uint16 *)v3 + 1);
-  *(VoidP *)((char *)&v4->src.addr + 1) = *(uint16 *)(v3 + 3);
-  v4->vram_dst = *(uint16 *)(v3 + 5);
-  vram_write_queue_tail = v2 + 7;
-  return j + 7;
-}
-
-uint16 Torizo_Instr_3(uint16 k, uint16 j) {  // 0xAAB09C
-  uint16 v2 = *(uint16 *)RomPtr_AA(j);
-  Get_Torizo(k)->toriz_var_E = v2;
-  return j + 2;
-}
-
-uint16 Torizo_Instr_31(uint16 k, uint16 j) {  // 0xAAB11D
+const uint16 *Torizo_Instr_31(uint16 k, const uint16 *jp) {  // 0xAAB11D
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_parameter_2 = E->toriz_parameter_2 | 0x8000;
   SpawnEnemyProjectileWithGfx(0, k, addr_stru_86A95B);
@@ -162,60 +114,60 @@ uint16 Torizo_Instr_31(uint16 k, uint16 j) {  // 0xAAB11D
   SpawnEnemyProjectileWithGfx(0, k, addr_stru_86A95B);
   SpawnEnemyProjectileWithGfx(0, k, addr_stru_86A95B);
   SpawnEnemyProjectileWithGfx(0, k, addr_stru_86A95B);
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_33(uint16 k, uint16 j) {  // 0xAAB1BE
+const uint16 *Torizo_Instr_33(uint16 k, const uint16 *jp) {  // 0xAAB1BE
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_parameter_2 |= 0x4000u;
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_36(uint16 k, uint16 j) {  // 0xAAB224
+const uint16 *Torizo_Instr_36(uint16 k, const uint16 *jp) {  // 0xAAB224
   Enemy_Torizo *E = Get_Torizo(k);
   E->base.properties &= ~kEnemyProps_Invisible;
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_37(uint16 k, uint16 j) {  // 0xAAB22E
+const uint16 *Torizo_Instr_37(uint16 k, const uint16 *jp) {  // 0xAAB22E
   Enemy_Torizo *E = Get_Torizo(k);
   E->base.properties |= kEnemyProps_Invisible;
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_35(uint16 k, uint16 j) {  // 0xAAB238
+const uint16 *Torizo_Instr_35(uint16 k, const uint16 *jp) {  // 0xAAB238
   for (int i = 30; i >= 0; i -= 2) {
     int v3 = i >> 1;
     target_palettes[v3 + 160] = 0;
     target_palettes[v3 + 144] = 0;
   }
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_38(uint16 k, uint16 j) {  // 0xAAB24D
+const uint16 *Torizo_Instr_38(uint16 k, const uint16 *jp) {  // 0xAAB24D
   SetBossBitForCurArea(4u);
   QueueMusic_Delayed8(g_word_AAB09A);
   if (area_index)
     Enemy_ItemDrop_GoldenTorizo(k);
   else
     Enemy_ItemDrop_BombTorizo(k);
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_6(uint16 k, uint16 j) {  // 0xAAB271
+const uint16 *Torizo_Instr_6(uint16 k, const uint16 *jp) {  // 0xAAB271
   sub_82DAF7(0x600u);
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_5(uint16 k, uint16 j) {  // 0xAAB94D
+const uint16 *Torizo_Instr_5(uint16 k, const uint16 *jp) {  // 0xAAB94D
   Torizo_C268();
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_9(uint16 k, uint16 j) {  // 0xAAB951
+const uint16 *Torizo_Instr_9(uint16 k, const uint16 *jp) {  // 0xAAB951
   QueueMusic_Delayed8(g_word_AAB098);
   SpawnPalfxObject(addr_stru_8DF759);
-  return j;
+  return jp;
 }
 
 void Torizo_C20A(uint16 k) {  // 0xAAC20A
@@ -286,241 +238,237 @@ void Torizo_C2B0(void) {  // 0xAAC2B0
   }
 }
 
-uint16 Torizo_Instr_7(uint16 k, uint16 j) {  // 0xAAC2C8
-  return j;
+const uint16 *Torizo_Instr_7(uint16 k, const uint16 *jp) {  // 0xAAC2C8
+  return jp;
 }
 
-uint16 Torizo_Instr_2(uint16 k, uint16 j) {  // 0xAAC2C9
+const uint16 *Torizo_Instr_2(uint16 k, const uint16 *jp) {  // 0xAAC2C9
   Get_Torizo(k)->toriz_var_04 = 30583;
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_8(uint16 k, uint16 j) {  // 0xAAC2D1
+const uint16 *Torizo_Instr_8(uint16 k, const uint16 *jp) {  // 0xAAC2D1
   Get_Torizo(k)->toriz_var_04 = 0;
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_25(uint16 k, uint16 j) {  // 0xAAC2D9
+const uint16 *Torizo_Instr_25(uint16 k, const uint16 *jp) {  // 0xAAC2D9
   if ((Get_Torizo(k)->toriz_parameter_2 & 0x4000) != 0)
-    return *(uint16 *)RomPtr_AA(j);
-  j += 2;
+    return INSTR_RETURN_ADDR(jp[0]);
   if (area_index)
-    return *(uint16 *)RomPtr_AA(j);
+    return INSTR_RETURN_ADDR(jp[1]);
   else
-    return j + 2;
+    return jp + 2;
 }
 
-uint16 Torizo_Instr_22(uint16 k, uint16 j) {  // 0xAAC2ED
-  uint16 v2 = *(uint16 *)RomPtr_AA(j);
-  Get_Torizo(k)->toriz_var_00 = v2;
-  return j + 2;
+const uint16 *Torizo_Instr_22(uint16 k, const uint16 *jp) {  // 0xAAC2ED
+  Get_Torizo(k)->toriz_var_00 = jp[0];
+  return jp + 1;
 }
 
-uint16 Torizo_Instr_19(uint16 k, uint16 j) {  // 0xAAC2F7
-  return Get_Torizo(k)->toriz_var_00;
+const uint16 *Torizo_Instr_19(uint16 k, const uint16 *jp) {  // 0xAAC2F7
+  return INSTR_RETURN_ADDR(Get_Torizo(k)->toriz_var_00);
 }
 
-uint16 Torizo_Instr_32(uint16 k, uint16 j) {  // 0xAAC2FD
-  return Get_Torizo(k)->toriz_var_01;
+const uint16 *Torizo_Instr_32(uint16 k, const uint16 *jp) {  // 0xAAC2FD
+  return INSTR_RETURN_ADDR(Get_Torizo(k)->toriz_var_01);
 }
 
-uint16 Torizo_Instr_30(uint16 k, uint16 j) {  // 0xAAC303
-  uint16 a = *(uint16 *)RomPtr_AA(j);
+const uint16 *Torizo_Instr_30(uint16 k, const uint16 *jp) {  // 0xAAC303
+  uint16 a = jp[0];
   for (int i = 5; i >= 0; --i)
     SpawnEnemyProjectileWithRoomGfx(addr_kEproj_BombTorizoLowHealthExplode, a);
   Enemy_Torizo *E = Get_Torizo(k);
-  E->base.current_instruction = j + 2;
+  E->base.current_instruction = INSTR_ADDR_TO_PTR(k, jp + 1);
   E->base.flash_timer = 40;
   E->base.instruction_timer = 40;
   return 0;
 }
 
-uint16 Torizo_Instr_34(uint16 k, uint16 j) {  // 0xAAC32F
-  printf("A undefined\n");
+const uint16 *Torizo_Instr_34(uint16 k, const uint16 *jp) {  // 0xAAC32F
+  //printf("A undefined\n");
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_BombTorizoDeathExplosion, 0);
   Enemy_Torizo *E = Get_Torizo(k);
-  E->base.current_instruction = j;
+  E->base.current_instruction = INSTR_ADDR_TO_PTR(k, jp);
   E->base.flash_timer = 1;
   E->base.instruction_timer = 1;
   return 0;
 }
 
-uint16 Torizo_Instr_24(uint16 k, uint16 j) {  // 0xAAC34A
-  printf("A undefined\n");
+const uint16 *Torizo_Instr_24(uint16 k, const uint16 *jp) {  // 0xAAC34A
+  //printf("A undefined\n");
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianLandingDustCloudsRightFoot, 0);
   SpawnEnemyProjectileWithRoomGfx(addr_stru_86AFF3, 0);
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_12(uint16 k, uint16 j) {  // 0xAAC35B
+const uint16 *Torizo_Instr_12(uint16 k, const uint16 *jp) {  // 0xAAC35B
   uint16 health = Get_Torizo(k)->base.health;
   if (health < 0x15Eu)
     SpawnEnemyProjectileWithGfx(health, k, addr_kEproj_BombTorizoLowHealthInitialDrool);
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_10(uint16 k, uint16 j) {  // 0xAAC36D
+const uint16 *Torizo_Instr_10(uint16 k, const uint16 *jp) {  // 0xAAC36D
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_parameter_1 |= 0x4000u;
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_11(uint16 k, uint16 j) {  // 0xAAC377
+const uint16 *Torizo_Instr_11(uint16 k, const uint16 *jp) {  // 0xAAC377
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_parameter_1 &= 0x1FFFu;
   ++E->toriz_var_09;
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_29(uint16 k, uint16 j) {  // 0xAAC38A
+const uint16 *Torizo_Instr_29(uint16 k, const uint16 *jp) {  // 0xAAC38A
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_parameter_1 = E->toriz_parameter_1 & 0x1FFF | 0x8000;
   ++E->toriz_var_09;
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_1(uint16 k, uint16 j) {  // 0xAAC3A0
+const uint16 *Torizo_Instr_1(uint16 k, const uint16 *jp) {  // 0xAAC3A0
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_parameter_1 = E->toriz_parameter_1 & 0x1FFF | 0x2000;
   ++E->toriz_var_09;
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_28(uint16 k, uint16 j) {  // 0xAAC3B6
+const uint16 *Torizo_Instr_28(uint16 k, const uint16 *jp) {  // 0xAAC3B6
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_parameter_1 = E->toriz_parameter_1 & 0x1FFF | 0xA000;
   ++E->toriz_var_09;
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_4(uint16 k, uint16 j) {  // 0xAAC3CC
-  uint16 v2 = *(uint16 *)RomPtr_AA(j);
+const uint16 *Torizo_Instr_4(uint16 k, const uint16 *jp) {  // 0xAAC3CC
+  uint16 v2 = jp[0];
   Enemy_Torizo *E = Get_Torizo(k);
   E->base.x_pos += g_word_AAC3EE[v2 >> 1];
   E->base.y_pos += g_word_AAC40E[(uint8)(v2 & 0xF) >> 1];
-  return j + 2;
+  return jp + 1;
 }
 
-uint16 Torizo_Instr_40(uint16 k, uint16 j) {  // 0xAAC41E
-  uint16 v2 = *(uint16 *)RomPtr_AA(j);
+const uint16 *Torizo_Instr_40(uint16 k, const uint16 *jp) {  // 0xAAC41E
+  uint16 v2 = jp[0];
   Enemy_Torizo *E = Get_Torizo(k);
   E->base.x_pos -= g_word_AAC440[v2 >> 1];
   E->base.y_pos -= g_word_AAC460[(uint8)(v2 & 0xF) >> 1];
-  return j + 2;
+  return jp + 1;
 }
 
-uint16 Torizo_Instr_16(uint16 k, uint16 j) {  // 0xAAC470
+const uint16 *Torizo_Instr_16(uint16 k, const uint16 *jp) {  // 0xAAC470
   R18_ = 0;
-  R20_ = g_word_AAC4BD[*(uint16 *)RomPtr_AA(j) >> 1];
+  R20_ = g_word_AAC4BD[jp[0] >> 1];
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_var_A = R20_;
   if (Enemy_MoveRight_IgnoreSlopes(k) & 1) {
     E->toriz_var_03 = 0;
     if ((E->toriz_parameter_1 & 0x8000u) != 0)
-      return addr_kTorizo_Ilist_B962;
+      return INSTR_RETURN_ADDR(addr_kTorizo_Ilist_B962);
     else
-      return addr_kTorizo_Ilist_BDD8;
+      return INSTR_RETURN_ADDR(addr_kTorizo_Ilist_BDD8);
   } else {
     EnemyFunc_C8AD(k);
     if (((E->toriz_parameter_1 ^ (samus_x_pos - E->base.x_pos)) & 0x8000u) == 0) {
       if (!E->toriz_var_03)
         E->toriz_var_03 = 72;
-      return j + 2;
+      return jp + 1;
     } else {
-      return j + 2;
+      return jp + 1;
     }
   }
 }
 
-uint16 Torizo_Instr_27(uint16 k, uint16 j) {  // 0xAAC4E5
+const uint16 *Torizo_Instr_27(uint16 k, const uint16 *jp) {  // 0xAAC4E5
   R18_ = 0;
-  R20_ = g_word_AAC532[*(uint16 *)RomPtr_AA(j) >> 1];
+  R20_ = g_word_AAC532[jp[0] >> 1];
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_var_A = R20_;
   if (Enemy_MoveRight_IgnoreSlopes(k) & 1) {
     E->toriz_var_03 = 0;
     if ((E->toriz_parameter_1 & 0x8000u) != 0)
-      return addr_kTorizo_Ilist_BD0E;
+      return INSTR_RETURN_ADDR(addr_kTorizo_Ilist_BD0E);
     else
-      return addr_kTorizo_Ilist_C188;
+      return INSTR_RETURN_ADDR(addr_kTorizo_Ilist_C188);
   } else {
     EnemyFunc_C8AD(k);
     if (((E->toriz_parameter_1 ^ (samus_x_pos - E->base.x_pos)) & 0x8000u) == 0) {
       if (!E->toriz_var_03)
         E->toriz_var_03 = 72;
-      return j + 2;
+      return jp + 1;
     } else {
-      return j + 2;
+      return jp + 1;
     }
   }
 }
 
-uint16 Torizo_Instr_23(uint16 k, uint16 j) {  // 0xAAC55A
+const uint16 *Torizo_Instr_23(uint16 k, const uint16 *jp) {  // 0xAAC55A
   if ((Get_Torizo(k)->toriz_var_B & 0x8000u) != 0)
-    return *(uint16 *)RomPtr_AA(j);
+    return INSTR_RETURN_ADDR(jp[0]);
   else
-    return j + 2;
+    return jp + 1;
 }
 
-uint16 Torizo_Instr_14(uint16 k, uint16 j) {  // 0xAAC567
+const uint16 *Torizo_Instr_14(uint16 k, const uint16 *jp) {  // 0xAAC567
   if (CompareDistToSamus_X(k, 0x38) & 1)
-    return j + 2;
+    return jp + 1;
   Enemy_Torizo *E = Get_Torizo(k);
   if (((E->toriz_parameter_1 ^ (samus_x_pos - E->base.x_pos)) & 0x8000u) == 0)
-    return j + 2;
-  E->toriz_var_00 = j + 2;
-  return *(uint16 *)RomPtr_AA(j);
+    return jp + 1;
+  E->toriz_var_00 = INSTR_ADDR_TO_PTR(k, jp + 1);
+  return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 Torizo_Instr_15(uint16 k, uint16 j) {  // 0xAAC58B
+const uint16 *Torizo_Instr_15(uint16 k, const uint16 *jp) {  // 0xAAC58B
   if (CompareDistToSamus_X(k, 0x20) & 1 || (Torizo_Func_12(k) & 0x8000u) != 0)
-    return j + 2;
+    return jp + 1;
   Torizo_C22D(k);
-  return *(uint16 *)RomPtr_AA(j);
+  return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 Torizo_Instr_26(uint16 k, uint16 j) {  // 0xAAC5A4
-  Get_Torizo(k)->toriz_var_00 = j + 4;
+const uint16 *Torizo_Instr_26(uint16 k, const uint16 *jp) {  // 0xAAC5A4
+  Enemy_Torizo *E = Get_Torizo(k);
+  E->toriz_var_00 = INSTR_ADDR_TO_PTR(k, jp + 2);
   if (samus_missiles < 5u || ((nmi_frame_counter_word + (samus_x_pos & 1) + (samus_x_pos >> 1)) & 8) != 0)
-    return *(uint16 *)RomPtr_AA(j);
+    return INSTR_RETURN_ADDR(jp[0]);
   else
-    return *((uint16 *)RomPtr_AA(j) + 1);
+    return INSTR_RETURN_ADDR(jp[1]);
 }
 
-uint16 Torizo_Instr_18(uint16 k, uint16 j) {  // 0xAAC5CB
-  printf("A unknown\n");
+const uint16 *Torizo_Instr_18(uint16 k, const uint16 *jp) {  // 0xAAC5CB
+  //printf("A unknown\n");
   SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_BombTorizosChozoOrbs);
   SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_BombTorizosChozoOrbs);
   SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_BombTorizosChozoOrbs);
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_20(uint16 k, uint16 j) {  // 0xAAC5E3
-  uint16 *v2 = (uint16 *)RomPtr_AA(j);
-  SpawnEnemyProjectileWithGfx(*v2, k, addr_kEproj_BombTorizoSonicBoom);
-  return j + 2;
+const uint16 *Torizo_Instr_20(uint16 k, const uint16 *jp) {  // 0xAAC5E3
+  SpawnEnemyProjectileWithGfx(jp[0], k, addr_kEproj_BombTorizoSonicBoom);
+  return jp + 1;
 }
 
-uint16 Torizo_Instr_44(uint16 k, uint16 j) {  // 0xAAC5F2
-  uint16 *v2 = (uint16 *)RomPtr_AA(j);
-  SpawnEnemyProjectileWithGfx(*v2, k, addr_kEproj_GoldenTorizoSonicBoom);
-  return j + 2;
+const uint16 *Torizo_Instr_44(uint16 k, const uint16 *jp) {  // 0xAAC5F2
+  SpawnEnemyProjectileWithGfx(jp[0], k, addr_kEproj_GoldenTorizoSonicBoom);
+  return jp + 1;
 }
 
-uint16 Torizo_Instr_21(uint16 k, uint16 j) {  // 0xAAC601
-  uint16 *v2 = (uint16 *)RomPtr_AA(j);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_BombTorizoExplosiveSwipe, *v2);
-  return j + 2;
+const uint16 *Torizo_Instr_21(uint16 k, const uint16 *jp) {  // 0xAAC601
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_BombTorizoExplosiveSwipe, jp[0]);
+  return jp + 1;
 }
 
-uint16 Torizo_Instr_17(uint16 k, uint16 j) {  // 0xAAC610
+const uint16 *Torizo_Instr_17(uint16 k, const uint16 *jp) {  // 0xAAC610
   QueueSfx2_Max6(0x27u);
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_13(uint16 k, uint16 j) {  // 0xAAC618
+const uint16 *Torizo_Instr_13(uint16 k, const uint16 *jp) {  // 0xAAC618
   QueueSfx2_Max6(0x4Bu);
-  return j;
+  return jp;
 }
 
 void Torizo_C620(uint16 k) {  // 0xAAC620
@@ -543,7 +491,7 @@ void Torizo_C643(uint16 k) {  // 0xAAC643
   torizo_var_B = E->toriz_var_B;
   if (torizo_var_B < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = torizo_var_B;
+  R19_ = torizo_var_B;
   if (Enemy_MoveDown(k) & 1) {
     v3 = E->toriz_var_B;
     if (v3 >= 0 && v3 != 256) {
@@ -603,7 +551,7 @@ void Torizo_Func_4(uint16 k) {  // 0xAAC6C6
   Enemy_Torizo *E = Get_Torizo(k);
   E->base.properties |= kEnemyProps_Tangible;
   uint16 v2 = 78;
-  while (plm_header_ptr[v2 >> 1] != (uint16)addr_kPlmHeader_D6EA) {
+  while (plm_header_ptr[v2 >> 1] != addr_kPlmHeader_D6EA) {
     v2 -= 2;
     if ((v2 & 0x8000u) != 0) {
       QueueMusic_Delayed8(g_word_AAB096);
@@ -719,7 +667,7 @@ void Torizo_Func_7(uint16 k) {  // 0xAAC82C
   torizo_var_A = E->toriz_var_A;
   if (torizo_var_A < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = torizo_var_A;
+  R19_ = torizo_var_A;
   Enemy_MoveRight_IgnoreSlopes(k);
   EnemyFunc_C8AD(k);
   R18_ = 0;
@@ -727,7 +675,7 @@ void Torizo_Func_7(uint16 k) {  // 0xAAC82C
   torizo_var_B = E->toriz_var_B;
   if (torizo_var_B < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = torizo_var_B;
+  R19_ = torizo_var_B;
   if (Enemy_MoveDown(k) & 1) {
     E->base.current_instruction = E->toriz_var_00;
     E->base.instruction_timer = 1;
@@ -817,67 +765,67 @@ void Torizo_Func_8(void) {  // 0xAAC9C2
     Torizo_D658();
 }
 
-uint16 Torizo_Instr_39(uint16 k, uint16 j) {  // 0xAACACE
+const uint16 *Torizo_Instr_39(uint16 k, const uint16 *jp) {  // 0xAACACE
   if (Get_Torizo(k)->base.y_pos == 375)
-    return j + 2;
+    return jp + 1;
   else
-    return *(uint16 *)RomPtr_AA(j);
+    return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 Torizo_Instr_41(uint16 k, uint16 j) {  // 0xAACADE
+const uint16 *Torizo_Instr_41(uint16 k, const uint16 *jp) {  // 0xAACADE
   Torizo_C298();
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_42(uint16 k, uint16 j) {  // 0xAACAE2
+const uint16 *Torizo_Instr_42(uint16 k, const uint16 *jp) {  // 0xAACAE2
   QueueMusic_Delayed8(5u);
   Enemy_Torizo *E = Get_Torizo(k);
   E->base.x_width = 18;
   E->base.y_height = 48;
   SpawnPalfxObject(addr_stru_8DF75D);
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_48(uint16 k, uint16 j) {  // 0xAACDD7
+const uint16 *Torizo_Instr_48(uint16 k, const uint16 *jp) {  // 0xAACDD7
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_parameter_2 &= ~0x1000u;
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_57(uint16 k, uint16 j) {  // 0xAAD0E9
-  printf("A unknown\n");
+const uint16 *Torizo_Instr_57(uint16 k, const uint16 *jp) {  // 0xAAD0E9
+  //printf("A unknown\n");
   SpawnEnemyProjectileWithRoomGfx(addr_stru_86B1C0, 0);
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_58(uint16 k, uint16 j) {  // 0xAAD0F3
+const uint16 *Torizo_Instr_58(uint16 k, const uint16 *jp) {  // 0xAAD0F3
   int16 v2;
 
   v2 = 34;
   while (*(uint16 *)((char *)enemy_projectile_id + (uint16)v2) != 0xB1C0) {
     v2 -= 2;
     if (v2 < 0)
-      return j + 2;
+      return jp + 1;
   }
-  return *(uint16 *)RomPtr_AA(j);
+  return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 Torizo_Instr_59(uint16 k, uint16 j) {  // 0xAAD17B
+const uint16 *Torizo_Instr_59(uint16 k, const uint16 *jp) {  // 0xAAD17B
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_var_06 &= ~0x8000u;
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_62(uint16 k, uint16 j) {  // 0xAAD187
+const uint16 *Torizo_Instr_62(uint16 k, const uint16 *jp) {  // 0xAAD187
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_var_06 |= 0x8000u;
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_63(uint16 k, uint16 j) {  // 0xAAD1E7
+const uint16 *Torizo_Instr_63(uint16 k, const uint16 *jp) {  // 0xAAD1E7
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_parameter_2 &= ~0x2000u;
-  return j;
+  return jp;
 }
 
 
@@ -892,19 +840,19 @@ void GoldTorizo_Main(void) {  // 0xAAD369
   CallTorizoFunc(E->toriz_var_E | 0xAA0000, cur_enemy_index);
 }
 
-uint16 Torizo_Instr_56(uint16 k, uint16 j) {  // 0xAAD38F
+const uint16 *Torizo_Instr_56(uint16 k, const uint16 *jp) {  // 0xAAD38F
   QueueSfx2_Max6(0x34u);
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_60(uint16 k, uint16 j) {  // 0xAAD397
+const uint16 *Torizo_Instr_60(uint16 k, const uint16 *jp) {  // 0xAAD397
   QueueSfx2_Max6(0x67u);
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_46(uint16 k, uint16 j) {  // 0xAAD39F
+const uint16 *Torizo_Instr_46(uint16 k, const uint16 *jp) {  // 0xAAD39F
   QueueSfx2_Max6(0x48u);
-  return j;
+  return jp;
 }
 
 uint16 Torizo_Func_12(uint16 k) {  // 0xAAD3A7
@@ -930,14 +878,14 @@ void GoldTorizo_Hurt(void) {  // 0xAAD3BA
   }
 }
 
-uint16 Torizo_Instr_47(uint16 k, uint16 j) {  // 0xAAD3E0
+const uint16 *Torizo_Instr_47(uint16 k, const uint16 *jp) {  // 0xAAD3E0
   uint16 v2 = 0;
-  printf("A unknown\n");
+  //printf("A unknown\n");
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_GoldenTorizoSuperMissile, v2);
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_49(uint16 k, uint16 j) {  // 0xAAD3EA
+const uint16 *Torizo_Instr_49(uint16 k, const uint16 *jp) {  // 0xAAD3EA
   if ((Torizo_Func_12(k) & 0x8000u) == 0
       || !(CompareDistToSamus_X(k, 4u) & 1)
       || CompareDistToSamus_X(k, 0x28) & 1
@@ -948,104 +896,103 @@ uint16 Torizo_Instr_49(uint16 k, uint16 j) {  // 0xAAD3EA
       && samus_pose != kPose_7A_FaceL_Springball_Ground
       && samus_pose != kPose_7B_MoveR_Springball_Ground
       && samus_pose != kPose_7C_MoveL_Springball_Ground) {
-    return j + 2;
+    return jp + 1;
   }
   Get_Torizo(k)->toriz_var_09 = 0;
-  return *(uint16 *)RomPtr_AA(j);
+  return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 Torizo_Instr_61(uint16 k, uint16 j) {  // 0xAAD436
-  uint16 *v2 = (uint16 *)RomPtr_AA(j);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_GoldenTorizoEyeBeam, *v2);
-  return j + 2;
+const uint16 *Torizo_Instr_61(uint16 k, const uint16 *jp) {  // 0xAAD436
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_GoldenTorizoEyeBeam, jp[0]);
+  return jp + 1;
 }
 
-uint16 Torizo_Instr_53(uint16 k, uint16 j) {  // 0xAAD445
+const uint16 *Torizo_Instr_53(uint16 k, const uint16 *jp) {  // 0xAAD445
   if ((Torizo_Func_12(k) & 0x8000u) != 0
       || !(CompareDistToSamus_X(k, 0x20) & 1)
       || CompareDistToSamus_X(k, 0x60) & 1
       || (NextRandom() & 0x110) != 0) {
-    return j + 2;
+    return jp + 1;
   }
-  Get_Torizo(k)->toriz_var_00 = j + 2;
-  return *(uint16 *)RomPtr_AA(j);
+  Get_Torizo(k)->toriz_var_00 = INSTR_ADDR_TO_PTR(k, jp + 1);
+  return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 Torizo_Instr_55(uint16 k, uint16 j) {  // 0xAAD474
+const uint16 *Torizo_Instr_55(uint16 k, const uint16 *jp) {  // 0xAAD474
   Enemy_Torizo *E = Get_Torizo(k);
   if (E->base.health > 0x788u || (NextRandom() & 0x102) != 0)
-    return j + 2;
+    return INSTR_RETURN_ADDR(jp + 1);
   E->toriz_var_09 = 0;
-  E->toriz_var_00 = j + 2;
-  return *(uint16 *)RomPtr_AA(j);
+  E->toriz_var_00 = INSTR_ADDR_TO_PTR(k, jp + 1);
+  return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 Torizo_Instr_52(uint16 k, uint16 j) {  // 0xAAD49B
+const uint16 *Torizo_Instr_52(uint16 k, const uint16 *jp) {  // 0xAAD49B
   Enemy_Torizo *E = Get_Torizo(k);
   if (E->base.health <= 0x2A30u || (E->toriz_parameter_2 & 0x2000) == 0)
-    return j + 2;
-  E->toriz_var_00 = j + 2;
-  return *(uint16 *)RomPtr_AA(j);
+    return jp + 1;
+  E->toriz_var_00 = INSTR_ADDR_TO_PTR(k, jp + 1);
+  return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 Torizo_Instr_50(uint16 k, uint16 j) {  // 0xAAD4BA
+const uint16 *Torizo_Instr_50(uint16 k, const uint16 *jp) {  // 0xAAD4BA
   if (!(CompareDistToSamus_X(k, 0x70) & 1))
-    return j + 2;
+    return jp + 1;
   if ((Torizo_Func_12(k) & 0x8000u) != 0)
-    return j + 2;
+    return jp + 1;
   Enemy_Torizo *E = Get_Torizo(k);
   if (E->toriz_var_07 <= 0x168u && ((joypad1_lastkeys & 0x300) == 0 || (NextRandom() & 0x101) == 0))
-    return j + 2;
+    return jp + 1;
   E->toriz_var_09 = 0;
   Torizo_C20A(k);
-  return *(uint16 *)RomPtr_AA(j);
+  return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 Torizo_Instr_43(uint16 k, uint16 j) {  // 0xAAD4F3
-  uint16 v2;
-  printf("A unknown\n"); v2 = 0;
+const uint16 *Torizo_Instr_43(uint16 k, const uint16 *jp) {  // 0xAAD4F3
+  uint16 v2 = 0;
+  //printf("A unknown\n"); v2 = 0;
   SpawnEnemyProjectileWithGfx(v2, k, addr_kEproj_GoldenTorizosChozoOrbs);
-  return j;
+  return jp;
 }
 
-uint16 Torizo_Instr_51(uint16 k, uint16 j) {  // 0xAAD4FD
+const uint16 *Torizo_Instr_51(uint16 k, const uint16 *jp) {  // 0xAAD4FD
   Enemy_Torizo *E = Get_Torizo(k);
   if (E->toriz_var_09 < 8u && (CompareDistToSamus_X(k, 0x20) & 1 || (Torizo_Func_12(k) & 0x8000u) != 0))
-    return j + 2;
+    return jp + 1;
   E->toriz_var_09 = 0;
   Torizo_C22D(k);
-  return *(uint16 *)RomPtr_AA(j);
+  return INSTR_RETURN_ADDR(jp[0]);
 }
 
-uint16 Torizo_Instr_45(uint16 k, uint16 j) {  // 0xAAD526
-  Get_Torizo(k)->toriz_var_00 = j + 4;
+const uint16 *Torizo_Instr_45(uint16 k, const uint16 *jp) {  // 0xAAD526
+  Get_Torizo(k)->toriz_var_00 = INSTR_ADDR_TO_PTR(k, jp + 2);
   if (samus_missiles < 0x20u
       || (((uint8)nmi_frame_counter_word + (samus_x_pos & 1) + (uint8)(samus_x_pos >> 1)) & 8) != 0) {
-    return *(uint16 *)RomPtr_AA(j);
+    return INSTR_RETURN_ADDR(jp[0]);
   } else {
-    return *((uint16 *)RomPtr_AA(j) + 1);
+    return INSTR_RETURN_ADDR(jp[1]);
   }
 }
 
-uint16 Torizo_Instr_54(uint16 k, uint16 j) {  // 0xAAD54D
+const uint16 *Torizo_Instr_54(uint16 k, const uint16 *jp) {  // 0xAAD54D
   R18_ = 0;
-  R20_ = g_word_AAD59A[*(uint16 *)RomPtr_AA(j) >> 1];
+  R20_ = g_word_AAD59A[jp[0] >> 1];
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_var_A = R20_;
   if (Enemy_MoveRight_IgnoreSlopes(k) & 1) {
     E->toriz_var_03 = 0;
     if ((E->toriz_parameter_1 & 0x8000u) != 0)
-      return addr_kTorizo_Ilist_D203;
+      return INSTR_RETURN_ADDR(addr_kTorizo_Ilist_D203);
     else
-      return addr_kTorizo_Ilist_D2BF;
+      return INSTR_RETURN_ADDR(addr_kTorizo_Ilist_D2BF);
   } else {
     EnemyFunc_C8AD(k);
     if (((E->toriz_parameter_1 ^ (samus_x_pos - E->base.x_pos)) & 0x8000u) == 0) {
       if (!E->toriz_var_03)
         E->toriz_var_03 = 16;
-      return j + 2;
+      return jp + 1;
     } else {
-      return j + 2;
+      return jp + 1;
     }
   }
 }
@@ -1198,7 +1145,7 @@ void TourianEntranceStatue_Init(void) {  // 0xAAD7C8
   uint16 v1 = g_off_AAD810[v0->parameter_1 >> 1];
   v0->current_instruction = v1;
   if (!v0->parameter_1) {
-    printf("A unknown\n");
+//    printf("A unknown\n");
     SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueBaseDecoration, 0);
     SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueRidley, 0);
     SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatuePhantoon, 0);
@@ -1210,29 +1157,29 @@ void TourianEntranceStatue_Init(void) {  // 0xAAD7C8
   }
 }
 
-uint16 Shaktool_Instr_2(uint16 k, uint16 j) {  // 0xAAD931
+const uint16 *Shaktool_Instr_2(uint16 k, const uint16 *jp) {  // 0xAAD931
   Enemy_Shaktool *E = Get_Shaktool(k);
   Enemy_Shaktool *EX = Get_Shaktool(E->shakt_var_E + 192);
-  return Shaktool_D956(k, j, EX->shakt_var_D ^ 0x80);
+  return Shaktool_D956(k, jp, EX->shakt_var_D ^ 0x80);
 }
 
-uint16 Shaktool_Instr_3(uint16 k, uint16 j) {  // 0xAAD93F
+const uint16 *Shaktool_Instr_3(uint16 k, const uint16 *jp) {  // 0xAAD93F
   Enemy_Shaktool *E = Get_Shaktool(k);
   Enemy_Shaktool *EX = Get_Shaktool(E->shakt_var_E + 192);
-  return Shaktool_D956(k, j, EX->shakt_var_D);
+  return Shaktool_D956(k, jp, EX->shakt_var_D);
 }
 
-uint16 Shaktool_Instr_4(uint16 k, uint16 j) {  // 0xAAD94A
+const uint16 *Shaktool_Instr_4(uint16 k, const uint16 *jp) {  // 0xAAD94A
   Enemy_Shaktool *E = Get_Shaktool(k);
-  return Shaktool_D956(k, j, *(uint16 *)((char *)&E->shakt_var_A + 1) ^ 0x80);
+  return Shaktool_D956(k, jp, *(uint16 *)((char *)&E->shakt_var_A + 1) ^ 0x80);
 }
 
-uint16 Shaktool_Instr_5(uint16 k, uint16 j) {  // 0xAAD953
+const uint16 *Shaktool_Instr_5(uint16 k, const uint16 *jp) {  // 0xAAD953
   Enemy_Shaktool *E = Get_Shaktool(k);
-  return Shaktool_D956(k, j, *(uint16 *)((char *)&E->shakt_var_A + 1));
+  return Shaktool_D956(k, jp, *(uint16 *)((char *)&E->shakt_var_A + 1));
 }
 
-uint16 Shaktool_D956(uint16 k, uint16 j, uint16 a) {  // 0xAAD956
+const uint16 *Shaktool_D956(uint16 k, const uint16 *jp, uint16 a) {  // 0xAAD956
   int16 v4;
   int16 v8;
 
@@ -1242,7 +1189,7 @@ uint16 Shaktool_D956(uint16 k, uint16 j, uint16 a) {  // 0xAAD956
   v4 = kSinCosTable8bit_Sext[v3 + 64];
   if (v4 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v4;
+  R19_ = v4;
   Enemy_Shaktool *E = Get_Shaktool(k);
   uint16 x_subpos = E->base.x_subpos;
   bool v7 = __CFADD__uint16(R18_, x_subpos);
@@ -1253,26 +1200,26 @@ uint16 Shaktool_D956(uint16 k, uint16 j, uint16 a) {  // 0xAAD956
   v8 = kSinCosTable8bit_Sext[v3];
   if (v8 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v8;
+  R19_ = v8;
   uint16 y_subpos = E->base.y_subpos;
   v7 = __CFADD__uint16(R18_, y_subpos);
   E->base.y_subpos = R18_ + y_subpos;
   E->base.y_pos += R20_ + v7;
-  return j;
+  return jp;
 }
 
-uint16 Shaktool_Instr_6(uint16 k, uint16 j) {  // 0xAAD99F
-  return j;
+const uint16 *Shaktool_Instr_6(uint16 k, const uint16 *jp) {  // 0xAAD99F
+  return jp;
 }
 
 void Shaktool_Func_2(uint16 k) {  // 0xAAD9A0
-  printf("A unknown!\n");
+//  printf("A unknown!\n");
   SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_ShaktoolAttackFrontCircle);
   SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_ShaktoolAttackMiddleCircle);
   SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_ShaktoolAttackBackCircle);
 }
 
-uint16 Shaktool_Instr_1(uint16 k, uint16 j) {  // 0xAAD9BA
+const uint16 *Shaktool_Instr_1(uint16 k, const uint16 *jp) {  // 0xAAD9BA
   uint16 shakt_var_E = Get_Shaktool(k)->shakt_var_E;
   Get_Shaktool(shakt_var_E)->shakt_var_F = g_off_AADEDB[0];
   Get_Shaktool(shakt_var_E + 64)->shakt_var_F = g_off_AADEDB[1];
@@ -1281,7 +1228,7 @@ uint16 Shaktool_Instr_1(uint16 k, uint16 j) {  // 0xAAD9BA
   Get_Shaktool(shakt_var_E + 256)->shakt_var_F = g_off_AADEDB[4];
   Get_Shaktool(shakt_var_E + 320)->shakt_var_F = g_off_AADEDB[5];
   Get_Shaktool(shakt_var_E + 384)->shakt_var_F = g_off_AADEDB[6];
-  return j;
+  return jp;
 }
 
 void Shaktool_DAE5(uint16 k) {  // 0xAADAE5
@@ -1405,7 +1352,7 @@ void Shaktool_DC2A(uint16 k) {  // 0xAADC2A
   v4 = kSine[v3];
   if (v4 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v4;
+  R19_ = v4;
   int v5 = k >> 1;
   bool v6 = __CFADD__uint16(enemy_drawing_queue[v5 + 92], R18_);
   E->base.x_subpos = enemy_drawing_queue[v5 + 92] + R18_;
@@ -1415,7 +1362,7 @@ void Shaktool_DC2A(uint16 k) {  // 0xAADC2A
   v7 = kNegativeCosine[v3];
   if (v7 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v7;
+  R19_ = v7;
   v6 = __CFADD__uint16(enemy_drawing_queue[v5 + 94], R18_);
   E->base.y_subpos = enemy_drawing_queue[v5 + 94] + R18_;
   E->base.y_pos = enemy_drawing_queue[v5 + 93] + v6 + R20_;
@@ -1468,7 +1415,6 @@ void Shaktool_DCD7(uint16 k) {  // 0xAADCD7
 }
 
 void Shaktool_DD25(uint16 k) {  // 0xAADD25
-  char v6; // t0
   int16 v7;
 
   Enemy_Shaktool *E = Get_Shaktool(k);
@@ -1494,10 +1440,7 @@ void Shaktool_DD25(uint16 k) {  // 0xAADD25
     }
     E->shakt_var_D = 0;
     uint16 v5 = CalculateAngleOfEnemyXfromEnemyY(k, E->shakt_var_E);
-    v6 = v5;
-    LOBYTE(v5) = HIBYTE(v5);
-    HIBYTE(v5) = v6;
-    v7 = v5 & 0xFF00;
+    v7 = v5 << 8;
     uint16 v8;
     if ((E->shakt_parameter_1 & 0x8000u) != 0)
       v8 = v7 - 0x4000;
@@ -1570,20 +1513,20 @@ void Shaktool_Shot(void) {  // 0xAADF34
   }
 }
 
-uint16 Shaktool_Instr_9(uint16 k, uint16 j) {  // 0xAAE429
+const uint16 *Shaktool_Instr_9(uint16 k, const uint16 *jp) {  // 0xAAE429
   fx_timer = 32;
   fx_y_vel = 64;
-  return j;
+  return jp;
 }
 
-uint16 Shaktool_Instr_11(uint16 k, uint16 j) {  // 0xAAE436
+const uint16 *Shaktool_Instr_11(uint16 k, const uint16 *jp) {  // 0xAAE436
   fx_base_y_pos = 722;
-  return j;
+  return jp;
 }
 
-uint16 Shaktool_Instr_10(uint16 k, uint16 j) {  // 0xAAE43D
+const uint16 *Shaktool_Instr_10(uint16 k, const uint16 *jp) {  // 0xAAE43D
   CallSomeSamusCode(1u);
-  return j;
+  return jp;
 }
 
 void sub_AAE445(uint16 k) {  // 0xAAE445
@@ -1594,33 +1537,33 @@ void sub_AAE445(uint16 k) {  // 0xAAE445
   }
 }
 
-uint16 Shaktool_Instr_8(uint16 k, uint16 j) {  // 0xAAE57F
+const uint16 *Shaktool_Instr_8(uint16 k, const uint16 *jp) {  // 0xAAE57F
   QueueSfx2_Max6(0x1Cu);
-  return j;
+  return jp;
 }
 
-uint16 Shaktool_Instr_13(uint16 k, uint16 j) {  // 0xAAE587
+const uint16 *Shaktool_Instr_13(uint16 k, const uint16 *jp) {  // 0xAAE587
   QueueSfx2_Max6(0x4Bu);
-  return j;
+  return jp;
 }
 
-uint16 Shaktool_Instr_12(uint16 k, uint16 j) {  // 0xAAE58F
+const uint16 *Shaktool_Instr_12(uint16 k, const uint16 *jp) {  // 0xAAE58F
   Enemy_Shaktool *e = Get_Shaktool(k);
-  uint16 arg = *(uint16 *)RomPtr_AA(j);
+  uint16 arg = jp[0];
 
   CalculateBlockContainingPixelPos(e->base.x_pos + arg, e->base.y_pos + 28);
   if ((level_data[room_width_in_blocks + cur_block_index] & 0xF000) == 0xA000) {
     SpawnPLM(addr_kPlmHeader_D113);
     SpawnEnemyProjectileWithRoomGfx(addr_kEproj_WreckedShipChozoSpikeFootsteps_1, arg);
   }
-  return j + 2;
+  return jp + 1;
 }
 
-uint16 Shaktool_Instr_7(uint16 k, uint16 j) {  // 0xAAE5D8
+const uint16 *Shaktool_Instr_7(uint16 k, const uint16 *jp) {  // 0xAAE5D8
   int16 v4;
   int16 v5;
 
-  uint16 v2 = *(uint16 *)RomPtr_AA(j);
+  uint16 v2 = jp[0];
   Enemy_Shaktool *E = Get_Shaktool(k);
   E->shakt_var_C = v2;
   R18_ = 0;
@@ -1628,23 +1571,23 @@ uint16 Shaktool_Instr_7(uint16 k, uint16 j) {  // 0xAAE5D8
   v4 = g_word_AAE630[E->shakt_var_C >> 1];
   if (v4 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v4;
+  R19_ = v4;
   Enemy_MoveRight_IgnoreSlopes(k);
   R18_ = 0;
   R20_ = 0;
   v5 = abs16(g_word_AAE630[E->shakt_var_C >> 1]);
   if (v5 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v5;
+  R19_ = v5;
   Enemy_MoveDown(k);
   EnemyFunc_C8AD(k);
   int v6 = E->shakt_var_C >> 1;
   samus_x_pos = g_word_AAE670[v6] + E->base.x_pos;
   samus_y_pos = g_word_AAE6B0[v6] + E->base.y_pos;
-  return j + 2;
+  return jp + 1;
 }
 
-uint16 Shaktool_Instr_14(uint16 k, uint16 j) {  // 0xAAE6F0
+const uint16 *Shaktool_Instr_14(uint16 k, const uint16 *jp) {  // 0xAAE6F0
   CallSomeSamusCode(1u);
   *(uint16 *)&scrolls[6] = 0;
   *(uint16 *)&scrolls[8] = 0;
@@ -1652,7 +1595,7 @@ uint16 Shaktool_Instr_14(uint16 k, uint16 j) {  // 0xAAE6F0
   *(uint16 *)&scrolls[13] = 1;
   static const SpawnHardcodedPlmArgs unk_AAE711 = { 0x17, 0x1d, 0xd6fc };
   SpawnHardcodedPlm(&unk_AAE711);
-  return j;
+  return jp;
 }
 
 void N00bTubeCracks_Init(void) {  // 0xAAE716

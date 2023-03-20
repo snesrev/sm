@@ -5,17 +5,42 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
-#define kScreenShakeOffsets ((uint16*)RomPtr(0x86846b))
-#define kAlignYPos_Tab0 ((uint8*)RomPtr(0x948b2b))
-#define kAlignPos_Tab1 ((uint8*)RomPtr(0x94892b))
-#define off_868A75 ((uint16*)RomPtr(0x868a75))
-#define word_869105 ((uint16*)RomPtr(0x869105))
-#define off_86A64D ((uint16*)RomPtr(0x86a64d))
-#define stru_86BB50 (*(EnemyProjectileDef*)RomPtr(0x86bb50))
-#define off_86BB1E ((uint16*)RomPtr(0x86bb1e))
-#define kCommonEnemySpeeds_Quadratic_Copy ((uint16*)RomPtr(0xa0cbc7))
-#define off_86C040 ((uint16*)RomPtr(0x86c040))
-#define off_86C929 ((uint16*)RomPtr(0x86c929))
+
+#define kScreenShakeOffsets ((uint16*)RomFixedPtr(0x86846b))
+#define kAlignYPos_Tab0 ((uint8*)RomFixedPtr(0x948b2b))
+#define kAlignPos_Tab1 ((uint8*)RomFixedPtr(0x94892b))
+#define off_868A75 ((uint16*)RomFixedPtr(0x868a75))
+#define word_869105 ((uint16*)RomFixedPtr(0x869105))
+#define off_86A64D ((uint16*)RomFixedPtr(0x86a64d))
+#define stru_86BB50 (*(EnemyProjectileDef*)RomFixedPtr(0x86bb50))
+#define off_86BB1E ((uint16*)RomFixedPtr(0x86bb1e))
+#define kCommonEnemySpeeds_Quadratic_Copy ((uint16*)RomFixedPtr(0xa0cbc7))
+#define off_86C040 ((uint16*)RomFixedPtr(0x86c040))
+#define off_86C929 ((uint16*)RomFixedPtr(0x86c929))
+#define CHECK_locret_868728(i) (unk_868729[i] & 0x80 ? -1 : 0)
+#define g_word_869059 ((uint16*)RomFixedPtr(0x869059))
+#define off_86A2E2 ((uint16*)RomFixedPtr(0x86a2e2))
+#define kEprojInit_BombTorizoStatueBreaking_InstrList ((uint16*)RomFixedPtr(0x86a7ab))
+#define off_86B209 ((uint16*)RomFixedPtr(0x86b209))
+#define kEproj_MotherBrainRoomTurrets_DirectionIndexes ((uint16*)RomFixedPtr(0x86bee1))
+#define kEproj_MotherBrainRoomTurrets_AllowedRotations ((uint16*)RomFixedPtr(0x86bec9))
+#define kEproj_MotherBrainRoomTurrets_InstrLists ((uint16*)RomFixedPtr(0x86beb9))
+#define g_off_86C040 ((uint16*)RomFixedPtr(0x86c040))
+#define kEprojInit_MotherBrainGlassShatteringShard_InstrPtrs ((uint16*)RomFixedPtr(0x86ce41))
+#define kEprojInit_N00bTubeShards_InstrPtrs ((uint16*)RomFixedPtr(0x86d760))
+#define off_86D96A ((uint16*)RomFixedPtr(0x86d96a))
+#define kSporeMovementData ((uint8*)RomFixedPtr(0x86dd6c))
+#define word_86DEB6 ((uint16*)RomFixedPtr(0x86deb6))
+#define off_86E42C ((uint16*)RomFixedPtr(0x86e42c))
+#define word_86E47E ((uint16*)RomFixedPtr(0x86e47e))
+#define kEprojInit_BotwoonsBody_InstrLists ((uint16*)RomFixedPtr(0x86e9f1))
+#define off_86EF04 ((uint16*)RomFixedPtr(0x86ef04))
+#define off_86EFD5 ((uint16*)RomFixedPtr(0x86efd5))
+#define kEnemyDef_F3D3 (*(EnemyDef_B2*)RomFixedPtr(0xa0f3d3))
+#define g_word_86F3D4 ((uint16*)RomFixedPtr(0x86f3d4))  // bug:: oob read
+
+
+
 
 void EnableEnemyProjectiles(void) {  // 0x868000
   enemy_projectile_enable_flag |= 0x8000u;
@@ -484,7 +509,7 @@ void EprojRunOne(uint16 k) {  // 0x868125
   if (enemy_projectile_instr_timers[v2]-- == 1) {
     uint16 v4 = enemy_projectile_instr_list_ptr[v2], v6;
     while (1) {
-      uint16 *v5 = (uint16 *)RomPtr_86(v4);
+      const uint16 *v5 = (const uint16 *)RomPtr_86(v4);
       v6 = *v5;
       if ((*v5 & 0x8000u) == 0)
         break;
@@ -532,7 +557,7 @@ void CallEprojFunc(uint32 ea, uint32 k) {
 }
 
 uint16 EprojInstr_CallFunc(uint16 k, uint16 j) {  // 0x868171
-  uint8 *v2 = RomPtr_86(j);
+  const uint8 *v2 = RomPtr_86(j);
   copy24((LongPtr *)&R18_, (LongPtr *)v2);
 
   uint32 ea = Load24((LongPtr *)&R18_);
@@ -580,13 +605,13 @@ uint16 EprojInstr_MoveRandomlyWithinRadius(uint16 k, uint16 j) {  // 0x8681DF
   R18_ = NextRandom();
   do {
     Random = NextRandom();
-    uint8 *v3 = RomPtr_86(j);
+    const uint8 *v3 = RomPtr_86(j);
     v4 = (*v3 & Random) - v3[1];
   } while (v4 < 0);
   enemy_projectile_x_pos[k >> 1] += sign16(R18_) ? -(uint8)v4 : (uint8)v4;
   do {
     LOBYTE(v6) = NextRandom();
-    uint8 *v5 = RomPtr_86(j);
+    const uint8 *v5 = RomPtr_86(j);
     LOBYTE(v6) = (v5[2] & v6) - v5[3];
   } while ((v6 & 0x80) != 0);
   v6 = (uint8)v6;
@@ -670,10 +695,10 @@ uint16 EprojInstr_CalculateDirectionTowardsSamus(uint16 k, uint16 j) {  // 0x868
 }
 
 uint16 EprojInstr_WriteColorsToPalette(uint16 k, uint16 j) {  // 0x8682D5
-  uint8 *v2 = RomPtr_86(j);
-  uint16 v3 = *((uint16 *)v2 + 1);
+  const uint8 *v2 = RomPtr_86(j);
+  uint16 v3 = GET_WORD(v2 + 2);
   R18_ = v2[4];
-  uint16 v4 = *(uint16 *)v2;
+  uint16 v4 = GET_WORD(v2);
   do {
     palette_buffer[v3 >> 1] = *(uint16 *)RomPtr_86(v4);
     v4 += 2;
@@ -684,91 +709,91 @@ uint16 EprojInstr_WriteColorsToPalette(uint16 k, uint16 j) {  // 0x8682D5
 }
 
 uint16 EprojInstr_QueueMusic(uint16 k, uint16 j) {  // 0x8682FD
-  uint8 *v2 = RomPtr_86(j);
+  const uint8 *v2 = RomPtr_86(j);
   QueueMusic_Delayed8(*v2);
   return j + 1;
 }
 
 uint16 EprojInstr_QueueSfx1_Max6(uint16 k, uint16 j) {  // 0x868309
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx1_Max6(*v2);
   return j + 1;
 }
 uint16 EprojInstr_QueueSfx2_Max6(uint16 k, uint16 j) {  // 0x868312
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx2_Max6(*v2);
   return j + 1;
 }
 uint16 EprojInstr_QueueSfx3_Max6(uint16 k, uint16 j) {  // 0x86831B
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx3_Max6(*v2);
   return j + 1;
 }
 uint16 EprojInstr_QueueSfx1_Max15(uint16 k, uint16 j) {  // 0x868324
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx1_Max15(*v2);
   return j + 1;
 }
 
 uint16 EprojInstr_QueueSfx2_Max15(uint16 k, uint16 j) {  // 0x86832D
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx2_Max15(*v2);
   return j + 1;
 }
 
 uint16 EprojInstr_QueueSfx3_Max15(uint16 k, uint16 j) {  // 0x868336
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx3_Max15(*v2);
   return j + 1;
 }
 
 uint16 EprojInstr_QueueSfx1_Max3(uint16 k, uint16 j) {  // 0x86833F
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx1_Max3(*v2);
   return j + 1;
 }
 
 uint16 EprojInstr_QueueSfx2_Max3(uint16 k, uint16 j) {  // 0x868348
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx2_Max3(*v2);
   return j + 1;
 }
 
 uint16 EprojInstr_QueueSfx3_Max3(uint16 k, uint16 j) {  // 0x868351
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx3_Max3(*v2);
   return j + 1;
 }
 
 uint16 EprojInstr_QueueSfx1_Max9(uint16 k, uint16 j) {  // 0x86835A
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx1_Max9(*v2);
   return j + 1;
 }
 
 uint16 EprojInstr_QueueSfx2_Max9(uint16 k, uint16 j) {  // 0x868363
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx2_Max9(*v2);
   return j + 1;
 }
 
 uint16 EprojInstr_QueueSfx3_Max9(uint16 k, uint16 j) {  // 0x86836C
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx3_Max9(*v2);
   return j + 1;
 }
 uint16 EprojInstr_QueueSfx1_Max1(uint16 k, uint16 j) {  // 0x868375
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx1_Max1(*v2);
   return j + 1;
 }
 uint16 EprojInstr_QueueSfx2_Max1(uint16 k, uint16 j) {  // 0x86837E
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx2_Max1(*v2);
   return j + 1;
 }
 uint16 EprojInstr_QueueSfx3_Max1(uint16 k, uint16 j) {  // 0x868387
-  uint16 *v2 = (uint16 *)RomPtr_86(j);
+  const uint16 *v2 = (uint16 *)RomPtr_86(j);
   QueueSfx3_Max1(*v2);
   return j + 1;
 }
@@ -842,14 +867,14 @@ uint8 EprojColl_Unknown8536(void) {  // 0x86853C
   if (BTS[cur_block_index]) {
     uint16 v1;
     if ((BTS[cur_block_index] & 0x80) != 0) {
-      temp_collision_DD4 = BTS[cur_block_index] | 0xFF00;
+      uint16 temp_collision_DD4 = BTS[cur_block_index] | 0xFF00;
       v1 = cur_block_index;
       do {
         v1 -= room_width_in_blocks;
         ++temp_collision_DD4;
       } while (temp_collision_DD4);
     } else {
-      temp_collision_DD4 = BTS[cur_block_index];
+      uint16 temp_collision_DD4 = BTS[cur_block_index];
       v1 = cur_block_index;
       do {
         v1 += room_width_in_blocks;
@@ -892,19 +917,18 @@ static const uint8 unk_868729[20] = {  // 0x8685C2
 };
 
 
-#define CHECK_locret_868728(i) (unk_868729[i] & 0x80 ? -1 : 0)
 
 uint8 EprojColl_85C2(uint16 a, uint16 k) {
 
-  temp_collision_DD4 = 4 * a;
-  temp_collision_DD6 = BTS[k] >> 6;
+  uint16 temp_collision_DD4 = 4 * a;
+  uint16 temp_collision_DD6 = BTS[k] >> 6;
   uint16 v2 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R34 & 8) >> 3));
-  if (!R32) {
+  if (!R32_) {
     int v3 = enemy_projectile_index >> 1;
-    if ((((uint8)enemy_projectile_y_pos[v3] - (uint8)g_word_7E001E) & 8) != 0
+    if ((((uint8)enemy_projectile_y_pos[v3] - (uint8)R30_) & 8) != 0
         || CHECK_locret_868728(v2) >= 0) {
       uint16 v4 = v2 ^ 2;
-      if ((((uint8)g_word_7E001E + (uint8)enemy_projectile_y_pos[v3] - 1) & 8) == 0
+      if ((((uint8)R30_ + (uint8)enemy_projectile_y_pos[v3] - 1) & 8) == 0
           || CHECK_locret_868728(v4) >= 0) {
         return 0;
       }
@@ -912,15 +936,15 @@ uint8 EprojColl_85C2(uint16 a, uint16 k) {
     goto LABEL_17;
   }
   if (!R26_) {
-    if ((((uint8)g_word_7E001E + (uint8)enemy_projectile_y_pos[enemy_projectile_index >> 1] - 1) & 8) == 0) {
+    if ((((uint8)R30_ + (uint8)enemy_projectile_y_pos[enemy_projectile_index >> 1] - 1) & 8) == 0) {
       if (CHECK_locret_868728(v2) >= 0)
         return 0;
       goto LABEL_17;
     }
     goto LABEL_14;
   }
-  if (R26_ != R32
-      || (((uint8)enemy_projectile_y_pos[enemy_projectile_index >> 1] - (uint8)g_word_7E001E) & 8) == 0) {
+  if (R26_ != R32_
+      || (((uint8)enemy_projectile_y_pos[enemy_projectile_index >> 1] - (uint8)R30_) & 8) == 0) {
 LABEL_14:
     if (CHECK_locret_868728(v2) < 0)
       goto LABEL_17;
@@ -942,10 +966,10 @@ LABEL_17:;
 uint8 EprojColl_8676(uint16 a, uint16 k, uint16 j) {  // 0x868676
   uint16 v2 = enemy_projectile_index;
 
-  temp_collision_DD4 = 4 * a;
-  temp_collision_DD6 = BTS[k] >> 6;
+  uint16 temp_collision_DD4 = 4 * a;
+  uint16 temp_collision_DD6 = BTS[k] >> 6;
   uint16 v3 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R34 & 8) >> 2));
-  if (!R32) {
+  if (!R32_) {
     printf("Y unknown!\n");
     int v4 = v2 >> 1;
     if ((((uint8)enemy_projectile_x_pos[v4] - (uint8)R28_) & 8) != 0
@@ -966,7 +990,7 @@ uint8 EprojColl_8676(uint16 a, uint16 k, uint16 j) {  // 0x868676
     }
     goto LABEL_14;
   }
-  if (R26_ != R32 || (((uint8)enemy_projectile_x_pos[enemy_projectile_index >> 1] - (uint8)R28_) & 8) == 0) {
+  if (R26_ != R32_ || (((uint8)enemy_projectile_x_pos[enemy_projectile_index >> 1] - (uint8)R28_) & 8) == 0) {
 LABEL_14:
     if (CHECK_locret_868728(v3) < 0)
       goto LABEL_17;
@@ -978,9 +1002,9 @@ LABEL_17:;
   uint16 v8;
   enemy_projectile_y_subpos[v7] = 0;
   if ((R20_ & 0x8000u) != 0)
-    v8 = g_word_7E001E + (R34 | 7) + 1;
+    v8 = R30_ + (R34 | 7) + 1;
   else
-    v8 = (R34 & 0xFFF8) - g_word_7E001E;
+    v8 = (R34 & 0xFFF8) - R30_;
   enemy_projectile_y_pos[v7] = v8;
   return 1;
 }
@@ -1008,8 +1032,8 @@ uint8 EprojColl_874E(void) {  // 0x86874E
     int v10 = v0 >> 1;
     v11 = enemy_projectile_x_pos[v10] >> 4;
     if (v11 == mod) {
-      temp_collision_DD4 = ((uint8)R24_ - (uint8)g_word_7E001E) & 0xF ^ 0xF;
-      temp_collision_DD6 = 16 * (BTS[v9] & 0x1F);
+      uint16 temp_collision_DD4 = ((uint8)R24_ - (uint8)R30_) & 0xF ^ 0xF;
+      uint16 temp_collision_DD6 = 16 * (BTS[v9] & 0x1F);
       v12 = BTS[v9] << 8;
       if (v12 < 0
           && ((v12 & 0x4000) != 0 ? (v13 = enemy_projectile_x_pos[v10] ^ 0xF) : (v13 = enemy_projectile_x_pos[v10]),
@@ -1032,8 +1056,8 @@ uint8 EprojColl_874E(void) {  // 0x86874E
     int v2 = v0 >> 1;
     v3 = enemy_projectile_x_pos[v2] >> 4;
     if (v3 == mod) {
-      temp_collision_DD4 = ((uint8)g_word_7E001E + (uint8)R24_ - 1) & 0xF;
-      temp_collision_DD6 = 16 * (BTS[v1] & 0x1F);
+      uint16 temp_collision_DD4 = ((uint8)R30_ + (uint8)R24_ - 1) & 0xF;
+      uint16 temp_collision_DD6 = 16 * (BTS[v1] & 0x1F);
       v5 = BTS[v1] << 8;
       if (v5 >= 0
           && ((v5 & 0x4000) != 0 ? (v6 = enemy_projectile_x_pos[v2] ^ 0xF) : (v6 = enemy_projectile_x_pos[v2]),
@@ -1117,13 +1141,13 @@ uint8 EnemyProjectileBlockCollisition_Horiz(uint16 k) {  // 0x8688B6
   v2 = enemy_projectile_x_vel[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
-  g_word_7E001E = HIBYTE(enemy_projectile_radius[v1]);
+  R19_ = v2;
+  R30_ = HIBYTE(enemy_projectile_radius[v1]);
   R28_ = LOBYTE(enemy_projectile_radius[v1]);
-  R26_ = (enemy_projectile_y_pos[v1] - g_word_7E001E) & 0xFFF0;
-  R26_ = (uint16)(g_word_7E001E + enemy_projectile_y_pos[v1] - 1 - R26_) >> 4;
-  R32 = R26_;
-  uint16 prod = Mult8x8((uint16)(enemy_projectile_y_pos[v1] - g_word_7E001E) >> 4, room_width_in_blocks);
+  R26_ = (enemy_projectile_y_pos[v1] - R30_) & 0xFFF0;
+  R26_ = (uint16)(R30_ + enemy_projectile_y_pos[v1] - 1 - R26_) >> 4;
+  R32_ = R26_;
+  uint16 prod = Mult8x8((uint16)(enemy_projectile_y_pos[v1] - R30_) >> 4, room_width_in_blocks);
   uint16 v3 = (__PAIR32__(R20_, R18_) + __PAIR32__(enemy_projectile_x_pos[v1], enemy_projectile_1A27[v1])) >> 16;
   R22_ = R18_ + enemy_projectile_1A27[v1];
   R24_ = v3;
@@ -1168,20 +1192,20 @@ uint8 EnemyProjectileBlockCollisition_Vertical(uint16 k) {  // 0x86897B
   v2 = enemy_projectile_y_vel[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
-  g_word_7E001E = HIBYTE(enemy_projectile_radius[v1]);
+  R19_ = v2;
+  R30_ = HIBYTE(enemy_projectile_radius[v1]);
   R28_ = LOBYTE(enemy_projectile_radius[v1]);
   R26_ = (enemy_projectile_x_pos[v1] - R28_) & 0xFFF0;
   R26_ = (uint16)(R28_ + enemy_projectile_x_pos[v1] - 1 - R26_) >> 4;
-  R32 = R26_;
+  R32_ = R26_;
   uint16 v3 = (__PAIR32__(R20_, R18_) + __PAIR32__(enemy_projectile_y_pos[v1], enemy_projectile_y_subpos[v1])) >> 16;
   R22_ = R18_ + enemy_projectile_y_subpos[v1];
   R24_ = v3;
   uint16 v4;
   if ((R20_ & 0x8000u) != 0)
-    v4 = v3 - g_word_7E001E;
+    v4 = v3 - R30_;
   else
-    v4 = g_word_7E001E + v3 - 1;
+    v4 = R30_ + v3 - 1;
   R34 = v4;
   uint16 prod = Mult8x8(v4 >> 4, room_width_in_blocks);
   v5 = (uint16)(enemy_projectile_x_pos[v1] - R28_) >> 4;
@@ -1196,12 +1220,12 @@ uint8 EnemyProjectileBlockCollisition_Vertical(uint16 k) {  // 0x86897B
   int v9 = k >> 1;
   enemy_projectile_y_subpos[v9] = 0;
   if ((R20_ & 0x8000u) != 0) {
-    uint16 v11 = g_word_7E001E + (R34 | 0xF) + 1;
+    uint16 v11 = R30_ + (R34 | 0xF) + 1;
     if (v11 < enemy_projectile_y_pos[v9] || v11 == enemy_projectile_y_pos[v9])
       enemy_projectile_y_pos[v9] = v11;
     return 1;
   } else {
-    uint16 v10 = (R34 & 0xFFF0) - g_word_7E001E;
+    uint16 v10 = (R34 & 0xFFF0) - R30_;
     if (v10 >= enemy_projectile_y_pos[v9])
       enemy_projectile_y_pos[v9] = v10;
     return 1;
@@ -1444,7 +1468,6 @@ void EprojInit_CrocomireProjectile(uint16 j) {  // 0x869023
 }
 
 static const int16 word_869059[9] = { -16, 0, 32, -16, 0, 32, -16, 0, 32 }; // bug: oob read
-#define g_word_869059 ((uint16*)RomPtr(0x869059))
 void EprojPreInstr_CrocomireProjectile(uint16 k) {  // 0x86906B
   EnemyProjectileBlockCollisition_Horiz(k);
   enemy_projectile_gfx_idx[0] = 2560;
@@ -1600,12 +1623,13 @@ uint16 MoveEprojWithVelocityX(uint16 k) {  // 0x869311
 
 void SetAreaDependentEprojPropertiesEx(uint16 k, uint16 j) {  // 0x86932F
   uint16 v2;
+  uint16 *p = (uint16 *)RomPtr_86(k);
   if (area_index == 2) {
-    v2 = *((uint16 *)RomPtr_86(k) + 1);
+    v2 = p[1];
   } else if (area_index == 5) {
-    v2 = *((uint16 *)RomPtr_86(k) + 2);
+    v2 = p[2];
   } else {
-    v2 = *(uint16 *)RomPtr_86(k);
+    v2 = p[0];
   }
   enemy_projectile_properties[j >> 1] = v2;
 }
@@ -2342,7 +2366,6 @@ void EprojPreInstr_PirateClawThrownRight(uint16 k) {  // 0x86A124
 }
 
 static const int16 word_86A2D6[6] = { 64, 72, 80, -64, -72, -80 };
-#define off_86A2E2 ((uint16*)RomPtr(0x86a2e2))
 
 void EprojInit_A379(uint16 j) {  // 0x86A2A1
   int v1 = j >> 1;
@@ -2494,7 +2517,6 @@ void EprojInit_A977(uint16 j) {  // 0x86A6C7
 
 static const int16 kEprojInit_BombTorizoExplosiveSwipe_Tab0[11] = { -30, -40, -47, -31, -21, -1, -28, -43, -48, -31, -21 };
 static const int16 kEprojInit_BombTorizoExplosiveSwipe_Tab1[11] = { -52, -28, -11, 9, 21, 20, -52, -27, -10, 9, 20 };
-#define kEprojInit_BombTorizoStatueBreaking_InstrList ((uint16*)RomPtr(0x86a7ab))
 static const int16 kEprojInit_BombTorizoStatueBreaking_Xpos[16] = { 8, 0x18, -8, 8, 0x18, -8, 8, 0x18, 8, -8, 0x18, 8, -8, 0x18, 8, -8 };
 static const int16 kEprojInit_BombTorizoStatueBreaking_Ypos[8] = { -8, -8, 8, 8, 8, 0x18, 0x18, 0x18 };
 static const int16 kEprojInit_BombTorizoStatueBreaking_Yvel[8] = { 256, 256, 256, 256, 256, 256, 256, 256 };
@@ -2661,7 +2683,7 @@ void EprojPreInstr_AB07(uint16 k) {  // 0x86AA8C
   uint16 v2 = 8 * (samus_x_pos - enemy_projectile_x_pos[v1]);
   if (((samus_x_pos - enemy_projectile_x_pos[v1]) & 0x1000) != 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   bool v3 = __CFADD__uint16(enemy_projectile_1A27[v1], R18_);
   enemy_projectile_1A27[v1] += R18_;
   enemy_projectile_x_pos[v1] += v3 + R20_;
@@ -2670,7 +2692,7 @@ void EprojPreInstr_AB07(uint16 k) {  // 0x86AA8C
   uint16 v4 = 8 * (samus_y_pos - 36 - enemy_projectile_y_pos[v1]);
   if (((samus_y_pos - 36 - enemy_projectile_y_pos[v1]) & 0x1000) != 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v4;
+  R19_ = v4;
   v3 = __CFADD__uint16(enemy_projectile_y_subpos[v1], R18_);
   enemy_projectile_y_subpos[v1] += R18_;
   enemy_projectile_y_pos[v1] += v3 + R20_;
@@ -2678,19 +2700,15 @@ void EprojPreInstr_AB07(uint16 k) {  // 0x86AA8C
 
 uint16 EprojInstr_SpawnEnemyDrops(uint16 k, uint16 j) {  // 0x86AB8A
   int v2 = k >> 1;
-  uint16 v3;
   R18_ = enemy_projectile_x_pos[v2];
   R20_ = enemy_projectile_y_pos[v2];
-  if (area_index)
-    v3 = *((uint16 *)RomPtr_86(j) + 1);
-  else
-    v3 = *(uint16 *)RomPtr_86(j);
-  SpawnEnemyDrops(v3, k);
+  uint16 *p = (uint16 *)RomPtr_86(j);
+  SpawnEnemyDrops(area_index ? p[1] : p[0], k);
   return j + 4;
 }
 
 void Eproj_InitXYVelRandom(uint16 j, uint16 k) {  // 0x86ABAE
-  uint16 *v2 = (uint16 *)RomPtr_86(k);
+  const uint16 *v2 = (const uint16 *)RomPtr_86(k);
   int v3 = j >> 1;
   enemy_projectile_instr_list_ptr[v3] = *v2;
   enemy_projectile_x_pos[v3] = v2[1] + R18_;
@@ -2778,15 +2796,16 @@ uint16 EprojInstr_GotoDependingOnXDirection(uint16 k, uint16 j) {  // 0x86AD92
   v3 = enemy_projectile_x_vel[v2];
   if (v3 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v3;
+  R19_ = v3;
   uint16 v4 = enemy_projectile_1A27[v2];
   bool v5 = __CFADD__uint16(R18_, v4);
   enemy_projectile_1A27[v2] = R18_ + v4;
   enemy_projectile_x_pos[v2] += R20_ + v5;
+  uint16 *t = (uint16 *)RomPtr_86(j);
   if ((enemy_projectile_x_vel[v2] & 0x8000u) == 0)
-    return *((uint16 *)RomPtr_86(j) + 1);
+    return t[1];
   else
-    return *(uint16 *)RomPtr_86(j);
+    return t[0];
 }
 
 void EprojInit_TorizoSonicBoom(uint16 j) {  // 0x86AE15
@@ -2972,7 +2991,6 @@ uint16 sub_86B183(uint16 k, uint16 j) {  // 0x86B183
 }
 
 static const int16 word_86B205[2] = { -0x1e, 0x1e };
-#define off_86B209 ((uint16*)RomPtr(0x86b209))
 
 void EprojInit_GoldenTorizoSuperMissile(uint16 j) {  // 0x86B1CE
   uint16 v4;
@@ -3331,7 +3349,7 @@ void EprojPreInstr_TourianStatueUnlockingParticle(uint16 k) {  // 0x86B982
   v2 = enemy_projectile_x_vel[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   uint16 v3 = enemy_projectile_1A27[v1];
   bool v4 = __CFADD__uint16(R18_, v3);
   enemy_projectile_1A27[v1] = R18_ + v3;
@@ -3342,7 +3360,7 @@ void EprojPreInstr_TourianStatueUnlockingParticle(uint16 k) {  // 0x86B982
   v5 = enemy_projectile_y_vel[v1];
   if (v5 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v5;
+  R19_ = v5;
   uint16 v6 = enemy_projectile_y_subpos[v1];
   v4 = __CFADD__uint16(R18_, v6);
   enemy_projectile_y_subpos[v1] = R18_ + v6;
@@ -3366,7 +3384,7 @@ void EprojPreInstr_TourianStatueSoul(uint16 k) {  // 0x86B9FD
   v2 = enemy_projectile_y_vel[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   uint16 v3 = enemy_projectile_y_subpos[v1];
   bool v4 = __CFADD__uint16(R18_, v3);
   enemy_projectile_y_subpos[v1] = R18_ + v3;
@@ -3571,9 +3589,6 @@ void EprojPreInstr_BE12(uint16 k) {  // 0x86BE12
   }
 }
 
-#define kEproj_MotherBrainRoomTurrets_DirectionIndexes ((uint16*)RomPtr(0x86bee1))
-#define kEproj_MotherBrainRoomTurrets_AllowedRotations ((uint16*)RomPtr(0x86bec9))
-#define kEproj_MotherBrainRoomTurrets_InstrLists ((uint16*)RomPtr(0x86beb9))
 static const int16 kEprojInit_MotherBrainRoomTurrets_X[12] = { 0x398, 0x348, 0x328, 0x2d8, 0x288, 0x268, 0x218, 0x1c8, 0x1a8, 0x158, 0x108, 0xe8 };
 static const int16 EprojInit_MotherBrainRoomTurrets_Y[12] = { 0x30, 0x40, 0x40, 0x30, 0x40, 0x40, 0x30, 0x40, 0x40, 0x30, 0x40, 0x40 };
 
@@ -3614,7 +3629,6 @@ void EprojInit_MotherBrainRoomTurretBullets(uint16 j) {  // 0x86BF59
   enemy_projectile_y_pos[v1] = R20_ + enemy_projectile_y_pos[v4];
 }
 
-#define g_off_86C040 ((uint16*)RomPtr(0x86c040))
 
 void EprojPreInstr_MotherBrainRoomTurrets(uint16 k) {  // 0x86BFDF
   if (Eproj_MotherBrainRoomTurretBullets_CheckIfTurretOnScreen(k) & 1) {
@@ -3826,7 +3840,7 @@ uint16 Math_MultByCos(uint16 a) {  // 0x86C272
 }
 
 uint16 Math_MultBySinCos(uint16 a) {  // 0x86C27A
-  R46 = kSinCosTable8bit_Sext[((uint16)((2 * a) & 0x1FE) >> 1) + 64];
+  R46 = kSinCosTable8bit_Sext[(a & 0xff) + 64];
   R40 = abs16(R46);
   Math_Mult16U();
   uint16 r = *(uint16 *)((char *)&R42 + 1);
@@ -4269,7 +4283,6 @@ void MotherBrainTubeFallingFunc_Falling(uint16 k) {  // 0x86CC08
   }
 }
 
-#define kEprojInit_MotherBrainGlassShatteringShard_InstrPtrs ((uint16*)RomPtr(0x86ce41))
 static const int16 kEprojInit_MotherBrainGlassShatteringShard_X[3] = { 8, -40, -16 };
 static const int16 kEprojInit_MotherBrainGlassShatteringShard_Y[3] = { 32, 32, 32 };
 
@@ -4308,7 +4321,7 @@ void EprojPreInstr_MotherBrainGlassShatteringShard(uint16 k) {  // 0x86CE9B
   v2 = enemy_projectile_x_vel[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   uint16 v3 = enemy_projectile_1A27[v1];
   bool v4 = __CFADD__uint16(R18_, v3);
   enemy_projectile_1A27[v1] = R18_ + v3;
@@ -4318,7 +4331,7 @@ void EprojPreInstr_MotherBrainGlassShatteringShard(uint16 k) {  // 0x86CE9B
   v5 = enemy_projectile_y_vel[v1];
   if (v5 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v5;
+  R19_ = v5;
   uint16 v6 = enemy_projectile_y_subpos[v1];
   v4 = __CFADD__uint16(R18_, v6);
   enemy_projectile_y_subpos[v1] = R18_ + v6;
@@ -4646,7 +4659,6 @@ static const int16 kEprojInit_N00bTubeShards_X[10] = { -56, -64, -20, -40, -64, 
 static const int16 kEprojInit_N00bTubeShards_Y[10] = { 8, -12, -26, -24, -32, 28, 16, -8, -24, 16 };
 static const int16 kEprojInit_N00bTubeShards_Xvel[10] = { -384, -384, -160, -288, -288, -320, -96, -352, 0, -64 };
 static const int16 kEprojInit_N00bTubeShards_Yvel[10] = { 320, -256, -416, -288, -288, 448, 576, -96, -288, 384 };
-#define kEprojInit_N00bTubeShards_InstrPtrs ((uint16*)RomPtr(0x86d760))
 
 void EprojInit_N00bTubeShards(uint16 j) {  // 0x86D6C9
   CalculatePlmBlockCoords(plm_id);
@@ -4686,7 +4698,7 @@ void sub_86D7BF(uint16 k) {  // 0x86D7BF
 void sub_86D7DE(uint16 k) {  // 0x86D7DE
   R18_ = 0;
   R20_ = 0;
-  *(uint16 *)((char *)&R18_ + 1) = 192;
+  R19_ = 192;
   int v1 = k >> 1;
   uint16 v2 = enemy_projectile_y_subpos[v1];
   bool v3 = __CFADD__uint16(R18_, v2);
@@ -4704,7 +4716,7 @@ void EprojPreInstr_N00bTubeShards(uint16 k) {  // 0x86D7FD
   v2 = enemy_projectile_x_vel[v1];
   if (v2 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v2;
+  R19_ = v2;
   uint16 v3 = enemy_projectile_E[v1];
   bool v4 = __CFADD__uint16(R18_, v3);
   enemy_projectile_E[v1] = R18_ + v3;
@@ -4714,7 +4726,7 @@ void EprojPreInstr_N00bTubeShards(uint16 k) {  // 0x86D7FD
   v5 = enemy_projectile_y_vel[v1];
   if (v5 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v5;
+  R19_ = v5;
   uint16 v6 = enemy_projectile_y_subpos[v1];
   v4 = __CFADD__uint16(R18_, v6);
   enemy_projectile_y_subpos[v1] = R18_ + v6;
@@ -4732,7 +4744,7 @@ void sub_86D83D(uint16 k) {  // 0x86D83D
   uint16 v3 = kSinCosTable8bit_Sext[v2 + 64];
   if ((kSinCosTable8bit_Sext[v2 + 64] & 0x8000u) != 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = (int16)v3 >> 2;
+  R19_ = (int16)v3 >> 2;
   uint16 v5 = enemy_projectile_index;
   int v6 = enemy_projectile_index >> 1;
   uint16 v7 = enemy_projectile_E[v6];
@@ -4745,7 +4757,7 @@ void sub_86D83D(uint16 k) {  // 0x86D83D
   v8 = enemy_projectile_y_vel[v6];
   if (v8 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v8;
+  R19_ = v8;
   uint16 v9 = enemy_projectile_y_subpos[v6];
   v4 = __CFADD__uint16(R18_, v9);
   enemy_projectile_y_subpos[v6] = R18_ + v9;
@@ -4761,7 +4773,7 @@ void sub_86D89F(uint16 k) {  // 0x86D89F
   uint16 v3 = kSinCosTable8bit_Sext[v2 + 64];
   if ((kSinCosTable8bit_Sext[v2 + 64] & 0x8000u) != 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = (int16)v3 >> 2;
+  R19_ = (int16)v3 >> 2;
   int v5 = enemy_projectile_index >> 1;
   uint16 v6 = enemy_projectile_E[v5];
   bool v4 = __CFADD__uint16(R18_, v6);
@@ -4779,7 +4791,7 @@ void sub_86D8DF(uint16 k) {  // 0x86D8DF
   v7 = enemy_projectile_y_vel[v5];
   if (v7 < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = v7;
+  R19_ = v7;
   uint16 v8 = enemy_projectile_y_subpos[v5];
   bool v4 = __CFADD__uint16(R18_, v8);
   enemy_projectile_y_subpos[v5] = R18_ + v8;
@@ -4787,7 +4799,6 @@ void sub_86D8DF(uint16 k) {  // 0x86D8DF
   enemy_projectile_x_pos[v5] = enemy_projectile_F[v5];
 }
 
-#define off_86D96A ((uint16*)RomPtr(0x86d96a))
 
 void sub_86D992(uint16 v0) {  // 0x86D992
   uint16 v1 = enemy_projectile_init_param;
@@ -5032,7 +5043,6 @@ void EprojInit_SporeSpawners(uint16 j) {  // 0x86DCD4
   enemy_projectile_y_pos[v1] = 520;
 }
 
-#define kSporeMovementData ((uint8*)RomPtr(0x86dd6c))
 
 void EprojPreInstr_Spores(uint16 k) {  // 0x86DCEE
   int v1 = k >> 1;
@@ -5061,7 +5071,6 @@ void EprojPreInstr_SporeSpawners(uint16 k) {  // 0x86DD46
   }
 }
 
-#define word_86DEB6 ((uint16*)RomPtr(0x86deb6))
 
 void EprojInit_NamiFuneFireball(uint16 j) {  // 0x86DED6
   int v2 = j >> 1;
@@ -5208,8 +5217,6 @@ uint16 sub_86E0B0(uint16 k) {  // 0x86E0B0
     || (int16)(layer1_y_pos + 256 - enemy_projectile_y_pos[v1]) < 0;
 }
 
-#define off_86E42C ((uint16*)RomPtr(0x86e42c))
-#define word_86E47E ((uint16*)RomPtr(0x86e47e))
 
 void EprojInst_DustCloudOrExplosion(uint16 v0) {  // 0x86E468
   int v1 = v0 >> 1;
@@ -5220,7 +5227,7 @@ void EprojInst_DustCloudOrExplosion(uint16 v0) {  // 0x86E468
 
 void EprojInit_EyeDoorSmoke(uint16 j) {  // 0x86E4A6
   int v1 = j >> 1;
-  enemy_projectile_instr_list_ptr[v1] = off_86E42C[(uint16)(2 * (uint8)enemy_projectile_init_param) >> 1];
+  enemy_projectile_instr_list_ptr[v1] = off_86E42C[(uint8)enemy_projectile_init_param];
   int v2 = (uint16)(8 * HIBYTE(enemy_projectile_init_param)) >> 1;
   R18_ = word_86E47E[v2 + 2] + (word_86E47E[v2] & random_number);
   R20_ = word_86E47E[v2 + 3] + (word_86E47E[v2 + 1] & *(uint16 *)((char *)&random_number + 1));
@@ -5361,7 +5368,6 @@ void Eproj_AngleToSamus(uint16 j) {  // 0x86E7AB
   enemy_projectile_F[v1] = R28_;
 }
 
-#define kEprojInit_BotwoonsBody_InstrLists ((uint16*)RomPtr(0x86e9f1))
 
 void EprojInit_BotwoonsBody(uint16 j) {  // 0x86EA31
   int v1 = j >> 1;
@@ -5398,7 +5404,7 @@ void CallBotwoonEprojFunc(uint32 ea, uint16 k) {
 void EprojPreInstr_BotwoonsBody(uint16 k) {  // 0x86EA80
   if (*(uint16 *)&extra_enemy_ram8000[0].pad[32]) {
     int v1 = k >> 1;
-    if (enemy_projectile_x_vel[v1] == (uint16)FUNC16(Eproj_BotwoonsBody_Main))
+    if (enemy_projectile_x_vel[v1] == FUNC16(Eproj_BotwoonsBody_Main))
       enemy_projectile_x_vel[v1] = FUNC16(Eproj_BotwonsBodyFunction_Dying);
   }
   CallBotwoonEprojFunc(enemy_projectile_x_vel[k >> 1] | 0x860000, k);
@@ -5565,7 +5571,6 @@ uint16 EprojInstr_QueueSfx2_B(uint16 k, uint16 j) {  // 0x86EEA3
   return j;
 }
 
-#define off_86EF04 ((uint16*)RomPtr(0x86ef04))
 
 uint16 EprojInstr_EEAF(uint16 k, uint16 j) {  // 0x86EEAF
   uint16 v2 = RandomDropRoutine(k);
@@ -5618,7 +5623,6 @@ void EprojInit_F337(uint16 j) {  // 0x86EF29
   }
 }
 
-#define off_86EFD5 ((uint16*)RomPtr(0x86efd5))
 
 void EprojInit_EnemyDeathExplosion(uint16 j) {  // 0x86EF89
   EnemyData *v1 = gEnemyData(cur_enemy_index);
@@ -5745,11 +5749,11 @@ uint16 RandomDropRoutine(uint16 k) {  // 0x86F106
   health_drop_bias_flag = v5;
 LABEL_7:
   if ((uint8)health_drop_bias_flag) {
-    uint8 *v6 = RomPtr_B4(v2);
+    const uint8 *v6 = RomPtr_B4(v2);
     LOBYTE(R18_) = v6[1] + *v6;
     LOBYTE(R22_) = 3;
   } else {
-    uint8 *v7 = RomPtr_B4(v2);
+    const uint8 *v7 = RomPtr_B4(v2);
     LOBYTE(R18_) = v7[3];
     LOBYTE(R22_) = 8;
     if (samus_health != samus_max_health || samus_reserve_health != samus_max_reserve_health) {
@@ -5780,7 +5784,7 @@ LABEL_7:
     v9 = R22_ & 1;
     LOBYTE(R22_) = (uint8)R22_ >> 1;
     if (v9) {
-      uint8 *v10 = RomPtr_B4(v2);
+      const uint8 *v10 = RomPtr_B4(v2);
       uint16 RegWord = Mult8x8(R20_, *v10);
       int divved = SnesDivide(RegWord, R18_);
       uint16 v12 = R24_;
@@ -5796,7 +5800,7 @@ LABEL_26:
     v9 = R22_ & 1;
     LOBYTE(R22_) = (uint8)R22_ >> 1;
     if (v9) {
-      uint8 *v14 = RomPtr_B4(v2);
+      const uint8 *v14 = RomPtr_B4(v2);
       if ((uint16)(R24_ + *v14) >= R26_)
         return byte_86F25E[i];
       R24_ += *v14;
@@ -5815,16 +5819,16 @@ void RespawnEnemy(uint16 v0) {  // 0x86F264
   int16 v7;
 
   cur_enemy_index = v0;
-  uint8 *v1 = RomPtr_A1(room_enemy_population_ptr + (v0 >> 2));
+  const uint8 *v1 = RomPtr_A1(room_enemy_population_ptr + (v0 >> 2));
   EnemyData *v2 = gEnemyData(v0);
-  v2->enemy_ptr = *(uint16 *)v1;
-  v2->x_pos = *((uint16 *)v1 + 1);
-  v2->y_pos = *((uint16 *)v1 + 2);
-  v2->current_instruction = *((uint16 *)v1 + 3);
-  v2->properties = *((uint16 *)v1 + 4);
-  v2->extra_properties = *((uint16 *)v1 + 5);
-  v2->parameter_1 = *((uint16 *)v1 + 6);
-  v2->parameter_2 = *((uint16 *)v1 + 7);
+  v2->enemy_ptr = GET_WORD(v1);
+  v2->x_pos = GET_WORD(v1 + 2);
+  v2->y_pos = GET_WORD(v1 + 4);
+  v2->current_instruction = GET_WORD(v1 + 6);
+  v2->properties = GET_WORD(v1 + 8);
+  v2->extra_properties = GET_WORD(v1 + 10);
+  v2->parameter_1 = GET_WORD(v1 + 12);
+  v2->parameter_2 = GET_WORD(v1 + 14);
   v3 = gEnemySpawnData(v0);
   EnemyData *v4 = gEnemyData(v0);
   v4->palette_index = v3->palette_index;
@@ -5847,18 +5851,16 @@ void RespawnEnemy(uint16 v0) {  // 0x86F264
   v2->x_width = EnemyDef_A2->x_radius;
   v2->y_height = EnemyDef_A2->y_radius;
   v2->health = EnemyDef_A2->health;
-  v2->layer = RomPtr_A0(enemy_ptr)[57];
+  v2->layer = EnemyDef_A2->layer;
   v7 = *(uint16 *)&EnemyDef_A2->bank;
   *(uint16 *)&v2->bank = v7;
   enemy_ai_pointer.bank = v7;
   CallEnemyAi(Load24(&enemy_ai_pointer));
 }
 
-#define kEnemyDef_F3D3 (*(EnemyDef_B2*)RomPtr(0xa0f3d3))
 
 void EprojInit_Sparks(uint16 j) {  // 0x86F391
   static const uint16 word_86F3D4[14] = { 0xffff, 0xb800, 0xffff, 0xc000, 0xffff, 0xe000, 0xffff, 0xff00, 0, 0x100, 0, 0x2000, 0, 0x4000 };
-#define g_word_86F3D4 ((uint16*)RomPtr(0x86f3d4))  // bug:: oob read
   int v2 = j >> 1;
   enemy_projectile_instr_list_ptr[v2] = addr_kEnemyDef_F353;
   EnemyData *v3 = gEnemyData(cur_enemy_index);

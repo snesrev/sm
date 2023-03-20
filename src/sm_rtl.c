@@ -7,6 +7,10 @@
 #include "spc_player.h"
 #include "util.h"
 
+
+
+
+
 struct StateRecorder;
 
 static void RtlSaveMusicStateToRam_Locked();
@@ -14,6 +18,7 @@ static void RtlRestoreMusicAfterLoad_Locked(bool is_reset);
 
 uint8 g_ram[0x20000];
 uint8 *g_sram;
+const uint8 *g_rom;
 
 static uint8 *g_rtl_memory_ptr;
 static RunFrameFunc *g_rtl_runframe;
@@ -510,11 +515,6 @@ uint32 Load24(void *a) {
   return *(uint32 *)a & 0xffffff;
 }
 
-void DecompressToMem_IpArg(const void *p) {
-  decompress_dst = *(LongPtr *)p;
-  DecompressToMem();
-}
-
 bool Unreachable(void) {
   printf("Unreachable!\n");
   assert(0);
@@ -522,28 +522,36 @@ bool Unreachable(void) {
   return false;
 }
 
-uint8_t *RomPtr(uint32_t addr) {
+const uint8 *RomPtr(uint32_t addr) {
   if (!(addr & 0x8000)) {
     printf("RomPtr - Invalid access 0x%x!\n", addr);
     g_fail = true;
   }
-  return &g_snes->cart->rom[(((addr >> 16) << 15) | (addr & 0x7fff)) & (g_snes->cart->romSize - 1)];
+  return &g_rom[(((addr >> 16) << 15) | (addr & 0x7fff)) & 0x3fffff];
 }
 
-uint8_t *IndirPtr(void *ptr, uint16 offs) {
-  uint32 a = (*(uint32 *)ptr & 0xffffff) + offs;
-  if ((a >> 16) >= 0x7e && (a >> 16) <= 0x7f || a < 0x2000) {
+static uint8 *IndirPtr(LongPtr ptr, uint16 offs) {
+  uint32 a = (ptr.bank << 16 | ptr.addr) + offs;
+  if (ptr.bank >= 0x7e && ptr.bank <= 0x7f || a < 0x2000) {
     return &g_ram[a & 0x1ffff];
   } else {
-    return RomPtr(a);
+    return (uint8 *)RomPtr(a);
   }
 }
 
-void IndirWriteWord(void *ptr, uint16 offs, uint16 value) {
+uint16 IndirReadWord(LongPtr ptr, uint16 offs) {
+  return *(uint16 *)IndirPtr(ptr, offs);
+}
+
+void IndirWriteWord(LongPtr ptr, uint16 offs, uint16 value) {
   *(uint16 *)IndirPtr(ptr, offs) = value;
 }
 
-void IndirWriteByte(void *ptr, uint16 offs, uint8 value) {
+uint8 IndirReadByte(LongPtr ptr, uint16 offs) {
+  return *(uint8_t *)IndirPtr(ptr, offs);
+}
+
+void IndirWriteByte(LongPtr ptr, uint16 offs, uint8 value) {
   *IndirPtr(ptr, offs) = value;
 }
 

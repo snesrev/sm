@@ -4,11 +4,16 @@
 
 extern uint8 g_ram[0x20000];
 
+
+// Aliasing
+// This is used in some R18:R20 places to multiply by 256
+#define R19_ (*(uint16*)(g_ram+0x13))
+
 #define R0_ (*(LongPtr*)(g_ram+0x0))
 #define R3_ (*(LongPtr*)(g_ram+0x3))
-#define R6_ (*(uint16*)(g_ram+0x6))
-#define R8_ (*(uint16*)(g_ram+0x8))
-#define R10_ (*(uint16*)(g_ram+0xA))
+#define R6_ (*(LongPtr*)(g_ram+0x6))
+#define R9_ (*(LongPtr*)(g_ram+0x9))
+
 #define R12_ (*(uint16*)(g_ram+0xC))
 #define R14_ (*(uint16*)(g_ram+0xE))
 #define R16_ (*(uint16*)(g_ram+0x10))
@@ -18,8 +23,8 @@ extern uint8 g_ram[0x20000];
 #define R24_ (*(uint16*)(g_ram+0x18))
 #define R26_ (*(uint16*)(g_ram+0x1A))
 #define R28_ (*(uint16*)(g_ram+0x1C))
-#define g_word_7E001E (*(uint16*)(g_ram+0x1E))
-#define R32 (*(uint16*)(g_ram+0x20))
+#define R30_ (*(uint16*)(g_ram+0x1E))
+#define R32_ (*(uint16*)(g_ram+0x20))
 #define R34 (*(uint16*)(g_ram+0x22))
 #define R36 (*(uint16*)(g_ram+0x24))
 #define R38 (*(uint16*)(g_ram+0x26))
@@ -35,12 +40,12 @@ extern uint8 g_ram[0x20000];
 #define g_byte_7E003A (*(uint8*)(g_ram+0x3A))
 #define nmicopy1_var_d (*(uint16*)(g_ram+0x3C))
 #define g_word_7E003E (*(uint16*)(g_ram+0x3E))
-#define decompress_dst_tmp (*(LongPtr*)(g_ram+0x44))
-#define decompress_src (*(LongPtr*)(g_ram+0x47))
-#define decompress_last_byte (*(uint8*)(g_ram+0x4A))
-#define decompress_tmp1 (*(uint8*)(g_ram+0x4B))
-#define decompress_dst (*(LongPtr*)(g_ram+0x4C))
-#define decompress_want_xor (*(uint16*)(g_ram+0x4F))
+#define REMOVED_decompress_dst_tmp (*(LongPtr*)(g_ram+0x44))
+#define REMOVED_decompress_src (*(LongPtr*)(g_ram+0x47))
+#define REMOVED_decompress_last_byte (*(uint8*)(g_ram+0x4A))
+#define REMOVED_decompress_tmp1 (*(uint8*)(g_ram+0x4B))
+#define REMOVED_decompress_dst (*(LongPtr*)(g_ram+0x4C))
+#define REMOVED_decompress_want_xor (*(uint16*)(g_ram+0x4F))
 #define reg_INIDISP (*(uint8*)(g_ram+0x51))
 #define reg_OBSEL (*(uint8*)(g_ram+0x52))
 #define reg_OAMaddr_UNUSED (*(uint16*)(g_ram+0x53))
@@ -518,6 +523,13 @@ extern uint8 g_ram[0x20000];
 #define demo_input (*(uint16*)(g_ram+0xA84))
 #define demo_input_new (*(uint16*)(g_ram+0xA86))
 #define demo_enable (*(uint16*)(g_ram+0xA88))
+
+// These are aliased
+#define hdma_ptr_1 (*(LongPtr*)(g_ram+0xA88))
+#define hdma_ptr_2 (*(LongPtr*)(g_ram+0xA8B))
+#define hdma_ptr_3 (*(LongPtr*)(g_ram+0xA8E))
+#define hdma_var_1 (*(uint16*)(g_ram+0xA91))
+
 #define demo_num_input_frames (*(uint16*)(g_ram+0xA8A))
 #define demo_input_prev (*(uint16*)(g_ram+0xA8C))
 #define demo_input_prev_new (*(uint16*)(g_ram+0xA8E))
@@ -717,8 +729,8 @@ extern uint8 g_ram[0x20000];
 #define samus_collides_with_solid_enemy (*(uint16*)(g_ram+0xDCE))
 #define samus_collision_flag (*(uint16*)(g_ram+0xDD0))
 #define temp_collision_DD2 (*(uint16*)(g_ram+0xDD2))
-#define temp_collision_DD4 (*(uint16*)(g_ram+0xDD4))
-#define temp_collision_DD6 (*(uint16*)(g_ram+0xDD6))
+#define REMOVED_temp_collision_DD4 (*(uint16*)(g_ram+0xDD4))
+#define REMOVED_temp_collision_DD6 (*(uint16*)(g_ram+0xDD6))
 #define suit_pickup_light_beam_widening_speed (*(uint16*)(g_ram+0xDDC))
 #define projectile_index (*(uint16*)(g_ram+0xDDE))
 #define debug_invincibility (*(uint16*)(g_ram+0xDE0))
@@ -805,7 +817,7 @@ extern uint8 g_ram[0x20000];
 #define active_enemy_indexes_write_ptr (*(uint16*)(g_ram+0x17A4))
 #define interactive_enemy_indexes_write_ptr (*(uint16*)(g_ram+0x17A6))
 #define active_enemy_indexes_index (*(uint16*)(g_ram+0x17A8))
-#define interactive_enemy_indexes_index (*(uint16*)(g_ram+0x17AA))
+#define REMOVED_interactive_enemy_indexes_index (*(uint16*)(g_ram+0x17AA))
 #define active_enemy_indexes ((uint16*)(g_ram+0x17AC))
 #define interactive_enemy_indexes ((uint16*)(g_ram+0x17EC))
 #define enemy_index_colliding_dirs ((uint16*)(g_ram+0x182C))

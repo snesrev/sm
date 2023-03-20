@@ -3,6 +3,10 @@
 #include "funcs.h"
 #include "variables.h"
 
+
+
+
+
 void EnableAnimtiles(void) {  // 0x878000
   animtiles_enable_flag |= 0x8000;
 }
@@ -28,7 +32,7 @@ void SpawnAnimtiles(uint16 j) {  // 0x878027
   int v2 = v1 >> 1;
   animtiles_ids[v2] = v0;
   animtiles_timers[v2] = 0;
-  uint16 *v3 = (uint16 *)RomPtr_87(v0);
+  const uint16 *v3 = (const uint16 *)RomPtr_87(v0);
   animtiles_instr_list_ptrs[v2] = *v3;
   animtiles_src_ptr[v2] = 0;
   animtiles_sizes[v2] = v3[1];
@@ -84,7 +88,7 @@ void ProcessAnimtilesObject(void) {  // 0x878085
   if (animtiles_instr_timers[v1]-- == 1) {
     uint16 v3 = animtiles_instr_list_ptrs[v1], v5;
     while (1) {
-      uint16 *v4 = (uint16 *)RomPtr_87(v3);
+      const uint16 *v4 = (const uint16 *)RomPtr_87(v3);
       v5 = *v4;
       if ((*v4 & 0x8000u) == 0)
         break;
@@ -136,31 +140,31 @@ uint16 AnimtilesInstr_SetTimer(uint16 k, uint16 j) {  // 0x8780E3
 }
 
 uint16 AnimtilesInstr_QueueMusic(uint16 k, uint16 j) {  // 0x8780F0
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   QueueMusic_Delayed8(*v2);
   return j + 1;
 }
 
 uint16 AnimtilesInstr_QueueSfx1(uint16 k, uint16 j) {  // 0x8780FC
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   QueueSfx1_Max6(*v2);
   return j + 1;
 }
 
 uint16 AnimtilesInstr_QueueSfx2(uint16 k, uint16 j) {  // 0x878108
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   QueueSfx2_Max6(*v2);
   return j + 1;
 }
 
 uint16 AnimtilesInstr_QueueSfx3(uint16 k, uint16 j) {  // 0x878114
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   QueueSfx3_Max6(*v2);
   return j + 1;
 }
 
 uint16 AnimtilesInstr_GotoIfBossBitSet(uint16 k, uint16 j) {  // 0x878120
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   uint16 v3 = j + 1;
   if (CheckBossBitForCurArea((uint8) * (uint16 *)v2) & 1)
     return AnimtilesInstr_Goto(k, v3);
@@ -169,13 +173,13 @@ uint16 AnimtilesInstr_GotoIfBossBitSet(uint16 k, uint16 j) {  // 0x878120
 }
 
 uint16 AnimtilesInstr_SetBossBit(uint16 k, uint16 j) {  // 0x878133
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   SetBossBitForCurArea(*v2);
   return j + 1;
 }
 
 uint16 AnimtilesInstr_GotoIfEventHappened(uint16 k, uint16 j) {  // 0x87813F
-  uint16 *v2 = (uint16 *)RomPtr_87(j);
+  const uint16 *v2 = (const uint16 *)RomPtr_87(j);
   uint16 v3 = j + 2;
   if (CheckEventHappened(*v2) & 1)
     return AnimtilesInstr_Goto(k, v3);
@@ -184,7 +188,7 @@ uint16 AnimtilesInstr_GotoIfEventHappened(uint16 k, uint16 j) {  // 0x87813F
 }
 
 uint16 AnimtilesInstr_SetEventHappened(uint16 k, uint16 j) {  // 0x878150
-  uint16 *v2 = (uint16 *)RomPtr_87(j);
+  const uint16 *v2 = (const uint16 *)RomPtr_87(j);
   SetEventHappened(*v2);
   return j + 2;
 }
@@ -206,7 +210,7 @@ uint16 AnimtilesInstr_WaitUntilAreaBossDead_DoubleRet(uint16 k, uint16 j) {  // 
 }
 
 uint16 AnimtilesInstr_GotoIfBossBitSetInArea(uint16 k, uint16 j) {  // 0x878303
-  uint8 *v2 = RomPtr_87(j);
+  const uint8 *v2 = RomPtr_87(j);
   uint16 v3 = j + 2;
   if ((*v2 & boss_bits_for_area[v2[1]]) != 0)
     return AnimtilesInstr_Goto(k, v3);
@@ -215,13 +219,13 @@ uint16 AnimtilesInstr_GotoIfBossBitSetInArea(uint16 k, uint16 j) {  // 0x878303
 }
 
 uint16 AnimtilesInstr_SpawnTourianStatueEyeGlow(uint16 k, uint16 j) {  // 0x878320
-  uint16 *v2 = (uint16 *)RomPtr_87(j);
+  const uint16 *v2 = (const uint16 *)RomPtr_87(j);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueEyeGlow, *v2);
   return j + 2;
 }
 
 uint16 AnimtilesInstr_SpawnTourianStatueSoul(uint16 k, uint16 j) {  // 0x87832F
-  uint16 *v2 = (uint16 *)RomPtr_87(j);
+  const uint16 *v2 = (const uint16 *)RomPtr_87(j);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueSoul, *v2);
   return j + 2;
 }
@@ -252,7 +256,7 @@ uint16 AnimtilesInstr_Clear3PaletteColors(uint16 k, uint16 j) {  // 0x87835B
 }
 
 uint16 AnimtilesInstr_SpawnPalfxObj(uint16 k, uint16 j) {  // 0x878372
-  uint16 *v2 = (uint16 *)RomPtr_87(j);
+  const uint16 *v2 = (const uint16 *)RomPtr_87(j);
   SpawnPalfxObject(*v2);
   return j + 2;
 }

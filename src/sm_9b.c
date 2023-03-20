@@ -3,27 +3,56 @@
 #include "variables.h"
 #include "funcs.h"
 
-#define g_off_9BA4B3 ((uint16*)RomPtr(0x9ba4b3))
-#define g_off_9BA4CB ((uint16*)RomPtr(0x9ba4cb))
-#define g_off_9BA4E3 ((uint16*)RomPtr(0x9ba4e3))
+
+#define g_off_9BA4B3 ((uint16*)RomFixedPtr(0x9ba4b3))
+#define g_off_9BA4CB ((uint16*)RomFixedPtr(0x9ba4cb))
+#define g_off_9BA4E3 ((uint16*)RomFixedPtr(0x9ba4e3))
+#define g_off_9BB5C8 ((uint16*)RomFixedPtr(0x9bb5c8))
+#define g_byte_9BB823 ((uint8*)RomFixedPtr(0x9bb823))
+#define g_off_9BB6D2 ((uint16*)RomFixedPtr(0x9bb6d2))
+#define kDeathSequencePals_PowerSuit ((uint16*)RomFixedPtr(0x9bb7d3))
+#define kDeathSequencePals_VariaSuit ((uint16*)RomFixedPtr(0x9bb7e7))
+#define kDeathSequencePals_GravitySuit ((uint16*)RomFixedPtr(0x9bb7fb))
+#define kDeathSequencePals_Suitless ((uint16*)RomFixedPtr(0x9bb80f))
+#define g_off_9BC3C6 ((uint16*)RomFixedPtr(0x9bc3c6))
+#define g_off_9BC3EE ((uint16*)RomFixedPtr(0x9bc3ee))
+#define g_off_9BC416 ((uint16*)RomFixedPtr(0x9bc416))
+#define grapple_beam_special_angles ((GrappleBeamSpecialAngles*)RomFixedPtr(0x9bc43e))
+#define kGrappleBeam_SwingingData ((uint8*)RomFixedPtr(0x9bc1c2))
+#define kGrappleBeam_SwingingData2 ((uint8*)RomFixedPtr(0x9bc2c2))
+#define kGrappleBeam_SwingingData3 ((uint8*)RomFixedPtr(0x9bc302))
+#define kGrappleBeam_OriginX_NoRun ((uint16*)RomFixedPtr(0x9bc122))
+#define kGrappleBeam_OriginY_NoRun ((uint16*)RomFixedPtr(0x9bc136))
+#define kGrappleBeam_0x0d1a_offs_NoRun ((uint16*)RomFixedPtr(0x9bc14a))
+#define kGrappleBeam_0x0d1c_offs_NoRun ((uint16*)RomFixedPtr(0x9bc15e))
+#define kGrappleBeam_OriginX_Run ((uint16*)RomFixedPtr(0x9bc172))
+#define kGrappleBeam_OriginY_Run ((uint16*)RomFixedPtr(0x9bc186))
+#define kGrappleBeam_0x0d1a_offs_Run ((uint16*)RomFixedPtr(0x9bc19a))
+#define kGrappleBeam_0x0d1c_offs_Run ((uint16*)RomFixedPtr(0x9bc1ae))
+#define g_off_9BC344 (*(uint16*)RomFixedPtr(0x9bc344))
+#define g_off_9BC342 (*(uint16*)RomFixedPtr(0x9bc342))
+#define g_off_9BC346 ((uint16*)RomFixedPtr(0x9bc346))
+#define kFlareAnimDelays ((uint16*)RomFixedPtr(0x90c481))
+#define kFlareAnimDelays_Main ((uint8*)RomFixedPtr(0x90c487))
+#define kFlareAnimDelays_SlowSparks ((uint8*)RomFixedPtr(0x90c4a7))
+#define kFlareAnimDelays_FastSparks ((uint8*)RomFixedPtr(0x90c4ae))
+#define g_word_93A22B ((uint16*)RomFixedPtr(0x93a22b))
+#define g_word_93A225 ((uint16*)RomFixedPtr(0x93a225))
+#define g_byte_9BC9BA ((uint8*)RomFixedPtr(0x9bc9ba))
+#define g_byte_9BC9C4 ((uint8*)RomFixedPtr(0x9bc9c4))
+#define kGrappleBeam_Ext_Xvel ((uint16*)RomFixedPtr(0x9bc0db))
+#define kGrappleBeam_Ext_Yvel ((uint16*)RomFixedPtr(0x9bc0ef))
+#define kGrappleBeam_Init_EndAngle ((uint16*)RomFixedPtr(0x9bc104))
+
+
+
 static const uint8 kDeathAnimationFrames[28] = {
   5, 5, 5, 5, 1, 5, 5, 0, 1,
   0, 5, 5, 5, 5, 5, 5, 5, 1,
   1, 1, 5, 5, 5, 5, 5, 5, 5,
   5,
 };
-#define g_off_9BB5C8 ((uint16*)RomPtr(0x9bb5c8))
-#define g_byte_9BB823 ((uint8*)RomPtr(0x9bb823))
-#define g_off_9BB6D2 ((uint16*)RomPtr(0x9bb6d2))
 
-#define kDeathSequencePals_PowerSuit ((uint16*)RomPtr(0x9bb7d3))
-#define kDeathSequencePals_VariaSuit ((uint16*)RomPtr(0x9bb7e7))
-#define kDeathSequencePals_GravitySuit ((uint16*)RomPtr(0x9bb7fb))
-#define kDeathSequencePals_Suitless ((uint16*)RomPtr(0x9bb80f))
-#define g_off_9BC3C6 ((uint16*)RomPtr(0x9bc3c6))
-#define g_off_9BC3EE ((uint16*)RomPtr(0x9bc3ee))
-#define g_off_9BC416 ((uint16*)RomPtr(0x9bc416))
-#define grapple_beam_special_angles ((GrappleBeamSpecialAngles*)RomPtr(0x9bc43e))
 static const uint16 g_word_9BC118 = 24;
 static const uint16 g_word_9BC11A = 0xc;
 static const uint16 g_word_9BC11C = 5;
@@ -42,31 +71,6 @@ static const uint8 kIsGrappleBannedForMovementType[28] = {
   1, 0, 0, 1, 1, 1, 0, 1, 1, 1,
   1, 0, 0, 1, 1, 1, 0, 1,
 };
-#define kGrappleBeam_SwingingData ((uint8*)RomPtr(0x9bc1c2))
-#define kGrappleBeam_SwingingData2 ((uint8*)RomPtr(0x9bc2c2))
-#define kGrappleBeam_SwingingData3 ((uint8*)RomPtr(0x9bc302))
-#define kGrappleBeam_OriginX_NoRun ((uint16*)RomPtr(0x9bc122))
-#define kGrappleBeam_OriginY_NoRun ((uint16*)RomPtr(0x9bc136))
-#define kGrappleBeam_0x0d1a_offs_NoRun ((uint16*)RomPtr(0x9bc14a))
-#define kGrappleBeam_0x0d1c_offs_NoRun ((uint16*)RomPtr(0x9bc15e))
-#define kGrappleBeam_OriginX_Run ((uint16*)RomPtr(0x9bc172))
-#define kGrappleBeam_OriginY_Run ((uint16*)RomPtr(0x9bc186))
-#define kGrappleBeam_0x0d1a_offs_Run ((uint16*)RomPtr(0x9bc19a))
-#define kGrappleBeam_0x0d1c_offs_Run ((uint16*)RomPtr(0x9bc1ae))
-#define g_off_9BC344 (*(uint16*)RomPtr(0x9bc344))
-#define g_off_9BC342 (*(uint16*)RomPtr(0x9bc342))
-#define g_off_9BC346 ((uint16*)RomPtr(0x9bc346))
-#define kFlareAnimDelays ((uint16*)RomPtr(0x90c481))
-#define kFlareAnimDelays_Main ((uint8*)RomPtr(0x90c487))
-#define kFlareAnimDelays_SlowSparks ((uint8*)RomPtr(0x90c4a7))
-#define kFlareAnimDelays_FastSparks ((uint8*)RomPtr(0x90c4ae))
-#define g_word_93A22B ((uint16*)RomPtr(0x93a22b))
-#define g_word_93A225 ((uint16*)RomPtr(0x93a225))
-#define g_byte_9BC9BA ((uint8*)RomPtr(0x9bc9ba))
-#define g_byte_9BC9C4 ((uint8*)RomPtr(0x9bc9c4))
-#define kGrappleBeam_Ext_Xvel ((uint16*)RomPtr(0x9bc0db))
-#define kGrappleBeam_Ext_Yvel ((uint16*)RomPtr(0x9bc0ef))
-#define kGrappleBeam_Init_EndAngle ((uint16*)RomPtr(0x9bc104))
 
 void ProjectileTrail_Func5(uint16 k, uint16 j) {  // 0x9BA3CC
   ProjectileInsts_GetValue(k);
@@ -90,7 +94,7 @@ void ProjectileTrail_Func5(uint16 k, uint16 j) {  // 0x9BA3CC
     v5 = g_off_9BA4B3[projectile_type[v3] & 0xF] + 2 * (projectile_dir[v3] & 0xF);
   }
   uint16 v6 = *(uint16 *)RomPtr_9B(v5) + 4 * R22_;
-  uint8 *p = RomPtr_9B(v6);
+  const uint8 *p = RomPtr_9B(v6);
   int v7 = j >> 1;
   projectiletrail_left_y_pos[v7] = R20_ + (int8)p[1] - 4;
   projectiletrail_left_x_pos[v7] = R18_ + (int8)p[0] - 4;
@@ -147,41 +151,9 @@ uint16 HandleSamusDeathSequence(void) {  // 0x9BB441
 }
 
 void HandleSamusDeathSequence_Helper2(void) {  // 0x9BB4B6
-  uint16 *v0 = (uint16 *)RomPtr_9B(g_off_9BB5C8[samus_suit_palette_index >> 1]);
-  uint16 *v1 = (uint16 *)RomPtr_9B(*v0);
-  palette_buffer[192] = *v1;
-  palette_buffer[193] = v1[1];
-  palette_buffer[194] = v1[2];
-  palette_buffer[195] = v1[3];
-  palette_buffer[196] = v1[4];
-  palette_buffer[197] = v1[5];
-  palette_buffer[198] = v1[6];
-  palette_buffer[199] = v1[7];
-  palette_buffer[200] = v1[8];
-  palette_buffer[201] = v1[9];
-  palette_buffer[202] = v1[10];
-  palette_buffer[203] = v1[11];
-  palette_buffer[204] = v1[12];
-  palette_buffer[205] = v1[13];
-  palette_buffer[206] = v1[14];
-  palette_buffer[207] = v1[15];
-  uint16 *v2 = (uint16 *)RomPtr_9B(0xA120);
-  palette_buffer[240] = *v2;
-  palette_buffer[241] = v2[1];
-  palette_buffer[242] = v2[2];
-  palette_buffer[243] = v2[3];
-  palette_buffer[244] = v2[4];
-  palette_buffer[245] = v2[5];
-  palette_buffer[246] = v2[6];
-  palette_buffer[247] = v2[7];
-  palette_buffer[248] = v2[8];
-  palette_buffer[249] = v2[9];
-  palette_buffer[250] = v2[10];
-  palette_buffer[251] = v2[11];
-  palette_buffer[252] = v2[12];
-  palette_buffer[253] = v2[13];
-  palette_buffer[254] = v2[14];
-  palette_buffer[255] = v2[15];
+  const uint16 *v0 = (const uint16 *)RomPtr_9B(g_off_9BB5C8[samus_suit_palette_index >> 1]);
+  memcpy(&palette_buffer[192], RomPtr_9B(*v0), 32);
+  memcpy(&palette_buffer[240], RomPtr_9B(addr_word_9BA120), 32);
   QueueTransferOfSamusDeathSequence(8);
   game_options_screen_index = g_byte_9BB823[0];
   g_word_7E0DE4 = 0;
@@ -190,43 +162,10 @@ void HandleSamusDeathSequence_Helper2(void) {  // 0x9BB4B6
 }
 
 void CopyPalettesForSamusDeath(uint16 v0) {  // 0x9BB5CE
-  R20_ = g_off_9BB6D2[samus_suit_palette_index >> 1];
-  R18_ = kDeathSequencePals_Suitless[v0 >> 1];
-  uint16 *v1 = (uint16 *)RomPtr_9B(R20_ + v0);
-  uint16 *v2 = (uint16 *)RomPtr_9B(*v1);
-  palette_buffer[192] = *v2;
-  palette_buffer[193] = v2[1];
-  palette_buffer[194] = v2[2];
-  palette_buffer[195] = v2[3];
-  palette_buffer[196] = v2[4];
-  palette_buffer[197] = v2[5];
-  palette_buffer[198] = v2[6];
-  palette_buffer[199] = v2[7];
-  palette_buffer[200] = v2[8];
-  palette_buffer[201] = v2[9];
-  palette_buffer[202] = v2[10];
-  palette_buffer[203] = v2[11];
-  palette_buffer[204] = v2[12];
-  palette_buffer[205] = v2[13];
-  palette_buffer[206] = v2[14];
-  palette_buffer[207] = v2[15];
-  uint16 *v3 = (uint16 *)RomPtr_9B(R18_);
-  palette_buffer[240] = *v3;
-  palette_buffer[241] = v3[1];
-  palette_buffer[242] = v3[2];
-  palette_buffer[243] = v3[3];
-  palette_buffer[244] = v3[4];
-  palette_buffer[245] = v3[5];
-  palette_buffer[246] = v3[6];
-  palette_buffer[247] = v3[7];
-  palette_buffer[248] = v3[8];
-  palette_buffer[249] = v3[9];
-  palette_buffer[250] = v3[10];
-  palette_buffer[251] = v3[11];
-  palette_buffer[252] = v3[12];
-  palette_buffer[253] = v3[13];
-  palette_buffer[254] = v3[14];
-  palette_buffer[255] = v3[15];
+  int R20 = g_off_9BB6D2[samus_suit_palette_index >> 1];
+  const uint16 *v1 = (const uint16 *)RomPtr_9B(R20 + v0);
+  memcpy(&palette_buffer[192], RomPtr_9B(*v1), 32);
+  memcpy(&palette_buffer[240], RomPtr_9B(kDeathSequencePals_Suitless[v0 >> 1]), 32);
 }
 
 void QueueTransferOfSamusDeathSequence(uint16 v0) {  // 0x9BB6D8
@@ -247,20 +186,13 @@ uint16 GameState_24_SamusNoHealth_Explosion_Helper(void) {  // 0x9BB701
 }
 
 void GameState_24_SamusNoHealth_Explosion_1(void) {  // 0x9BB710
-  *(VoidP *)((char *)&R0_.addr + 1) = 32256;
   if (!substate && g_word_7E0DE4) {
-    uint16 v0 = 2 * g_word_7E0DE6;
-    R0_.addr = -16384;
-    uint16 v1 = 0;
-    do {
-      IndirWriteWord(&R0_, v1, kShadesOfWhite[v0 >> 1]);
-      v1 += 2;
-    } while ((int16)(v1 - 384) < 0);
-    uint16 v2 = 416;
-    do {
-      IndirWriteWord(&R0_, v2, kShadesOfWhite[v0 >> 1]);
-      v2 += 2;
-    } while ((int16)(v2 - 480) < 0);
+    int v0 = g_word_7E0DE6;
+    uint16 *dst = (uint16*)(g_ram + 0xc000);
+    for(int i = 0; i < 384/2; i++)
+      dst[i] = kShadesOfWhite[v0];
+    for(int i = 416/2; i < 480/2; i++)
+      dst[i] = kShadesOfWhite[v0];
     if (sign16(g_word_7E0DE6 - 20))
       ++g_word_7E0DE6;
   }
@@ -291,11 +223,11 @@ void CancelGrappleBeamIfIncompatiblePose(void) {  // 0x9BB861
 
   if (kIsGrappleBannedForMovementType[samus_movement_type]) {
 LABEL_2:
-    if (grapple_beam_function != (uint16)FUNC16(GrappleBeamFunc_Inactive))
+    if (grapple_beam_function != FUNC16(GrappleBeamFunc_Inactive))
       grapple_beam_function = FUNC16(GrappleBeamFunc_Cancel);
     return;
   }
-  if (grapple_beam_function != (uint16)FUNC16(GrappleBeamFunc_Inactive)
+  if (grapple_beam_function != FUNC16(GrappleBeamFunc_Inactive)
       && sign16(grapple_beam_function + 0x3882)) {
     v0 = *(&kPoseParams[0].direction_shots_fired + (uint16)(8 * samus_pose));
     if ((v0 & 0xF0) == 0) {
@@ -333,36 +265,36 @@ int ProcessEnemyGrappleBeamColl(uint16 a) {  // 0x9BB907
   uint16 v3;
 
   v1 = 2 * a;
-  switch (v1) {
+  switch (a) {
   case 0:
-  case 4:
-    return -1;  // clc
-  case 6:
-    return 1;
   case 2:
-  case 8:
-  case 10:
+    return -1;  // clc
+  case 3:
+    return 1;
+  case 1:
+  case 4:
+  case 5:
+    return 0;
+  case 6:
+    R18_ = *((uint16 *)RomPtr_A0(R18_) + 3);
+    if ((equipped_items & 0x20) != 0) {
+      R18_ >>= 1;
+      R18_ >>= 1;
+      v3 = R18_;
+    } else {
+      if (equipped_items & 1)
+        R18_ >>= 1;
+      v3 = R18_;
+    }
+    Samus_DealDamage(v3);
+    samus_invincibility_timer = 96;
+    samus_knockback_timer = 5;
+    knockback_x_dir = samus_pose_x_dir == 4;
+    return 1;
+  default:
+    Unreachable();
     return 0;
   }
-  if (v1 != 12) {
-    Unreachable();
-    while (1);
-  }
-  R18_ = *((uint16 *)RomPtr_A0(R18_) + 3);
-  if ((equipped_items & 0x20) != 0) {
-    R18_ >>= 1;
-    R18_ >>= 1;
-    v3 = R18_;
-  } else {
-    if (equipped_items & 1)
-      R18_ >>= 1;
-    v3 = R18_;
-  }
-  Samus_DealDamage(v3);
-  samus_invincibility_timer = 96;
-  samus_knockback_timer = 5;
-  knockback_x_dir = samus_pose_x_dir == 4;
-  return 1;
 }
 
 void CallGrappleNextFunc(uint32 ea) {
@@ -462,15 +394,10 @@ void UNUSED_sub_9BBA31(void) {  // 0x9BBA31
 }
 
 void HandleConnectingGrapple_Swinging(void) {  // 0x9BBA61
-  char v1; // t0
-
   samus_special_transgfx_index = 9;
   R18_ = samus_x_pos - grapple_beam_end_x_pos;
   R20_ = samus_y_pos - grapple_beam_end_y_pos;
-  uint16 v0 = CalculateAngleFromXY();
-  v1 = v0;
-  LOBYTE(v0) = HIBYTE(v0);
-  HIBYTE(v0) = v1;
+  uint16 v0 = swap16(CalculateAngleFromXY());
   *(uint16 *)&grapple_beam_end_subangle = v0;
   grapple_beam_end_angles_mirror = v0;
   grapple_beam_length_delta = 0;
@@ -480,15 +407,10 @@ void HandleConnectingGrapple_Swinging(void) {  // 0x9BBA61
 }
 
 void HandleConnectingGrapple_StuckInPlace(void) {  // 0x9BBA9B
-  char v1; // t0
-
   samus_special_transgfx_index = 10;
   R18_ = samus_x_pos - grapple_beam_end_x_pos;
   R20_ = samus_y_pos - grapple_beam_end_y_pos;
-  uint16 v0 = CalculateAngleFromXY();
-  v1 = v0;
-  LOBYTE(v0) = HIBYTE(v0);
-  HIBYTE(v0) = v1;
+  uint16 v0 = swap16(CalculateAngleFromXY());
   *(uint16 *)&grapple_beam_end_subangle = v0;
   grapple_beam_end_angles_mirror = v0;
   grapple_beam_length_delta = 0;
@@ -498,9 +420,6 @@ void HandleConnectingGrapple_StuckInPlace(void) {  // 0x9BBA9B
 }
 
 uint8 HandleSpecialGrappleBeamAngles(void) {  // 0x9BBAD5
-  int16 v2;
-  int16 v3;
-
   uint16 v0 = 7;
   while (*(uint16 *)&grapple_beam_end_subangle != grapple_beam_special_angles[v0].field_0) {
     if ((--v0 & 0x8000u) != 0)
@@ -512,14 +431,14 @@ uint8 HandleSpecialGrappleBeamAngles(void) {  // 0x9BBAD5
   grapple_beam_function = grapple_beam_special_angles[v0].field_8;
   samus_special_transgfx_index = 0;
   slow_grabble_scrolling_flag = 0;
-  v2 = samus_x_pos - samus_prev_x_pos;
+  int16 v2 = samus_x_pos - samus_prev_x_pos;
   if ((int16)(samus_x_pos - samus_prev_x_pos) < 0) {
     if (sign16(v2 + 12))
       samus_prev_x_pos = samus_x_pos + 12;
   } else if (!sign16(v2 - 13)) {
     samus_prev_x_pos = samus_x_pos - 12;
   }
-  v3 = samus_y_pos - samus_prev_y_pos;
+  int16 v3 = samus_y_pos - samus_prev_y_pos;
   if ((int16)(samus_y_pos - samus_prev_y_pos) < 0) {
     if (sign16(v3 + 12))
       samus_prev_y_pos = samus_y_pos + 12;
@@ -809,7 +728,7 @@ void GrappleBeamHandler(void) {  // 0x9BC490
   samus_grapple_flags &= ~1u;
   CancelGrappleBeamIfIncompatiblePose();
   CallGrappleBeamFunc(grapple_beam_function | 0x9B0000);
-  if (grapple_beam_function != (uint16)FUNC16(GrappleBeamFunc_Inactive)
+  if (grapple_beam_function != FUNC16(GrappleBeamFunc_Inactive)
       && sign16(grapple_beam_function + 0x37AA)
       && (samus_suit_palette_index & 4) == 0
       && fx_type

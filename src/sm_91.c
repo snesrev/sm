@@ -4,6 +4,34 @@
 #include "funcs.h"
 #include "sm_rtl.h"
 
+
+#define unk_91CAF2 (*(SpawnHdmaObject_Args*)RomFixedPtr(0x91caf2))
+#define stru_91D2D6 ((XrayBlockData*)RomFixedPtr(0x91d2d6))
+#define stru_91D2D6 ((XrayBlockData*)RomFixedPtr(0x91d2d6))
+#define off_91D727 ((uint16*)RomFixedPtr(0x91d727))
+#define kSamusPalette_HyperBeam ((uint16*)RomFixedPtr(0x91d829))
+#define kSamusPalette_NonPseudoScrew ((uint16*)RomFixedPtr(0x91d7d5))
+#define kSamusPalette_PseudoScrew ((uint16*)RomFixedPtr(0x91d7ff))
+#define word_9BA3C0 ((uint16*)RomFixedPtr(0x9ba3c0))
+#define kSamus_SpeedBoostingPalettes ((uint16*)RomFixedPtr(0x91d998))
+#define kSamus_HyperBeamPalettes ((uint16*)RomFixedPtr(0x91d99e))
+#define kSamusPal_ScrewAttack ((uint16*)RomFixedPtr(0x91da4a))
+#define kSamusPal_SpeedBoost ((uint16*)RomFixedPtr(0x91daa9))
+#define kSamusPal_SpeedBoostShine ((uint16*)RomFixedPtr(0x91db10))
+#define kSamusPal_Shinespark ((uint16*)RomFixedPtr(0x91db75))
+#define stru_91DC00 ((SamusCrystalFlashPalTable*)RomFixedPtr(0x91dc00))
+#define off_91DC28 ((uint16*)RomFixedPtr(0x91dc28))
+#define word_91E921 ((uint16*)RomFixedPtr(0x91e921))
+#define word_91E9F3 ((uint16*)RomFixedPtr(0x91e9f3))
+#define word_91EB74 ((uint16*)RomFixedPtr(0x91eb74))
+#define kSamusTurnPose_Standing ((uint8*)RomFixedPtr(0x91f9c2))
+#define kSamusTurnPose_Crouching ((uint8*)RomFixedPtr(0x91f9cc))
+#define kSamusTurnPose_Jumping ((uint8*)RomFixedPtr(0x91f9d6))
+#define kSamusTurnPose_Falling ((uint8*)RomFixedPtr(0x91f9e0))
+#define kSamusTurnPose_Moonwalk ((uint8*)RomFixedPtr(0x91f9ea))
+
+
+
 static Func_V *const kSamusInputHandlers[28] = {
   Samus_Input_00_Standing,
   Samus_Input_01_Running,
@@ -376,9 +404,9 @@ void ProcessDemoInputObject(void) {  // 0x9183F2
         return;
     }
     demo_input_instr_timer = *v1;
-    uint8 *v3 = RomPtr_91(v0);
-    demo_input = *((uint16 *)v3 + 1);
-    demo_input_new = *((uint16 *)v3 + 2);
+    const uint8 *v3 = RomPtr_91(v0);
+    demo_input = GET_WORD(v3 + 2);
+    demo_input_new = GET_WORD(v3 + 4);
     demo_input_instr_ptr = v0 + 6;
   }
 }
@@ -637,12 +665,9 @@ static Func_V *const kXrayHdmaFuncs[5] = {  // 0x91BE11
 };
 
 void CalculateXrayHdmaTable_OriginOffScreen(uint16 k, uint16 j) {
-  int16 v2;
-  uint16 v3;
+  int v3;
 
-  LOBYTE(v2) = HIBYTE(k);
-  HIBYTE(v2) = k;
-  R22_ = v2 & 0xFF00;
+  R22_ = (k << 8);
   R24_ = j;
   R26_ = R18_ - R20_;
   R26_ += (R26_ & 0x8000u) != 0 ? 0x100 : 0;
@@ -677,11 +702,11 @@ LABEL_16:;
   uint16 v4 = R26_;
   if (!sign16(R26_ - 128))
     v4 = R26_ - 128;
-  g_word_7E001E = kTanTable[v4];
+  R30_ = kTanTable[v4];
   uint16 v5 = R28_;
   if (!sign16(R28_ - 128))
     v5 = R28_ - 128;
-  R32 = kTanTable[v5];
+  R32_ = kTanTable[v5];
   kXrayHdmaFuncs[v3 >> 1]();
 }
 
@@ -693,8 +718,8 @@ void XrayHdmaFunc_BeamAimedR(void) {  // 0x91BEC2
   R34 = R22_;
   R36 = R22_;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
     v0 -= 2;
@@ -703,28 +728,28 @@ void XrayHdmaFunc_BeamAimedR(void) {  // 0x91BEC2
       goto LABEL_10;
     }
   }
-  IndirWriteWord(&R0_, v0, HIBYTE(R34) | 0xFF00);
+  IndirWriteWord(R0_, v0, HIBYTE(R34) | 0xFF00);
   R18_ = v0 + 2;
   v2 = v0 - 2;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
-    IndirWriteWord(&R0_, v2, HIBYTE(R34) | 0xFF00);
+    IndirWriteWord(R0_, v2, HIBYTE(R34) | 0xFF00);
     v2 -= 2;
     if (v2 < 0)
       goto LABEL_10;
   }
   do {
-    IndirWriteWord(&R0_, v2, 0xFF);
+    IndirWriteWord(R0_, v2, 0xFF);
     v2 -= 2;
   } while (v2 >= 0);
 LABEL_10:;
   uint16 v3 = 2 * R24_;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
     v3 += 2;
@@ -733,29 +758,29 @@ LABEL_10:;
       goto LABEL_19;
     }
   }
-  IndirWriteWord(&R0_, v3, HIBYTE(R36) | 0xFF00);
+  IndirWriteWord(R0_, v3, HIBYTE(R36) | 0xFF00);
   R20_ = v3 - 2;
   uint16 v4;
   v4 = v3 - 2 + 4;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
-    IndirWriteWord(&R0_, v4, HIBYTE(R36) | 0xFF00);
+    IndirWriteWord(R0_, v4, HIBYTE(R36) | 0xFF00);
     v4 += 2;
     if ((int16)(v4 - 460) >= 0)
       goto LABEL_19;
   }
   do {
-    IndirWriteWord(&R0_, v4, 0xFF);
+    IndirWriteWord(R0_, v4, 0xFF);
     v4 += 2;
   } while ((int16)(v4 - 460) < 0);
 LABEL_19:;
   uint16 v5 = R18_;
   do {
     do {
-      IndirWriteWord(&R0_, v5, 0xFF00);
+      IndirWriteWord(R0_, v5, 0xFF00);
       v5 += 2;
     } while ((int16)(v5 - R20_) < 0);
   } while (v5 == R20_);
@@ -769,8 +794,8 @@ void XrayHdmaFunc_BeamAimedL(void) {  // 0x91BF72
   R34 = R22_;
   R36 = R22_;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
     v0 -= 2;
@@ -779,28 +804,28 @@ void XrayHdmaFunc_BeamAimedL(void) {  // 0x91BF72
       goto LABEL_10;
     }
   }
-  IndirWriteWord(&R0_, v0, R36 & 0xFF00);
+  IndirWriteWord(R0_, v0, R36 & 0xFF00);
   R18_ = v0 + 2;
   v2 = v0 - 2;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
-    IndirWriteWord(&R0_, v2, R36 & 0xFF00);
+    IndirWriteWord(R0_, v2, R36 & 0xFF00);
     v2 -= 2;
     if (v2 < 0)
       goto LABEL_10;
   }
   do {
-    IndirWriteWord(&R0_, v2, 0xFF);
+    IndirWriteWord(R0_, v2, 0xFF);
     v2 -= 2;
   } while (v2 >= 0);
 LABEL_10:;
   uint16 v3 = 2 * R24_;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
     v3 += 2;
@@ -809,29 +834,29 @@ LABEL_10:;
       goto LABEL_19;
     }
   }
-  IndirWriteWord(&R0_, v3, R34 & 0xFF00);
+  IndirWriteWord(R0_, v3, R34 & 0xFF00);
   R20_ = v3 - 2;
   uint16 v4;
   v4 = v3 - 2 + 4;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
-    IndirWriteWord(&R0_, v4, R34 & 0xFF00);
+    IndirWriteWord(R0_, v4, R34 & 0xFF00);
     v4 += 2;
     if ((int16)(v4 - 460) >= 0)
       goto LABEL_19;
   }
   do {
-    IndirWriteWord(&R0_, v4, 0xFF);
+    IndirWriteWord(R0_, v4, 0xFF);
     v4 += 2;
   } while ((int16)(v4 - 460) < 0);
 LABEL_19:;
   uint16 v5 = R18_;
   do {
     do {
-      IndirWriteWord(&R0_, v5, 0xFF00);
+      IndirWriteWord(R0_, v5, 0xFF00);
       v5 += 2;
     } while ((int16)(v5 - R20_) < 0);
   } while (v5 == R20_);
@@ -858,7 +883,7 @@ void XrayHdmaFunc_BeamAimedU(void) {
   off_91C063[v0 >> 1](2 * (R24_ - 1));
   uint16 v1 = R18_;
   do {
-    IndirWriteWord(&R0_, v1, 0xFF);
+    IndirWriteWord(R0_, v1, 0xFF);
     v1 += 2;
   } while ((int16)(v1 - 460) < 0);
 }
@@ -871,8 +896,8 @@ void XrayHdmaFunc_BeamAimedUUR(uint16 v0) {  // 0x91C069
 
   v6 = v0;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
     v0 -= 2;
@@ -881,22 +906,22 @@ void XrayHdmaFunc_BeamAimedUUR(uint16 v0) {  // 0x91C069
       goto LABEL_12;
     }
   }
-  IndirWriteByte(&R0_, v0, HIBYTE(R34));
+  IndirWriteByte(R0_, v0, HIBYTE(R34));
   v2 = v0 - 2;
   if (v2 >= 0) {
     R18_ = v2 + 4;
     while (1) {
-      bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-      R34 += g_word_7E001E;
+      bool v1 = __CFADD__uint16(R30_, R34);
+      R34 += R30_;
       if (v1)
         break;
-      IndirWriteByte(&R0_, v2, HIBYTE(R34));
+      IndirWriteByte(R0_, v2, HIBYTE(R34));
       v2 -= 2;
       if (v2 < 0)
         goto LABEL_12;
     }
     do {
-      IndirWriteByte(&R0_, v2, 0xFF);
+      IndirWriteByte(R0_, v2, 0xFF);
       v2 -= 2;
     } while (v2 >= 0);
   } else {
@@ -905,8 +930,8 @@ void XrayHdmaFunc_BeamAimedUUR(uint16 v0) {  // 0x91C069
 LABEL_12:
   v3 = v6 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
     v3 -= 2;
@@ -915,22 +940,22 @@ LABEL_12:
       goto LABEL_23;
     }
   }
-  IndirWriteByte(&R0_, v3, HIBYTE(R36));
+  IndirWriteByte(R0_, v3, HIBYTE(R36));
   v4 = v3 - 2;
   if (v4 >= 0) {
     R20_ = v4 + 4;
     while (1) {
-      bool v1 = __CFADD__uint16(R32, R36);
-      R36 += R32;
+      bool v1 = __CFADD__uint16(R32_, R36);
+      R36 += R32_;
       if (v1)
         break;
-      IndirWriteByte(&R0_, v4, HIBYTE(R36));
+      IndirWriteByte(R0_, v4, HIBYTE(R36));
       v4 -= 2;
       if (v4 < 0)
         goto LABEL_23;
     }
     do {
-      IndirWriteByte(&R0_, v4, 0xFF);
+      IndirWriteByte(R0_, v4, 0xFF);
       v4 -= 2;
     } while (v4 >= 0);
   } else {
@@ -939,7 +964,7 @@ LABEL_12:
 LABEL_23:;
   uint16 v5 = R18_;
   do {
-    IndirWriteByte(&R0_, v5, 0);
+    IndirWriteByte(R0_, v5, 0);
     v5 += 2;
   } while ((int16)(v5 - R20_) < 0);
   R18_ = R20_ - 1;
@@ -952,8 +977,8 @@ void XrayHdmaFunc_BeamAimedUU(uint16 j) {  // 0x91C123
 
   uint16 v5 = j;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
     j -= 2;
@@ -962,22 +987,22 @@ void XrayHdmaFunc_BeamAimedUU(uint16 j) {  // 0x91C123
       goto LABEL_12;
     }
   }
-  IndirWriteByte(&R0_, j, HIBYTE(R34));
+  IndirWriteByte(R0_, j, HIBYTE(R34));
   v2 = j - 2;
   if (v2 >= 0) {
     R18_ = v2 + 4;
     while (1) {
-      bool v1 = R34 >= g_word_7E001E;
-      R34 -= g_word_7E001E;
+      bool v1 = R34 >= R30_;
+      R34 -= R30_;
       if (!v1)
         break;
-      IndirWriteByte(&R0_, v2, HIBYTE(R34));
+      IndirWriteByte(R0_, v2, HIBYTE(R34));
       v2 -= 2;
       if (v2 < 0)
         goto LABEL_12;
     }
     do {
-      IndirWriteByte(&R0_, v2, 0);
+      IndirWriteByte(R0_, v2, 0);
       v2 -= 2;
     } while (v2 >= 0);
   } else {
@@ -986,8 +1011,8 @@ void XrayHdmaFunc_BeamAimedUU(uint16 j) {  // 0x91C123
 LABEL_12:
   v3 = v5 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
     v3 -= 2;
@@ -996,22 +1021,22 @@ LABEL_12:
       return;
     }
   }
-  IndirWriteByte(&R0_, v3, HIBYTE(R36));
+  IndirWriteByte(R0_, v3, HIBYTE(R36));
   v4 = v3 - 2;
   if (v4 >= 0) {
     R20_ = v4 + 4;
     while (1) {
-      bool v1 = __CFADD__uint16(R32, R36);
-      R36 += R32;
+      bool v1 = __CFADD__uint16(R32_, R36);
+      R36 += R32_;
       if (v1)
         break;
-      IndirWriteByte(&R0_, v4, HIBYTE(R36));
+      IndirWriteByte(R0_, v4, HIBYTE(R36));
       v4 -= 2;
       if (v4 < 0)
         return;
     }
     do {
-      IndirWriteByte(&R0_, v4, 0xFF);
+      IndirWriteByte(R0_, v4, 0xFF);
       v4 -= 2;
     } while (v4 >= 0);
   } else {
@@ -1026,8 +1051,8 @@ void XrayHdmaFunc_BeamAimedUUL(uint16 j) {  // 0x91C1CA
 
   uint16 v6 = j;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
     j -= 2;
@@ -1036,22 +1061,22 @@ void XrayHdmaFunc_BeamAimedUUL(uint16 j) {  // 0x91C1CA
       goto LABEL_12;
     }
   }
-  IndirWriteByte(&R0_, j, HIBYTE(R34));
+  IndirWriteByte(R0_, j, HIBYTE(R34));
   v2 = j - 2;
   if (v2 >= 0) {
     R18_ = v2 + 4;
     while (1) {
-      bool v1 = R34 >= g_word_7E001E;
-      R34 -= g_word_7E001E;
+      bool v1 = R34 >= R30_;
+      R34 -= R30_;
       if (!v1)
         break;
-      IndirWriteByte(&R0_, v2, HIBYTE(R34));
+      IndirWriteByte(R0_, v2, HIBYTE(R34));
       v2 -= 2;
       if (v2 < 0)
         goto LABEL_12;
     }
     do {
-      IndirWriteByte(&R0_, v2, 0);
+      IndirWriteByte(R0_, v2, 0);
       v2 -= 2;
     } while (v2 >= 0);
   } else {
@@ -1060,8 +1085,8 @@ void XrayHdmaFunc_BeamAimedUUL(uint16 j) {  // 0x91C1CA
 LABEL_12:
   v3 = v6 + 1;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
     v3 -= 2;
@@ -1070,22 +1095,22 @@ LABEL_12:
       goto LABEL_23;
     }
   }
-  IndirWriteByte(&R0_, v3, HIBYTE(R34));
+  IndirWriteByte(R0_, v3, HIBYTE(R34));
   v4 = v3 - 2;
   if (v4 >= 0) {
     R20_ = v4 + 4;
     while (1) {
-      bool v1 = R36 >= R32;
-      R36 -= R32;
+      bool v1 = R36 >= R32_;
+      R36 -= R32_;
       if (!v1)
         break;
-      IndirWriteByte(&R0_, v4, HIBYTE(R36));
+      IndirWriteByte(R0_, v4, HIBYTE(R36));
       v4 -= 2;
       if (v4 < 0)
         goto LABEL_23;
     }
     do {
-      IndirWriteByte(&R0_, v4, 0);
+      IndirWriteByte(R0_, v4, 0);
       v4 -= 2;
     } while (v4 >= 0);
   } else {
@@ -1094,7 +1119,7 @@ LABEL_12:
 LABEL_23:;
   uint16 v5 = R20_;
   do {
-    IndirWriteByte(&R0_, v5, 0xFF);
+    IndirWriteByte(R0_, v5, 0xFF);
     v5 += 2;
   } while ((int16)(v5 - R18_) < 0);
 }
@@ -1121,7 +1146,7 @@ void XrayHdmaFunc_BeamAimedD(void) {
   off_91C2B7[v0 >> 1](R24_ * 2);
   v1 = R18_;
   do {
-    IndirWriteWord(&R0_, v1, 0xFF);
+    IndirWriteWord(R0_, v1, 0xFF);
     v1 -= 2;
   } while (v1 >= 0);
 }
@@ -1129,8 +1154,8 @@ void XrayHdmaFunc_BeamAimedD(void) {
 void XrayHdmaFunc_BeamAimedDDR(uint16 j) {  // 0x91C2BD
   uint16 v6 = j;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
     j += 2;
@@ -1139,23 +1164,23 @@ void XrayHdmaFunc_BeamAimedDDR(uint16 j) {  // 0x91C2BD
       goto LABEL_12;
     }
   }
-  IndirWriteWord(&R0_, j, *(uint16 *)((char *)&R36 + 1));
+  IndirWriteWord(R0_, j, *(uint16 *)((char *)&R36 + 1));
   uint16 v2;
   v2 = j + 2;
   if ((int16)(v2 - 460) < 0) {
     R18_ = v2 - 4;
     while (1) {
-      bool v1 = __CFADD__uint16(R32, R36);
-      R36 += R32;
+      bool v1 = __CFADD__uint16(R32_, R36);
+      R36 += R32_;
       if (v1)
         break;
-      IndirWriteWord(&R0_, v2, *(uint16 *)((char *)&R36 + 1));
+      IndirWriteWord(R0_, v2, *(uint16 *)((char *)&R36 + 1));
       v2 += 2;
       if ((int16)(v2 - 460) >= 0)
         goto LABEL_12;
     }
     do {
-      IndirWriteWord(&R0_, v2, 0xFF);
+      IndirWriteWord(R0_, v2, 0xFF);
       v2 += 2;
     } while ((int16)(v2 - 460) < 0);
   } else {
@@ -1164,8 +1189,8 @@ void XrayHdmaFunc_BeamAimedDDR(uint16 j) {  // 0x91C2BD
 LABEL_12:;
   uint16 v3 = v6 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
     v3 += 2;
@@ -1174,23 +1199,23 @@ LABEL_12:;
       goto LABEL_23;
     }
   }
-  IndirWriteByte(&R0_, v3, HIBYTE(R34));
+  IndirWriteByte(R0_, v3, HIBYTE(R34));
   uint16 v4;
   v4 = v3 + 2;
   if ((int16)(v4 - 460) < 0) {
     R20_ = v4 - 4;
     while (1) {
-      bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-      R34 += g_word_7E001E;
+      bool v1 = __CFADD__uint16(R30_, R34);
+      R34 += R30_;
       if (v1)
         break;
-      IndirWriteByte(&R0_, v4, HIBYTE(R34));
+      IndirWriteByte(R0_, v4, HIBYTE(R34));
       v4 += 2;
       if ((int16)(v4 - 460) >= 0)
         goto LABEL_23;
     }
     do {
-      IndirWriteByte(&R0_, v4, 0xFF);
+      IndirWriteByte(R0_, v4, 0xFF);
       v4 += 2;
     } while ((int16)(v4 - 460) < 0);
   } else {
@@ -1199,7 +1224,7 @@ LABEL_12:;
 LABEL_23:;
   uint16 v5 = R18_;
   do {
-    IndirWriteByte(&R0_, v5, 0);
+    IndirWriteByte(R0_, v5, 0);
     v5 -= 2;
   } while ((int16)(v5 - R20_) >= 0);
   R18_ = R20_ - 1;
@@ -1207,10 +1232,10 @@ LABEL_23:;
 
 void XrayHdmaFunc_BeamAimedDD(uint16 j) {  // 0x91C381
   uint16 v5 = j;
-  if (R32) {
+  if (R32_) {
     while (1) {
-      bool v1 = R36 >= R32;
-      R36 -= R32;
+      bool v1 = R36 >= R32_;
+      R36 -= R32_;
       if (!v1)
         break;
       j += 2;
@@ -1219,22 +1244,22 @@ void XrayHdmaFunc_BeamAimedDD(uint16 j) {  // 0x91C381
         goto LABEL_15;
       }
     }
-    IndirWriteWord(&R0_, j, *(uint16 *)((char *)&R36 + 1));
+    IndirWriteWord(R0_, j, *(uint16 *)((char *)&R36 + 1));
     uint16 v2 = j + 2;
     if ((int16)(v2 - 460) < 0) {
       R18_ = v2 - 4;
       while (1) {
-        bool v1 = R36 >= R32;
-        R36 -= R32;
+        bool v1 = R36 >= R32_;
+        R36 -= R32_;
         if (!v1)
           break;
-        IndirWriteWord(&R0_, v2, *(uint16 *)((char *)&R36 + 1));
+        IndirWriteWord(R0_, v2, *(uint16 *)((char *)&R36 + 1));
         v2 += 2;
         if ((int16)(v2 - 460) >= 0)
           goto LABEL_15;
       }
       do {
-        IndirWriteWord(&R0_, v2, 0);
+        IndirWriteWord(R0_, v2, 0);
         v2 += 2;
       } while ((int16)(v2 - 460) < 0);
     } else {
@@ -1243,15 +1268,15 @@ void XrayHdmaFunc_BeamAimedDD(uint16 j) {  // 0x91C381
   } else {
     R18_ = j;
     do {
-      IndirWriteWord(&R0_, j, 0);
+      IndirWriteWord(R0_, j, 0);
       j += 2;
     } while ((int16)(j - 460) < 0);
   }
 LABEL_15:;
   uint16 v3 = v5 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
     v3 += 2;
@@ -1260,22 +1285,22 @@ LABEL_15:;
       return;
     }
   }
-  IndirWriteByte(&R0_, v3, HIBYTE(R34));
+  IndirWriteByte(R0_, v3, HIBYTE(R34));
   uint16 v4 = v3 + 2;
   if ((int16)(v4 - 460) < 0) {
     R20_ = v4 - 4;
     while (1) {
-      bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-      R34 += g_word_7E001E;
+      bool v1 = __CFADD__uint16(R30_, R34);
+      R34 += R30_;
       if (v1)
         break;
-      IndirWriteByte(&R0_, v4, HIBYTE(R34));
+      IndirWriteByte(R0_, v4, HIBYTE(R34));
       v4 += 2;
       if ((int16)(v4 - 460) >= 0)
         return;
     }
     do {
-      IndirWriteByte(&R0_, v4, 0xFF);
+      IndirWriteByte(R0_, v4, 0xFF);
       v4 += 2;
     } while ((int16)(v4 - 460) < 0);
   } else {
@@ -1286,8 +1311,8 @@ LABEL_15:;
 void XrayHdmaFunc_BeamAimedDDL(uint16 j) {  // 0x91C446
   uint16 v6 = j;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
     j += 2;
@@ -1296,23 +1321,23 @@ void XrayHdmaFunc_BeamAimedDDL(uint16 j) {  // 0x91C446
       goto LABEL_12;
     }
   }
-  IndirWriteWord(&R0_, j, *(uint16 *)((char *)&R36 + 1));
+  IndirWriteWord(R0_, j, *(uint16 *)((char *)&R36 + 1));
   uint16 v2;
   v2 = j + 2;
   if ((int16)(v2 - 460) < 0) {
     R18_ = v2 - 4;
     while (1) {
-      bool v1 = R36 >= R32;
-      R36 -= R32;
+      bool v1 = R36 >= R32_;
+      R36 -= R32_;
       if (!v1)
         break;
-      IndirWriteWord(&R0_, v2, *(uint16 *)((char *)&R36 + 1));
+      IndirWriteWord(R0_, v2, *(uint16 *)((char *)&R36 + 1));
       v2 += 2;
       if ((int16)(v2 - 460) >= 0)
         goto LABEL_12;
     }
     do {
-      IndirWriteWord(&R0_, v2, 0);
+      IndirWriteWord(R0_, v2, 0);
       v2 += 2;
     } while ((int16)(v2 - 460) < 0);
   } else {
@@ -1321,8 +1346,8 @@ void XrayHdmaFunc_BeamAimedDDL(uint16 j) {  // 0x91C446
 LABEL_12:;
   uint16 v3 = v6 + 1;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
     v3 += 2;
@@ -1331,23 +1356,23 @@ LABEL_12:;
       goto LABEL_23;
     }
   }
-  IndirWriteByte(&R0_, v3, HIBYTE(R34));
+  IndirWriteByte(R0_, v3, HIBYTE(R34));
   uint16 v4;
   v4 = v3 + 2;
   if ((int16)(v4 - 460) < 0) {
     R20_ = v4 - 4;
     while (1) {
-      bool v1 = R34 >= g_word_7E001E;
-      R34 -= g_word_7E001E;
+      bool v1 = R34 >= R30_;
+      R34 -= R30_;
       if (!v1)
         break;
-      IndirWriteByte(&R0_, v4, HIBYTE(R34));
+      IndirWriteByte(R0_, v4, HIBYTE(R34));
       v4 += 2;
       if ((int16)(v4 - 460) >= 0)
         goto LABEL_23;
     }
     do {
-      IndirWriteByte(&R0_, v4, 0);
+      IndirWriteByte(R0_, v4, 0);
       v4 += 2;
     } while ((int16)(v4 - 460) < 0);
   } else {
@@ -1356,7 +1381,7 @@ LABEL_12:;
 LABEL_23:;
   uint16 v5 = R20_;
   do {
-    IndirWriteByte(&R0_, v5, 0xFF);
+    IndirWriteByte(R0_, v5, 0xFF);
     v5 -= 2;
   } while ((int16)(v5 - R18_) >= 0);
 }
@@ -1365,30 +1390,27 @@ void XrayHdmaFunc_BeamHoriz(void) {  // 0x91C505
   int16 v1;
 
   uint16 v0 = 2 * (R24_ - 1);
-  IndirWriteWord(&R0_, v0, 0xFF00);
+  IndirWriteWord(R0_, v0, 0xFF00);
   v1 = v0 - 2;
   do {
-    if (*(uint16 *)IndirPtr(&R0_, v1) == 255)
+    if (IndirReadWord(R0_, v1) == 255)
       break;
-    IndirWriteWord(&R0_, v1, 0xFF);
+    IndirWriteWord(R0_, v1, 0xFF);
     v1 -= 2;
   } while (v1 >= 0);
   uint16 v2 = 2 * R24_;
   do {
-    if (*(uint16 *)IndirPtr(&R0_, v2) == 255)
+    if (IndirReadWord(R0_, v2) == 255)
       break;
-    IndirWriteWord(&R0_, v2, 0xFF);
+    IndirWriteWord(R0_, v2, 0xFF);
     v2 += 2;
   } while ((int16)(v2 - 460) < 0);
 }
 
 void CalculateXrayHdmaTable_OriginOnScreen(uint16 k, uint16 j) {  // 0x91C54B
-  int16 v2;
-  uint16 v3;
+  int v3;
 
-  LOBYTE(v2) = HIBYTE(k);
-  HIBYTE(v2) = k;
-  R22_ = v2 & 0xFF00;
+  R22_ = k << 8;
   R24_ = j;
   R26_ = R18_ - R20_;
   R26_ += (R26_ & 0x8000u) != 0 ? 0x100 : 0;
@@ -1423,11 +1445,11 @@ LABEL_16:;
   uint16 v4 = R26_;
   if (!sign16(R26_ - 128))
     v4 = R26_ - 128;
-  g_word_7E001E = kTanTable[v4];
+  R30_ = kTanTable[v4];
   uint16 v5 = R28_;
   if (!sign16(R28_ - 128))
     v5 = R28_ - 128;
-  R32 = kTanTable[v5];
+  R32_ = kTanTable[v5];
   grapple_beam_unkD1E = 0;
   static Func_V *const kXrayHdmaOnScreen_Funcs[5] = {
     XrayHdmaOnScreen_BeamAimedR,
@@ -1444,38 +1466,38 @@ void XrayHdmaOnScreen_BeamAimedR(void) {  // 0x91C5FF
   int16 v1;
 
   uint16 v0 = 2 * (R24_ - 1);
-  IndirWriteWord(&R0_, v0, HIBYTE(R22_) | 0xFF00);
+  IndirWriteWord(R0_, v0, HIBYTE(R22_) | 0xFF00);
   v1 = v0 - 2;
   R34 = R22_;
   R36 = R22_;
   while (1) {
-    bool v2 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v2 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v2)
       break;
-    IndirWriteWord(&R0_, v1, HIBYTE(R34) | 0xFF00);
+    IndirWriteWord(R0_, v1, HIBYTE(R34) | 0xFF00);
     v1 -= 2;
     if (v1 < 0)
       goto LABEL_6;
   }
   do {
-    IndirWriteWord(&R0_, v1, 0xFF);
+    IndirWriteWord(R0_, v1, 0xFF);
     v1 -= 2;
   } while (v1 >= 0);
 LABEL_6:;
   uint16 v3 = 2 * R24_;
   while (1) {
-    bool v2 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v2 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v2)
       break;
-    IndirWriteWord(&R0_, v3, HIBYTE(R36) | 0xFF00);
+    IndirWriteWord(R0_, v3, HIBYTE(R36) | 0xFF00);
     v3 += 2;
     if ((int16)(v3 - 460) >= 0)
       return;
   }
   do {
-    IndirWriteWord(&R0_, v3, 0xFF);
+    IndirWriteWord(R0_, v3, 0xFF);
     v3 += 2;
   } while ((int16)(v3 - 460) < 0);
 }
@@ -1484,46 +1506,46 @@ void XrayHdmaOnScreen_BeamAimedL(void) {  // 0x91C660
   int16 v1;
 
   uint16 v0 = 2 * (R24_ - 1);
-  IndirWriteWord(&R0_, v0, R22_ & 0xFF00);
+  IndirWriteWord(R0_, v0, R22_ & 0xFF00);
   v1 = v0 - 2;
   R34 = R22_;
   R36 = R22_;
   while (1) {
-    bool v2 = R36 >= R32;
-    R36 -= R32;
+    bool v2 = R36 >= R32_;
+    R36 -= R32_;
     if (!v2)
       break;
-    IndirWriteWord(&R0_, v1, R36 & 0xFF00);
+    IndirWriteWord(R0_, v1, R36 & 0xFF00);
     v1 -= 2;
     if (v1 < 0)
       goto LABEL_6;
   }
   do {
-    IndirWriteWord(&R0_, v1, 0xFF);
+    IndirWriteWord(R0_, v1, 0xFF);
     v1 -= 2;
   } while (v1 >= 0);
 LABEL_6:;
   uint16 v3 = 2 * R24_;
   while (1) {
-    bool v2 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v2 = R34 >= R30_;
+    R34 -= R30_;
     if (!v2)
       break;
-    IndirWriteWord(&R0_, v3, R34 & 0xFF00);
+    IndirWriteWord(R0_, v3, R34 & 0xFF00);
     v3 += 2;
     if ((int16)(v3 - 460) >= 0)
       return;
   }
   do {
-    IndirWriteWord(&R0_, v3, 0xFF);
+    IndirWriteWord(R0_, v3, 0xFF);
     v3 += 2;
   } while ((int16)(v3 - 460) < 0);
 }
 
 void XrayHdmaOnScreen_BeamAimedU(void) {  // 0x91C6C1
   uint16 v0 = 2 * (R24_ - 1);
-  IndirWriteByte(&R0_, v0++, HIBYTE(R22_));
-  IndirWriteByte(&R0_, v0, HIBYTE(R22_));
+  IndirWriteByte(R0_, v0++, HIBYTE(R22_));
+  IndirWriteByte(R0_, v0, HIBYTE(R22_));
   uint16 v1 = v0 - 3;
   uint16 v2;
   R34 = R22_;
@@ -1543,9 +1565,9 @@ void XrayHdmaOnScreen_BeamAimedU(void) {  // 0x91C6C1
   off_91C716[v2 >> 1](v1);
   uint16 v3 = 2 * R24_;
   do {
-    if (*(uint16 *)IndirPtr(&R0_, v3) == 255)
+    if (IndirReadWord(R0_, v3) == 255)
       break;
-    IndirWriteWord(&R0_, v3, 0xFF);
+    IndirWriteWord(R0_, v3, 0xFF);
     v3 += 2;
   } while ((int16)(v3 - 460) < 0);
 }
@@ -1556,39 +1578,39 @@ void XrayHdmaOnScreen_BeamAimedUUR(uint16 v0) {  // 0x91C71C
 
   v4 = v0;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
-    IndirWriteByte(&R0_, v0, HIBYTE(R34));
+    IndirWriteByte(R0_, v0, HIBYTE(R34));
     v0 -= 2;
     if ((v0 & 0x8000u) != 0)
       goto LABEL_7;
   }
   grapple_beam_unkD1E = v0;
   do {
-    IndirWriteByte(&R0_, v0, 0xFF);
+    IndirWriteByte(R0_, v0, 0xFF);
     v0 -= 2;
   } while ((v0 & 0x8000u) == 0);
 LABEL_7:
   v2 = v4 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
-    IndirWriteByte(&R0_, v2, HIBYTE(R36));
+    IndirWriteByte(R0_, v2, HIBYTE(R36));
     v2 -= 2;
     if (v2 < 0)
       return;
   }
   do {
-    IndirWriteByte(&R0_, v2, 0xFF);
+    IndirWriteByte(R0_, v2, 0xFF);
     v2 -= 2;
   } while (v2 >= 0);
   if (grapple_beam_unkD1E) {
     for (int i = grapple_beam_unkD1E - 2; i >= 0; i -= 2)
-      IndirWriteWord(&R0_, i, 0xFF);
+      IndirWriteWord(R0_, i, 0xFF);
   }
 }
 
@@ -1598,33 +1620,33 @@ void XrayHdmaOnScreen_BeamAimedUU(uint16 v0) {  // 0x91C77F
 
   v3 = v0;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
-    IndirWriteByte(&R0_, v0, HIBYTE(R34));
+    IndirWriteByte(R0_, v0, HIBYTE(R34));
     v0 -= 2;
     if (v0 < 0)
       goto LABEL_6;
   }
   do {
-    IndirWriteByte(&R0_, v0, 0);
+    IndirWriteByte(R0_, v0, 0);
     v0 -= 2;
   } while (v0 >= 0);
 LABEL_6:
   v2 = v3 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
-    IndirWriteByte(&R0_, v2, HIBYTE(R36));
+    IndirWriteByte(R0_, v2, HIBYTE(R36));
     v2 -= 2;
     if (v2 < 0)
       return;
   }
   do {
-    IndirWriteByte(&R0_, v2, 0xFF);
+    IndirWriteByte(R0_, v2, 0xFF);
     v2 -= 2;
   } while (v2 >= 0);
 }
@@ -1636,39 +1658,39 @@ void XrayHdmaOnScreen_BeamAimedUUL(uint16 j) {  // 0x91C7CB
 
   uint16 v4 = j;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
-    IndirWriteByte(&R0_, j, HIBYTE(R34));
+    IndirWriteByte(R0_, j, HIBYTE(R34));
     j -= 2;
     if ((j & 0x8000u) != 0)
       goto LABEL_6;
   }
   do {
-    IndirWriteByte(&R0_, j, 0);
+    IndirWriteByte(R0_, j, 0);
     j -= 2;
   } while ((j & 0x8000u) == 0);
 LABEL_6:
   v2 = v4 + 1;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
-    IndirWriteByte(&R0_, v2, HIBYTE(R36));
+    IndirWriteByte(R0_, v2, HIBYTE(R36));
     v2 -= 2;
     if (v2 < 0)
       return;
   }
   v5 = v2;
   do {
-    IndirWriteByte(&R0_, v2, 0);
+    IndirWriteByte(R0_, v2, 0);
     v2 -= 2;
   } while (v2 >= 0);
   v3 = v5 - 1;
   do {
-    IndirWriteByte(&R0_, v3, 0xFF);
+    IndirWriteByte(R0_, v3, 0xFF);
     v3 -= 2;
   } while (v3 >= 0);
 }
@@ -1678,8 +1700,8 @@ void XrayHdmaOnScreen_BeamAimedD(void) {  // 0x91C822
 
   uint16 v2;
   uint16 v0 = 2 * (R24_ - 1);
-  IndirWriteByte(&R0_, v0++, HIBYTE(R22_));
-  IndirWriteByte(&R0_, v0, HIBYTE(R22_));
+  IndirWriteByte(R0_, v0++, HIBYTE(R22_));
+  IndirWriteByte(R0_, v0, HIBYTE(R22_));
   uint16 v1 = v0 + 1;
   R34 = R22_;
   R36 = R22_;
@@ -1698,9 +1720,9 @@ void XrayHdmaOnScreen_BeamAimedD(void) {  // 0x91C822
   off_91C874[v2 >> 1](v1);
   v3 = 2 * (R24_ - 2);
   do {
-    if (*(uint16 *)IndirPtr(&R0_, v3) == 255)
+    if (IndirReadWord(R0_, v3) == 255)
       break;
-    IndirWriteWord(&R0_, v3, 0xFF);
+    IndirWriteWord(R0_, v3, 0xFF);
     v3 -= 2;
   } while (v3 >= 0);
 }
@@ -1708,41 +1730,41 @@ void XrayHdmaOnScreen_BeamAimedD(void) {  // 0x91C822
 void XrayHdmaOnScreen_BeamAimedDDR(uint16 j) {  // 0x91C87A
   uint16 v4 = j;
   while (1) {
-    bool v1 = __CFADD__uint16(R32, R36);
-    R36 += R32;
+    bool v1 = __CFADD__uint16(R32_, R36);
+    R36 += R32_;
     if (v1)
       break;
-    IndirWriteWord(&R0_, j, *(uint16 *)((char *)&R36 + 1));
+    IndirWriteWord(R0_, j, *(uint16 *)((char *)&R36 + 1));
     j += 2;
     if ((int16)(j - 460) >= 0)
       goto LABEL_7;
   }
   grapple_beam_unkD1E = j;
   do {
-    IndirWriteWord(&R0_, j, 0xFF);
+    IndirWriteWord(R0_, j, 0xFF);
     j += 2;
   } while ((int16)(j - 460) < 0);
 LABEL_7:;
   uint16 v2 = v4 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
-    IndirWriteByte(&R0_, v2, HIBYTE(R34));
+    IndirWriteByte(R0_, v2, HIBYTE(R34));
     v2 += 2;
     if ((int16)(v2 - 460) >= 0)
       return;
   }
   do {
-    IndirWriteByte(&R0_, v2, 0xFF);
+    IndirWriteByte(R0_, v2, 0xFF);
     v2 += 2;
   } while ((int16)(v2 - 460) < 0);
   if (grapple_beam_unkD1E) {
     uint16 v3 = grapple_beam_unkD1E + 2;
     if ((int16)(grapple_beam_unkD1E - 458) < 0) {
       do {
-        IndirWriteWord(&R0_, v3, 0xFF);
+        IndirWriteWord(R0_, v3, 0xFF);
         v3 += 2;
       } while ((int16)(v3 - 460) < 0);
     }
@@ -1752,33 +1774,33 @@ LABEL_7:;
 void XrayHdmaOnScreen_BeamAimedDD(uint16 j) {  // 0x91C8E8
   uint16 v3 = j;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
-    IndirWriteWord(&R0_, j, *(uint16 *)((char *)&R36 + 1));
+    IndirWriteWord(R0_, j, *(uint16 *)((char *)&R36 + 1));
     j += 2;
     if ((int16)(j - 460) >= 0)
       goto LABEL_6;
   }
   do {
-    IndirWriteWord(&R0_, j, 0);
+    IndirWriteWord(R0_, j, 0);
     j += 2;
   } while ((int16)(j - 460) < 0);
 LABEL_6:;
   uint16 v2 = v3 + 1;
   while (1) {
-    bool v1 = __CFADD__uint16(g_word_7E001E, R34);
-    R34 += g_word_7E001E;
+    bool v1 = __CFADD__uint16(R30_, R34);
+    R34 += R30_;
     if (v1)
       break;
-    IndirWriteByte(&R0_, v2, HIBYTE(R34));
+    IndirWriteByte(R0_, v2, HIBYTE(R34));
     v2 += 2;
     if ((int16)(v2 - 460) >= 0)
       return;
   }
   do {
-    IndirWriteByte(&R0_, v2, 0xFF);
+    IndirWriteByte(R0_, v2, 0xFF);
     v2 += 2;
   } while ((int16)(v2 - 460) < 0);
 }
@@ -1786,39 +1808,39 @@ LABEL_6:;
 void XrayHdmaOnScreen_BeamAimedDDL(uint16 j) {  // 0x91C939
   uint16 v4 = j;
   while (1) {
-    bool v1 = R36 >= R32;
-    R36 -= R32;
+    bool v1 = R36 >= R32_;
+    R36 -= R32_;
     if (!v1)
       break;
-    IndirWriteWord(&R0_, j, *(uint16 *)((char *)&R36 + 1));
+    IndirWriteWord(R0_, j, *(uint16 *)((char *)&R36 + 1));
     j += 2;
     if ((int16)(j - 460) >= 0)
       goto LABEL_6;
   }
   do {
-    IndirWriteWord(&R0_, j, 0);
+    IndirWriteWord(R0_, j, 0);
     j += 2;
   } while ((int16)(j - 460) < 0);
 LABEL_6:;
   uint16 v2 = v4 + 1;
   while (1) {
-    bool v1 = R34 >= g_word_7E001E;
-    R34 -= g_word_7E001E;
+    bool v1 = R34 >= R30_;
+    R34 -= R30_;
     if (!v1)
       break;
-    IndirWriteByte(&R0_, v2, HIBYTE(R34));
+    IndirWriteByte(R0_, v2, HIBYTE(R34));
     v2 += 2;
     if ((int16)(v2 - 460) >= 0)
       return;
   }
   uint16 v5 = v2;
   do {
-    IndirWriteByte(&R0_, v2, 0);
+    IndirWriteByte(R0_, v2, 0);
     v2 += 2;
   } while ((int16)(v2 - 460) < 0);
   uint16 v3 = v5 - 1;
   do {
-    IndirWriteByte(&R0_, v3, 0xFF);
+    IndirWriteByte(R0_, v3, 0xFF);
     v3 += 2;
   } while ((int16)(v3 - 460) < 0);
 }
@@ -1828,23 +1850,22 @@ void XrayHdmaOnScreen_BeamHoriz(void) {  // 0x91C998
 
   uint16 v0 = 2 * (R24_ - 1);
   if (R18_ == 64)
-    IndirWriteWord(&R0_, v0, HIBYTE(R22_) | 0xFF00);
+    IndirWriteWord(R0_, v0, HIBYTE(R22_) | 0xFF00);
   else
-    IndirWriteWord(&R0_, v0, R22_ & 0xFF00);
+    IndirWriteWord(R0_, v0, R22_ & 0xFF00);
   v1 = v0 - 2;
   do {
-    IndirWriteWord(&R0_, v1, 0xFF);
+    IndirWriteWord(R0_, v1, 0xFF);
     v1 -= 2;
   } while (v1 >= 0);
   uint16 v2 = 2 * R24_;
   do {
-    IndirWriteWord(&R0_, v2, 0xFF);
+    IndirWriteWord(R0_, v2, 0xFF);
     v2 += 2;
   } while ((int16)(v2 - 460) < 0);
 }
 
 void XrayRunHandler(void) {  // 0x91CAD6
-#define unk_91CAF2 (*(SpawnHdmaObject_Args*)RomPtr(0x91caf2))
   if (!time_is_frozen_flag && (button_config_run_b & joypad1_lastkeys) != 0) {
     if (Xray_Initialize() & 1)
       SpawnHdmaObject(0x91, &unk_91CAF2);
@@ -1901,14 +1922,14 @@ void Xray_SetupStage4(void) {  // 0x91CB8E
     R18_ = 16;
     R26_ = R24_ & 0x7E0;
     R28_ = R24_ & 0x1F;
-    g_word_7E001E = 0;
+    R30_ = 0;
     do {
-      if (!sign16(g_word_7E001E + R28_ - 32)) {
+      if (!sign16(R30_ + R28_ - 32)) {
         R26_ = (R26_ + 1024) & 0x7E0;
         R28_ = 0;
-        g_word_7E001E = 0;
+        R30_ = 0;
       }
-      uint16 v0 = g_word_7E001E + R28_ + R26_;
+      uint16 v0 = R30_ + R28_ + R26_;
       uint16 v11 = ram4000.xray_tilemaps[v0 + 4096];
       uint16 v10 = ram4000.xray_tilemaps[v0 + 4097];
       uint16 v9 = ram4000.xray_tilemaps[v0 + 4128];
@@ -1920,11 +1941,11 @@ void Xray_SetupStage4(void) {  // 0x91CB8E
       *(uint16 *)((char *)&ram4000.xray_tilemaps[1] + v2) = v10;
       *(uint16 *)((char *)ram4000.xray_tilemaps + v2) = v11;
       R22_ += 4;
-      g_word_7E001E += 2;
+      R30_ += 2;
       --R18_;
     } while (R18_);
     Xray_SetupStage4_Func1();
-    R32 = R24_ & 0x400;
+    R32_ = R24_ & 0x400;
     R24_ = (R24_ & 0x400) + ((R24_ + 64) & 0x3FF);
     R22_ += 64;
     --R20_;
@@ -1963,13 +1984,13 @@ void Xray_SetupStage4(void) {  // 0x91CB8E
 void Xray_SetupStage4_Func1(void) {  // 0x91CCF1
   int16 v0;
 
-  R32 = R26_;
-  v0 = g_word_7E001E + R28_;
-  if (!sign16(g_word_7E001E + R28_ - 32)) {
-    R32 = (R32 + 1024) & 0x7E0;
+  R32_ = R26_;
+  v0 = R30_ + R28_;
+  if (!sign16(R30_ + R28_ - 32)) {
+    R32_ = (R32_ + 1024) & 0x7E0;
     v0 = 0;
   }
-  uint16 v1 = R32 + v0;
+  uint16 v1 = R32_ + v0;
   uint16 v6 = ram4000.xray_tilemaps[v1 + 4096];
   uint16 v5 = ram4000.xray_tilemaps[v1 + 4097];
   uint16 v4 = ram4000.xray_tilemaps[v1 + 4128];
@@ -2029,7 +2050,6 @@ uint16 Xray_Func21(uint16 j) {  // 0x91CDCB
   return j;
 }
 
-#define stru_91D2D6 ((XrayBlockData*)RomPtr(0x91d2d6))
 
 PairU16 Xray_HandleXrayedBlock(uint16 k) {  // 0x91CDD6
   uint16 value;
@@ -2143,7 +2163,6 @@ void Xray_Func6C(void) {  // 0x91CED0
   Xray_Func20();
 }
 
-#define stru_91D2D6 ((XrayBlockData*)RomPtr(0x91d2d6))
 
 void Xray_Func20(void) {  // 0x91CEFD
   int i;
@@ -2225,7 +2244,7 @@ uint16 Xray_Func11(uint16 j) {  // 0x91CF6F
 }
 
 void Xray_Func12(uint16 j) {  // 0x91CFBF
-  uint8 *v1 = RomPtr_91(R3_.addr);
+  const uint8 *v1 = RomPtr_91(R3_.addr);
   Xray_Func13(*(uint16 *)&v1[j]);
 }
 
@@ -2370,10 +2389,10 @@ void Xray_SetupStage7(void) {  // 0x91D1A0
     v1->vram_dst = ((reg_BG2SC & 0xFC) << 8) + 1024;
     vram_write_queue_tail = v0 + 7;
   }
-  mov24((LongPtr *)&demo_enable, 0x9800E4);
-  mov24((LongPtr *)((char *)&demo_num_input_frames + 1), 0x98C8E4);
-  mov24((LongPtr *)&demo_input_prev_new, 0x999098);
-  *(uint16 *)((char *)&demo_backup_prev_controller_input + 1) = 0;
+  mov24(&hdma_ptr_1, 0x9800E4);
+  mov24(&hdma_ptr_2, 0x98C8E4);
+  mov24(&hdma_ptr_3, 0x999098);
+  hdma_var_1 = 0;
   demo_input_pre_instr = 0;
   demo_input_instr_timer = 0;
   demo_input_instr_ptr = 0;
@@ -2386,7 +2405,7 @@ void Xray_SetupStage7(void) {  // 0x91D1A0
 }
 
 void HdmaobjPreInstr_XraySetup(uint16 k) {  // 0x91D27F
-  int16 v1;
+  uint16 v1;
 
   v1 = 4096;
   if (fx_type == 36) {
@@ -2408,10 +2427,6 @@ LABEL_5:
 
 void Xray_SetupStage8_SetBackdropColor(void) {  // 0x91D2BC
   palette_buffer[0] = 3171;
-}
-
-void sub_91D2D1(void) {  // 0x91D2D1
-  ;
 }
 
 void GameState_28_Unused_(void) {  // 0x91D4DA
@@ -2509,13 +2524,12 @@ void InitializeSuitPickupHdma(void) {  // 0x91D692
   reg_COLDATA[0] = suit_pickup_color_math_R;
   reg_COLDATA[1] = suit_pickup_color_math_G;
   reg_COLDATA[2] = suit_pickup_color_math_B;
-  mov24((LongPtr *)&demo_enable, 0x9800E4);
-  mov24((LongPtr *)((char *)&demo_num_input_frames + 1), 0x98C8E4);
-  mov24((LongPtr *)&demo_input_prev_new, 0x999098);
-  *(uint16 *)((char *)&demo_backup_prev_controller_input + 1) = 0;
+  mov24(&hdma_ptr_1, 0x9800E4);
+  mov24(&hdma_ptr_2, 0x98C8E4);
+  mov24(&hdma_ptr_3, 0x999098);
+  hdma_var_1 = 0;
 }
 
-#define off_91D727 ((uint16*)RomPtr(0x91d727))
 
 static Func_U8 *const off_91D72D[11] = {  // 0x91D6F7
   Samus_HandleScrewAttackSpeedBoostingPals,
@@ -2539,9 +2553,7 @@ void Samus_HandlePalette(void) {
   }
   HandleMiscSamusPalette();
 }
-#define kSamusPalette_HyperBeam ((uint16*)RomPtr(0x91d829))
-#define kSamusPalette_NonPseudoScrew ((uint16*)RomPtr(0x91d7d5))
-#define kSamusPalette_PseudoScrew ((uint16*)RomPtr(0x91d7ff))
+
 uint8 HandleBeamChargePalettes(void) {  // 0x91D743
   if (charged_shot_glow_timer) {
     if (hyper_beam_flag) {
@@ -2550,7 +2562,7 @@ uint8 HandleBeamChargePalettes(void) {  // 0x91D743
           charged_shot_glow_timer = 0;
           return 1;
         }
-        CopyToSamusSuitPalette(kSamusPalette_HyperBeam[(uint8)(charged_shot_glow_timer & 0x1E) >> 1]);
+        CopyToSamusSuitPalette(kSamusPalette_HyperBeam[(charged_shot_glow_timer & 0x1E) >> 1]);
       }
       --charged_shot_glow_timer;
       return 0;
@@ -2562,15 +2574,14 @@ uint8 HandleBeamChargePalettes(void) {  // 0x91D743
     } else {
       return 1;
     }
-  } else if (grapple_beam_function == (uint16)FUNC16(GrappleBeamFunc_Inactive)
+  } else if (grapple_beam_function == FUNC16(GrappleBeamFunc_Inactive)
              && flare_counter
              && !sign16(flare_counter - 60)) {
     if (samus_contact_damage_index == 4)
       R36 = kSamusPalette_PseudoScrew[samus_suit_palette_index >> 1];
     else
       R36 = kSamusPalette_NonPseudoScrew[samus_suit_palette_index >> 1];
-    uint16 v0 = *(uint16 *)RomPtr_91(R36 + samus_charge_palette_index);
-    CopyToSamusSuitPalette(v0);
+    CopyToSamusSuitPalette(*(uint16 *)RomPtr_91(R36 + samus_charge_palette_index));
     uint16 v1 = samus_charge_palette_index + 2;
     if (!sign16(samus_charge_palette_index - 10))
       v1 = 0;
@@ -2582,12 +2593,7 @@ uint8 HandleBeamChargePalettes(void) {  // 0x91D743
   }
 }
 
-#define word_9BA3C0 ((uint16*)RomPtr(0x9ba3c0))
 uint8 HandleVisorPalette(void) {  // 0x91D83F
-  int16 v2;
-  uint16 v3;
-  char v4; // t0
-
   if (timer_for_shine_timer == 8)
     return 0;
   if (fx_layer_blending_config_a == 40 || fx_layer_blending_config_a == 42) {
@@ -2597,13 +2603,10 @@ uint8 HandleVisorPalette(void) {  // 0x91D83F
       return 0;
     samus_visor_palette_timer_index = v1 | 5;
     palette_buffer[196] = word_9BA3C0[HIBYTE(v1) >> 1];
-    v2 = HIBYTE(v1) + 2;
+    int v2 = HIBYTE(v1) + 2;
     if (sign16(v2 - 12)) {
-      v4 = v2;
-      LOBYTE(v3) = HIBYTE(v2);
-      HIBYTE(v3) = v4;
-      R18_ = v3;
-      samus_visor_palette_timer_index = v3 | (uint8)samus_visor_palette_timer_index;
+      R18_ = swap16(v2);
+      samus_visor_palette_timer_index = R18_ | (uint8)samus_visor_palette_timer_index;
     } else {
       samus_visor_palette_timer_index = (uint8)samus_visor_palette_timer_index | 0x600;
     }
@@ -2614,8 +2617,6 @@ uint8 HandleVisorPalette(void) {  // 0x91D83F
   }
 }
 
-#define kSamus_SpeedBoostingPalettes ((uint16*)RomPtr(0x91d998))
-#define kSamus_HyperBeamPalettes ((uint16*)RomPtr(0x91d99e))
 
 void HandleMiscSamusPalette(void) {  // 0x91D8A5
   if (!samus_special_super_palette_flags) {
@@ -2624,7 +2625,7 @@ void HandleMiscSamusPalette(void) {  // 0x91D8A5
       return;
     if (samus_hurt_flash_counter == 2) {
       if (!cinematic_function
-          && (frame_handler_beta != (uint16)FUNC16(j_HandleDemoRecorder_2_0)
+          && (frame_handler_beta != FUNC16(j_HandleDemoRecorder_2_0)
               || samus_pose != kPose_54_FaceL_Knockback)) {
         QueueSfx1_Max6(0x35u);
         goto LABEL_14;
@@ -2646,7 +2647,7 @@ LABEL_17:;
     uint16 v1 = samus_hurt_flash_counter + 1;
     samus_hurt_flash_counter = v1;
     if (v1 == 40) {
-      if (grapple_beam_function == (uint16)FUNC16(GrappleBeamFunc_Inactive)) {
+      if (grapple_beam_function == FUNC16(GrappleBeamFunc_Inactive)) {
         if (samus_movement_type == kMovementType_03_SpinJumping || samus_movement_type == kMovementType_14_WallJumping) {
           CallSomeSamusCode(0x1Cu);
         } else if (!sign16(flare_counter - 16) && (button_config_shoot_x & joypad1_lastkeys) != 0) {
@@ -2677,8 +2678,6 @@ LABEL_17:;
   }
 }
 
-#define kSamusPal_ScrewAttack ((uint16*)RomPtr(0x91da4a))
-#define kSamusPal_SpeedBoost ((uint16*)RomPtr(0x91daa9))
 
 uint8 Samus_HandleScrewAttackSpeedBoostingPals(void) {  // 0x91D9B2
   if ((samus_suit_palette_index & 4) == 0) {
@@ -2738,7 +2737,6 @@ LABEL_10:
   return 1;
 }
 
-#define kSamusPal_SpeedBoostShine ((uint16*)RomPtr(0x91db10))
 
 uint8 Samus_SpeedBoosterShinePals(void) {  // 0x91DAC7
   uint16 v0 = samus_shine_timer;
@@ -2764,7 +2762,6 @@ uint8 Samus_SpeedBoosterShinePals(void) {  // 0x91DAC7
   }
 }
 
-#define kSamusPal_Shinespark ((uint16*)RomPtr(0x91db75))
 uint8 Samus_HandleShinesparkingPals(void) {  // 0x91DB3A
   bool v0 = (--samus_shine_timer & 0x8000u) != 0;
   if (!samus_shine_timer || v0) {
@@ -2783,8 +2780,6 @@ uint8 Samus_HandleShinesparkingPals(void) {  // 0x91DB3A
   }
 }
 
-#define stru_91DC00 ((SamusCrystalFlashPalTable*)RomPtr(0x91dc00))
-#define off_91DC28 ((uint16*)RomPtr(0x91dc28))
 uint8 Samus_HandleCrystalFlashPals(void) {  // 0x91DB93
   if ((samus_shine_timer & 0x8000u) != 0) {
     WriteBeamPalette_A(equipped_beams);
@@ -2816,27 +2811,11 @@ uint8 Samus_HandleCrystalFlashPals(void) {  // 0x91DB93
 }
 
 void Samus_Copy10PalColors(uint16 v0) {  // 0x91DC34
-  uint16 *v1 = (uint16 *)RomPtr_9B(v0);
-  palette_buffer[224] = *v1;
-  palette_buffer[225] = v1[1];
-  palette_buffer[226] = v1[2];
-  palette_buffer[227] = v1[3];
-  palette_buffer[228] = v1[4];
-  palette_buffer[229] = v1[5];
-  palette_buffer[230] = v1[6];
-  palette_buffer[231] = v1[7];
-  palette_buffer[232] = v1[8];
-  palette_buffer[233] = v1[9];
+  memcpy(&palette_buffer[224], RomPtr_9B(v0), 20);
 }
 
 void Samus_Copy6PalColors(uint16 j) {  // 0x91DC82
-  uint16 *v1 = (uint16 *)RomPtr_9B(j);
-  palette_buffer[234] = *v1;
-  palette_buffer[235] = v1[1];
-  palette_buffer[236] = v1[2];
-  palette_buffer[237] = v1[3];
-  palette_buffer[238] = v1[4];
-  palette_buffer[239] = v1[5];
+  memcpy(&palette_buffer[234], RomPtr_9B(j), 12);
 }
 
 uint8 Samus_HandleXrayPals(void) {  // 0x91DCB4
@@ -2880,43 +2859,11 @@ uint8 nullsub_164(void) {  // 0x91DD31
 }
 
 void CopyToSamusSuitPalette(uint16 k) {  // 0x91DD5B
-  uint16 *v1 = (uint16 *)RomPtr_9B(k);
-  palette_buffer[192] = *v1;
-  palette_buffer[193] = v1[1];
-  palette_buffer[194] = v1[2];
-  palette_buffer[195] = v1[3];
-  palette_buffer[196] = v1[4];
-  palette_buffer[197] = v1[5];
-  palette_buffer[198] = v1[6];
-  palette_buffer[199] = v1[7];
-  palette_buffer[200] = v1[8];
-  palette_buffer[201] = v1[9];
-  palette_buffer[202] = v1[10];
-  palette_buffer[203] = v1[11];
-  palette_buffer[204] = v1[12];
-  palette_buffer[205] = v1[13];
-  palette_buffer[206] = v1[14];
-  palette_buffer[207] = v1[15];
+  memcpy(&palette_buffer[192], (uint16 *)RomPtr_9B(k), 32);
 }
 
 void CopyToSamusSuitTargetPalette(uint16 k) {  // 0x91DDD7
-  uint16 *v1 = (uint16 *)RomPtr_9B(k);
-  target_palettes[192] = *v1;
-  target_palettes[193] = v1[1];
-  target_palettes[194] = v1[2];
-  target_palettes[195] = v1[3];
-  target_palettes[196] = v1[4];
-  target_palettes[197] = v1[5];
-  target_palettes[198] = v1[6];
-  target_palettes[199] = v1[7];
-  target_palettes[200] = v1[8];
-  target_palettes[201] = v1[9];
-  target_palettes[202] = v1[10];
-  target_palettes[203] = v1[11];
-  target_palettes[204] = v1[12];
-  target_palettes[205] = v1[13];
-  target_palettes[206] = v1[14];
-  target_palettes[207] = v1[15];
+  memcpy(&target_palettes[192], (uint16 *)RomPtr_9B(k), 32);
 }
 
 void Samus_CancelSpeedBoost(void) {  // 0x91DE53
@@ -3149,11 +3096,11 @@ uint8 Xray_Initialize(void) {  // 0x91E16D
   DisablePLMs();
   DisableAnimtiles();
   DisablePaletteFx();
-  mov24((LongPtr *)&demo_enable, 0x980001);
+  mov24(&hdma_ptr_1, 0x980001);
   *(uint16 *)((char *)&demo_num_input_frames + 1) = 0;
   demo_input_prev = -26424;
-  mov24((LongPtr *)&demo_input_prev_new, 0x999098);
-  *(uint16 *)((char *)&demo_backup_prev_controller_input + 1) = 0;
+  mov24(&hdma_ptr_3, 0x999098);
+  hdma_var_1 = 0;
   demo_input_pre_instr = 0;
   demo_input_instr_timer = 0;
   demo_input_instr_ptr = 0;
@@ -3392,7 +3339,7 @@ void SamusFunc_E633(void) {
     speed_echo_ypos[0] = 0;
     speed_echo_ypos[1] = 0;
   }
-  if (grapple_beam_function == (uint16)FUNC16(GrappleBeamFunc_Inactive)) {
+  if (grapple_beam_function == FUNC16(GrappleBeamFunc_Inactive)) {
     if ((equipped_beams & 0x1000) != 0) {
       if (!sign16(flare_counter - 16))
         QueueSfx1_Max6(0x41u);
@@ -3515,7 +3462,7 @@ static Func_V *const kSamus_HandleTransFromBlockColl[6] = {  // 0x91E8B6
 
 void Samus_HandleTransFromBlockColl(void) {
   if (input_to_pose_calc)
-    kSamus_HandleTransFromBlockColl[(uint16)(2 * (uint8)input_to_pose_calc) >> 1]();
+    kSamus_HandleTransFromBlockColl[(uint8)input_to_pose_calc]();
 }
 void Samus_HandleTransFromBlockColl_3(void) {  // 0x91E8D8
   samus_new_pose = samus_pose;
@@ -3527,7 +3474,6 @@ void Samus_HandleTransFromBlockColl_4(void) {  // 0x91E8E5
   samus_momentum_routine_index = 5;
 }
 
-#define word_91E921 ((uint16*)RomPtr(0x91e921))
 
 uint8 nullsub_18_U8(void) {
   return 0;
@@ -3556,13 +3502,12 @@ void Samus_HandleTransFromBlockColl_2(void) {
 
 void Samus_HandleTransFromBlockColl_1(void) {  // 0x91E931
   if (HIBYTE(input_to_pose_calc) != 4) {
-    if (off_91E951[(uint16)(2 * HIBYTE(input_to_pose_calc)) >> 1]() & 1)
+    if (off_91E951[HIBYTE(input_to_pose_calc)]() & 1)
       samus_momentum_routine_index = 0;
     else
       samus_momentum_routine_index = 5;
   }
 }
-#define word_91E9F3 ((uint16*)RomPtr(0x91e9f3))
 uint8 Samus_HandleTransFromBlockColl_1_0(void) {  // 0x91E95D
   int16 v0;
 
@@ -3674,7 +3619,6 @@ void Samus_HandleTransFromBlockColl_5(void) {  // 0x91EABE
   samus_momentum_routine_index = 5;
 }
 
-#define word_91EB74 ((uint16*)RomPtr(0x91eb74))
 
 uint8 Samus_CheckWalkedIntoSomething(void) {  // 0x91EADE
   int16 v0;
@@ -3916,7 +3860,7 @@ uint8 Samus_HandleTransitionsB_1_11(void) {  // 0x91EDA4
 }
 
 uint8 Samus_HandleTransitionsB_1_6(void) {  // 0x91EDA6
-  if (frame_handler_gamma == (uint16)FUNC16(Samus_Func9))
+  if (frame_handler_gamma == FUNC16(Samus_Func9))
     return 0;
   else
     return Samus_HandleTransitionsB_1_0();
@@ -3978,7 +3922,7 @@ void Samus_HandleTransitionsB_2(void) {  // 0x91EE69
 void Samus_HandleTransitionsB_3(void) {  // 0x91EE80
   bomb_jump_dir = (uint8)bomb_jump_dir | 0x800;
   samus_movement_handler = FUNC16(Samus_MoveHandler_BombJumpStart);
-  if (samus_input_handler != (uint16)FUNC16(Samus_InputHandler_E91D))
+  if (samus_input_handler != FUNC16(Samus_InputHandler_E91D))
     samus_input_handler = FUNC16(nullsub_152);
 }
 
@@ -4105,7 +4049,7 @@ static Func_V *const kSamus_HandleTransitionsA_5[7] = {  // 0x91EFC4
   Samus_HandleTransitionsA_5_6,
 };
 void Samus_HandleTransitionsA_5(void) {
-  kSamus_HandleTransitionsA_5[(uint16)(2 * (uint8)input_to_pose_calc) >> 1]();
+  kSamus_HandleTransitionsA_5[(uint8)input_to_pose_calc]();
 }
 
 void Samus_HandleTransitionsA_5_4(void) {  // 0x91EFDF
@@ -4142,7 +4086,7 @@ void Samus_HandleTransitionsA_5_1(void) {
   HandleLandingSoundEffectsAndGfx();
   if (HIBYTE(input_to_pose_calc) == 4) {
     SamusFunc_F1D3();
-  } else if (!(kSamus_HandleTransitionsA_5_1[(uint16)(2 * HIBYTE(input_to_pose_calc)) >> 1]() & 1)) {
+  } else if (!(kSamus_HandleTransitionsA_5_1[HIBYTE(input_to_pose_calc)]() & 1)) {
     UNUSED_word_7E0A18 = 0;
     samus_x_accel_mode = 0;
     samus_x_base_speed = 0;
@@ -4289,7 +4233,7 @@ void SamusFunc_F1D3(void) {  // 0x91F1D3
 }
 
 uint8 Samus_HandleTransitionsA_5_1_0(void) {  // 0x91F1EC
-  if (samus_input_handler != (uint16)FUNC16(Samus_InputHandler_E91D))
+  if (samus_input_handler != FUNC16(Samus_InputHandler_E91D))
     samus_input_handler = FUNC16(HandleAutoJumpHack);
   return 0;
 }
@@ -4402,7 +4346,7 @@ void Samus_HandleTransitionsC_1(void) {  // 0x91F31D
   samus_is_falling_flag = 1;
   samus_y_dir = 2;
   Samus_AlignBottomWithPrevPose();
-  if (samus_input_handler != (uint16)FUNC16(Samus_InputHandler_E91D))
+  if (samus_input_handler != FUNC16(Samus_InputHandler_E91D))
     samus_input_handler = FUNC16(Samus_InputHandler_E913);
 }
 
@@ -4803,11 +4747,6 @@ uint8 SamusFunc_F468_DamageBoost_(void) {  // 0x91F8CB
   return 0;
 }
 
-#define kSamusTurnPose_Standing ((uint8*)RomPtr(0x91f9c2))
-#define kSamusTurnPose_Crouching ((uint8*)RomPtr(0x91f9cc))
-#define kSamusTurnPose_Jumping ((uint8*)RomPtr(0x91f9d6))
-#define kSamusTurnPose_Falling ((uint8*)RomPtr(0x91f9e0))
-#define kSamusTurnPose_Moonwalk ((uint8*)RomPtr(0x91f9ea))
 uint8 SamusFunc_F468_TurningAroundOnGround(void) {  // 0x91F8D3
   if (samus_prev_pose && samus_prev_pose != kPose_9B_FaceF_VariaGravitySuit) {
     uint16 v0 = *(&kPoseParams[0].direction_shots_fired + (uint16)(8 * samus_prev_pose));

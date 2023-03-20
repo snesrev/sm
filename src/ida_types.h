@@ -246,11 +246,6 @@ typedef struct LoadBg_E {
   uint16 field_2;
 }LoadBg_E;
 
-/* 24 */
-typedef struct LoadBg_28 {
-  uint16 field_0;
-  uint16 field_2;
-}LoadBg_28;
 
 /* 25 */
 typedef struct LoadBg_4 {
@@ -1059,11 +1054,6 @@ typedef struct StartDmaCopy {
   VoidP das;
 } StartDmaCopy;
 
-/* 102 */
-typedef struct DecompressToParams {
-  LongPtr field_0;
-} DecompressToParams;
-
 /* 103 */
 typedef struct  OpcodeData3 {
   uint16 field_0;
@@ -1190,16 +1180,19 @@ typedef struct DemoRoomData {
 } DemoRoomData;
 
 /* 118 */
-typedef struct PauseScreenSpriteAnimationData {
-  VoidP unused;
-  VoidP lr_highlight;
-  VoidP item_selector;
-  VoidP unused2;
-  VoidP unused3;
-  VoidP map_scroll_arrow_up;
-  VoidP map_scroll_arrow_down;
-  VoidP map_scroll_arrow_right;
-  VoidP map_scroll_arrow_left;
+typedef union PauseScreenSpriteAnimationData {
+  struct {
+    VoidP unused;
+    VoidP lr_highlight;
+    VoidP item_selector;
+    VoidP unused2;
+    VoidP unused3;
+    VoidP map_scroll_arrow_up;
+    VoidP map_scroll_arrow_down;
+    VoidP map_scroll_arrow_right;
+    VoidP map_scroll_arrow_left;
+  };
+  VoidP arr[9];
 } PauseScreenSpriteAnimationData;
 
 /* 119 */
@@ -1559,6 +1552,7 @@ enum Consts_81 {
   addr_kMenuTilemap_ClearSamusA = 0xB69A,
   addr_kMenuTilemap_DataCleared = 0xB6DA,
   addr_kAreaSelectForegroundTilemap = 0xB71A,
+  addr_kAreaSelectBackgroundTilemaps = 0xBF1A,
 };
 enum Consts_82 {
   addr_kPauseMenuMapData = 0x9717,
@@ -2034,8 +2028,10 @@ enum Consts_9B {
   addr_kSamusPalette_PowerSuit = 0x9400,
   addr_kSamusPalette_VariaSuit = 0x9520,
   addr_kSamusPalette_GravitySuit = 0x9800,
+  addr_word_9BA120 = 0xA120,
   addr_word_9BA380 = 0xA380,
   addr_word_9BA3A0 = 0xA3A0,
+
 };
 enum Consts_A0 {
   addr_kSpritemap_Nothing_A0 = 0x804D,
@@ -2208,6 +2204,7 @@ enum Consts_A4 {
   addr_kCrocomire_Ilist_BCD8 = 0xBCD8,
   addr_kCrocomire_Ilist_BD2A = 0xBD2A,
   addr_kCrocomire_Ilist_BD8E = 0xBD8E,
+  addr_kCrocomire_Ilist_BDA2 = 0xBDA2,
   addr_kCrocomire_Ilist_BDAE = 0xBDAE,
   addr_kCrocomire_Ilist_BDB2 = 0xBDB2,
   addr_kCrocomire_Ilist_BDB6 = 0xBDB6,
@@ -2685,6 +2682,7 @@ enum Consts_B3 {
   addr_kBrinstarYellowPipeBug_Ilist_8F24 = 0x8F24,
   addr_kBrinstarYellowPipeBug_Ilist_8F38 = 0x8F38,
   addr_kBotwoon_Ilist_9389 = 0x9389,
+  addr_stru_B3E150 = 0xE150,
   addr_loc_B3E28C = 0xE28C,
   addr_kEscapeEtecoon_Ilist_E556 = 0xE556,
   addr_kEscapeEtecoon_Ilist_E582 = 0xE582,
@@ -2704,10 +2702,6 @@ enum Consts_B7 {
   addr_kMotherBrain_Misc_TileData = 0xCE00,
 
 };
-enum Consts_B9 {
-  addr_byte_B9FA38 = 0xFA38,
-  addr_byte_B9FE3E = 0xFE3E,
-};
 
 static inline OamEnt *gOamEnt(int v) { return (OamEnt *)&g_ram[0x370 + v]; }
 static inline VramWriteEntry *gVramWriteEntry(int a) { return (VramWriteEntry *)&g_ram[0xd0 + a]; }
@@ -2718,7 +2712,6 @@ struct StateHeaderTiles; static inline StateHeaderTiles *get_StateHeaderTiles(ui
 struct EnemyDef_A2; static inline EnemyDef_A2 *get_EnemyDef_A2(uint16 a) { return (EnemyDef_A2 *)RomPtr(0xA00000 | a); }
 struct EnemyTileset; static inline EnemyTileset *get_EnemyTileset(uint16 a) { return (EnemyTileset *)RomPtr(0xB40000 | a); }
 struct RoomPlmEntry; static inline RoomPlmEntry *get_RoomPlmEntry(uint16 a) { return (RoomPlmEntry *)RomPtr(0x8F0000 | a); }
-struct PlmHeader_Size6; static inline PlmHeader_Size6 *get_PlmHeader_Size6(uint16 a) { return (PlmHeader_Size6 *)RomPtr(0x8F0000 | a); }
 struct EnemyProjectileDef; static inline EnemyProjectileDef *get_EnemyProjectileDef(uint16 a) { return (EnemyProjectileDef *)RomPtr(0x860000 | a); }
 struct Vulnerability; static inline Vulnerability *get_Vulnerability(uint16 a) { return (Vulnerability *)RomPtr(0xB40000 | a); }
 struct ExtendedSpriteMap; static inline ExtendedSpriteMap *get_ExtendedSpriteMap(uint8 db, uint16 a) { return (ExtendedSpriteMap *)RomPtr(db << 16 | a); }
@@ -2735,14 +2728,14 @@ struct LoadBg_E; static inline LoadBg_E *get_LoadBg_E(uint16 a) { return (LoadBg
 struct Mode7VramWriteQueue; static inline Mode7VramWriteQueue *get_Mode7VramWriteQueue(uint16 a) { return (Mode7VramWriteQueue *)RomPtr(0xA60000 | a); }
 struct ProjectileInstr; static inline ProjectileInstr *get_ProjectileInstr(uint16 a) { return (ProjectileInstr *)RomPtr(0x930000 | a); }
 struct PlmHeader_Size4; static inline PlmHeader_Size4 *get_PlmHeader_Size4(uint16 a) { return (PlmHeader_Size4 *)RomPtr(0x840000 | a); }
+struct PlmHeader_Size6; static inline PlmHeader_Size6 *get_PlmHeader_Size6(uint16 a) { return (PlmHeader_Size6 *)RomPtr(0x840000 | a); }
 struct RoomDefStateSelect_E6E5_Finish; static inline RoomDefStateSelect_E6E5_Finish *get_RoomDefStateSelect_E6E5_Finish(uint16 a) { return (RoomDefStateSelect_E6E5_Finish *)RomPtr(0x8F0000 | a); }
 struct SamusSpeedTableEntry; static inline SamusSpeedTableEntry *get_SamusSpeedTableEntry(uint16 a) { return (SamusSpeedTableEntry *)RomPtr(0x900000 | a); }
 struct SpriteDrawEnt; static inline SpriteDrawEnt *get_SpriteDrawEnt(uint16 a) { return (SpriteDrawEnt *)RomPtr(0xA60000 | a); }
 struct SamusTileAnimationDefs; static inline SamusTileAnimationDefs *get_SamusTileAnimationDefs(uint16 a) { return (SamusTileAnimationDefs *)RomPtr(0x920000 | a); }
-struct LoadBg_28; static inline LoadBg_28 *get_LoadBg_28(uint16 a) { return (LoadBg_28 *)RomPtr(0x8F0000 | a); }
 struct PalFxDef; static inline PalFxDef *get_PalFxDef(uint16 a) { return (PalFxDef *)RomPtr(0x8D0000 | a); }
 struct Mode7ObjectDef; static inline Mode7ObjectDef *get_Mode7ObjectDef(uint16 a) { return (Mode7ObjectDef *)RomPtr(0x8B0000 | a); }
 static inline Ram7800_Default *gRam7800_Default(uint16 a) { return (Ram7800_Default *)&g_ram[0x7800 + a]; }
-
+static inline Mode7CgvmWriteQueue *get_Mode7CgvmWriteQueue_RAM(uint16 a) { return (Mode7CgvmWriteQueue *)RomPtr_RAM(a); }
 
 #pragma pack(pop)

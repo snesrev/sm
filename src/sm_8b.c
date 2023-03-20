@@ -4,32 +4,37 @@
 #include "funcs.h"
 #include "variables.h"
 
-#define kPalettes_Intro ((uint16*)RomPtr(0x8ce3e9))
-#define kPalettes_Intro2 ((uint16*)RomPtr(0x8ce5e9))
-#define kPalettes_Intro4 ((uint16*)RomPtr(0x8ce7e9))
-#define kPalettes_Intro5 ((uint16*)RomPtr(0x8ce9e9))
-#define kPalettes_Intro6 ((uint16*)RomPtr(0x8cebe9))
-#define kPalettes_Intro3 ((uint16*)RomPtr(0x8cede9))
-#define g_word_8CD81B ((uint16*)RomPtr(0x8cd81b))
-#define g_word_8BA72B ((uint16*)RomPtr(0x8ba72b))
-#define kLevelData_MotherBrainRoomFromCutscene ((uint16*)RomPtr(0x8cbec3))
-#define kLevelData_RoomWithBabyMetroidHatching ((uint16*)RomPtr(0x8cc083))
-#define g_word_8CDC9B ((uint16*)RomPtr(0x8cdc9b))
-#define g_word_8CDEDB ((uint16*)RomPtr(0x8cdedb))
-#define g_word_8CEFE9 ((uint16*)RomPtr(0x8cefe9))
-#define g_off_8BE70D ((uint16*)RomPtr(0x8be70d))
-#define g_word_8BE717 ((uint16*)RomPtr(0x8be717))
-#define g_word_8BE721 ((uint16*)RomPtr(0x8be721))
-#define g_word_8BE737 ((uint16*)RomPtr(0x8be737))
-#define g_word_8BE741 ((uint16*)RomPtr(0x8be741))
-#define g_word_8BE9CF ((uint16*)RomPtr(0x8be9cf))
-#define kCinematicFunction_Intro_Func142_Tab0 ((uint16*)RomPtr(0x8be45a))
-#define kCinematicFunction_Intro_Func144_Tab0 ((uint16*)RomPtr(0x8be5e7))
-#define g_word_8CDF5B ((uint16*)RomPtr(0x8cdf5b))
-#define g_word_8BE9A7 ((uint16*)RomPtr(0x8be9a7))
-#define g_word_8BF6B8 ((uint16*)RomPtr(0x8bf6b8))
-#define g_word_8BF6D8 ((uint16*)RomPtr(0x8bf6d8))
-#define g_word_8CE1E9 ((uint16*)RomPtr(0x8ce1e9))
+
+#define kPalettes_Intro ((uint16*)RomFixedPtr(0x8ce3e9))
+#define kPalettes_Intro2 ((uint16*)RomFixedPtr(0x8ce5e9))
+#define kPalettes_Intro4 ((uint16*)RomFixedPtr(0x8ce7e9))
+#define kPalettes_Intro5 ((uint16*)RomFixedPtr(0x8ce9e9))
+#define kPalettes_Intro6 ((uint16*)RomFixedPtr(0x8cebe9))
+#define kPalettes_Intro3 ((uint16*)RomFixedPtr(0x8cede9))
+#define g_word_8CD81B ((uint16*)RomFixedPtr(0x8cd81b))
+#define g_word_8BA72B ((uint16*)RomFixedPtr(0x8ba72b))
+#define kLevelData_MotherBrainRoomFromCutscene ((uint16*)RomFixedPtr(0x8cbec3))
+#define kLevelData_RoomWithBabyMetroidHatching ((uint16*)RomFixedPtr(0x8cc083))
+#define g_word_8CDC9B ((uint16*)RomFixedPtr(0x8cdc9b))
+#define g_word_8CDEDB ((uint16*)RomFixedPtr(0x8cdedb))
+#define g_word_8CEFE9 ((uint16*)RomFixedPtr(0x8cefe9))
+#define g_off_8BE70D ((uint16*)RomFixedPtr(0x8be70d))
+#define g_word_8BE717 ((uint16*)RomFixedPtr(0x8be717))
+#define g_word_8BE721 ((uint16*)RomFixedPtr(0x8be721))
+#define g_word_8BE737 ((uint16*)RomFixedPtr(0x8be737))
+#define g_word_8BE741 ((uint16*)RomFixedPtr(0x8be741))
+#define g_word_8BE9CF ((uint16*)RomFixedPtr(0x8be9cf))
+#define kCinematicFunction_Intro_Func142_Tab0 ((uint16*)RomFixedPtr(0x8be45a))
+#define kCinematicFunction_Intro_Func144_Tab0 ((uint16*)RomFixedPtr(0x8be5e7))
+#define g_word_8CDF5B ((uint16*)RomFixedPtr(0x8cdf5b))
+#define g_word_8BE9A7 ((uint16*)RomFixedPtr(0x8be9a7))
+#define g_word_8BF6B8 ((uint16*)RomFixedPtr(0x8bf6b8))
+#define g_word_8BF6D8 ((uint16*)RomFixedPtr(0x8bf6d8))
+#define g_word_8CE1E9 ((uint16*)RomFixedPtr(0x8ce1e9))
+#define g_off_8CBC5D ((uint16*)RomFixedPtr(0x8cbc5d))
+
+
+
 
 void SetupPpuForTitleSequence(void) {  // 0x8B8000
   WriteReg(INIDISP, 0x80);
@@ -423,21 +428,14 @@ void HandleMode7TransformationNoRotation(void) {  // 0x8B8518
 }
 
 void HandleMode7TransformationMatrix(void) {  // 0x8B8532
-  uint16 v0;
-  uint16 v1;
-
-  R38 = kSinCosTable8bit_Sext[((uint16)(2 * (uint8)(cinematic_var5 + 64)) >> 1) + 64];
+  R38 = kSinCosTable8bit_Sext[((uint8)(cinematic_var5 + 64)) + 64];
   R40 = cinematic_var6;
   Smult16x16Shr16();
-  HIBYTE(v0) = R42;
-  LOBYTE(v0) = HIBYTE(R44);
-  reg_M7A = v0;
-  reg_M7D = v0;
-  R38 = kSinCosTable8bit_Sext[((uint16)(2 * (uint8)cinematic_var5) >> 1) + 64];
+  reg_M7D = reg_M7A = PAIR16(R42, HIBYTE(R44));
+  R38 = kSinCosTable8bit_Sext[((uint8)cinematic_var5) + 64];
   R40 = cinematic_var6;
   Smult16x16Shr16();
-  HIBYTE(v1) = R42;
-  LOBYTE(v1) = HIBYTE(R44);
+  uint16 v1 = PAIR16(R42, HIBYTE(R44));
   reg_M7B = v1;
   reg_M7C = -v1;
   reg_BG1HOFS = cinematic_var8;
@@ -561,7 +559,7 @@ void ProcessCinematicBgObject_DrawChar(uint16 k, uint16 j) {  // 0x8B884D
 
   cinematicbg_var1 = cinematicbg_var1 == 0;
   SpawnTextGlowObject(j);
-  uint8 *v2 = RomPtr_8C(cinematicbg_instr_ptr[k >> 1]);
+  const uint8 *v2 = RomPtr_8C(cinematicbg_instr_ptr[k >> 1]);
   if (*((int16 *)v2 + 3) < 0) {
     cinematicbg_arr7[15] = 8;
     v3 = 8 * (v2[3] + 2);
@@ -570,7 +568,7 @@ void ProcessCinematicBgObject_DrawChar(uint16 k, uint16 j) {  // 0x8B884D
     v3 = 8 * v2[9];
   }
   cinematicbg_arr8[15] = v3 - 8;
-  if (*((uint16 *)v2 + 2) != 0xD67D && cinematicbg_var1)
+  if (GET_WORD(v2 + 4) != 0xD67D && cinematicbg_var1)
     QueueSfx3_Max6(0xDu);
   ProcessCinematicBgObject_DrawToTextTilemap(0x1E, j);
 }
@@ -579,7 +577,7 @@ void ProcessCinematicBgObject_DrawToTextTilemap(uint16 k, uint16 j) {  // 0x8B88
   uint16 jorg = j;
 
   uint16 TilemapOffsetForTile = CinematicGetTilemapOffsetForTile();
-  uint8 *v3 = RomPtr_8C(j);
+  const uint8 *v3 = RomPtr_8C(j);
   R18_ = v3[2];
   R24_ = R18_;
   R20_ = v3[3];
@@ -605,7 +603,7 @@ void ProcessCinematicBgObject_DrawToBgTilemap(uint16 k, uint16 j) {  // 0x8B88FD
   uint16 jorg = j;
 
   uint16 TilemapOffsetForTile = CinematicGetTilemapOffsetForTile();
-  uint8 *v3 = RomPtr_8C(j);
+  const uint8 *v3 = RomPtr_8C(j);
   R18_ = v3[2];
   R24_ = R18_;
   R20_ = v3[3];
@@ -632,7 +630,7 @@ uint16 CinematicGetTilemapOffsetForTile(void) {  // 0x8B8943
 
 void ProcessCinematicBgObject_Unk1(uint16 k, uint16 j) {  // 0x8B896B
   Mult0x80Add();
-  uint8 *v2 = RomPtr_8C(j);
+  const uint8 *v2 = RomPtr_8C(j);
   R18_ = v2[2];
   R20_ = v2[3];
   uint16 v3 = j + 4;
@@ -654,7 +652,7 @@ void ProcessCinematicBgObject_Unk1(uint16 k, uint16 j) {  // 0x8B896B
 
 void ProcessCinematicBgObject_Unk2(uint16 k, uint16 j) {  // 0x8B89CF
   Mult0x80Add();
-  uint8 *v2 = RomPtr_8C(j);
+  const uint8 *v2 = RomPtr_8C(j);
   R18_ = v2[2];
   R20_ = v2[3];
   uint16 v3 = j + 4;
@@ -680,118 +678,77 @@ void Mult0x80Add(void) {  // 0x8B8A2C
 }
 
 void Samus_CalcPos_Mode7(void) {  // 0x8B8A52
-  uint16 v0;
-  int16 v1;
-  uint16 v2;
-  int16 v3;
-
   R34 = samus_x_pos - reg_M7X;
   R36 = reg_M7Y - samus_y_pos;
   R38 = samus_x_pos - reg_M7X;
   R40 = reg_M7A;
   Smult16x16Shr16();
-  HIBYTE(v0) = R42;
-  LOBYTE(v0) = HIBYTE(R44);
-  R26_ = v0;
+  R26_ = PAIR16(R42, HIBYTE(R44));
   R38 = reg_M7B;
   R40 = R36;
   Smult16x16Shr16();
-  HIBYTE(v1) = R42;
-  LOBYTE(v1) = HIBYTE(R44);
-  R26_ += v1;
+  R26_ += PAIR16(R42, HIBYTE(R44));
   samus_x_pos = R26_ + reg_M7X;
   R38 = reg_M7C;
   R40 = R34;
   Smult16x16Shr16();
-  HIBYTE(v2) = R42;
-  LOBYTE(v2) = HIBYTE(R44);
-  R26_ = v2;
+  R26_ = PAIR16(R42, HIBYTE(R44));
   R38 = reg_M7A;
   R40 = R36;
   Smult16x16Shr16();
-  HIBYTE(v3) = R42;
-  LOBYTE(v3) = HIBYTE(R44);
-  R26_ += v3;
+  R26_ += PAIR16(R42, HIBYTE(R44));
   samus_y_pos = reg_M7Y - R26_;
 }
 
 void CalcExplosion_Mode7(uint16 k) {  // 0x8B8AD9
-  uint16 v2;
-  int16 v3;
-  uint16 v4;
-  int16 v5;
-
   int v1 = k >> 1;
   R34 = projectile_x_pos[v1] - reg_M7X;
   R36 = reg_M7Y - projectile_y_pos[v1];
   R38 = R34;
   R40 = reg_M7A;
   Smult16x16Shr16();
-  HIBYTE(v2) = R42;
-  LOBYTE(v2) = HIBYTE(R44);
-  R26_ = v2;
+  R26_ = PAIR16(R42, HIBYTE(R44));
   R38 = reg_M7B;
   R40 = R36;
   Smult16x16Shr16();
-  HIBYTE(v3) = R42;
-  LOBYTE(v3) = HIBYTE(R44);
-  R26_ += v3;
+  R26_ += PAIR16(R42, HIBYTE(R44));
   R20_ = R26_ + reg_M7X - layer1_x_pos;
   R38 = reg_M7C;
   R40 = R34;
   Smult16x16Shr16();
-  HIBYTE(v4) = R42;
-  LOBYTE(v4) = HIBYTE(R44);
-  R26_ = v4;
+  R26_ = PAIR16(R42, HIBYTE(R44));
   R38 = reg_M7A;
   R40 = R36;
   Smult16x16Shr16();
-  HIBYTE(v5) = R42;
-  LOBYTE(v5) = HIBYTE(R44);
-  R26_ += v5;
+  R26_ += PAIR16(R42, HIBYTE(R44));
   R18_ = reg_M7Y - R26_ - layer1_y_pos;
 }
 
 void CalcCeresSteamPos_Mode7(void) {  // 0x8B8B66
-  uint16 v0;
-  int16 v1;
-  uint16 v2;
-  int16 v3;
-
   R34 = R18_ - reg_M7X;
   R36 = reg_M7Y - R20_;
   R38 = R18_ - reg_M7X;
   R40 = reg_M7A;
   Smult16x16Shr16();
-  HIBYTE(v0) = R42;
-  LOBYTE(v0) = HIBYTE(R44);
-  R26_ = v0;
+  R26_ = PAIR16(R42, HIBYTE(R44));
   R38 = reg_M7B;
   R40 = R36;
   Smult16x16Shr16();
-  HIBYTE(v1) = R42;
-  LOBYTE(v1) = HIBYTE(R44);
-  R26_ += v1;
+  R26_ += PAIR16(R42, HIBYTE(R44));
   R18_ = R26_ + reg_M7X;
   R38 = reg_M7C;
   R40 = R34;
   Smult16x16Shr16();
-  HIBYTE(v2) = R42;
-  LOBYTE(v2) = HIBYTE(R44);
-  R26_ = v2;
+  R26_ = PAIR16(R42, HIBYTE(R44));
   R38 = reg_M7A;
   R40 = R36;
   Smult16x16Shr16();
-  HIBYTE(v3) = R42;
-  LOBYTE(v3) = HIBYTE(R44);
-  R26_ += v3;
+  R26_ += PAIR16(R42, HIBYTE(R44));
   R20_ = reg_M7Y - R26_;
 }
 
 void CopyPalettesToFadingPalettes(void) {  // 0x8B8BE9
-  int16 v0;
-
-  v0 = 256;
+  int v0 = 256;
   uint16 v1 = 0;
   do {
     tilemap_stuff[(v1 >> 1) + 256] = palette_buffer[v1 >> 1];
@@ -801,35 +758,22 @@ void CopyPalettesToFadingPalettes(void) {  // 0x8B8BE9
 }
 
 void DecomposePaletteDataForFading(void) {  // 0x8B8C09
-  int16 v1;
-  uint16 v3;
-  char v5; // t2
-  char v7; // tt
-
   uint16 v0 = 0;
-  v1 = 256;
+  int v1 = 256;
   do {
     int v2 = v0 >> 1;
     R18_ = tilemap_stuff[v2 + 256];
-    LOBYTE(v3) = 0;
-    HIBYTE(v3) = R18_ & 0x1F;
-    tilemap_stuff[v2 + 512] = v3;
-    tilemap_stuff[v2 + 1280] = 8 * HIBYTE(v3);
-    uint16 v4 = 8 * (R18_ & 0x3E0);
-    tilemap_stuff[v2 + 768] = v4;
-    v5 = v4;
-    LOBYTE(v4) = HIBYTE(v4);
-    HIBYTE(v4) = v5;
-    tilemap_stuff[v2 + 1536] = 8 * v4;
-    uint16 v6 = (uint16)(R18_ & 0x7C00) >> 2;
-    tilemap_stuff[v2 + 1024] = v6;
-    v7 = v6;
-    LOBYTE(v6) = HIBYTE(v6);
-    HIBYTE(v6) = v7;
-    tilemap_stuff[v2 + 1792] = 8 * v6;
+    int v3 = (R18_ & 0x1F);
+    tilemap_stuff[v2 + 512] = v3 << 8;
+    tilemap_stuff[v2 + 1280] = v3 << 3;
+    int v4 = (R18_ & 0x3E0) >> 5;
+    tilemap_stuff[v2 + 768] = v4 << 8;
+    tilemap_stuff[v2 + 1536] = v4 << 3;
+    int v6 = (R18_ & 0x7C00) >> 10;
+    tilemap_stuff[v2 + 1024] = v6 << 8;
+    tilemap_stuff[v2 + 1792] = v6 << 3;
     v0 += 2;
-    --v1;
-  } while (v1);
+  } while (--v1);
 }
 
 void ClearYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C5E
@@ -840,8 +784,7 @@ void ClearYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C5E
     tilemap_stuff[v2 + 768] = 0;
     tilemap_stuff[v2 + 1024] = 0;
     k += 2;
-    --j;
-  } while (j);
+  } while (--j);
 }
 
 void FadeOutYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C83
@@ -851,8 +794,7 @@ void FadeOutYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C83
     tilemap_stuff[v2 + 768] -= tilemap_stuff[v2 + 1536];
     tilemap_stuff[v2 + 1024] -= tilemap_stuff[v2 + 1792];
     k += 2;
-    --j;
-  } while (j);
+  } while (--j);
 }
 
 void FadeInYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8CB2
@@ -862,40 +804,34 @@ void FadeInYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8CB2
     tilemap_stuff[v2 + 768] = (tilemap_stuff[v2 + 1536] + tilemap_stuff[v2 + 768]) & 0x1FFF;
     tilemap_stuff[v2 + 1024] = (tilemap_stuff[v2 + 1792] + tilemap_stuff[v2 + 1024]) & 0x1FFF;
     k += 2;
-    --j;
-  } while (j);
+  } while (--j);
 }
 
 void ComposeFadingPalettes(void) {  // 0x8B8CEA
-  int16 v1;
-
   uint16 v0 = 0;
-  v1 = 256;
+  int v1 = 256;
   do {
     int v2 = v0 >> 1;
-    R18_ = HIBYTE(tilemap_stuff[v2 + 512]) & 0x1F;
-    R18_ |= (tilemap_stuff[v2 + 768] >> 3) & 0x3E0;
-    uint16 v3 = R18_ | (4 * tilemap_stuff[v2 + 1024]) & 0x7C00;
+    int R18 = HIBYTE(tilemap_stuff[v2 + 512]) & 0x1F;
+    R18 |= (tilemap_stuff[v2 + 768] >> 3) & 0x3E0;
+    uint16 v3 = R18 | (tilemap_stuff[v2 + 1024] << 2) & 0x7C00;
     tilemap_stuff[v2] = v3;
     palette_buffer[v2] = v3;
     v0 += 2;
-    --v1;
-  } while (v1);
+  } while (--v1);
 }
 
 void CinematicFunction_Intro_Func20(uint16 j) {  // 0x8B8D23
   uint16 *tt = (uint16 *)RomPtr_8B(j);
   uint16 v2 = tt[0];
-  R18_ = tt[1];
+  int R18 = tt[1];
   uint16 *dst = ram4000.intro_japanese_text_tiles;
   do {
-    R22_ = tt[2];
-    memcpy(dst + (v2 >> 1), (uint16 *)RomPtr_7F(R22_ + 0xa000), 16);
-    R22_ = tt[3];
-    memcpy(dst + ((v2 + 768) >> 1), (uint16 *)RomPtr_7F(R22_ + 0xa000), 16);
+    memcpy(dst + (v2 >> 1), (uint16 *)&g_ram[tt[2] + 0x1a000], 16);
+    memcpy(dst + ((v2 + 768) >> 1), (uint16 *)&g_ram[tt[3] + 0x1a000], 16);
     v2 += 16;
     tt += 2;
-  } while (--R18_);
+  } while (--R18);
 }
 
 void TransferJapaneseTextTilesToVram(void) {  // 0x8B8DE6
@@ -1142,11 +1078,7 @@ CoroutineRet InitializeIoDisplayLogo_Async(void) {  // 0x8B9146
   reg_COLDATA[2] = 0x80;
   WriteReg(SETINI, 0);
   reg_SETINI = 0;
-  mov24(&decompress_src, 0x9580D8);
-  {
-    static const LongPtr unk_8B92A1 = LONGPTR(0x7f5000);
-    DecompressToMem_IpArg(&unk_8B92A1);
-  }
+  DecompressToMem(0x9580D8, g_ram + 0x15000);
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0x60);
   WriteReg(VMAIN, 0x80);
@@ -1304,16 +1236,16 @@ void CallCinematicSpriteObjectSetup(uint32 ea, uint16 j) {
 }
 
 uint8 SpawnCimenaticSpriteObjectInner(uint16 k, uint16 j) {  // 0x8B93AC
-  uint8 *v2 = RomPtr_8B(k);
+  const uint8 *v2 = RomPtr_8B(k);
   int v3 = j >> 1;
-  cinematicspr_preinstr_func[v3] = *((uint16 *)v2 + 1);
-  cinematicspr_instr_ptr[v3] = *((uint16 *)v2 + 2);
+  cinematicspr_preinstr_func[v3] = GET_WORD(v2 + 2);
+  cinematicspr_instr_ptr[v3] = GET_WORD(v2 + 4);
   cinematicspr_instr_timer[v3] = 1;
   cinematicspr_whattodraw[v3] = 0;
   cinematicspr_goto_timer[v3] = 0;
   cinematicspr_arr6[v3] = 0;
   cinematicspr_arr7[v3] = 0;
-  CallCinematicSpriteObjectSetup(*(uint16 *)v2 | 0x8B0000, j);
+  CallCinematicSpriteObjectSetup(GET_WORD(v2) | 0x8B0000, j);
   return 0;
 }
 
@@ -1460,7 +1392,7 @@ void ProcessCinematicSpriteInstructionList(uint16 k) {  // 0x8B9409
   if (cinematicspr_instr_timer[v2]-- == 1) {
     uint16 v4 = cinematicspr_instr_ptr[v2], v6;
     while (1) {
-      uint16 *v5 = (uint16 *)RomPtr_8B(v4);
+      const uint16 *v5 = (const uint16 *)RomPtr_8B(v4);
       v6 = *v5;
       if ((*v5 & 0x8000u) == 0)
         break;
@@ -1629,7 +1561,7 @@ void ProcessMode7ObjectInstructions(uint16 k) {  // 0x8B9537
   if (mode7_obj_instr_timer[v2]-- == 1) {
     uint16 v4 = mode7_obj_instr_ptr[v2], v6;
     while (1) {
-      uint16 *v5 = (uint16 *)RomPtr_8B(v4);
+      const uint16 *v5 = (const uint16 *)RomPtr_8B(v4);
       v6 = *v5;
       if ((*v5 & 0x8000u) == 0)
         break;
@@ -1639,8 +1571,8 @@ void ProcessMode7ObjectInstructions(uint16 k) {  // 0x8B9537
         return;
     }
     mode7_obj_instr_timer[v1 >> 1] = v6;
-    uint8 *v7 = RomPtr_8B(v4);
-    QueueMode7Transfers(0x8b, *((uint16 *)v7 + 1));
+    const uint8 *v7 = RomPtr_8B(v4);
+    QueueMode7Transfers(0x8b, GET_WORD(v7 + 2));
     mode7_obj_instr_ptr[v1 >> 1] = v4 + 4;
   }
 }
@@ -1721,14 +1653,14 @@ uint8 SpawnCinematicBgObject(uint16 j, uint16 a) {  // 0x8B95F0
     if ((v3 & 0x8000u) != 0)
       return 1;
   }
-  uint8 *v5 = RomPtr_8B(j);
+  const uint8 *v5 = RomPtr_8B(j);
   int v6 = v3 >> 1;
-  cinematicbg_preinstr[v6] = *((uint16 *)v5 + 1);
-  cinematicbg_instr_ptr[v6] = *((uint16 *)v5 + 2);
+  cinematicbg_preinstr[v6] = GET_WORD(v5 + 2);
+  cinematicbg_instr_ptr[v6] = GET_WORD(v5 + 4);
   cinematicbg_instr_timer[v6] = 1;
   cinematicbg_arr1[v6] = 0;
   cinematicbg_arr6[v6] = 0;
-  CallCinematicBgObjectSetup(*(uint16 *)v5 | 0x8B0000, v3);
+  CallCinematicBgObjectSetup(GET_WORD(v5) | 0x8B0000, v3);
   return 0;
 }
 
@@ -1789,7 +1721,7 @@ void ProcessCinematicBgObjectsInstrs(uint16 k) {  // 0x8B9659
   if (cinematicbg_instr_timer[v2]-- == 1) {
     uint16 v4 = cinematicbg_instr_ptr[v2], v6;
     while (1) {
-      uint16 *v5 = (uint16 *)RomPtr_8C(v4);
+      const uint16 *v5 = (const uint16 *)RomPtr_8C(v4);
       v6 = *v5;
       if ((*v5 & 0x8000u) == 0)
         break;
@@ -1800,9 +1732,9 @@ void ProcessCinematicBgObjectsInstrs(uint16 k) {  // 0x8B9659
     }
     int v7 = v1 >> 1;
     cinematicbg_instr_timer[v7] = v6;
-    uint8 *v8 = RomPtr_8C(v4);
-    R18_ = *((uint16 *)v8 + 1);
-    cinematicbg_arr1[v7] = *((uint16 *)v8 + 2);
+    const uint8 *v8 = RomPtr_8C(v4);
+    R18_ = GET_WORD(v8 + 2);
+    cinematicbg_arr1[v7] = GET_WORD(v8 + 4);
     ProcessCinematicBgObject(v1);
     cinematicbg_instr_ptr[v7] = v4 + 6;
   }
@@ -1897,7 +1829,7 @@ void ProcessTextGlowObject(void) {  // 0x8B9849
     R20_ = 2 * LOBYTE(enemy_projectile_pre_instr[v1 + 10]);
     R22_ = R20_ + Mult8x8(*((uint8 *)enemy_projectile_1A27 + v0), 0x40);
     uint16 v4 = R22_;
-    uint8 *v5 = RomPtr_8C(v3);
+    const uint8 *v5 = RomPtr_8C(v3);
     R18_ = v5[2];
     R24_ = R18_;
     R20_ = v5[3];
@@ -1958,12 +1890,12 @@ void CallCreditsObjectFunc(uint32 ea, uint16 k) {
 }
 
 void CreditsObject_Init(uint16 j) {  // 0x8B9932
-  uint8 *v1 = RomPtr_8B(j);
-  cinematic_var24 = *((uint16 *)v1 + 1);
-  cinematic_var21 = *((uint16 *)v1 + 2);
+  const uint8 *v1 = RomPtr_8B(j);
+  cinematic_var24 = GET_WORD(v1 + 2);
+  cinematic_var21 = GET_WORD(v1 + 4);
   cinematic_var22 = 1;
   cinematic_var23 = 0;
-  CallCreditsObjectFunc(*(uint16 *)v1 | 0x8B0000, 0);
+  CallCreditsObjectFunc(GET_WORD(v1) | 0x8B0000, 0);
 }
 
 void CreditsObject_Process(void) {  // 0x8B9955
@@ -1995,7 +1927,7 @@ void CreditsObject_ProcessOne(void) {  // 0x8B996A
   if (!sign16(v0 - enemy_projectile_pre_instr[0] - 8)) {
     enemy_projectile_pre_instr[0] = cinematic_var10;
     for (i = cinematic_var21; ; ) {
-      uint16 *v2 = (uint16 *)RomPtr_8C(i);
+      const uint16 *v2 = (const uint16 *)RomPtr_8C(i);
       uint16 v3 = *v2;
       if ((*v2 & 0x8000u) == 0)
         break;
@@ -2017,7 +1949,7 @@ void CreditsObject_Func1(uint16 j) {  // 0x8B99C1
   R20_ = 31;
   uint16 v2 = *((uint16 *)RomPtr_8C(j) + 1);
   do {
-    *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + RegWord) = *(uint16 *)IndirPtr(&R0_, v2);
+    *(uint16 *)((char *)ram3000.pause_menu_map_tilemap + RegWord) = IndirReadWord(R0_, v2);
     RegWord += 2;
     v2 += 2;
     --R20_;
@@ -2273,18 +2205,10 @@ void LoadTitleSequenceGraphics(void) {  // 0x8B9B87
     palette_buffer[v0 >> 1] = g_word_8CE1E9[v0 >> 1];
     v0 += 2;
   } while ((int16)(v0 - 512) < 0);
-  mov24(&decompress_src, 0x94E000);
-  static const LongPtr unk_8B9BB4 = LONGPTR(0x7f0000);
-  static const LongPtr unk_8B9BC5 = LONGPTR(0x7f4000);
-  static const LongPtr unk_8B9BD6 = LONGPTR(0x7f5000);
-  static const LongPtr unk_8B9BE7 = LONGPTR(0x7f9000);
-  DecompressToMem_IpArg(&unk_8B9BB4);
-  mov24(&decompress_src, 0x96FC04);
-  DecompressToMem_IpArg(&unk_8B9BC5);
-  mov24(&decompress_src, 0x9580D8);
-  DecompressToMem_IpArg(&unk_8B9BD6);
-  mov24(&decompress_src, 0x95A5E1);
-  DecompressToMem_IpArg(&unk_8B9BE7);
+  DecompressToMem(0x94E000, g_ram + 0x10000);
+  DecompressToMem(0x96FC04, g_ram + 0x14000);
+  DecompressToMem(0x9580D8, g_ram + 0x15000);
+  DecompressToMem(0x95A5E1, g_ram + 0x19000);
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0);
   WriteReg(VMAIN, 0x80);
@@ -2592,7 +2516,6 @@ void CinematicFunc_Func9(void) {  // 0x8B9FAE
 }
 
 void ConfigureTitleSequenceGradientHDMA(void) {  // 0x8BA00A
-#define g_off_8CBC5D ((uint16*)RomPtr(0x8cbc5d))
   uint16 v0 = g_off_8CBC5D[(uint16)((uint8)(cinematic_var6 & 0xF0) >> 3) >> 1];
   for (int i = 0; ; i += 2) {
     uint16 v2 = *(uint16 *)RomPtr_8C(v0);
@@ -2690,25 +2613,12 @@ void CinematicFunction_Intro_Initial(void) {  // 0x8BA395
     palette_buffer[v1 >> 1] = kPalettes_Intro[v1 >> 1];
     v1 += 2;
   } while ((int16)(v1 - 512) < 0);
-  static const LongPtr unk_8BA3FC = LONGPTR(0x7f0000);
-  static const LongPtr unk_8BA40D = LONGPTR(0x7f8000);
-  static const LongPtr unk_8BA41E = LONGPTR(0x7f9000);
-  static const LongPtr unk_8BA42F = LONGPTR(0x7f9800);
-  static const LongPtr unk_8BA440 = LONGPTR(0x7fb800);
-  static const LongPtr unk_8BA451 = LONGPTR(0x7fe000);
-
-  mov24(&decompress_src, 0x95f90e);
-  DecompressToMem_IpArg(&unk_8BA3FC);
-  mov24(&decompress_src, 0x95d089);
-  DecompressToMem_IpArg(&unk_8BA40D);
-  mov24(&decompress_src, 0x9788cc);
-  DecompressToMem_IpArg(&unk_8BA41E);
-  mov24(&decompress_src, 0x96ff14);
-  DecompressToMem_IpArg(&unk_8BA42F);
-  mov24(&decompress_src, 0x95e4c2);
-  DecompressToMem_IpArg(&unk_8BA440);
-  mov24(&decompress_src, 0x978d12);
-  DecompressToMem_IpArg(&unk_8BA451);
+  DecompressToMem(0x95f90e, g_ram + 0x10000);
+  DecompressToMem(0x95d089, g_ram + 0x18000);
+  DecompressToMem(0x9788cc, g_ram + 0x19000);
+  DecompressToMem(0x96ff14, g_ram + 0x19800);
+  DecompressToMem(0x95e4c2, g_ram + 0x1b800);
+  DecompressToMem(0x978d12, g_ram + 0x1e000);
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0);
   WriteReg(VMAIN, 0x80);
@@ -2751,9 +2661,7 @@ void CinematicFunction_Intro_Initial(void) {  // 0x8BA395
   static const StartDmaCopy unk_8BA529 = { 1, 1, 0x18, LONGPTR(0x7fb800), 0x2400 };
   SetupDmaTransfer(&unk_8BA529);
   WriteReg(MDMAEN, 2u);
-  mov24(&decompress_src, 0x95D713);
-  static const LongPtr unk_8BA546 = LONGPTR(0x7fa000);
-  DecompressToMem_IpArg(&unk_8BA546);
+  DecompressToMem(0x95D713, g_ram + 0x1a000);
   EnableNMI();
   screen_fade_delay = 3;
   screen_fade_counter = 3;
@@ -3603,8 +3511,8 @@ void CinematicFunction_Intro_Fadestuff2(void) {  // 0x8BB458
 }
 
 void CinematicBgPreInstr_SamusBlink(uint16 k) {  // 0x8BB4BC
-  if (cinematic_function == (uint16)FUNC16(CinematicFunction_Intro_Func15b)
-      || cinematic_function == (uint16)FUNC16(nullsub_121)) {
+  if (cinematic_function == FUNC16(CinematicFunction_Intro_Func15b)
+      || cinematic_function == FUNC16(nullsub_121)) {
     int v1 = k >> 1;
     cinematicbg_instr_ptr[v1] = -10733;
     cinematicbg_instr_timer[v1] = 1;
@@ -3928,7 +3836,7 @@ void CinematicFunction_Intro_Func44(uint16 k) {  // 0x8BB8D8
   cinematicbg_arr8[v1] += __CFADD__uint16(v3, 0x8000);
   R18_ = samus_x_pos - 5;
   if (sign16(cinematicbg_arr7[v1] + 8 - (samus_x_pos - 5))) {
-    if (cinematicspr_preinstr_func[0] != (uint16)FUNC16(CinematicFunction_Intro_Func39))
+    if (cinematicspr_preinstr_func[0] != FUNC16(CinematicFunction_Intro_Func39))
       return;
   } else {
     samus_invincibility_timer = 11;
@@ -4020,8 +3928,6 @@ void CinematicFunction_Intro_Func50(uint16 k) {  // 0x8BBA5E
 }
 
 void CinematicFunction_Intro_Func51(uint16 k) {  // 0x8BBA73
-  int16 v2;
-
   int v1 = k >> 1;
   if (cinematicbg_arr8[v1] == 145) {
     SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCEF1, 0);
@@ -4036,13 +3942,8 @@ void CinematicFunction_Intro_Func51(uint16 k) {  // 0x8BBA73
   } else if (sign16(cinematic_var17 - 544)) {
     cinematic_var17 += 32;
   }
-  LOBYTE(v2) = HIBYTE(cinematic_var17);
-  HIBYTE(v2) = cinematic_var17;
-  R20_ = v2 & 0xFF00;
-  uint16 v3 = HIBYTE(cinematic_var17);
-  if ((cinematic_var17 & 0x8000u) != 0)
-    v3 = HIBYTE(cinematic_var17) | 0xFF00;
-  R18_ = v3;
+  R20_ = cinematic_var17 << 8;
+  R18_ = (int8)(cinematic_var17 >> 8);
   uint16 v4 = cinematicspr_arr7[v1];
   bool v5 = __CFADD__uint16(R20_, v4);
   cinematicspr_arr7[v1] = R20_ + v4;
@@ -4065,10 +3966,6 @@ void CinematicFunction_Intro_Func52(uint16 k) {  // 0x8BBB0D
 }
 
 void CinematicFunction_Intro_Func53(uint16 k) {  // 0x8BBB24
-  int16 v4;
-  int16 v5;
-  int16 v8;
-
   if (cinematic_var13) {
     int v2 = k >> 1;
     if (sign16(cinematicspr_goto_timer[v2] - 128)) {
@@ -4083,14 +3980,9 @@ void CinematicFunction_Intro_Func53(uint16 k) {  // 0x8BBB24
     } else if (sign16(cinematic_var14 - 640)) {
       cinematic_var14 += 32;
     }
-    LOBYTE(v4) = HIBYTE(cinematic_var14);
-    HIBYTE(v4) = cinematic_var14;
-    R20_ = v4 & 0xFF00;
-    v5 = HIBYTE(cinematic_var14);
-    if ((cinematic_var14 & 0x8000u) != 0)
-      v5 = HIBYTE(cinematic_var14) | 0xFF00;
-    R18_ = v5;
-    if (v5 >= 0)
+    R20_ = cinematic_var14 << 8;
+    R18_ = (int8)GET_HIBYTE(cinematic_var14);
+    if (!sign16(R18_))
       cinematic_var15 = -1;
     else
       cinematic_var15 = 1;
@@ -4104,13 +3996,8 @@ void CinematicFunction_Intro_Func53(uint16 k) {  // 0x8BBB24
     } else if (sign16(cinematic_var17 - 544)) {
       cinematic_var17 += 32;
     }
-    LOBYTE(v8) = HIBYTE(cinematic_var17);
-    HIBYTE(v8) = cinematic_var17;
-    R20_ = v8 & 0xFF00;
-    uint16 v9 = HIBYTE(cinematic_var17);
-    if ((cinematic_var17 & 0x8000u) != 0)
-      v9 = HIBYTE(cinematic_var17) | 0xFF00;
-    R18_ = v9;
+    R20_ = cinematic_var17 << 8;
+    R18_ = (int8)GET_HIBYTE(cinematic_var17);
     uint16 v10 = cinematicspr_arr7[v2];
     v7 = __CFADD__uint16(R20_, v10);
     cinematicspr_arr7[v2] = R20_ + v10;
@@ -4166,41 +4053,35 @@ void CinematicFunction_Intro_Func54(void) {  // 0x8BBCA0
     palette_buffer[v0 >> 1] = kPalettes_Intro2[v0 >> 1];
     v0 += 2;
   } while ((int16)(v0 - 512) < 0);
-  static const DecompressToParams unk_8BBCCA = { LONGPTR(0x7f0000) };
-  static const DecompressToParams unk_8BBCDB = { LONGPTR(0x7f4000) };
-  static const DecompressToParams unk_8BBCEC = { LONGPTR(0x7f5000) };
-  mov24(&decompress_src, 0x95A82F);
-  DecompressToMem_IpArg(&unk_8BBCCA);
-  mov24(&decompress_src, 0x96FE69);
-  DecompressToMem_IpArg(&unk_8BBCDB);
-  mov24(&decompress_src, 0x96D10A);
-  DecompressToMem_IpArg(&unk_8BBCEC);
-  WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0);
+  DecompressToMem(0x95A82F, g_ram + 0x10000);
+  DecompressToMem(0x96FE69, g_ram + 0x14000);
+  DecompressToMem(0x96D10A, g_ram + 0x15000);
+  WriteRegWord(VMADDL, 0);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BBD04 = { 1, 0, 0x19, LONGPTR(0x7f0000), 0x4000 };
   SetupDmaTransfer(&unk_8BBD04);
   WriteReg(MDMAEN, 2u);
+
   WriteReg(VMAIN, 0);
-  WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0);
+  WriteRegWord(VMADDL, 0);
   v1 = 0x4000;
   do {
     WriteReg(VMDATAL, 0x8C);
     --v1;
   } while (v1);
-  WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0);
+
+  WriteRegWord(VMADDL, 0);
   WriteReg(VMAIN, 0);
   static const StartDmaCopy unk_8BBD3C = { 1, 0, 0x18, LONGPTR(0x7f4000), 0x0300 };
   SetupDmaTransfer(&unk_8BBD3C);
   WriteReg(MDMAEN, 2u);
-  WriteReg(VMADDL, 0);
-  WriteReg(VMADDH, 0x60);
+
+  WriteRegWord(VMADDL, 0x6000);
   WriteReg(VMAIN, 0x80);
   static const StartDmaCopy unk_8BBD5C = { 1, 1, 0x18, LONGPTR(0x7f5000), 0x4000 };
   SetupDmaTransfer(&unk_8BBD5C);
   WriteReg(MDMAEN, 2u);
+
   WriteRegWord(M7A, 0x100);
   reg_M7A = 256;
   WriteRegWord(M7B, 0);
@@ -4464,15 +4345,9 @@ void CinematicFunctionBlackoutFromCeres(void) {  // 0x8BC11B
     palette_buffer[v2 >> 1] = kPalettes_Intro2[v2 >> 1];
     v2 += 2;
   } while ((int16)(v2 - 512) < 0);
-  static const DecompressToParams unk_8BC162 = { LONGPTR(0x7f0000) };
-  static const DecompressToParams unk_8BC173 = { LONGPTR(0x7f4000) };
-  static const DecompressToParams unk_8BC184 = { LONGPTR(0x7f5000) };
-  mov24(&decompress_src, 0x95A82F);
-  DecompressToMem_IpArg(&unk_8BC162);
-  mov24(&decompress_src, 0x96FE69);
-  DecompressToMem_IpArg(&unk_8BC173);
-  mov24(&decompress_src, 0x96D10A);
-  DecompressToMem_IpArg(&unk_8BC184);
+  DecompressToMem(0x95A82F, g_ram + 0x10000);
+  DecompressToMem(0x96FE69, g_ram + 0x14000);
+  DecompressToMem(0x96D10A, g_ram + 0x15000);
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0);
   WriteReg(VMAIN, 0x80);
@@ -4619,7 +4494,7 @@ void CinematicFunction_Intro_Func78(uint16 j) {  // 0x8BC434
 }
 
 void CinematicSprPreInstr_C489(uint16 k) {  // 0x8BC489
-  if (cinematic_function == (uint16)FUNC16(CinematicFunction_Intro_Func77)) {
+  if (cinematic_function == FUNC16(CinematicFunction_Intro_Func77)) {
     cinematicspr_preinstr_func[k >> 1] = FUNC16(CinematicFunction_nullsub_116);
   } else {
     bool v1 = (--cinematic_var4 & 0x8000u) != 0;
@@ -4739,15 +4614,11 @@ void CinematicFunction_Intro_Func85(void) {  // 0x8BC627
 }
 
 void CinematicFunction_Intro_Func86(void) {  // 0x8BC699
-  static const DecompressToParams unk_8BC6BB = { LONGPTR(0x7f9000) };
-  static const DecompressToParams unk_8BC6CC = { LONGPTR(0x7f5000) };
   SetupPpu_4_Mode1();
   for (int i = 656; i >= 0; i -= 2)
     *(uint16 *)((char *)&cinematic_var5 + (uint16)i) = 0;
-  mov24(&decompress_src, 0x978ADB);
-  DecompressToMem_IpArg(&unk_8BC6BB);
-  mov24(&decompress_src, 0x96EC76);
-  DecompressToMem_IpArg(&unk_8BC6CC);
+  DecompressToMem(0x978ADB, g_ram + 0x19000);
+  DecompressToMem(0x96EC76, g_ram + 0x15000);
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0);
   WriteReg(VMAIN, 0);
@@ -4837,21 +4708,16 @@ void CinematicFunction_Intro_Func89(uint16 j) {  // 0x8BC83B
 }
 
 void CinematicFunction_Intro_Func90(uint16 k) {  // 0x8BC84E
-  if (cinematic_function == (uint16)FUNC16(nullsub_124))
+  if (cinematic_function == FUNC16(nullsub_124))
     cinematicspr_preinstr_func[k >> 1] = FUNC16(CinematicFunction_Intro_Func91);
 }
 
 void CinematicFunction_Intro_Func91(uint16 k) {  // 0x8BC85D
-  char v3; // t0
-
   int v1 = k >> 1;
   uint16 v2 = cinematicspr_goto_timer[v1] + 64;
   cinematicspr_goto_timer[v1] = v2;
-  v3 = v2;
-  LOBYTE(v2) = HIBYTE(v2);
-  HIBYTE(v2) = v3;
-  R20_ = v2 & 0xFF00;
-  R18_ = (uint8)v2;
+  R20_ = v2 << 8;
+  R18_ = (uint8)(v2 >> 8);
   uint16 v4 = cinematicspr_arr7[v1];
   bool v5 = v4 < R20_;
   cinematicspr_arr7[v1] = v4 - R20_;
@@ -4871,21 +4737,16 @@ void CinematicFunction_Intro_Func92(uint16 j) {  // 0x8BC897
 }
 
 void CinematicFunction_Intro_Func93(uint16 k) {  // 0x8BC8AA
-  if (cinematic_function == (uint16)FUNC16(nullsub_124))
+  if (cinematic_function == FUNC16(nullsub_124))
     cinematicspr_preinstr_func[k >> 1] = FUNC16(CinematicFunction_Intro_Func94);
 }
 
 void CinematicFunction_Intro_Func94(uint16 k) {  // 0x8BC8B9
-  char v3; // t0
-
   int v1 = k >> 1;
   uint16 v2 = cinematicspr_goto_timer[v1] + 32;
   cinematicspr_goto_timer[v1] = v2;
-  v3 = v2;
-  LOBYTE(v2) = HIBYTE(v2);
-  HIBYTE(v2) = v3;
-  R20_ = v2 & 0xFF00;
-  R18_ = (uint8)v2;
+  R20_ = v2 << 8;
+  R18_ = (uint8)(v2 >> 8);
   uint16 v4 = cinematicspr_arr7[v1];
   bool v5 = v4 < R20_;
   cinematicspr_arr7[v1] = v4 - R20_;
@@ -4899,21 +4760,16 @@ void CinematicFunction_Intro_Func94(uint16 k) {  // 0x8BC8B9
 }
 
 void CinematicFunction_Intro_Func96(uint16 k) {  // 0x8BC8F9
-  if (cinematic_function == (uint16)FUNC16(nullsub_124))
+  if (cinematic_function == FUNC16(nullsub_124))
     cinematicspr_preinstr_func[k >> 1] = FUNC16(CinematicFunction_Intro_Func97);
 }
 
 void CinematicFunction_Intro_Func97(uint16 k) {  // 0x8BC908
-  char v3; // t0
-
   int v1 = k >> 1;
   uint16 v2 = cinematicspr_goto_timer[v1] + 32;
   cinematicspr_goto_timer[v1] = v2;
-  v3 = v2;
-  LOBYTE(v2) = HIBYTE(v2);
-  HIBYTE(v2) = v3;
-  R20_ = v2 & 0xFF00;
-  R18_ = (uint8)v2;
+  R20_ = v2 << 8;
+  R18_ = (uint8)(v2 >> 8);
   uint16 v4 = cinematicspr_arr7[v1];
   bool v5 = v4 < R20_;
   cinematicspr_arr7[v1] = v4 - R20_;
@@ -5091,15 +4947,9 @@ void CinematicFunctionEscapeFromCebes(void) {  // 0x8BD480
     palette_buffer[v2 >> 1] = kPalettes_Intro3[v2 >> 1];
     v2 += 2;
   } while ((int16)(v2 - 512) < 0);
-  static const DecompressToParams unk_8BD4C2 = { LONGPTR(0x7f0000) };
-  static const DecompressToParams unk_8BD4D3 = { LONGPTR(0x7f4000) };
-  static const DecompressToParams unk_8BD4E4 = { LONGPTR(0x7f8000) };
-  mov24(&decompress_src, 0x98bcd6);
-  DecompressToMem_IpArg(&unk_8BD4C2);
-  mov24(&decompress_src, 0x99a56f);
-  DecompressToMem_IpArg(&unk_8BD4D3);
-  mov24(&decompress_src, 0x99d17e);
-  DecompressToMem_IpArg(&unk_8BD4E4);
+  DecompressToMem(0x98bcd6, g_ram + 0x10000);
+  DecompressToMem(0x99a56f, g_ram + 0x14000);
+  DecompressToMem(0x99d17e, g_ram + 0x18000);
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0);
   WriteReg(VMAIN, 0x80);
@@ -5124,41 +4974,21 @@ void CinematicFunctionEscapeFromCebes(void) {  // 0x8BD480
   static const StartDmaCopy unk_8BD55C = { 1, 0, 0x19, LONGPTR(0x7f0000), 0x4000 };
   SetupDmaTransfer(&unk_8BD55C);
   WriteReg(MDMAEN, 2u);
-  static const DecompressToParams unk_8BD579 = { LONGPTR(0x7f8000) };
-  static const DecompressToParams unk_8BD58A = { LONGPTR(0x7f0000) };
-  static const DecompressToParams unk_8BD59B = { LONGPTR(0x7f4000) };
-  static const DecompressToParams unk_8BD5BD = { LONGPTR(0x7fe000) };
-  static const DecompressToParams unk_8BD5CE = { LONGPTR(0x7fe800) };
-  static const DecompressToParams unk_8BD5DF = { LONGPTR(0x7ff000) };
-  static const DecompressToParams unk_8BD5F0 = { LONGPTR(0x7ff800) };
-  static const DecompressToParams unk_8BD601 = { LONGPTR(0x7ea000) };
-  static const DecompressToParams unk_8BD612 = { LONGPTR(0x7e2000) };
-  static const DecompressToParams unk_8BD623 = { LONGPTR(0x7e6000) };
-  mov24(&decompress_src, 0x988304);
-  DecompressToMem_IpArg(&unk_8BD579);
-  mov24(&decompress_src, 0x95a82f);
-  DecompressToMem_IpArg(&unk_8BD58A);
-  mov24(&decompress_src, 0x96fe69);
-  DecompressToMem_IpArg(&unk_8BD59B);
+  DecompressToMem(0x988304, g_ram + 0x18000);
+  DecompressToMem(0x95a82f, g_ram + 0x10000);
+  DecompressToMem(0x96fe69, g_ram + 0x14000);
   uint16 v3 = 768;
   do {
     *(uint16 *)((char *)&g_ram[0x14000] + v3) = 0x8c8c;
     v3 += 2;
   } while ((int16)(v3 - 0x4000) < 0);
-  mov24(&decompress_src, 0x98b5c1);
-  DecompressToMem_IpArg(&unk_8BD5BD);
-  mov24(&decompress_src, 0x98b857);
-  DecompressToMem_IpArg(&unk_8BD5CE);
-  mov24(&decompress_src, 0x98baed);
-  DecompressToMem_IpArg(&unk_8BD5DF);
-  mov24(&decompress_src, 0x98bccd);
-  DecompressToMem_IpArg(&unk_8BD5F0);
-  mov24(&decompress_src, 0x97e7de);
-  DecompressToMem_IpArg(&unk_8BD601);
-  mov24(&decompress_src, 0x99d65b);
-  DecompressToMem_IpArg(&unk_8BD612);
-  mov24(&decompress_src, 0x99d932);
-  DecompressToMem_IpArg(&unk_8BD623);
+  DecompressToMem(0x98b5c1, g_ram + 0x1e000);
+  DecompressToMem(0x98b857, g_ram + 0x1e800);
+  DecompressToMem(0x98baed, g_ram + 0x1f000);
+  DecompressToMem(0x98bccd, g_ram + 0x1f800);
+  DecompressToMem(0x97e7de, g_ram + 0xa000);
+  DecompressToMem(0x99d65b, g_ram + 0x2000);
+  DecompressToMem(0x99d932, g_ram + 0x6000);
   WriteRegWord(M7A, 0x100);
   reg_M7A = 256;
   WriteRegWord(M7B, 0);
@@ -5235,9 +5065,7 @@ void CinematicFunction_Intro_Func112(void) {  // 0x8BD731
   static const StartDmaCopy unk_8BD766 = { 1, 1, 0x18, LONGPTR(0x7e2000), 0x4000 };
   SetupDmaTransfer(&unk_8BD766);
   WriteReg(MDMAEN, 2u);
-  mov24(&decompress_src, 0x98ED4F);
-  static const DecompressToParams unk_8BD783 = { LONGPTR(0x7e2000) };
-  DecompressToMem_IpArg(&unk_8BD783);
+  DecompressToMem(0x98ED4F, g_ram + 0x2000);
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0);
   WriteReg(VMAIN, 0x80);
@@ -5287,9 +5115,7 @@ void CinematicFunction_Intro_Func115(void) {  // 0x8BD837
   static const StartDmaCopy unk_8BD86C = { 1, 1, 0x18, LONGPTR(0x7e6000), 0x4000 };
   SetupDmaTransfer(&unk_8BD86C);
   WriteReg(MDMAEN, 2u);
-  mov24(&decompress_src, 0x999101);
-  static const DecompressToParams unk_8BD889 = { LONGPTR(0x7e6000) };
-  DecompressToMem_IpArg(&unk_8BD889);
+  DecompressToMem(0x999101, g_ram + 0x6000);
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0);
   WriteReg(VMAIN, 0x80);
@@ -5619,30 +5445,14 @@ void CinematicFunction_Intro_Func126(void) {  // 0x8BDE80
     palette_buffer[v0 >> 1] = kPalettes_Intro5[v0 >> 1];
     v0 += 2;
   } while ((int16)(v0 - 256) < 0);
-  static const DecompressToParams unk_8BDEAA = { LONGPTR(0x7f0000) };
-  static const DecompressToParams unk_8BDEBB = { LONGPTR(0x7e2000) };
-  static const DecompressToParams unk_8BDECC = { LONGPTR(0x7e6000) };
-  static const DecompressToParams unk_8BDEDD = { LONGPTR(0x7fc000) };
-  static const DecompressToParams unk_8BDEEE = { LONGPTR(0x7fe000) };
-  static const DecompressToParams unk_8BDEFF = { LONGPTR(0x7f4000) };
-  static const DecompressToParams unk_8BDF10 = { LONGPTR(0x7fe800) };
-  static const DecompressToParams unk_8BDF21 = { LONGPTR(0x7ff000) };
-  mov24(&decompress_src, 0x979803);
-  DecompressToMem_IpArg(&unk_8BDEAA);
-  mov24(&decompress_src, 0x97B957);
-  DecompressToMem_IpArg(&unk_8BDEBB);
-  mov24(&decompress_src, 0x97D7FC);
-  DecompressToMem_IpArg(&unk_8BDECC);
-  mov24(&decompress_src, 0x97E7DE);
-  DecompressToMem_IpArg(&unk_8BDEDD);
-  mov24(&decompress_src, 0x9796F4);
-  DecompressToMem_IpArg(&unk_8BDEEE);
-  mov24(&decompress_src, 0x97F987);
-  DecompressToMem_IpArg(&unk_8BDEFF);
-  mov24(&decompress_src, 0x99DA9F);
-  DecompressToMem_IpArg(&unk_8BDF10);
-  mov24(&decompress_src, 0x99DAB1);
-  DecompressToMem_IpArg(&unk_8BDF21);
+  DecompressToMem(0x979803, g_ram + 0x10000);
+  DecompressToMem(0x97B957, g_ram + 0x2000);
+  DecompressToMem(0x97D7FC, g_ram + 0x6000);
+  DecompressToMem(0x97E7DE, g_ram + 0x1c000);
+  DecompressToMem(0x9796F4, g_ram + 0x1e000);
+  DecompressToMem(0x97F987, g_ram + 0x14000);
+  DecompressToMem(0x99DA9F, g_ram + 0x1e800);
+  DecompressToMem(0x99DAB1, g_ram + 0x1f000);
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0x20);
   WriteReg(VMAIN, 0x80);
@@ -5680,12 +5490,8 @@ void CinematicFunction_Intro_Func126(void) {  // 0x8BDE80
   SetupDmaTransfer(&unk_8BDFD9);
   WriteReg(MDMAEN, 2u);
 
-  mov24(&decompress_src, 0x99E089);
-  static const DecompressToParams unk_8BDFF6 = { LONGPTR(0x7e6000) };
-  DecompressToMem_IpArg(&unk_8BDFF6);
-  mov24(&decompress_src, 0x99ECC4);
-  static const DecompressToParams unk_8BE007 = { LONGPTR(0x7e8000) };
-  DecompressToMem_IpArg(&unk_8BE007);
+  DecompressToMem(0x99E089, g_ram + 0x6000);
+  DecompressToMem(0x99ECC4, g_ram + 0x8000);
   if (sign16(game_time_hours - 3)) {
     WriteReg(VMADDL, 0);
     WriteReg(VMADDH, 0);
@@ -5725,9 +5531,7 @@ void CinematicFunction_Intro_Func126(void) {  // 0x8BDE80
   for (int i = 510; i >= 0; i -= 2)
     hdma_table_1[i >> 1] = 0;
   CinematicFunction_Intro_Func127();
-  mov24(&decompress_src, 0x97EEFF);
-  static const DecompressToParams unk_8BE0CB = { LONGPTR(0x7f0000) };
-  DecompressToMem_IpArg(&unk_8BE0CB);
+  DecompressToMem(0x97EEFF, g_ram + 0x10000);
   ClearCinematicBgObjects(0x7F);
   CinematicFunction_Intro_Func128(0x7F);
   EnableTextGlowObjects_();
@@ -6055,7 +5859,7 @@ uint16 CalcItemPercentageCount(uint16 k, uint16 instrp) {  // 0x8BE627
   uint16 v0 = 4;
   R18_ = 0;
   do {
-    uint16 *v1 = (uint16 *)RomPtr_RAM(g_off_8BE70D[v0]);
+    const uint16 *v1 = (const uint16 *)RomPtr_RAM(g_off_8BE70D[v0]);
     R18_ += SnesDivide(*v1, g_word_8BE717[v0]);
     --v0;
   } while ((v0 & 0x8000u) == 0);
@@ -6166,7 +5970,7 @@ void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
       uint8 *v3 = RomPtr_RAM(v0);
       if (*(int16 *)v3 < 0) {
         uint8 *v1 = RomPtr_RAM(v0);
-        v2 = *((uint16 *)v1 + 5) - 1;
+        v2 = GET_WORD(v1 + 10) - 1;
         *((uint16 *)v1 + 5) = v2;
         if (v2 < 0) {
           *((uint16 *)v1 + 5) = 32;
@@ -6174,25 +5978,25 @@ void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
         }
       } else {
         int v4 = (uint16)(8 * (uint8) * (uint16 *)v3) >> 1;
-        if (sign16((*(uint16 *)v3 & 0xFF00) - 1024)) {
+        if (sign16((GET_WORD(v3) & 0xFF00) - 1024)) {
           *((uint16 *)v3 + 6) += g_word_8BE9CF[v4];
-          v5 = *((uint16 *)v3 + 7);
+          v5 = GET_WORD(v3 + 14);
         } else {
           *((uint16 *)v3 + 6) += g_word_8BE9CF[v4] + g_word_8BE9CF[v4];
           v5 = g_word_8BE9CF[v4 + 1] + *((uint16 *)v3 + 7);
         }
         *((uint16 *)v3 + 7) = g_word_8BE9CF[v4 + 1] + v5;
-        uint16 v23 = *((uint16 *)v3 + 6);
+        uint16 v23 = GET_WORD(v3 + 12);
         R18_ = (int8)HIBYTE(v23);
         R20_ = (v23 << 8) & 0xFF00;
-        v8 = *((uint16 *)v3 + 2);
+        v8 = GET_WORD(v3 + 4);
         bool v9 = __CFADD__uint16(R20_, v8);
         *((uint16 *)v3 + 2) = R20_ + v8;
         *((uint16 *)v3 + 1) += R18_ + v9;
-        uint16 v24 = *((uint16 *)v3 + 7);
+        uint16 v24 = GET_WORD(v3 + 14);
         R18_ = (int8)HIBYTE(v24);
         R20_ = (v24 << 8) & 0xFF00;
-        v12 = *((uint16 *)v3 + 4);
+        v12 = GET_WORD(v3 + 8);
         v9 = __CFADD__uint16(R20_, v12);
         *((uint16 *)v3 + 4) = R20_ + v12;
         *((uint16 *)v3 + 3) += R18_ + v9;
@@ -6207,10 +6011,10 @@ void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
       uint8 *v15 = RomPtr_RAM(v14);
       uint8 *v16 = v15;
       if (*(int16 *)v15 >= 0) {
-        v17 = *((uint16 *)v15 + 1);
+        v17 = GET_WORD(v15 + 2);
         if (v15[3]
             || ((v17 - 4) & 0xFF00) != 0
-            || (v18 = gOamEnt(v13), *(uint16 *)&v18->xcoord = v17 - 4, v19 = *((uint16 *)v16 + 3), v16[7])
+            || (v18 = gOamEnt(v13), *(uint16 *)&v18->xcoord = v17 - 4, v19 = GET_WORD(v16 + 6), v16[7])
             || ((v19 - 4) & 0xFF00) != 0) {
           uint8 *v21 = RomPtr_RAM(v14);
           *((uint16 *)v21 + 5) = 32;
@@ -6223,15 +6027,15 @@ void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
           *(uint16 *)v21 = *v21;
         } else {
           *(uint16 *)&v18->ycoord = v19 - 4;
-          v20 = *((uint16 *)v16 + 5) - 1;
+          v20 = GET_WORD(v16 + 10) - 1;
           *((uint16 *)v16 + 5) = v20;
           if (v20 <= 0) {
-            v22 = *(uint16 *)v16;
+            v22 = GET_WORD(v16);
             *((uint16 *)v16 + 5) = g_word_8BE9CF[((uint16)(8 * (uint8) * (uint16 *)v16) >> 1) + 2];
             *(uint16 *)v16 = v22 + 512;
           }
           if (v16[1]) {
-            *(uint16 *)&gOamEnt(v13)->charnum = g_word_8BE9A7[(uint16)HIBYTE(*(uint16 *)v16) >> 1];
+            *(uint16 *)&gOamEnt(v13)->charnum = g_word_8BE9A7[(uint16)GET_HIBYTE(GET_WORD(v16)) >> 1];
             v13 += 4;
           }
         }
@@ -6566,7 +6370,7 @@ uint16 CinematicSprInstr_Func187(uint16 k, uint16 j) {  // 0x8BF32B
 
 
 void CinematicSprPreInstr_F35A(uint16 k) {  // 0x8BF35A
-  if (cinematic_function == (uint16)FUNC16(CinematicFunction_Intro_Func121)) {
+  if (cinematic_function == FUNC16(CinematicFunction_Intro_Func121)) {
     int v1 = k >> 1;
     cinematicspr_preinstr_func[v1] = FUNC16(CinematicFunction_Intro_Func189);
     cinematicspr_arr7[v1] = 0x4000;
@@ -6601,7 +6405,7 @@ uint16 CinematicSprInstr_Func190(uint16 k, uint16 j) {  // 0x8BF3B0
 }
 
 void CinematicFunction_Intro_Func191(uint16 k) {  // 0x8BF3B9
-  if (cinematic_function == (uint16)FUNC16(CinematicFunction_Intro_Func126)) {
+  if (cinematic_function == FUNC16(CinematicFunction_Intro_Func126)) {
     int v1 = k >> 1;
     cinematicspr_instr_timer[v1] = 1;
     cinematicspr_instr_ptr[v1] = addr_off_8BEE9B;
@@ -6705,7 +6509,7 @@ void CinematicFunction_Intro_Func206(uint16 k) {  // 0x8BF4E0
 }
 
 void CinematicFunction_Intro_Func207(uint16 k) {  // 0x8BF507
-  if (cinematic_function == (uint16)FUNC16(nullsub_125)) {
+  if (cinematic_function == FUNC16(nullsub_125)) {
     int v1 = k >> 1;
     cinematicspr_instr_timer[v1] = 1;
     cinematicspr_instr_ptr[v1] = addr_off_8BEE9B;

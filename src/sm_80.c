@@ -8,6 +8,14 @@
 #include "spc_player.h"
 
 
+#define kMusicPointers (*(LongPtr*)RomFixedPtr(0x8fe7e1))
+#define kTimerDigitsSpritemapPtr ((uint16*)RomFixedPtr(0x809fd4))
+#define kLoadStationLists ((uint16*)RomFixedPtr(0x80c4b5))
+#define off_80CD46 ((uint16*)RomFixedPtr(0x80cd46))
+
+
+
+
 void APU_UploadBank(void) {  // 0x808028
   if (!g_use_my_apu_code)
     return;
@@ -27,7 +35,6 @@ uint16 NextRandom(void) {  // 0x808111
 
 void ReleaseButtonsFilter(uint16 v0) {  // 0x808146
   timed_held_input_timer_reset = v0;
-  R18_ = ~joypad1_newkeys & joypad1_lastkeys;
   bool v1 = ((uint16)~joypad1_newkeys & joypad1_lastkeys) == joypad_released_keys;
   joypad_released_keys = ~joypad1_newkeys & joypad1_lastkeys;
   if (!v1) {
@@ -156,8 +163,7 @@ CoroutineRet Vector_RESET_Async(void) {  // 0x80841C
   WriteReg(MEMSEL, 1u);
   reg_MEMSEL = 1;
   // Removed code to wait 4 frames
-  for (int i = 8190; i >= 0; i -= 2)
-    *(uint16 *)RomPtr_RAM(i) = 0;
+  memset(g_ram, 0, 8192);
   COROUTINE_AWAIT(2, InitializeIoDisplayLogo_Async());
   COROUTINE_MANUAL_POS(3); // Soft reset position
   mov24(&R0_, 0xCF8000);
@@ -413,83 +419,69 @@ void ClearOamExt(void) {  // 0x808B1A
 }
 
 void QueueMode7Transfers(uint8 db, uint16 k) {  // 0x808B4F
-  int16 v4; // dx
-
+  const uint8 *p = RomPtrWithBank(db, k);
   uint16 v2 = mode7_vram_write_queue_tail;
-  for (int i = k - 1; ; i += 7) {
-    while (1) {
-      v4 = *(uint16 *)RomPtrWithBank(db, i);
-      if (v4 >= 0)
-        break;
-      uint8 *v6 = RomPtrWithBank(db, i);
-      *(uint16 *)(&mode7_write_queue[0].field_0 + v2) = *(uint16 *)(v6 + 1);
-      *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v2 + 1) = *(uint16 *)(v6 + 3);
-      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 1] = *(uint16 *)(v6 + 5);
-      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 3] = *(uint16 *)(v6 + 7);
-      *(uint16 *)((char *)&mode7_write_queue[1].field_1 + v2) = v6[9];
-      i += 9;
-      v2 += 9;
-    }
-    if ((v4 & 0x4000) == 0)
+  for (;;) {
+    int f = GET_BYTE(p);
+    if (f & 0x80) {
+      *(uint16 *)(&mode7_write_queue[0].field_0 + v2) = GET_WORD(p);
+      *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v2 + 1) = GET_WORD(p + 2);
+      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 1] = GET_WORD(p + 4);
+      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 3] = GET_WORD(p + 6);
+      *(uint16 *)((char *)&mode7_write_queue[1].field_1 + v2) = p[8];
+      p += 9, v2 += 9;
+    } else if (f & 0x40) {
+      *(uint16 *)(&mode7_write_queue[0].field_0 + v2) = GET_WORD(p);
+      *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v2 + 1) = GET_WORD(p + 2);
+      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 1] = GET_WORD(p + 4);
+      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 3] = p[6];
+      p += 7, v2 += 7;
+    } else {
       break;
-    uint8 *v5 = RomPtrWithBank(db, i);
-    *(uint16 *)(&mode7_write_queue[0].field_0 + v2) = *(uint16 *)(v5 + 1);
-    *(uint16 *)((char *)&mode7_write_queue[0].field_1 + v2 + 1) = *(uint16 *)(v5 + 3);
-    *(uint16 *)&mode7_write_queue[0].gap3[v2 + 1] = *(uint16 *)(v5 + 5);
-    *(uint16 *)&mode7_write_queue[0].gap3[v2 + 3] = v5[7];
-    v2 += 7;
+    }
   }
   mode7_vram_write_queue_tail = v2;
 }
 
 void NMI_ProcessMode7Queue(void) {  // 0x808BBA
   if (mode7_vram_write_queue_tail) {
-    NMI_ProcessMode7QueueInner(0x2D0u);
+    NMI_ProcessMode7QueueInner(&g_ram[0x2D0]);
     *(uint16 *)&mode7_write_queue[0].field_0 = 0;
     mode7_vram_write_queue_tail = 0;
   }
 }
 
-static inline Mode7CgvmWriteQueue *get_Mode7CgvmWriteQueue_RAM(uint16 a) { return (Mode7CgvmWriteQueue *)RomPtr_RAM(a); }
-void NMI_ProcessMode7QueueInner(uint16 k) {  // 0x808BD3
-  char v2;
-  char v3;
-  char v4;
-  Mode7CgvmWriteQueue *v5;
-  uint8 *v1;
-
+void NMI_ProcessMode7QueueInner(const uint8 *p) {  // 0x808BD3
   while (1) {
+    uint8 v2;
     while (1) {
-      v1 = RomPtr_RAM(k);
-      v2 = *v1;
-      if ((*v1 & 0x80) == 0)
+      v2 = *p;
+      if ((v2 & 0x80) == 0)
         break;
-      v4 = 2 * v2;
-      WriteReg(DMAP1, ((uint8)v4 >> 1) & 0x1F);
-      v5 = get_Mode7CgvmWriteQueue_RAM(k);
+      WriteReg(DMAP1, v2 & 0x1F);
+      Mode7CgvmWriteQueue *v5 = (Mode7CgvmWriteQueue *)p;
       WriteRegWord(A1T1L, v5->src_addr.addr);
       WriteReg(A1B1, v5->src_addr.bank);
       WriteRegWord(DAS1L, v5->count);
-      if (v4 < 0)
+      if (v2 & 0x40)
         WriteReg(BBAD1, 0x19);
       else
         WriteReg(BBAD1, 0x18);
       WriteRegWord(VMADDL, v5->vram_addr);
       WriteReg(VMAIN, v5->vmain);
       WriteReg(MDMAEN, 2u);
-      k += 9;
+      p += sizeof(Mode7CgvmWriteQueue);
     }
-    v3 = 2 * v2;
-    if (v3 >= 0)
+    if (!(v2 & 0x40))
       break;
-    WriteReg(DMAP1, ((uint8)v3 >> 1) & 0x1F);
-    WriteRegWord(A1T1L, *(uint16 *)(v1 + 1));
-    WriteReg(A1B1, v1[3]);
-    WriteRegWord(DAS1L, *((uint16 *)v1 + 2));
+    WriteReg(DMAP1, v2 & 0x1F);
+    WriteRegWord(A1T1L, *(uint16 *)(p + 1));
+    WriteReg(A1B1, p[3]);
+    WriteRegWord(DAS1L, *((uint16 *)p + 2));
     WriteReg(BBAD1, 0x22);
-    WriteReg(CGADD, v1[6]);
+    WriteReg(CGADD, p[6]);
     WriteReg(MDMAEN, 2u);
-    k += 7;
+    p += 7;
   }
 }
 
@@ -660,7 +652,7 @@ uint8 HasQueuedMusic(void) {  // 0x808EF4
   }
   return 1;
 }
-#define kMusicPointers (*(LongPtr*)RomPtr(0x8fe7e1))
+
 void HandleMusicQueue(void) {  // 0x808F0C
   bool v0 = music_timer-- == 1;
   if ((music_timer & 0x8000u) == 0) {
@@ -743,20 +735,17 @@ void QueueSfx1_Max6(uint16 a) {  // 0x809049
 }
 
 void QueueSfx1_Internal(uint16 a) {  // 0x809051
-  uint16 v2;
-
   sfx_max_queued[0] = a;
   if ((uint8)((sfx_writepos[0] - sfx_readpos[0]) & 0xF) < (uint8)a) {
-    LOBYTE(v2) = HIBYTE(a);
-    HIBYTE(v2) = (sfx_writepos[0] - sfx_readpos[0]) & 0xF;
+    uint8 v2 = GET_HIBYTE(a);
     if (!debug_disable_sounds && game_state < 0x28u && (power_bomb_explosion_status & 0x8000u) == 0) {
-      uint16 v1 = sfx_writepos[0];
-      uint16 v3 = sfx_writepos[0] + 1;
-      if ((uint8)(sfx_writepos[0] + 1) >= 0x10u)
+      uint8 v1 = sfx_writepos[0];
+      uint8 v3 = sfx_writepos[0] + 1;
+      if (v3 >= 0x10u)
         v3 = 0;
       if (v3 == sfx_readpos[0]) {
-        if (v2 < *(uint16 *)&sfx1_queue[v1])
-          *(uint16 *)&sfx1_queue[v1] = v2;
+        if (v2 < sfx1_queue[v1])
+          sfx1_queue[v1] = v2;
       } else {
         sfx1_queue[sfx_writepos[0]] = v2;
         sfx_writepos[0] = v3;
@@ -787,21 +776,17 @@ void QueueSfx2_Max6(uint16 a) {  // 0x8090CB
 }
 
 void QueueSfx2_Internal(uint16 a) {  // 0x8090D3
-  uint16 v1;
-  uint16 v2;
-
   sfx_max_queued[1] = a;
   if ((uint8)((sfx_writepos[1] - sfx_readpos[1]) & 0xF) < (uint8)a) {
-    LOBYTE(v2) = HIBYTE(a);
-    HIBYTE(v2) = (sfx_writepos[1] - sfx_readpos[1]) & 0xF;
+    uint8 v2 = GET_HIBYTE(a);
     if (!debug_disable_sounds && game_state < 0x28u && (power_bomb_explosion_status & 0x8000u) == 0) {
-      LOBYTE(v1) = sfx_writepos[1];
+      uint8 v1 = sfx_writepos[1];
       uint8 v3 = sfx_writepos[1] + 1;
-      if ((uint8)(sfx_writepos[1] + 1) >= 0x10u)
+      if (v3 >= 0x10u)
         v3 = 0;
       if (v3 == sfx_readpos[1]) {
-        if (v2 < *(uint16 *)&sfx2_queue[v1])
-          *(uint16 *)&sfx2_queue[v1] = v2;
+        if (v2 < sfx2_queue[v1])
+          sfx2_queue[v1] = v2;
       } else {
         sfx2_queue[sfx_writepos[1]] = v2;
         sfx_writepos[1] = v3;
@@ -834,17 +819,15 @@ void QueueSfx3_Max6(uint16 a) {  // 0x80914D
 void QueueSfx3_Internal(uint16 a) {  // 0x809155
   sfx_max_queued[2] = a;
   if ((uint8)((sfx_writepos[2] - sfx_readpos[2]) & 0xF) < (uint8)a) {
-    uint16 v2 = 0;
-    LOBYTE(v2) = HIBYTE(a);
-    HIBYTE(v2) = (sfx_writepos[2] - sfx_readpos[2]) & 0xF;
+    uint8 v2 = GET_HIBYTE(a);
     if (!debug_disable_sounds && game_state < 0x28u && (power_bomb_explosion_status & 0x8000u) == 0) {
-      uint16 v1 = sfx_writepos[2];
-      int v3 = sfx_writepos[2] + 1;
+      uint8 v1 = sfx_writepos[2];
+      uint8 v3 = sfx_writepos[2] + 1;
       if (v3 >= 0x10u)
         v3 = 0;
       if (v3 == sfx_readpos[2]) {
-        if (v2 < *(uint16 *)&sfx3_queue[v1])
-          *(uint16 *)&sfx3_queue[v1] = v2;
+        if (v2 < sfx3_queue[v1])
+          sfx3_queue[v1] = v2;
       } else {
         sfx3_queue[sfx_writepos[2]] = v2;
         sfx_writepos[2] = v3;
@@ -949,44 +932,36 @@ void NmiUpdatePalettesAndOam(void) {  // 0x80933A
 void NmiTransferSamusToVram(void) {  // 0x809376
   WriteReg(VMAIN, 0x80);
   if ((uint8)nmi_copy_samus_halves) {
-    nmicopy1_var_d = nmi_copy_samus_top_half_src;
+    const uint8 *rp = RomPtr_92(nmi_copy_samus_top_half_src);
     WriteRegWord(VMADDL, 0x6000);
     WriteRegWord(DMAP1, 0x1801);
-    uint16 v0 = *(uint16 *)RomPtr_92(nmicopy1_var_d);
+    uint16 v0 = GET_WORD(rp + 0);
     WriteRegWord(A1T1L, v0);
-    R20_ = v0;
-    uint8 *v1 = RomPtr_92(nmicopy1_var_d);
-    WriteRegWord(A1B1, *((uint16 *)v1 + 1));
-    uint16 v2 = *(uint16 *)(RomPtr_92(nmicopy1_var_d) + 3);
+    WriteRegWord(A1B1, GET_WORD(rp + 2));
+    uint16 v2 = GET_WORD(rp + 3);
     WriteRegWord(DAS1L, v2);
-    R20_ += v2;
     WriteReg(MDMAEN, 2u);
     WriteRegWord(VMADDL, 0x6100);
-    WriteRegWord(A1T1L, R20_);
-    uint8 *v3 = RomPtr_92(nmicopy1_var_d);
-    if (*(uint16 *)(v3 + 5)) {
-      WriteRegWord(DAS1L, *(uint16 *)(v3 + 5));
+    WriteRegWord(A1T1L, v0 + v2);
+    if (GET_WORD(rp + 5)) {
+      WriteRegWord(DAS1L, GET_WORD(rp + 5));
       WriteReg(MDMAEN, 2u);
     }
   }
   if (HIBYTE(nmi_copy_samus_halves)) {
-    nmicopy1_var_d = nmi_copy_samus_bottom_half_src;
+    const uint8 *rp = RomPtr_92(nmi_copy_samus_bottom_half_src);
     WriteRegWord(VMADDL, 0x6080);
     WriteRegWord(DMAP1, 0x1801);
-    uint16 v4 = *(uint16 *)RomPtr_92(nmicopy1_var_d);
+    uint16 v4 = GET_WORD(rp + 0);
     WriteRegWord(A1T1L, v4);
-    R20_ = v4;
-    uint8 *v5 = RomPtr_92(nmicopy1_var_d);
-    WriteRegWord(A1B1, *((uint16 *)v5 + 1));
-    uint16 v6 = *(uint16 *)(RomPtr_92(nmicopy1_var_d) + 3);
+    WriteRegWord(A1B1, GET_WORD(rp + 2));
+    uint16 v6 = GET_WORD(rp + 3);
     WriteRegWord(DAS1L, v6);
-    R20_ += v6;
     WriteReg(MDMAEN, 2u);
     WriteRegWord(VMADDL, 0x6180);
-    WriteRegWord(A1T1L, R20_);
-    uint8 *v7 = RomPtr_92(nmicopy1_var_d);
-    if (*(uint16 *)(v7 + 5)) {
-      WriteRegWord(DAS1L, *(uint16 *)(v7 + 5));
+    WriteRegWord(A1T1L, v4 + v6);
+    if (GET_WORD(rp + 5)) {
+      WriteRegWord(DAS1L, GET_WORD(rp + 5));
       WriteReg(MDMAEN, 2u);
     }
   }
@@ -1331,29 +1306,28 @@ void AddMissilesToHudTilemap(void) {
 }
 
 void AddSuperMissilesToHudTilemap(void) {  // 0x809A0E
-  AddToTilemapInner(0x1C, addr_kHudTilemaps_Missiles + 12);
+  AddToTilemapInner(0x1C, (const uint16*)RomPtr_80(addr_kHudTilemaps_Missiles + 12));
 }
 
 void AddPowerBombsToHudTilemap(void) {  // 0x809A1E
-  AddToTilemapInner(0x22, addr_kHudTilemaps_Missiles + 20);
+  AddToTilemapInner(0x22, (const uint16 *)RomPtr_80(addr_kHudTilemaps_Missiles + 20));
 }
 
 void AddGrappleToHudTilemap(void) {  // 0x809A2E
-  AddToTilemapInner(0x28, addr_kHudTilemaps_Missiles + 28);
+  AddToTilemapInner(0x28, (const uint16 *)RomPtr_80(addr_kHudTilemaps_Missiles + 28));
 }
 
 void AddXrayToHudTilemap(void) {  // 0x809A3E
-  AddToTilemapInner(0x2E, addr_kHudTilemaps_Missiles + 36);
+  AddToTilemapInner(0x2E, (const uint16 *)RomPtr_80(addr_kHudTilemaps_Missiles + 36));
 }
 
-void AddToTilemapInner(uint16 k, uint16 j) {  // 0x809A4C
+void AddToTilemapInner(uint16 k, const uint16 *j) {  // 0x809A4C
   int v2 = k >> 1;
   if ((hud_tilemap[v2] & 0x3FF) == 15) {
-    uint16 *v3 = (uint16 *)RomPtr_80(j);
-    hud_tilemap[v2] = *v3;
-    hud_tilemap[v2 + 1] = v3[1];
-    hud_tilemap[v2 + 32] = v3[2];
-    hud_tilemap[v2 + 33] = v3[3];
+    hud_tilemap[v2] = j[0];
+    hud_tilemap[v2 + 1] = j[1];
+    hud_tilemap[v2 + 32] = j[2];
+    hud_tilemap[v2 + 33] = j[3];
   }
 }
 
@@ -1384,11 +1358,11 @@ void InitializeHud(void) {  // 0x809A79
   R0_.addr = addr_kDigitTilesetsWeapon;
   *(uint16 *)&R0_.bank = 128;
   if (samus_max_missiles)
-    DrawThreeHudDigits(samus_missiles, 0x94);
+    DrawThreeHudDigits(R0_, samus_missiles, 0x94);
   if (samus_max_super_missiles)
-    DrawTwoHudDigits(samus_super_missiles, 0x9C);
+    DrawTwoHudDigits(R0_, samus_super_missiles, 0x9C);
   if (samus_max_power_bombs)
-    DrawTwoHudDigits(samus_power_bombs, 0xA2);
+    DrawTwoHudDigits(R0_, samus_power_bombs, 0xA2);
   ToggleHudItemHighlight(hud_item_index, 0x1000);
   ToggleHudItemHighlight(samus_prev_hud_item_index, 0x1400);
   HandleHudTilemap();
@@ -1399,11 +1373,10 @@ static const uint16 kEnergyTankIconTilemapOffsets[14] = { 0x42, 0x44, 0x46, 0x48
 void HandleHudTilemap(void) {  // 0x809B44
   R0_.bank = 0;
   if (reserve_health_mode == 1) {
-    uint16 v0 = addr_kHudTilemaps_AutoReserve;
+    const uint16 *v1 = (const uint16 *)RomPtr_80(addr_kHudTilemaps_AutoReserve);
     if (!samus_reserve_health)
-      v0 = addr_kHudTilemaps_AutoReserve + 12;
-    uint16 *v1 = (uint16 *)RomPtr_80(v0);
-    hud_tilemap[8] = *v1;
+      v1 += 6;
+    hud_tilemap[8] = v1[0];
     hud_tilemap[9] = v1[1];
     hud_tilemap[40] = v1[2];
     hud_tilemap[41] = v1[3];
@@ -1429,23 +1402,23 @@ void HandleHudTilemap(void) {  // 0x809B44
       v2 += 2;
     } while ((int16)(v2 - 28) < 0);
     R0_.addr = addr_kDigitTilesetsHealth;
-    DrawTwoHudDigits(R18_, 0x8C);
+    DrawTwoHudDigits(R0_, R18_, 0x8C);
   }
   R0_.addr = addr_kDigitTilesetsWeapon;
   if (samus_max_missiles && samus_missiles != samus_prev_missiles) {
     samus_prev_missiles = samus_missiles;
-    DrawThreeHudDigits(samus_missiles, 0x94);
+    DrawThreeHudDigits(R0_, samus_missiles, 0x94);
   }
   if (samus_max_super_missiles && samus_super_missiles != samus_prev_super_missiles) {
     samus_prev_super_missiles = samus_super_missiles;
     if ((joypad_dbg_flags & 0x1F40) != 0)
-      DrawThreeHudDigits(samus_prev_super_missiles, 0x9C);
+      DrawThreeHudDigits(R0_, samus_prev_super_missiles, 0x9C);
     else
-      DrawTwoHudDigits(samus_prev_super_missiles, 0x9C);
+      DrawTwoHudDigits(R0_, samus_prev_super_missiles, 0x9C);
   }
   if (samus_max_power_bombs && samus_power_bombs != samus_prev_power_bombs) {
     samus_prev_power_bombs = samus_power_bombs;
-    DrawTwoHudDigits(samus_power_bombs, 0xA2);
+    DrawTwoHudDigits(R0_, samus_power_bombs, 0xA2);
   }
   if (hud_item_index != samus_prev_hud_item_index) {
     ToggleHudItemHighlight(hud_item_index, 0x1000);
@@ -1498,19 +1471,19 @@ void ToggleHudItemHighlight(uint16 a, uint16 k) {  // 0x809CEA
   }
 }
 
-void DrawThreeHudDigits(uint16 a, uint16 k) {  // 0x809D78
+void DrawThreeHudDigits(LongPtr r0, uint16 a, uint16 k) {  // 0x809D78
   uint16 v2 = 2 * (a / 100);
-  hud_tilemap[k >> 1] = *(uint16 *)IndirPtr(&R0_, v2);
+  hud_tilemap[k >> 1] = IndirReadWord(r0, v2);
   uint16 RegWord = (a % 100);
-  DrawTwoHudDigits(RegWord, k + 2);
+  DrawTwoHudDigits(r0, RegWord, k + 2);
 }
 
-void DrawTwoHudDigits(uint16 a, uint16 k) {  // 0x809D98
+void DrawTwoHudDigits(LongPtr r0, uint16 a, uint16 k) {  // 0x809D98
   uint16 RegWord = a / 10;
   int v3 = k >> 1;
-  hud_tilemap[v3] = *(uint16 *)IndirPtr(&R0_, 2 * RegWord);
+  hud_tilemap[v3] = IndirReadWord(r0, 2 * RegWord);
   uint16 v4 = 2 * (a % 10);
-  hud_tilemap[v3 + 1] = *(uint16 *)IndirPtr(&R0_, v4);
+  hud_tilemap[v3 + 1] = IndirReadWord(r0, v4);
 }
 
 static Func_U8 *const kTimerProcessFuncs[7] = {  // 0x809DE7
@@ -1524,7 +1497,7 @@ static Func_U8 *const kTimerProcessFuncs[7] = {  // 0x809DE7
 };
 
 uint8 ProcessTimer(void) {
-  return kTimerProcessFuncs[(uint16)(2 * (uint8)timer_status) >> 1]();
+  return kTimerProcessFuncs[(uint8)timer_status]();
 }
 
 uint8 ProcessTimer_CeresStart(void) {  // 0x809E09
@@ -1639,7 +1612,6 @@ void DrawTimer(void) {  // 0x809F6C
   DrawTwoTimerDigits(*(uint16 *)&timer_centiseconds, 0x14);
 }
 
-#define kTimerDigitsSpritemapPtr ((uint16*)RomPtr(0x809fd4))
 
 void DrawTwoTimerDigits(uint16 a, uint16 k) {  // 0x809F95
   char v2;
@@ -2203,7 +2175,7 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
     uint16 v9 = 0;
     loopcounter = 16;
     do {
-      tmp_block_to_update = *(uint16 *)IndirPtr(&copywithflip_src, v9);
+      tmp_block_to_update = IndirReadWord(copywithflip_src, v9);
       uint16 v10 = tmp_block_to_update & 0x3FF;
       uint16 v17 = v9;
       uint16 v11 = tmp_vram_base_addr;
@@ -2297,7 +2269,7 @@ void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
     uint16 v9 = 0;
     loopcounter = 17;
     do {
-      tmp_block_to_update = *(uint16 *)IndirPtr(&copywithflip_src, v9);
+      tmp_block_to_update = IndirReadWord(copywithflip_src, v9);
       uint16 v10 = tmp_block_to_update & 0x3FF;
       uint16 v17 = v9;
       uint16 v11 = tmp_vram_base_addr;
@@ -2558,86 +2530,82 @@ uint8 DoorTransition_Up(void) {  // 0x80AF89
 void ConfigureMode7RotationMatrix(void) {  // 0x80B0C2
   if (irq_enable_mode7) {
     if ((nmi_frame_counter_word & 7) == 0) {
-      reg_M7B = kSinCosTable8bit_Sext[((uint16)(2 * (uint8)mode7_rotation_angle) >> 1) + 64];
+      reg_M7B = kSinCosTable8bit_Sext[((uint8)mode7_rotation_angle) + 64];
       reg_M7C = -reg_M7B;
-      reg_M7A = kSinCosTable8bit_Sext[((uint16)(2 * (uint8)(mode7_rotation_angle + 64)) >> 1) + 64];
+      reg_M7A = kSinCosTable8bit_Sext[((uint8)(mode7_rotation_angle + 64)) + 64];
       reg_M7D = reg_M7A;
       ++mode7_rotation_angle;
     }
   }
 }
 
-uint8 DecompNextByte(void) {
-  uint8 v2 = *RomPtrWithBank(decompress_src.bank, decompress_src.addr);
-  if (decompress_src.addr++ == 0xFFFF) {
-    decompress_src.addr = 0x8000;
-    decompress_src.bank++;
-  }
-  return v2;
+static uint32 decompress_src;
+
+static uint8 DecompNextByte() {
+  uint8 b = *RomPtrWithBank(decompress_src >> 16, decompress_src);
+  if ((decompress_src++ & 0xffff) == 0xffff)
+    decompress_src += 0x8000;
+  return b;
 }
 
-void DecompressToMem(void) {  // 0x80B119
-  HIBYTE(decompress_want_xor) = 0;
-  uint16 dst_pos = 0;
+void DecompressToMem(uint32 src, uint8 *decompress_dst) {  // 0x80B119
+  decompress_src = src;
+
+  int src_pos, dst_pos = 0;
   while (1) {
     int len;
-    uint8 v2 = DecompNextByte(), cmd, b;
-    decompress_last_byte = v2;
-    if (v2 == 0xFF)
+    uint8 cmd, b;
+    b = DecompNextByte();
+    if (b == 0xFF)
       break;
-    if ((v2 & 0xE0) == 0xE0) {
-      cmd = (8 * decompress_last_byte) & 0xE0;
-      len = ((decompress_last_byte & 3) << 8 | DecompNextByte()) + 1;
+    if ((b & 0xE0) == 0xE0) {
+      cmd = (8 * b) & 0xE0;
+      len = ((b & 3) << 8 | DecompNextByte()) + 1;
     } else {
-      cmd = v2 & 0xE0;
-      len = (decompress_last_byte & 0x1F) + 1;
+      cmd = b & 0xE0;
+      len = (b & 0x1F) + 1;
     }
     if (cmd & 0x80) {
-      decompress_want_xor = cmd & 0x20;
-      if (cmd >= 0xC0u) {
-        decompress_last_byte = DecompNextByte();
-        decompress_tmp1 = 0;
-        *(uint16 *)&decompress_last_byte = dst_pos - *(uint16 *)&decompress_last_byte;
+      uint8 want_xor = cmd & 0x20 ? 0xff : 0;
+      if (cmd >= 0xC0) {
+        src_pos = dst_pos - DecompNextByte();
       } else {
-        decompress_last_byte = DecompNextByte();
-        decompress_tmp1 = DecompNextByte();
+        src_pos = DecompNextByte();
+        src_pos += DecompNextByte() * 256;
       }
       do {
-        uint16 v27 = *(uint16 *)&decompress_last_byte;
-        b = *IndirPtr(&decompress_dst, *(uint16 *)&decompress_last_byte);
-        *(uint16 *)&decompress_last_byte = v27 + 1;
-        if (decompress_want_xor)
-          b = ~b;
-        IndirWriteByte(&decompress_dst, dst_pos++, b);
+        b = decompress_dst[src_pos++] ^ want_xor;
+        decompress_dst[dst_pos++] = b;
       } while (--len);
     } else {
       switch (cmd) {
       case 0x20:
         b = DecompNextByte();
         do {
-          IndirWriteByte(&decompress_dst, dst_pos++, b);
+          decompress_dst[dst_pos++] = b;
         } while (--len);
         break;
-      case 0x40:
-        decompress_last_byte = DecompNextByte();
-        decompress_tmp1 = DecompNextByte();
+      case 0x40: {
+        b = DecompNextByte();
+        uint8 b2 = DecompNextByte();
         do {
-          IndirWriteByte(&decompress_dst, dst_pos++, decompress_last_byte);
+          decompress_dst[dst_pos++] = b;
           if (!--len)
             break;
-          IndirWriteByte(&decompress_dst, dst_pos++, decompress_tmp1);
+          decompress_dst[dst_pos++] = b2;
         } while (--len);
         break;
+      }
       case 0x60:
         b = DecompNextByte();
         do {
-          IndirWriteByte(&decompress_dst, dst_pos++, b++);
+          decompress_dst[dst_pos++] = b++;
         } while (--len);
         break;
       default:
         do {
           b = DecompNextByte();
-          IndirWriteByte(&decompress_dst, dst_pos++, b);
+          decompress_dst[dst_pos++] = b;
         } while (--len);
         break;
       }
@@ -2645,168 +2613,83 @@ void DecompressToMem(void) {  // 0x80B119
   }
 }
 
-void DecompressToVRAM(void) {  // 0x80B271
-  uint16 v0; // r8
-  VoidP addr;
-  int16 v5;
-  int16 v7;
-  int16 v10;
-  int16 v13;
-  int16 v14;
-  int16 v16;
-  int16 v21;
-  int16 v28;
-  int16 v29;
-  int16 v30;
-  int16 v31;
-  int16 v32;
-  int16 v33;
-  int16 v34;
-  uint8 v35;
+static uint8 ReadPpuByte(uint16 addr) {
+  WriteRegWord(VMADDL, addr >> 1);
+  ReadRegWord(RDVRAML);  // latch
+  uint16 data = ReadRegWord(RDVRAML);
+  return (addr & 1) ? GET_HIBYTE(data) : data;
+}
 
-  uint8 bank = decompress_src.bank;
-  HIBYTE(decompress_want_xor) = 0;
-  addr = decompress_dst.addr;
+void DecompressToVRAM(uint32 src, uint16 dst_addr) {  // 0x80B271
+  decompress_src = src;
+  int src_pos, dst_pos = dst_addr;
   while (1) {
-    uint8 v2 = DecompNextByte();
-    decompress_last_byte = v2;
-    if (v2 == 0xFF)
+    int len;
+    uint8 b = DecompNextByte(), cmd;
+    if (b == 0xFF)
       break;
-    uint8 v4 = v2 & 0xE0;
-    if (v4 == 0xE0) {
-      v35 = (8 * decompress_last_byte) & 0xE0;
-      HIBYTE(v5) = decompress_last_byte & 3;
-      LOBYTE(v5) = DecompNextByte();
+    if ((b & 0xE0) == 0xE0) {
+      cmd = (8 * b) & 0xE0;
+      len = ((b & 3) << 8 | DecompNextByte()) + 1;
     } else {
-      v35 = v4;
-      v5 = decompress_last_byte & 0x1F;
+      cmd = b & 0xE0;
+      len = (b & 0x1F) + 1;
     }
-    v7 = v5 + 1;
-    LOBYTE(v0) = v35;
-    if ((uint8)sign8(v0)) {
-      if (v35 >= 0xC0u) {
-        LOBYTE(decompress_want_xor) = v35 & 0x20;
-        v34 = v5 + 1;
-        uint8 v25 = DecompNextByte();
-        v21 = v34;
-        decompress_last_byte = v25;
-        decompress_tmp1 = 0;
-        *(uint16 *)&decompress_last_byte = addr - *(uint16 *)&decompress_last_byte;
+    if (cmd & 0x80) {
+      uint8 want_xor = cmd & 0x20 ? 0xff : 0;
+      if (cmd >= 0xC0) {
+        src_pos = dst_pos - DecompNextByte();
       } else {
-        LOBYTE(decompress_want_xor) = v35 & 0x20;
-        v32 = v5 + 1;
-        uint8 v17 = DecompNextByte();
-        decompress_last_byte = v17;
-        uint8 v19 = DecompNextByte();
-        v21 = v32;
-        decompress_tmp1 = v19;
-        *(uint16 *)&decompress_last_byte += decompress_dst.addr;
+        src_pos = DecompNextByte();
+        src_pos += DecompNextByte() * 256;
+        src_pos += dst_addr;
       }
       do {
-        v33 = v21;
-        WriteRegWord(VMADDL, *(uint16 *)&decompress_last_byte >> 1);
-        ReadRegWord(RDVRAML);
-        uint16 RegWord = ReadRegWord(RDVRAML);
-        uint8 v23 = RegWord;
-        if (decompress_last_byte & 1)
-          v23 = HIBYTE(RegWord);
-        ++ *(uint16 *)&decompress_last_byte;
-        if (decompress_want_xor)
-          v23 = ~v23;
-        WriteRegWord(VMADDL, addr >> 1);
-        HIBYTE(v0) = (uint16)(addr >> 1) >> 8;
-        if (addr & 1)
-          WriteReg(VMDATAH, v23);
-        else
-          WriteReg(VMDATAL, v23);
-        ++addr;
-        --v21;
-      } while (v33 != 1);
+        b = ReadPpuByte(src_pos++) ^ want_xor;
+        WriteRegWord(VMADDL, dst_pos >> 1);
+        WriteReg(VMDATAL + (dst_pos++ & 1), b);
+      } while (--len);
     } else {
-      switch (v35) {
-      case ' ':
-        v29 = v5 + 1;
-        LOBYTE(v5) = DecompNextByte();
-        v10 = v29;
+      switch (cmd) {
+      case 0x20:
+        b = DecompNextByte();
         do {
-          HIBYTE(v0) = HIBYTE(v5);
-          if (addr & 1)
-            WriteReg(VMDATAH, v5);
-          else
-            WriteReg(VMDATAL, v5);
-          ++addr;
-          --v10;
-        } while (v10);
+          WriteReg(VMDATAL + (dst_pos++ & 1), b);
+        } while (--len);
         break;
-      case '@':
-        v30 = v5 + 1;
-        LOBYTE(v5) = DecompNextByte();
-        decompress_last_byte = v5;
-        LOBYTE(v5) = DecompNextByte();
-        v13 = v30;
-        decompress_tmp1 = v5;
+      case 0x40: {
+        b = DecompNextByte();
+        uint8 b2 = DecompNextByte();
         do {
-          HIBYTE(v0) = HIBYTE(v5);
-          if (addr & 1)
-            WriteReg(VMDATAH, decompress_last_byte);
-          else
-            WriteReg(VMDATAL, decompress_last_byte);
-          ++addr;
-          v14 = v13 - 1;
-          if (!v14)
+          WriteReg(VMDATAL + (dst_pos++ & 1), b);
+          if (!--len)
             break;
-          HIBYTE(v0) = HIBYTE(v5);
-          if (addr & 1)
-            WriteReg(VMDATAH, decompress_tmp1);
-          else
-            WriteReg(VMDATAL, decompress_tmp1);
-          ++addr;
-          v13 = v14 - 1;
-        } while (v13);
+          WriteReg(VMDATAL + (dst_pos++ & 1), b2);
+        } while (--len);
         break;
-      case '`':
-        v31 = v5 + 1;
-        LOBYTE(v5) = DecompNextByte();
-        v16 = v31;
+      }
+      case 0x60:
+        b = DecompNextByte();
         do {
-          HIBYTE(v0) = HIBYTE(v5);
-          if (addr & 1)
-            WriteReg(VMDATAH, v5);
-          else
-            WriteReg(VMDATAL, v5);
-          ++addr;
-          LOBYTE(v5) = v5 + 1;
-          --v16;
-        } while (v16);
+          WriteReg(VMDATAL + (dst_pos++ & 1), b++);
+        } while (--len);
         break;
       default:
         do {
-          v28 = v7;
-          LOBYTE(v5) = DecompNextByte();
-          HIBYTE(v0) = HIBYTE(v5);
-          if (addr & 1)
-            WriteReg(VMDATAH, v5);
-          else
-            WriteReg(VMDATAL, v5);
-          ++addr;
-          v7 = v28 - 1;
-        } while (v28 != 1);
+          b = DecompNextByte();
+          WriteReg(VMDATAL + (dst_pos++ & 1), b++);
+        } while (--len);
         break;
       }
     }
   }
 }
 
-#define kLoadStationLists ((uint16*)RomPtr(0x80c4b5))
 
 void LoadFromLoadStation(void) {  // 0x80C437
   save_station_lockout_flag = 1;
   R18_ = 2 * load_station_index;
-  uint16 *v0 = (uint16 *)RomPtr_80(
-    kLoadStationLists[area_index]
-    + 2
-    * (load_station_index
-       + 6 * load_station_index));
+  const uint16 *v0 = (const uint16 *)RomPtr_80(kLoadStationLists[area_index] + 14 * load_station_index);
   room_ptr = *v0;
   door_def_ptr = v0[1];
   door_bts = v0[2];
@@ -2820,16 +2703,13 @@ void LoadFromLoadStation(void) {  // 0x80C437
   samus_prev_x_pos = samus_x_pos;
   reg_BG1HOFS = 0;
   reg_BG1VOFS = 0;
-  LOBYTE(area_index) = RomPtr_8F(room_ptr)[1];
+  LOBYTE(area_index) = get_RoomDefHeader(room_ptr)->area_index_;
   LOBYTE(debug_disable_minimap) = 0;
 }
 
-#define off_80CD46 ((uint16*)RomPtr(0x80cd46))
 
 void SetElevatorsAsUsed(void) {  // 0x80CD07
-  uint8 *v0 = RomPtr_80(
-    off_80CD46[area_index]
-    + 4 * (((uint8)elevator_door_properties_orientation & 0xFu) - 1));
-  used_save_stations_and_elevators[*v0] |= v0[1];
+  const uint8 *v0 = RomPtr_80(off_80CD46[area_index] + 4 * (((uint8)elevator_door_properties_orientation & 0xF) - 1));
+  used_save_stations_and_elevators[v0[0]] |= v0[1];
   used_save_stations_and_elevators[v0[2]] |= v0[3];
 }

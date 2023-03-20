@@ -4,6 +4,10 @@
 #include "sm_rtl.h"
 #include "funcs.h"
 
+
+
+
+
 static const SpawnHardcodedPlmArgs unk_8F9198 = { 0x3d, 0x0b, 0xbb30 };
 static const SpawnHardcodedPlmArgs unk_8F91AD = { 0x10, 0x87, 0xb964 };
 static const SpawnHardcodedPlmArgs unk_8F91B6 = { 0x0f, 0x0a, 0xb9ed };
@@ -526,7 +530,7 @@ void RoomCode_Elevatube(void) {  // 0x8FE2B6
   R20_ = 0;
   if (*(int16 *)&room_main_asm_variables[4] < 0)
     --R20_;
-  *(uint16 *)((char *)&R18_ + 1) = *(uint16 *)&room_main_asm_variables[4];
+  R19_ = *(uint16 *)&room_main_asm_variables[4];
   v0 = (__PAIR32__(R20_, R18_) + *(uint32 *)room_main_asm_variables) >> 16;
   *(uint16 *)room_main_asm_variables += R18_;
   *(uint16 *)&room_main_asm_variables[2] = v0;
@@ -731,9 +735,9 @@ uint16 RoomDefStateSelect_Finish(uint16 k) {  // 0x8FE5E6
 }
 
 uint16 RoomDefStateSelect_Door(uint16 k) {  // 0x8FE5EB
-  uint8 *v1 = RomPtr_8F(k);
-  if (*(uint16 *)v1 == door_def_ptr)
-    return RoomDefStateSelect_Finish(*((uint16 *)v1 + 1));
+  const uint8 *v1 = RomPtr_8F(k);
+  if (GET_WORD(v1) == door_def_ptr)
+    return RoomDefStateSelect_Finish(GET_WORD(v1 + 2));
   else
     return k + 4;
 }
@@ -741,22 +745,22 @@ uint16 RoomDefStateSelect_Door(uint16 k) {  // 0x8FE5EB
 uint16 RoomDefStateSelect_TourianBoss01(uint16 k) {  // 0x8FE5FF
   if (!(CheckBossBitForCurArea(1u) & 1))
     return k + 2;
-  uint16 *v1 = (uint16 *)RomPtr_8F(k);
+  const uint16 *v1 = (const uint16 *)RomPtr_8F(k);
   return RoomDefStateSelect_Finish(*v1);
 }
 
 uint16 RoomDefStateSelect_IsEventSet(uint16 k) {  // 0x8FE612
-  uint8 *v1 = RomPtr_8F(k);
+  const uint8 *v1 = RomPtr_8F(k);
   if (CheckEventHappened(*v1))
-    return RoomDefStateSelect_Finish(*(uint16 *)(v1 + 1));
+    return RoomDefStateSelect_Finish(GET_WORD(v1 + 1));
   else
     return k + 3;
 }
 
 uint16 RoomDefStateSelect_IsBossDead(uint16 k) {  // 0x8FE629
-  uint8 *v1 = RomPtr_8F(k);
+  const uint8 *v1 = RomPtr_8F(k);
   if (CheckBossBitForCurArea(*v1) & 1)
-    return RoomDefStateSelect_Finish(*(uint16 *)(v1 + 1));
+    return RoomDefStateSelect_Finish(GET_WORD(v1 + 1));
   else
     return k + 3;
 }
@@ -764,14 +768,14 @@ uint16 RoomDefStateSelect_IsBossDead(uint16 k) {  // 0x8FE629
 uint16 RoomDefStateSelect_MorphBallMissiles(uint16 k) {  // 0x8FE652
   if ((collected_items & 4) == 0 || !samus_max_missiles)
     return k + 2;
-  uint16 *v1 = (uint16 *)RomPtr_8F(k);
+  const uint16 *v1 = (const uint16 *)RomPtr_8F(k);
   return RoomDefStateSelect_Finish(*v1);
 }
 
 uint16 RoomDefStateSelect_PowerBombs(uint16 k) {  // 0x8FE669
   if (!samus_max_power_bombs)
     return k + 2;
-  uint16 *v1 = (uint16 *)RomPtr_8F(k);
+  const uint16 *v1 = (const uint16 *)RomPtr_8F(k);
   return RoomDefStateSelect_Finish(*v1);
 }
 

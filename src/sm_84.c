@@ -4,22 +4,30 @@
 #include "sm_rtl.h"
 #include "funcs.h"
 
-void CallPlmPreInstr(uint32 ea, uint16 k);
-uint16 CallPlmInstr(uint32 ea, uint16 j, uint16 k);
 
-#define kGoldenTorizoPalette1 ((uint16*)RomPtr(0x848032))
-#define kGoldenTorizoPalette2 ((uint16*)RomPtr(0x848132))
-#define kXrayBlockDrawingInstrs ((uint16*)RomPtr(0x84839d))
-#define kGrayDoorPreInstrs ((uint16*)RomPtr(0x84be4b))
-#define kDowardGatePlmListPtrs ((uint16*)RomPtr(0x84c70a))
-#define kDowardGateLeftBlockBts ((uint16*)RomPtr(0x84c71a))
-#define kDowardGateRightBlockBts ((uint16*)RomPtr(0x84c72a))
-#define kUpwardGatePlmListPtrs ((uint16*)RomPtr(0x84c764))
-#define kUpwardGateLeftBlockBts ((uint16*)RomPtr(0x84c774))
-#define kUpwardGateRightBlockBts ((uint16*)RomPtr(0x84c784))
-#define off_84DB28 ((uint16*)RomPtr(0x84db28))
-#define off_84E05F ((uint16*)RomPtr(0x84e05f))
-#define off_84E077 ((uint16*)RomPtr(0x84e077))
+#define kGoldenTorizoPalette1 ((uint16*)RomFixedPtr(0x848032))
+#define kGoldenTorizoPalette2 ((uint16*)RomFixedPtr(0x848132))
+#define kXrayBlockDrawingInstrs ((uint16*)RomFixedPtr(0x84839d))
+#define kGrayDoorPreInstrs ((uint16*)RomFixedPtr(0x84be4b))
+#define kDowardGatePlmListPtrs ((uint16*)RomFixedPtr(0x84c70a))
+#define kDowardGateLeftBlockBts ((uint16*)RomFixedPtr(0x84c71a))
+#define kDowardGateRightBlockBts ((uint16*)RomFixedPtr(0x84c72a))
+#define kUpwardGatePlmListPtrs ((uint16*)RomFixedPtr(0x84c764))
+#define kUpwardGateLeftBlockBts ((uint16*)RomFixedPtr(0x84c774))
+#define kUpwardGateRightBlockBts ((uint16*)RomFixedPtr(0x84c784))
+#define off_84DB28 ((uint16*)RomFixedPtr(0x84db28))
+#define off_84E05F ((uint16*)RomFixedPtr(0x84e05f))
+#define off_84E077 ((uint16*)RomFixedPtr(0x84e077))
+#define fnPlmPreInstr_Empty4 0x848AA6
+#define kPlmVramAddresses ((uint16*)RomFixedPtr(0x8487cd))
+#define kPlmTileDataOffs ((uint16*)RomFixedPtr(0x8487d5))
+#define kPlmStartingTileNumber ((uint16*)RomFixedPtr(0x8487dd))
+
+
+
+void CallPlmPreInstr(uint32 ea, uint16 k);
+const uint8 *CallPlmInstr(uint32 ea, const uint8 *j, uint16 k);
+
 
 void SetGoldenTorizoPalette(uint16 a) {  // 0x848000
   int16 v1;
@@ -39,13 +47,12 @@ void SetGoldenTorizoPalette(uint16 a) {  // 0x848000
 
 void LoadRoomPlmGfx(void) {  // 0x848232
   plm_item_gfx_index = 0;
-  uint16 v0 = 0, v1;
+  int v0 = 0;
   do {
-    v1 = v0;
     if (plm_item_gfx_ptrs[v0 >> 1]) // bugfix
-      PlmInstr_LoadItemPlmGfx(plm_item_gfx_ptrs[v0 >> 1], v0);
+      PlmInstr_LoadItemPlmGfx(RomPtr_84(plm_item_gfx_ptrs[v0 >> 1]), v0);
     v0 += 2;
-  } while (v1 != 6);
+  } while (v0 != 8);
 }
 
 void ClearSoundsWhenGoingThroughDoor(void) {  // 0x848250
@@ -73,34 +80,18 @@ void CalculatePlmBlockCoords(uint16 k) {  // 0x848290
 }
 
 void WriteLevelDataBlockTypeAndBts(uint16 k, uint16 a) {  // 0x8482B4
-  R18_ = a;
-  uint8 *v2 = RomPtr_7F(k);
+  uint8 *v2 = &g_ram[0x10000 + k];
   v2[3] = HIBYTE(a) | v2[3] & 0xF;
-  BTS[k >> 1] = R18_;
+  BTS[k >> 1] = a;
 }
 
 void WriteRowOfLevelDataBlockAndBTS(uint16 k, uint16 arg0, uint16 arg1, uint16 arg2) {  // 0x8482D6
-  uint16 v1 = k;
-
-  R18_ = arg0;
-  R20_ = arg1;
-  R22_ = arg2;
-  uint16 v2 = plm_block_indices[v1 >> 1];
+  uint16 v2 = plm_block_indices[k >> 1];
   uint16 v8 = v2 >> 1;
-  uint16 v3 = R18_;
-  uint16 v4 = R22_;
-  do {
-    level_data[v2 >> 1] = v3;
-    v2 += 2;
-    --v4;
-  } while (v4);
-  uint16 v5 = v8;
-  uint8 v6 = R20_;
-  uint16 v7 = R22_;
-  do {
-    BTS[v5++] = v6;
-    --v7;
-  } while (v7);
+  for (int i = 0; i < arg2; i++) {
+    level_data[(v2 + i * 2) >> 1] = arg0;
+    BTS[v8 + i] = arg1;
+  }
 }
 
 void LoadXrayBlocks(void) {  // 0x84831A
@@ -110,14 +101,14 @@ void LoadXrayBlocks(void) {  // 0x84831A
 
   for (int i = 78; i >= 0; i -= 2) {
     int v1 = i >> 1;
-    if (plm_header_ptr[v1] >= (uint16)FUNC16(PlmPreInstr_GotoLinkIfTriggered)) {
+    if (plm_header_ptr[v1] >= FUNC16(PlmPreInstr_GotoLinkIfTriggered)) {
       uint16 k = i;
       uint16 v2 = item_bit_array[PrepareBitAccess(plm_room_arguments[v1])];
       i = k;
       if ((bitmask & v2) == 0) {
         CalculatePlmBlockCoords(k);
-        uint8 *v3 = RomPtr_84(kXrayBlockDrawingInstrs[plm_variables[k >> 1] >> 1]);
-        LoadBlockToXrayTilemap(*((uint16 *)v3 + 1) & 0xFFF, plm_x_block, plm_y_block);
+        const uint8 *v3 = RomPtr_84(kXrayBlockDrawingInstrs[plm_variables[k >> 1] >> 1]);
+        LoadBlockToXrayTilemap(GET_WORD(v3 + 2) & 0xFFF, plm_x_block, plm_y_block);
         i = k;
       }
     }
@@ -125,13 +116,13 @@ void LoadXrayBlocks(void) {  // 0x84831A
   RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
   if (RoomDefRoomstate->xray_special_casing_ptr) {
     for (j = RoomDefRoomstate->xray_special_casing_ptr; ; j += 4) {
-      uint8 *v6 = RomPtr_8F(j);
-      v7 = *(uint16 *)v6;
-      if (!*(uint16 *)v6)
+      const uint8 *v6 = RomPtr_8F(j);
+      v7 = GET_WORD(v6);
+      if (!GET_WORD(v6))
         break;
       R18_ = (uint8)v7;
       R20_ = v6[1];
-      LoadBlockToXrayTilemap(*((uint16 *)v6 + 1), (uint8)v7, R20_);
+      LoadBlockToXrayTilemap(GET_WORD(v6 + 2), (uint8)v7, R20_);
     }
   }
 }
@@ -371,29 +362,31 @@ CoroutineRet PlmHandler_Async(void) {  // 0x8485B4
     CallPlmPreInstr(plm_pre_instrs[plm_id >> 1] | 0x840000, plm_id);
     if (--plm_instruction_timer[plm_id >> 1])
       continue;
-    uint16 v4, *v5;
-    v4 = plm_instr_list_ptrs[plm_id >> 1];
+    const uint8 *base, *v5;
+    base = RomPtr_84(0x8000) - 0x8000;
+    v5 = base + plm_instr_list_ptrs[plm_id >> 1];
     while (1) {
-      v5 = (uint16 *)RomPtr_84(v4);
-      if ((*v5 & 0x8000u) == 0)
+      if ((GET_WORD(v5) & 0x8000) == 0)
         break;
-      R18_ = *v5;
-      v4 = CallPlmInstr(*v5 | 0x840000, v4 + 2, plm_id);
-      if (!v4)
+      v5 = CallPlmInstr(GET_WORD(v5) | 0x840000, v5 + 2, plm_id);
+      if (!v5)
         goto NEXT_PLM;
+      if ((uintptr_t)v5 < 0x10000)
+        v5 = base + (uintptr_t)v5;
       // If the plm handler wanted to display a message, then display it.
       if (queued_message_box_index != 0) {
-        plm_instr_list_ptrs[plm_id >> 1] = v4;
+        plm_instr_list_ptrs[plm_id >> 1] = v5 - base;
         COROUTINE_AWAIT(1, DisplayMessageBox_Async(queued_message_box_index));
         queued_message_box_index = 0;
-        v4 = plm_instr_list_ptrs[plm_id >> 1];
+        base = RomPtr_84(0x8000) - 0x8000;
+        v5 = base + plm_instr_list_ptrs[plm_id >> 1];
       }
     }
     int v7;
     v7 = plm_id >> 1;
-    plm_instruction_timer[v7] = v5[0];
-    plm_instruction_draw_ptr[v7] = v5[1];
-    plm_instr_list_ptrs[v7] = v4 + 4;
+    plm_instruction_timer[v7] = GET_WORD(v5);
+    plm_instruction_draw_ptr[v7] = GET_WORD(v5 + 2);
+    plm_instr_list_ptrs[v7] = v5 + 4 - base;
     ProcessPlmDrawInstruction(plm_id);
     CalculatePlmBlockCoords(plm_id);
     DrawPlm(plm_id);
@@ -403,7 +396,6 @@ NEXT_PLM:;
   COROUTINE_END(0);
 }
 
-#define fnPlmPreInstr_Empty4 0x848AA6
 void CallPlmPreInstr(uint32 ea, uint16 k) {
   switch (ea) {
   case fnPlmPreInstr_nullsub_60: return;
@@ -467,7 +459,7 @@ void CallPlmPreInstr(uint32 ea, uint16 k) {
   }
 }
 
-uint16 CallPlmInstr(uint32 ea, uint16 j, uint16 k) {
+const uint8 *CallPlmInstr(uint32 ea, const uint8 *j, uint16 k) {
   switch (ea) {
   case fnPlmInstr_Sleep: return PlmInstr_Sleep(j, k);
   case fnPlmInstr_Delete: return PlmInstr_Delete(j, k);
@@ -579,13 +571,13 @@ uint16 CallPlmInstr(uint32 ea, uint16 j, uint16 k) {
   case fnPlmInstr_SetBtsTo1: return PlmInstr_SetBtsTo1(j, k);
   case fnPlmInstr_DisableSamusControls: return PlmInstr_DisableSamusControls(j, k);
   case fnPlmInstr_EnableSamusControls: return PlmInstr_EnableSamusControls(j, k);
-  default: return Unreachable();
+  default: Unreachable(); return NULL;
   }
 }
 
-static inline uint8_t *RomPtr_84orRAM(uint16_t addr) {
+static inline uint8 *RomPtr_84orRAM(uint16_t addr) {
   if (addr & 0x8000) {
-    return RomPtr(0x840000 | addr);
+    return (uint8*)RomPtr(0x840000 | addr);
   } else {
     assert(addr < 0x2000);
     return RomPtr_RAM(addr);
@@ -593,85 +585,44 @@ static inline uint8_t *RomPtr_84orRAM(uint16_t addr) {
 }
 
 void ProcessPlmDrawInstruction(uint16 v0) {  // 0x84861E
-  int16 v4;
-  int16 v8;
-  int16 v9;
-  int16 v10;
-  uint16 v5;
-
   int v1 = v0 >> 1;
-  uint16 v2 = plm_instruction_draw_ptr[v1];
-  R18_ = plm_block_indices[v1];
-  uint16 v3 = R18_;
+  uint16 *p = (uint16 *)RomPtr_84orRAM(plm_instruction_draw_ptr[v1]);
+  uint16 dst = plm_block_indices[v1], dst_base = dst;
   while (1) {
-    v4 = *(uint16 *)RomPtr_84orRAM(v2);
-    if (v4 < 0) {
-      R22_ = (uint8)v4;
-      v5 = v2 + 2;
-      do {
-        level_data[v3 >> 1] = *(uint16 *)RomPtr_84orRAM(v5);
-        v5 += 2;
-        v3 += room_width_in_blocks * 2;
-        --R22_;
-      } while (R22_);
+    uint16 v4 = *p++;
+    if (v4 & 0x8000) {
+      for (int i = 0, t = room_width_in_blocks * 2; i < (uint8)v4; i++)
+        level_data[(dst + i * t) >> 1] = *p++;
     } else {
-      R22_ = (uint8)v4;
-      v5 = v2 + 2;
-      do {
-        level_data[v3 >> 1] = *(uint16 *)RomPtr_84orRAM(v5);
-        v5 += 2;
-        v3 += 2;
-        --R22_;
-      } while (R22_);
+      for (int i = 0; i < (uint8)v4; i++)
+        level_data[(dst + i * 2) >> 1] = *p++;
     }
-    if (!*(uint16 *)RomPtr_84orRAM(v5))
+    if (!*p)
       break;
-    uint16 v6 = v5 - 1;
-    uint8 *v7 = RomPtr_84orRAM(v6);
-    v8 = (int8)HIBYTE(*(uint16 *)v7);
-    R20_ = R18_ + 2 * v8;
-    LOBYTE(v8) = HIBYTE(*(uint16 *)(v7 + 1));
-    if ((v8 & 0x80) == 0) {
-      v8 = (uint8)v8;
-      if ((uint8)v8) {
-        v10 = (uint8)v8;
-        v8 = 0;
-        do {
-          v8 += room_width_in_blocks;
-          --v10;
-        } while (v10);
-      }
-    } else {
-      v9 = -(v8 | 0xFF00);
-      v8 = 0;
-      do {
-        v8 -= room_width_in_blocks;
-        --v9;
-      } while (v9);
-    }
-    v3 = R20_ + 2 * v8;
-    v2 = v6 + 3;
+    dst = dst_base + 2 * ((int8)*p + (int8)(*p >> 8) * room_width_in_blocks);
+    p++;
   }
 }
 
-uint16 PlmInstr_Sleep(uint16 j, uint16 k) {  // 0x8486B4
-  plm_instr_list_ptrs[k >> 1] = j - 2;
+const uint8 *PlmInstr_Sleep(const uint8 *plmp, uint16 k) {  // 0x8486B4
+  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
+  plm_instr_list_ptrs[k >> 1] = plmp - base - 2;
   return 0;
 }
 
-uint16 PlmInstr_Delete(uint16 j, uint16 k) {  // 0x8486BC
+const uint8 *PlmInstr_Delete(const uint8 *plmp, uint16 k) {  // 0x8486BC
   plm_header_ptr[k >> 1] = 0;
   return 0;
 }
 
-uint16 PlmInstr_PreInstr(uint16 j, uint16 k) {  // 0x8486C1
-  plm_pre_instrs[k >> 1] = *(uint16 *)RomPtr_84(j);
-  return j + 2;
+const uint8 *PlmInstr_PreInstr(const uint8 *plmp, uint16 k) {  // 0x8486C1
+  plm_pre_instrs[k >> 1] = GET_WORD(plmp);
+  return plmp + 2;
 }
 
-uint16 PlmInstr_ClearPreInstr(uint16 j, uint16 k) {  // 0x8486CA
+const uint8 *PlmInstr_ClearPreInstr(const uint8 *plmp, uint16 k) {  // 0x8486CA
   plm_pre_instrs[k >> 1] = FUNC16(PlmPreInstr_Empty);
-  return j;
+  return plmp;
 }
 
 void CallPlmInstrFunc(uint32 ea) {
@@ -682,309 +633,276 @@ void CallPlmInstrFunc(uint32 ea) {
   }
 }
 
-uint16 PlmInstr_CallFunction(uint16 j, uint16 k) {  // 0x84870B
-  uint8 *v2 = RomPtr_84(j);
-  copy24((LongPtr *)&R18_, (LongPtr *)v2);
+const uint8 *PlmInstr_CallFunction(const uint8 *plmp, uint16 k) {  // 0x84870B
+  copy24((LongPtr *)&R18_, (LongPtr *)plmp);
   CallPlmInstrFunc(Load24(&R18_));
-  return j + 3;
+  return plmp + 3;
 }
 
-uint16 PlmInstr_Goto(uint16 j, uint16 k) {  // 0x848724
-  return *(uint16 *)RomPtr_84(j);
+const uint8 *PlmInstr_Goto(const uint8 *plmp, uint16 k) {  // 0x848724
+  return INSTRB_RETURN_ADDR(GET_WORD(plmp));
 }
 
 
-uint16 PlmInstr_DecrementAndBranchNonzero(uint16 j, uint16 k) {  // 0x84873F
-  int v2 = k >> 1;
-  if (plm_timers[v2]-- == 1)
-    return j + 2;
+const uint8 *PlmInstr_DecrementAndBranchNonzero(const uint8 *plmp, uint16 k) {  // 0x84873F
+  if (plm_timers[k >> 1]-- == 1)
+    return plmp + 2;
   else
-    return PlmInstr_Goto(j, k);
+    return PlmInstr_Goto(plmp, k);
 }
 
-uint16 PlmInstr_SetTimer(uint16 j, uint16 k) {  // 0x84874E
-  *((uint8 *)plm_timers + k) = *RomPtr_84(j);
-  return j + 1;
+const uint8 *PlmInstr_SetTimer(const uint8 *plmp, uint16 k) {  // 0x84874E
+  *((uint8 *)plm_timers + k) = *plmp;
+  return plmp + 1;
 }
 
-#define kPlmVramAddresses ((uint16*)RomPtr(0x8487cd))
-#define kPlmTileDataOffs ((uint16*)RomPtr(0x8487d5))
-#define kPlmStartingTileNumber ((uint16*)RomPtr(0x8487dd))
 
-uint16 PlmInstr_LoadItemPlmGfx(uint16 j, uint16 k) {  // 0x848764
-  VramWriteEntry *v5; // r10
-
+const uint8 *PlmInstr_LoadItemPlmGfx(const uint8 *plmp, uint16 k) {  // 0x848764
   uint16 v2 = plm_item_gfx_index;
   plm_variables[k >> 1] = plm_item_gfx_index;
-  plm_item_gfx_index = ((uint8)v2 + 2) & 6;
+  plm_item_gfx_index = (v2 + 2) & 6;
   int v3 = v2 >> 1;
-  R18_ = kPlmVramAddresses[v3];
-  R20_ = kPlmTileDataOffs[v3];
-  R22_ = kPlmStartingTileNumber[v3];
-  plm_item_gfx_ptrs[v3] = j;
-  uint16 v4 = vram_write_queue_tail;
-  v5 = gVramWriteEntry(vram_write_queue_tail);
+  int R18 = kPlmVramAddresses[v3];
+  int R20 = kPlmTileDataOffs[v3];
+  int R22 = kPlmStartingTileNumber[v3];
+  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
+  plm_item_gfx_ptrs[v3] = plmp - base;
+  int v4 = vram_write_queue_tail;
+  VramWriteEntry *v5 = gVramWriteEntry(vram_write_queue_tail);
   v5->size = 256;
-  v5->src.addr = *(uint16 *)RomPtr_84(j);
-  *(uint16 *)&v5->src.bank = 137;
-  v5->vram_dst = R18_;
+  v5->src.addr = GET_WORD(plmp);
+  v5->src.bank = 0x89;
+  v5->vram_dst = R18;
   vram_write_queue_tail = v4 + 7;
-  uint16 result = j + 2;
-  uint16 v7 = R20_;
-  R24_ = R20_ + 16;
+  plmp += 2;
+  int v7 = R20;
+  int R24 = R20 + 16;
   do {
-    *(uint16 *)((char *)&tile_table.tables[0].top_left + v7) = R22_ + (*RomPtr_84(result) << 10);
-    ++R22_;
-    ++result;
+    *(uint16 *)((char *)&tile_table.tables[0].top_left + v7) = R22 + (plmp[0] << 10);
+    ++R22;
+    plmp++;
     v7 += 2;
-  } while (v7 != R24_);
-  return result;
+  } while (v7 != R24);
+  return plmp;
 }
 
-uint16 PlmInstr_CopyFromRamToVram(uint16 j, uint16 k) {  // 0x8487E5
-  VramWriteEntry *v4;
-
+const uint8 *PlmInstr_CopyFromRamToVram(const uint8 *plmp, uint16 k) {  // 0x8487E5
   uint16 v2 = vram_write_queue_tail;
-  uint8 *v3 = RomPtr_84(j);
-  v4 = gVramWriteEntry(vram_write_queue_tail);
-  v4->size = *(uint16 *)v3;
-  v4->src.addr = *((uint16 *)v3 + 1);
-  *(VoidP *)((char *)&v4->src.addr + 1) = *(uint16 *)(v3 + 3);
-  v4->vram_dst = *(uint16 *)(v3 + 5);
+  VramWriteEntry *v4 = gVramWriteEntry(vram_write_queue_tail);
+  v4->size = GET_WORD(plmp);
+  v4->src.addr = GET_WORD(plmp + 2);
+  v4->src.bank = plmp[4];
+  v4->vram_dst = GET_WORD(plmp + 5);
   vram_write_queue_tail = v2 + 7;
-  return j + 7;
+  return plmp + 7;
 }
 
-uint16 PlmInstr_GotoIfBossBitSet(uint16 j, uint16 k) {  // 0x84880E
-  uint8 *v2 = RomPtr_84(j);
-  uint16 v3 = j + 1;
-  if (CheckBossBitForCurArea((uint8) * (uint16 *)v2))
-    return PlmInstr_Goto(v3, k);
+const uint8 *PlmInstr_GotoIfBossBitSet(const uint8 *plmp, uint16 k) {  // 0x84880E
+  if (CheckBossBitForCurArea(plmp[0]))
+    return PlmInstr_Goto(plmp + 1, k);
   else
-    return v3 + 2;
+    return plmp + 3;
 }
 
-uint16 PlmInstr_GotoIfEventSet(uint16 j, uint16 k) {  // 0x84882D
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  uint16 v3 = j + 2;
-  if (CheckEventHappened(*v2))
-    return PlmInstr_Goto(v3, k);
+const uint8 *PlmInstr_GotoIfEventSet(const uint8 *plmp, uint16 k) {  // 0x84882D
+  if (CheckEventHappened(GET_WORD(plmp)))
+    return PlmInstr_Goto(plmp + 2, k);
   else
-    return v3 + 2;
+    return plmp + 4;
 }
 
-uint16 PlmInstr_SetEvent(uint16 j, uint16 k) {  // 0x84883E
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  SetEventHappened(*v2);
-  return j + 2;
+const uint8 *PlmInstr_SetEvent(const uint8 *plmp, uint16 k) {  // 0x84883E
+  SetEventHappened(GET_WORD(plmp));
+  return plmp + 2;
 }
 
-uint16 PlmInstr_GotoIfChozoSet(uint16 j, uint16 k) {  // 0x848848
-  int16 v3;
-
-  int v2 = k >> 1;
-  v3 = plm_room_arguments[v2];
+const uint8 *PlmInstr_GotoIfChozoSet(const uint8 *plmp, uint16 k) {  // 0x848848
+  uint16 v3 = plm_room_arguments[k >> 1];
   int idx = PrepareBitAccess(v3);
-  if (v3 >= 0 && ((bitmask & room_chozo_bits[idx]) != 0))
-    return PlmInstr_Goto(j, k);
+  if (!sign16(v3) && ((bitmask & room_chozo_bits[idx]) != 0))
+    return PlmInstr_Goto(plmp, k);
   else
-    return j + 2;
+    return plmp + 2;
 }
 
-uint16 PlmInstr_SetRoomChozoBit(uint16 j, uint16 k) {  // 0x848865
-  int16 v3;
-
-  int v2 = k >> 1;
-  v3 = plm_room_arguments[v2];
-  if (v3 >= 0) {
+const uint8 *PlmInstr_SetRoomChozoBit(const uint8 *plmp, uint16 k) {  // 0x848865
+  uint16 v3 = plm_room_arguments[k >> 1];
+  if (!sign16(v3)) {
     int idx = PrepareBitAccess(v3);
     room_chozo_bits[idx] |= bitmask;
   }
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_GotoIfItemBitSet(uint16 j, uint16 k) {  // 0x84887C
-  int16 v2;
-
-  v2 = plm_room_arguments[k >> 1];
+const uint8 *PlmInstr_GotoIfItemBitSet(const uint8 *plmp, uint16 k) {  // 0x84887C
+  uint16 v2 = plm_room_arguments[k >> 1];
   int idx = PrepareBitAccess(v2);
-  if (v2 >= 0 && (bitmask & item_bit_array[idx]) != 0)
-    return PlmInstr_Goto(j, k);
+  if (!sign16(v2) && (bitmask & item_bit_array[idx]) != 0)
+    return PlmInstr_Goto(plmp, k);
   else
-    return j + 2;
+    return plmp + 2;
 }
 
-uint16 PlmInstr_SetItemBit(uint16 j, uint16 k) {  // 0x848899
-  int16 v2;
-
-  v2 = plm_room_arguments[k >> 1];
-  if (v2 >= 0) {
+const uint8 *PlmInstr_SetItemBit(const uint8 *plmp, uint16 k) {  // 0x848899
+  uint16 v2 = plm_room_arguments[k >> 1];
+  if (!sign16(v2)) {
     uint16 v3 = PrepareBitAccess(v2);
     item_bit_array[v3] |= bitmask;
   }
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_PickupBeamAndShowMessage(uint16 j, uint16 k) {  // 0x8488B0
-  uint8 *v2 = RomPtr_84(j);
-  collected_beams |= *(uint16 *)v2;
-  equipped_beams |= *(uint16 *)v2;
-  equipped_beams &= ~((2 * (uint8) * (uint16 *)v2) & 8);
-  equipped_beams &= ~((*(uint16 *)v2 >> 1) & 4);
+const uint8 *PlmInstr_PickupBeamAndShowMessage(const uint8 *plmp, uint16 k) {  // 0x8488B0
+  uint16 t = GET_WORD(plmp);
+  collected_beams |= t;
+  equipped_beams |= t;
+  equipped_beams &= ~((t << 1) & 8);
+  equipped_beams &= ~((t >> 1) & 4);
   UpdateBeamTilesAndPalette();
   PlayRoomMusicTrackAfterAFrames(0x168u);
-  uint8 *v3 = RomPtr_84(j);
-  DisplayMessageBox(v3[2]);
-  return j + 3;
+  DisplayMessageBox(plmp[2]);
+  return plmp + 3;
 }
 
-uint16 PlmInstr_PickupEquipmentAndShowMessage(uint16 j, uint16 k) {  // 0x8488F3
-  uint8 *v2 = RomPtr_84(j);
-  equipped_items |= *(uint16 *)v2;
-  collected_items |= *(uint16 *)v2;
+const uint8 *PlmInstr_PickupEquipmentAndShowMessage(const uint8 *plmp, uint16 k) {  // 0x8488F3
+  uint16 t = GET_WORD(plmp);
+  equipped_items |= t;
+  collected_items |= t;
   PlayRoomMusicTrackAfterAFrames(0x168u);
-  DisplayMessageBox(v2[2]);
-  return j + 3;
+  DisplayMessageBox(plmp[2]);
+  return plmp + 3;
 }
 
-uint16 PlmInstr_PickupEquipmentAddGrappleShowMessage(uint16 j, uint16 k) {  // 0x84891A
-  uint8 *v2 = RomPtr_84(j);
-  equipped_items |= *(uint16 *)v2;
-  collected_items |= *(uint16 *)v2;
+const uint8 *PlmInstr_PickupEquipmentAddGrappleShowMessage(const uint8 *plmp, uint16 k) {  // 0x84891A
+  uint16 t = GET_WORD(plmp);
+  equipped_items |= t;
+  collected_items |= t;
   AddGrappleToHudTilemap();
   PlayRoomMusicTrackAfterAFrames(0x168u);
   DisplayMessageBox(5u);
-  return j + 2;
+  return plmp + 2;
 }
 
-uint16 PlmInstr_PickupEquipmentAddXrayShowMessage(uint16 j, uint16 k) {  // 0x848941
-  uint8 *v2 = RomPtr_84(j);
-  equipped_items |= *(uint16 *)v2;
-  collected_items |= *(uint16 *)v2;
+const uint8 *PlmInstr_PickupEquipmentAddXrayShowMessage(const uint8 *plmp, uint16 k) {  // 0x848941
+  uint16 t = GET_WORD(plmp);
+  equipped_items |= t;
+  collected_items |= t;
   AddXrayToHudTilemap();
   PlayRoomMusicTrackAfterAFrames(0x168u);
   DisplayMessageBox(6u);
-  return j + 2;
+  return plmp + 2;
 }
 
-uint16 PlmInstr_CollectHealthEnergyTank(uint16 j, uint16 k) {  // 0x848968
-  samus_max_health += *(uint16 *)RomPtr_84(j);
+const uint8 *PlmInstr_CollectHealthEnergyTank(const uint8 *plmp, uint16 k) {  // 0x848968
+  samus_max_health += GET_WORD(plmp);
   samus_health = samus_max_health;
   PlayRoomMusicTrackAfterAFrames(0x168u);
   DisplayMessageBox(1u);
-  return j + 2;
+  return plmp + 2;
 }
 
-uint16 PlmInstr_CollectHealthReserveTank(uint16 j, uint16 k) {  // 0x848986
-  samus_max_reserve_health += *(uint16 *)RomPtr_84(j);
+const uint8 *PlmInstr_CollectHealthReserveTank(const uint8 *plmp, uint16 k) {  // 0x848986
+  samus_max_reserve_health += GET_WORD(plmp);
   if (!reserve_health_mode)
     ++reserve_health_mode;
   PlayRoomMusicTrackAfterAFrames(0x168u);
   DisplayMessageBox(0x19u);
-  return j + 2;
+  return plmp + 2;
 }
 
-uint16 PlmInstr_CollectAmmoMissileTank(uint16 j, uint16 k) {  // 0x8489A9
-  uint8 *v2 = RomPtr_84(j);
-  samus_max_missiles += *(uint16 *)v2;
-  samus_missiles += *(uint16 *)v2;
+const uint8 *PlmInstr_CollectAmmoMissileTank(const uint8 *plmp, uint16 k) {  // 0x8489A9
+  uint16 t = GET_WORD(plmp);
+  samus_max_missiles += t;
+  samus_missiles += t;
   AddMissilesToHudTilemap();
   PlayRoomMusicTrackAfterAFrames(0x168u);
   DisplayMessageBox(2u);
-  return j + 2;
+  return plmp + 2;
 }
 
-uint16 PlmInstr_CollectAmmoSuperMissileTank(uint16 j, uint16 k) {  // 0x8489D2
-  uint8 *v2 = RomPtr_84(j);
-  samus_max_super_missiles += *(uint16 *)v2;
-  samus_super_missiles += *(uint16 *)v2;
+const uint8 *PlmInstr_CollectAmmoSuperMissileTank(const uint8 *plmp, uint16 k) {  // 0x8489D2
+  uint16 t = GET_WORD(plmp);
+  samus_max_super_missiles += t;
+  samus_super_missiles += t;
   AddSuperMissilesToHudTilemap();
   PlayRoomMusicTrackAfterAFrames(0x168u);
   DisplayMessageBox(3u);
-  return j + 2;
+  return plmp + 2;
 }
 
-uint16 PlmInstr_CollectAmmoPowerBombTank(uint16 j, uint16 k) {  // 0x8489FB
-  uint8 *v2 = RomPtr_84(j);
-  samus_max_power_bombs += *(uint16 *)v2;
-  samus_power_bombs += *(uint16 *)v2;
+const uint8 *PlmInstr_CollectAmmoPowerBombTank(const uint8 *plmp, uint16 k) {  // 0x8489FB
+  uint16 t = GET_WORD(plmp);
+  samus_max_power_bombs += t;
+  samus_power_bombs += t;
   AddPowerBombsToHudTilemap();
   PlayRoomMusicTrackAfterAFrames(0x168u);
   DisplayMessageBox(4u);
-  return j + 2;
+  return plmp + 2;
 }
 
-uint16 PlmInstr_SetLinkReg(uint16 j, uint16 k) {  // 0x848A24
-  plm_instruction_list_link_reg[k >> 1] = *(uint16 *)RomPtr_84(j);
-  return j + 2;
+const uint8 *PlmInstr_SetLinkReg(const uint8 *plmp, uint16 k) {  // 0x848A24
+  plm_instruction_list_link_reg[k >> 1] = GET_WORD(plmp);
+  return plmp + 2;
 }
 
-uint16 PlmInstr_Call(uint16 j, uint16 k) {  // 0x848A2E
-  plm_instruction_list_link_reg[k >> 1] = j + 2;
-  return *(uint16 *)RomPtr_84(j);
+const uint8 *PlmInstr_Call(const uint8 *plmp, uint16 k) {  // 0x848A2E
+  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
+  plm_instruction_list_link_reg[k >> 1] = plmp - base + 2;
+  return INSTRB_RETURN_ADDR(GET_WORD(plmp));
 }
 
-uint16 PlmInstr_Return(uint16 j, uint16 k) {  // 0x848A3A
-  return plm_instruction_list_link_reg[k >> 1];
+const uint8 *PlmInstr_Return(const uint8 *plmp, uint16 k) {  // 0x848A3A
+  return RomPtr_84(plm_instruction_list_link_reg[k >> 1]);
 }
 
-uint16 PlmInstr_GotoIfDoorBitSet(uint16 j, uint16 k) {  // 0x848A72
-  int16 v2;
-
-  v2 = plm_room_arguments[k >> 1];
+const uint8 *PlmInstr_GotoIfDoorBitSet(const uint8 *plmp, uint16 k) {  // 0x848A72
+  uint16 v2 = plm_room_arguments[k >> 1];
   if (sign16(v2))
-    return j + 2;
+    return plmp + 2;
   int idx = PrepareBitAccess(v2);
-  if (v2 >= 0 && (bitmask & opened_door_bit_array[idx]) != 0)
-    return *(uint16 *)RomPtr_84(j);
+  if (!sign16(v2) && (bitmask & opened_door_bit_array[idx]) != 0)
+    return INSTRB_RETURN_ADDR(GET_WORD(plmp));
   else
-    return j + 2;
+    return plmp + 2;
 }
 
-uint16 PlmInstr_IncrementDoorHitCounterAndJGE(uint16 j, uint16 k) {  // 0x848A91
-  int16 v5;
-
+const uint8 *PlmInstr_IncrementDoorHitCounterAndJGE(const uint8 *plmp, uint16 k) {  // 0x848A91
   int v2 = k >> 1;
-  uint16 v3 = plm_variables[v2] + 1;
-  plm_variables[v2] = v3;
-  if ((uint8)v3 < *RomPtr_84(j))
-    return j + 3;
-  v5 = plm_room_arguments[v2];
-  if (v5 >= 0) {
+  if ((uint8)++plm_variables[v2] < plmp[0])
+    return plmp + 3;
+  uint16 v5 = plm_room_arguments[v2];
+  if (!sign16(v5)) {
     int idx = PrepareBitAccess(v5);
-    v5 = bitmask | opened_door_bit_array[idx];
-    opened_door_bit_array[idx] = v5;
-    v5 = WORD(opened_door_bit_array[idx]);
+    opened_door_bit_array[idx] |= bitmask;
+    plm_room_arguments[v2] = WORD(opened_door_bit_array[idx]) | 0x8000;
   }
-  int v6 = k >> 1;
-  plm_room_arguments[v6] = v5 | 0x8000;
-  plm_pre_instrs[v6] = addr_PlmPreInstr_Empty4;
-  return PlmInstr_Goto(j + 1, k);
+  plm_pre_instrs[v2] = addr_PlmPreInstr_Empty4;
+  return PlmInstr_Goto(plmp + 1, k);
 }
 
-uint16 PlmInstr_IncrementArgumentAndJGE(uint16 j, uint16 k) {  // 0x848ACD
+const uint8 *PlmInstr_IncrementArgumentAndJGE(const uint8 *plmp, uint16 k) {  // 0x848ACD
   uint8 v2 = *((uint8 *)plm_room_arguments + k) + 1;
-  if (v2 >= *RomPtr_84(j)) {
+  if (v2 >= plmp[0]) {
     int v4 = k >> 1;
     plm_room_arguments[v4] = -1;
     plm_pre_instrs[v4] = addr_locret_848AE0;
-    return PlmInstr_Goto(j + 1, k);
+    return PlmInstr_Goto(plmp + 1, k);
   } else {
     plm_room_arguments[k >> 1] = v2;
-    return j + 3;
+    return plmp + 3;
   }
 }
 
-uint16 PlmInstr_SetBTS(uint16 j, uint16 k) {  // 0x848AF1
-  BTS[plm_block_indices[k >> 1] >> 1] = *RomPtr_84(j);
-  return j + 1;
+const uint8 *PlmInstr_SetBTS(const uint8 *plmp, uint16 k) {  // 0x848AF1
+  BTS[plm_block_indices[k >> 1] >> 1] = plmp[0];
+  return plmp + 1;
 }
 
-uint16 PlmInstr_DrawPlmBlock(uint16 j, uint16 k) {  // 0x848B05
-  return PlmInstr_DrawPlmBlock_(j, k);
+const uint8 *PlmInstr_DrawPlmBlock(const uint8 *plmp, uint16 k) {  // 0x848B05
+  return PlmInstr_DrawPlmBlock_(plmp, k);
 }
 
-uint16 PlmInstr_DrawPlmBlock_(uint16 j, uint16 k) {  // 0x848B17
+const uint8 *PlmInstr_DrawPlmBlock_(const uint8 *plmp, uint16 k) {  // 0x848B17
   int v2 = k >> 1;
   uint16 v3 = plm_variable[v2];
   level_data[plm_block_indices[v2] >> 1] = v3;
@@ -993,7 +911,8 @@ uint16 PlmInstr_DrawPlmBlock_(uint16 j, uint16 k) {  // 0x848B17
   custom_draw_instr_zero_terminator = 0;
   plm_instruction_timer[v2] = 1;
   plm_instruction_draw_ptr[v2] = ADDR16_OF_RAM(custom_draw_instr_num_blocks);
-  plm_instr_list_ptrs[v2] = j;
+  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
+  plm_instr_list_ptrs[v2] = plmp - base;
   ProcessPlmDrawInstruction(k);
   uint16 v4 = plm_id;
   CalculatePlmBlockCoords(plm_id);
@@ -1001,57 +920,44 @@ uint16 PlmInstr_DrawPlmBlock_(uint16 j, uint16 k) {  // 0x848B17
   return 0;
 }
 
-uint16 PlmInstr_ProcessAirScrollUpdate(uint16 j, uint16 k) {  // 0x848B55
-  uint16 v4;
-  char *v5;
-
+const uint8 *PlmInstr_ProcessAirScrollUpdate(const uint8 *plmp, uint16 k) {  // 0x848B55
   int v2 = k >> 1;
   plm_variable[v2] = 0;
   uint16 v3 = plm_room_arguments[v2];
-  HIBYTE(v4) = 0;
   while (1) {
-    v5 = (char *)RomPtr_8F(v3);
-    if (*v5 < 0)
+    const uint8 *v5 = RomPtr_8F(v3);
+    if (v5[0] & 0x80)
       break;
-    LOBYTE(v4) = *v5;
-    scrolls[v4] = v5[1];
+    scrolls[v5[0]] = v5[1];
     v3 += 2;
   }
-  uint16 result = j;
   int v7 = plm_block_indices[k >> 1] >> 1;
   level_data[v7] = level_data[v7] & 0xFFF | 0x3000;
-  return result;
+  return plmp;
 }
 
-uint16 PlmInstr_ProcessSolidScrollUpdate(uint16 j, uint16 k) {  // 0x848B93
-  uint16 v4;
-  char *v5;
-
+const uint8 *PlmInstr_ProcessSolidScrollUpdate(const uint8 *plmp, uint16 k) {  // 0x848B93
   int v2 = k >> 1;
   plm_variable[v2] = 0;
   uint16 v3 = plm_room_arguments[v2];
-  HIBYTE(v4) = 0;
   while (1) {
-    v5 = (char *)RomPtr_8F(v3);
-    if (*v5 < 0)
+    const uint8 *v5 = RomPtr_8F(v3);
+    if (v5[0] & 0x80)
       break;
-    LOBYTE(v4) = *v5;
-    scrolls[v4] = v5[1];
+    scrolls[v5[0]] = v5[1];
     v3 += 2;
   }
-  uint16 result = j;
   int v7 = plm_block_indices[k >> 1] >> 1;
   level_data[v7] = level_data[v7] & 0xFFF | 0xB000;
-  return result;
+  return plmp;
 }
 
-uint16 PlmInstr_QueueMusic(uint16 j, uint16 k) {  // 0x848BD1
-  uint8 *v2 = RomPtr_84(j);
-  QueueMusic_Delayed8(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueMusic(const uint8 *plmp, uint16 k) {  // 0x848BD1
+  QueueMusic_Delayed8(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_ClearMusicQueueAndQueueTrack(uint16 j, uint16 k) {  // 0x848BDD
+const uint8 *PlmInstr_ClearMusicQueueAndQueueTrack(const uint8 *plmp, uint16 k) {  // 0x848BDD
   for (int i = 14; i >= 0; i -= 2) {
     int v3 = i >> 1;
     music_queue_track[v3] = 0;
@@ -1060,151 +966,132 @@ uint16 PlmInstr_ClearMusicQueueAndQueueTrack(uint16 j, uint16 k) {  // 0x848BDD
   music_queue_read_pos = music_queue_write_pos;
   music_timer = 0;
   music_entry = 0;
-  uint8 *v4 = RomPtr_84(j);
-  QueueMusic_Delayed8(*v4);
-  return j + 1;
+  QueueMusic_Delayed8(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx1_Max6(uint16 j, uint16 k) {  // 0x848C07
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx1_Max6(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx1_Max6(const uint8 *plmp, uint16 k) {  // 0x848C07
+  QueueSfx1_Max6(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx2_Max6(uint16 j, uint16 k) {  // 0x848C10
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx2_Max6(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx2_Max6(const uint8 *plmp, uint16 k) {  // 0x848C10
+  QueueSfx2_Max6(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx3_Max6(uint16 j, uint16 k) {  // 0x848C19
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx3_Max6(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx3_Max6(const uint8 *plmp, uint16 k) {  // 0x848C19
+  QueueSfx3_Max6(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx1_Max15(uint16 j, uint16 k) {  // 0x848C22
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx1_Max15(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx1_Max15(const uint8 *plmp, uint16 k) {  // 0x848C22
+  QueueSfx1_Max15(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx2_Max15(uint16 j, uint16 k) {  // 0x848C2B
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx2_Max15(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx2_Max15(const uint8 *plmp, uint16 k) {  // 0x848C2B
+  QueueSfx2_Max15(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx3_Max15(uint16 j, uint16 k) {  // 0x848C34
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx3_Max15(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx3_Max15(const uint8 *plmp, uint16 k) {  // 0x848C34
+  QueueSfx3_Max15(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx1_Max3(uint16 j, uint16 k) {  // 0x848C3D
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx1_Max3(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx1_Max3(const uint8 *plmp, uint16 k) {  // 0x848C3D
+  QueueSfx1_Max3(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx2_Max3(uint16 j, uint16 k) {  // 0x848C46
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx2_Max3(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx2_Max3(const uint8 *plmp, uint16 k) {  // 0x848C46
+  QueueSfx2_Max3(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx_Max3(uint16 j, uint16 k) {  // 0x848C4F
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx3_Max3(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx_Max3(const uint8 *plmp, uint16 k) {  // 0x848C4F
+  QueueSfx3_Max3(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx1_Max9(uint16 j, uint16 k) {  // 0x848C58
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx1_Max9(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx1_Max9(const uint8 *plmp, uint16 k) {  // 0x848C58
+  QueueSfx1_Max9(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx2_Max9(uint16 j, uint16 k) {  // 0x848C61
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx2_Max9(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx2_Max9(const uint8 *plmp, uint16 k) {  // 0x848C61
+  QueueSfx2_Max9(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx3_Max9(uint16 j, uint16 k) {  // 0x848C6A
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx3_Max9(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx3_Max9(const uint8 *plmp, uint16 k) {  // 0x848C6A
+  QueueSfx3_Max9(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx1_Max1(uint16 j, uint16 k) {  // 0x848C73
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx1_Max1(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx1_Max1(const uint8 *plmp, uint16 k) {  // 0x848C73
+  QueueSfx1_Max1(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx2_Max1(uint16 j, uint16 k) {  // 0x848C7C
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx2_Max1(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx2_Max1(const uint8 *plmp, uint16 k) {  // 0x848C7C
+  QueueSfx2_Max1(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_QueueSfx3_Max1(uint16 j, uint16 k) {  // 0x848C85
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  QueueSfx3_Max1(*v2);
-  return j + 1;
+const uint8 *PlmInstr_QueueSfx3_Max1(const uint8 *plmp, uint16 k) {  // 0x848C85
+  QueueSfx3_Max1(plmp[0]);
+  return plmp + 1;
 }
 
-uint16 PlmInstr_ActivateMapStation(uint16 j, uint16 k) {  // 0x848C8F
+const uint8 *PlmInstr_ActivateMapStation(const uint8 *plmp, uint16 k) {  // 0x848C8F
   *(uint16 *)&map_station_byte_array[area_index] |= 0xFFu;
   DisplayMessageBox(0x14u);
   has_area_map = 1;
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_ActivateEnergyStation(uint16 j, uint16 k) {  // 0x848CAF
+const uint8 *PlmInstr_ActivateEnergyStation(const uint8 *plmp, uint16 k) {  // 0x848CAF
   if (samus_max_health != samus_health) {
     DisplayMessageBox(0x15u);
     samus_health = samus_max_health;
   }
   CallSomeSamusCode(1u);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_ActivateMissileStation(uint16 j, uint16 k) {  // 0x848CD0
+const uint8 *PlmInstr_ActivateMissileStation(const uint8 *plmp, uint16 k) {  // 0x848CD0
   if (samus_max_missiles != samus_missiles) {
     DisplayMessageBox(0x16u);
     samus_missiles = samus_max_missiles;
   }
   CallSomeSamusCode(1u);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_ActivateSaveStationAndGotoIfNo(uint16 j, uint16 k) {  // 0x848CF1
+const uint8 *PlmInstr_ActivateSaveStationAndGotoIfNo(const uint8 *plmp, uint16 k) {  // 0x848CF1
   int r = DisplayMessageBox_Poll(23);
   if (r < 0)
-    return j - 2; // restart plm instr
-
+    return plmp - 2; // restart plm instr
   if (r == 2)
-    return *(uint16 *)RomPtr_84(j);
+    return INSTRB_RETURN_ADDR(GET_WORD(plmp));
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_SaveStationElectricity, 0);
   load_station_index = plm_room_arguments[plm_id >> 1] & 7;
   PrepareBitAccess(load_station_index);
   used_save_stations_and_elevators[(uint16)(2 * area_index)] |= bitmask;
   SaveToSram(selected_save_slot);
-  return j + 2;
+  return plmp + 2;
 }
 
-uint16 PlmInstr_GotoIfSamusNear(uint16 j, uint16 k) {  // 0x848D41
-  uint8 v4;
-
+const uint8 *PlmInstr_GotoIfSamusNear(const uint8 *plmp, uint16 k) {  // 0x848D41
   CalculatePlmBlockCoords(k);
   uint8 v2 = abs16((samus_x_pos >> 4) - plm_x_block);
-  uint8 *v3 = RomPtr_84(j);
-  if ((v2 < *v3 || v2 == *v3) && (v4 = abs16((samus_y_pos >> 4) - plm_y_block), v4 < v3[1] || v4 == v3[1]))
-    return *((uint16 *)v3 + 1);
+  uint8 v4 = abs16((samus_y_pos >> 4) - plm_y_block);
+  if (v2 <= plmp[0] && v4 <= plmp[1])
+    return INSTRB_RETURN_ADDR(GET_WORD(plmp + 2));
   else
-    return j + 4;
+    return plmp + 4;
 }
 
 void DrawPlm(uint16 k) {  // 0x848DAA
@@ -1224,28 +1111,28 @@ void DrawPlm(uint16 k) {  // 0x848DAA
   uint16 v35;
   uint16 a;
 
-  *(uint16 *)((char *)&R8_ + 1) = addr_unk_605000;
+  R9_.addr = addr_unk_605000;
   R12_ = addr_unk_6053E0;
   uint16 v1 = plm_instruction_draw_ptr[k >> 1];
-  g_word_7E001E = plm_x_block;
-  R32 = plm_y_block;
+  R30_ = plm_x_block;
+  R32_ = plm_y_block;
 LABEL_2:
   R26_ = layer1_y_pos >> 4;
-  if (!sign16((layer1_y_pos >> 4) + 15 - R32)) {
+  if (!sign16((layer1_y_pos >> 4) + 15 - R32_)) {
     v2 = *(uint16 *)RomPtr_84orRAM(v1);
     if (v2 < 0) {
       R20_ = v2 & 0x7FFF;
-      if (layer1_x_pos >> 4 == g_word_7E001E || (int16)((layer1_x_pos >> 4) - g_word_7E001E) < 0) {
+      if (layer1_x_pos >> 4 == R30_ || (int16)((layer1_x_pos >> 4) - R30_) < 0) {
         v20 = (layer1_x_pos >> 4) + 17;
-        if (v20 != g_word_7E001E && (int16)(v20 - g_word_7E001E) >= 0) {
-          R24_ = g_word_7E001E;
+        if (v20 != R30_ && (int16)(v20 - R30_) >= 0) {
+          R24_ = R30_;
           R18_ = 0;
           R22_ = R26_ + 16;
-          if ((int16)(R26_ - R32) < 0) {
-            R26_ = R32;
+          if ((int16)(R26_ - R32_) < 0) {
+            R26_ = R32_;
           } else {
-            R18_ = R26_ - R32;
-            if (sign16(R32 + R20_ - R26_))
+            R18_ = R26_ - R32_;
+            if (sign16(R32_ + R20_ - R26_))
               return;
             bool v21 = R20_ == R18_;
             bool v22 = (int16)(R20_ - R18_) < 0;
@@ -1272,36 +1159,36 @@ LABEL_2:
               uint16 v26;
               v26 = 0;
               while (1) {
-                g_word_7E001E = *(uint16 *)RomPtr_84orRAM(R3_.addr);
+                R30_ = *(uint16 *)RomPtr_84orRAM(R3_.addr);
                 uint16 v27, v29;
-                v27 = g_word_7E001E & 0x3FF;
-                v28 = g_word_7E001E & 0xC00;
-                if ((g_word_7E001E & 0xC00) != 0) {
+                v27 = R30_ & 0x3FF;
+                v28 = R30_ & 0xC00;
+                if ((R30_ & 0xC00) != 0) {
                   if (v28 == 1024) {
-                    IndirWriteWord(&R0_, v26, tile_table.tables[v27].top_right ^ 0x4000);
-                    IndirWriteWord(&R6_, v26, tile_table.tables[v27].top_left ^ 0x4000);
+                    IndirWriteWord(R0_, v26, tile_table.tables[v27].top_right ^ 0x4000);
+                    IndirWriteWord(R6_, v26, tile_table.tables[v27].top_left ^ 0x4000);
                     v29 = v26 + 2;
-                    IndirWriteWord(&R0_, v29, tile_table.tables[v27].bottom_right ^ 0x4000);
-                    IndirWriteWord(&R6_, v29, tile_table.tables[v27].bottom_left ^ 0x4000);
+                    IndirWriteWord(R0_, v29, tile_table.tables[v27].bottom_right ^ 0x4000);
+                    IndirWriteWord(R6_, v29, tile_table.tables[v27].bottom_left ^ 0x4000);
                   } else if (v28 == 2048) {
-                    IndirWriteWord(&R0_, v26, tile_table.tables[v27].bottom_left ^ 0x8000);
-                    IndirWriteWord(&R6_, v26, tile_table.tables[v27].bottom_right ^ 0x8000);
+                    IndirWriteWord(R0_, v26, tile_table.tables[v27].bottom_left ^ 0x8000);
+                    IndirWriteWord(R6_, v26, tile_table.tables[v27].bottom_right ^ 0x8000);
                     v29 = v26 + 2;
-                    IndirWriteWord(&R0_, v29, tile_table.tables[v27].top_left ^ 0x8000);
-                    IndirWriteWord(&R6_, v29, tile_table.tables[v27].top_right ^ 0x8000);
+                    IndirWriteWord(R0_, v29, tile_table.tables[v27].top_left ^ 0x8000);
+                    IndirWriteWord(R6_, v29, tile_table.tables[v27].top_right ^ 0x8000);
                   } else {
-                    IndirWriteWord(&R0_, v26, tile_table.tables[v27].bottom_right ^ 0xC000);
-                    IndirWriteWord(&R6_, v26, tile_table.tables[v27].bottom_left ^ 0xC000);
+                    IndirWriteWord(R0_, v26, tile_table.tables[v27].bottom_right ^ 0xC000);
+                    IndirWriteWord(R6_, v26, tile_table.tables[v27].bottom_left ^ 0xC000);
                     v29 = v26 + 2;
-                    IndirWriteWord(&R0_, v29, tile_table.tables[v27].top_right ^ 0xC000);
-                    IndirWriteWord(&R6_, v29, tile_table.tables[v27].top_left ^ 0xC000);
+                    IndirWriteWord(R0_, v29, tile_table.tables[v27].top_right ^ 0xC000);
+                    IndirWriteWord(R6_, v29, tile_table.tables[v27].top_left ^ 0xC000);
                   }
                 } else {
-                  IndirWriteWord(&R0_, v26, tile_table.tables[v27].top_left);
-                  IndirWriteWord(&R6_, v26, tile_table.tables[v27].top_right);
+                  IndirWriteWord(R0_, v26, tile_table.tables[v27].top_left);
+                  IndirWriteWord(R6_, v26, tile_table.tables[v27].top_right);
                   v29 = v26 + 2;
-                  IndirWriteWord(&R0_, v29, tile_table.tables[v27].bottom_left);
-                  IndirWriteWord(&R6_, v29, tile_table.tables[v27].bottom_right);
+                  IndirWriteWord(R0_, v29, tile_table.tables[v27].bottom_left);
+                  IndirWriteWord(R6_, v29, tile_table.tables[v27].bottom_right);
                 }
                 v26 = v29 + 2;
                 ++R3_.addr;
@@ -1317,9 +1204,9 @@ LABEL_70:
                     addr = R3_.addr + 2 * R22_;
                   v31 = *(uint16 *)RomPtr_84orRAM(addr);
                   if (v31) {
-                    g_word_7E001E = plm_x_block + (int8)v31;
+                    R30_ = plm_x_block + (int8)v31;
                     uint16 v32 = addr + 1;
-                    R32 = plm_y_block + (int8)*RomPtr_84orRAM(v32);
+                    R32_ = plm_y_block + (int8)*RomPtr_84orRAM(v32);
                     v1 = v32 + 1;
                     goto LABEL_2;
                   }
@@ -1333,21 +1220,21 @@ LABEL_70:
     } else {
       R20_ = v2 & 0x7FFF;
       R28_ = 0;
-      if (sign16(R32 - R26_))
+      if (sign16(R32_ - R26_))
         return;
-      R26_ = R32;
+      R26_ = R32_;
       R18_ = 0;
-      R24_ = g_word_7E001E;
+      R24_ = R30_;
       R22_ = ((uint16)(layer1_x_pos + 15) >> 4) - 1;
-      if ((int16)(R22_ - g_word_7E001E) >= 0 && R22_ != g_word_7E001E) {
-        R18_ = R22_ - g_word_7E001E;
-        if (g_word_7E001E + R20_ == R22_ || (int16)(g_word_7E001E + R20_ - R22_) < 0)
+      if ((int16)(R22_ - R30_) >= 0 && R22_ != R30_) {
+        R18_ = R22_ - R30_;
+        if (R30_ + R20_ == R22_ || (int16)(R30_ + R20_ - R22_) < 0)
           return;
         R20_ -= R18_;
         R24_ = R22_;
       }
       R22_ += 17;
-      if (!sign16(R22_ - g_word_7E001E)) {
+      if (!sign16(R22_ - R30_)) {
         R22_ = R20_ + R24_ - 1 - R22_;
         if ((R22_ & 0x8000u) != 0 || (R20_ -= R22_) != 0) {
           v35 = k;
@@ -1362,13 +1249,13 @@ LABEL_70:
               if ((bg1_x_offset & 0x100) != 0)
                 a -= 1024;
             } else {
-              v5 = *(uint16 *)((char *)&R8_ + 1) + 2 * v4;
+              v5 = R9_.addr + 2 * v4;
               uint16 RegWord = prod;
               a = RegWord + v5;
               if ((bg1_x_offset & 0x100) != 0)
                 a += 1024;
             }
-            g_word_7E001E = 2 * R20_;
+            R30_ = 2 * R20_;
             R34 = a & 0x1F;
             if (((2 * R20_ + (a & 0x1F) - 1) & 0xFFE0) != 0) {
               if ((int16)(v3 - 228) >= 0 || (int16)(32 - R34) < 0)
@@ -1381,7 +1268,7 @@ LABEL_70:
               v10[1].vram_dst = a & 0xFFE0 ^ 0x400;
               v10[3].vram_dst = v10[1].vram_dst + 32;
               v10[2].vram_dst = v10->vram_dst + 32;
-              g_word_7E001E = 4 * R20_;
+              R30_ = 4 * R20_;
               uint16 v11 = 4 * R20_ - v10->size;
               v10[1].size = v11;
               v10[3].size = v11;
@@ -1392,12 +1279,12 @@ LABEL_70:
               v10[1].src.addr = v13;
               uint16 v14 = v10[1].size + v13;
               v10[2].src.addr = v14;
-              R6_ = v14;
+              R6_.addr = v14;
               v10[3].src.addr = v10[2].size + v14;
               v10->src.bank = 126;
               R0_.bank = 126;
               v10[1].src.bank = 126;
-              LOBYTE(R8_) = 126;
+              R6_.bank = 126;
               v10[2].src.bank = 126;
               v10[3].src.bank = 126;
               vram_write_queue_tail = v3 + 28;
@@ -1411,39 +1298,38 @@ LABEL_70:
             R3_.addr = R18_ + v1 + 2;
             uint16 v16 = 0;
             while (1) {
-              g_word_7E001E = *(uint16 *)RomPtr_84orRAM(R3_.addr);
-              uint16 v17 = g_word_7E001E & 0x3FF, v19;
-              v18 = g_word_7E001E & 0xC00;
-              if ((g_word_7E001E & 0xC00) != 0) {
+              R30_ = *(uint16 *)RomPtr_84orRAM(R3_.addr);
+              uint16 v17 = R30_ & 0x3FF, v19;
+              v18 = R30_ & 0xC00;
+              if ((R30_ & 0xC00) != 0) {
                 if (v18 == 1024) {
-                  IndirWriteWord(&R0_, v16, tile_table.tables[v17].top_right ^ 0x4000);
-                  IndirWriteWord(&R6_, v16, tile_table.tables[v17].bottom_right ^ 0x4000);
+                  IndirWriteWord(R0_, v16, tile_table.tables[v17].top_right ^ 0x4000);
+                  IndirWriteWord(R6_, v16, tile_table.tables[v17].bottom_right ^ 0x4000);
                   v19 = v16 + 2;
-                  IndirWriteWord(&R0_, v19, tile_table.tables[v17].top_left ^ 0x4000);
-                  IndirWriteWord(&R6_, v19, tile_table.tables[v17].bottom_left ^ 0x4000);
+                  IndirWriteWord(R0_, v19, tile_table.tables[v17].top_left ^ 0x4000);
+                  IndirWriteWord(R6_, v19, tile_table.tables[v17].bottom_left ^ 0x4000);
                 } else if (v18 == 2048) {
-                  IndirWriteWord(&R0_, v16, tile_table.tables[v17].bottom_left ^ 0x8000);
-                  IndirWriteWord(&R6_, v16, tile_table.tables[v17].top_left ^ 0x8000);
+                  IndirWriteWord(R0_, v16, tile_table.tables[v17].bottom_left ^ 0x8000);
+                  IndirWriteWord(R6_, v16, tile_table.tables[v17].top_left ^ 0x8000);
                   v19 = v16 + 2;
-                  IndirWriteWord(&R0_, v19, tile_table.tables[v17].bottom_right ^ 0x8000);
-                  IndirWriteWord(&R6_, v19, tile_table.tables[v17].top_right ^ 0x8000);
+                  IndirWriteWord(R0_, v19, tile_table.tables[v17].bottom_right ^ 0x8000);
+                  IndirWriteWord(R6_, v19, tile_table.tables[v17].top_right ^ 0x8000);
                 } else {
-                  IndirWriteWord(&R0_, v16, tile_table.tables[v17].bottom_right ^ 0xC000);
-                  IndirWriteWord(&R6_, v16, tile_table.tables[v17].top_right ^ 0xC000);
+                  IndirWriteWord(R0_, v16, tile_table.tables[v17].bottom_right ^ 0xC000);
+                  IndirWriteWord(R6_, v16, tile_table.tables[v17].top_right ^ 0xC000);
                   v19 = v16 + 2;
-                  IndirWriteWord(&R0_, v19, tile_table.tables[v17].bottom_left ^ 0xC000);
-                  IndirWriteWord(&R6_, v19, tile_table.tables[v17].top_left ^ 0xC000);
+                  IndirWriteWord(R0_, v19, tile_table.tables[v17].bottom_left ^ 0xC000);
+                  IndirWriteWord(R6_, v19, tile_table.tables[v17].top_left ^ 0xC000);
                 }
               } else {
-                IndirWriteWord(&R0_, v16, tile_table.tables[v17].top_left);
-                IndirWriteWord(&R6_, v16, tile_table.tables[v17].bottom_left);
+                IndirWriteWord(R0_, v16, tile_table.tables[v17].top_left);
+                IndirWriteWord(R6_, v16, tile_table.tables[v17].bottom_left);
                 v19 = v16 + 2;
-                IndirWriteWord(&R0_, v19, tile_table.tables[v17].top_right);
-                IndirWriteWord(&R6_, v19, tile_table.tables[v17].bottom_right);
+                IndirWriteWord(R0_, v19, tile_table.tables[v17].top_right);
+                IndirWriteWord(R6_, v19, tile_table.tables[v17].bottom_right);
               }
               v16 = v19 + 2;
-              ++R3_.addr;
-              ++R3_.addr;
+              R3_.addr += 2;
               plm_draw_tilemap_index += 8;
               if (!sign16(plm_draw_tilemap_index - 512))
                 break;
@@ -1472,7 +1358,7 @@ void CalculatePlmDrawTilemapVramDst(uint16 k) {  // 0x8491DC
     if ((bg1_x_offset & 0x100) != 0)
       a -= 1024;
   } else {
-    v2 = *(uint16 *)((char *)&R8_ + 1) + 2 * v1;
+    v2 = R9_.addr + 2 * v1;
     uint16 v3 = prod;
     a = v3 + v2;
     if ((bg1_x_offset & 0x100) != 0)
@@ -1495,16 +1381,16 @@ void PartiallyQueueVramForSingleScreenPlm(uint16 a, uint16 k) {  // 0x849220
   R0_.addr = v4;
   uint16 v5 = v2->size + v4;
   v2[1].src.addr = v5;
-  R6_ = v5;
+  R6_.addr = v5;
   v2->src.bank = 126;
   v2[1].src.bank = 126;
   R0_.bank = 126;
-  LOBYTE(R8_) = 126;
+  R6_.bank = 126;
 }
 
-uint16 PlmInstr_MovePlmDownOneBlock(uint16 j, uint16 k) {  // 0x84AB00
+const uint8 *PlmInstr_MovePlmDownOneBlock(const uint8 *plmp, uint16 k) {  // 0x84AB00
   plm_block_indices[k >> 1] += 2 * room_width_in_blocks;
-  return j;
+  return plmp;
 }
 
 uint8 PlmSetup_CrumbleBotwoonWall(uint16 j) {  // 0x84AB28
@@ -1512,22 +1398,19 @@ uint8 PlmSetup_CrumbleBotwoonWall(uint16 j) {  // 0x84AB28
   return 0;
 }
 
-uint16 PlmInstr_Scroll_0_1_Blue(uint16 j, uint16 k) {  // 0x84AB51
+const uint8 *PlmInstr_Scroll_0_1_Blue(const uint8 *plmp, uint16 k) {  // 0x84AB51
   *(uint16 *)scrolls = 257;
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_MovePlmDownOneBlock_0(uint16 j, uint16 k) {  // 0x84AB59
-  plm_block_indices[k >> 1] += room_width_in_blocks
-    + room_width_in_blocks;
-  return j;
+const uint8 *PlmInstr_MovePlmDownOneBlock_0(const uint8 *plmp, uint16 k) {  // 0x84AB59
+  plm_block_indices[k >> 1] += 2 * room_width_in_blocks;
+  return plmp;
 }
 
-uint16 PlmInstr_ABD6(uint16 j, uint16 k) {  // 0x84ABD6
-  int v1 = k >> 1;
-  ++plm_block_indices[v1];
-  ++plm_block_indices[v1];
-  return j;
+const uint8 *PlmInstr_ABD6(const uint8 *plmp, uint16 k) {  // 0x84ABD6
+  plm_block_indices[k >> 1] += 2;
+  return plmp;
 }
 
 void PlmPreInstr_PositionSamusAndInvincible(uint16 k) {  // 0x84AC89
@@ -1537,55 +1420,55 @@ void PlmPreInstr_PositionSamusAndInvincible(uint16 k) {  // 0x84AC89
   samus_invincibility_timer |= 0x10u;
 }
 
-uint16 PlmInstr_DealDamage_2(uint16 j, uint16 k) {  // 0x84AC9D
+const uint8 *PlmInstr_DealDamage_2(const uint8 *plmp, uint16 k) {  // 0x84AC9D
   samus_periodic_damage += 2;
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_GiveInvincibility(uint16 j, uint16 k) {  // 0x84ACB1
+const uint8 *PlmInstr_GiveInvincibility(const uint8 *plmp, uint16 k) {  // 0x84ACB1
   samus_invincibility_timer = 48;
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_Draw0x38FramesOfRightTreadmill(uint16 j, uint16 k) {  // 0x84AD43
+const uint8 *PlmInstr_Draw0x38FramesOfRightTreadmill(const uint8 *plmp, uint16 k) {  // 0x84AD43
   WriteRowOfLevelDataBlockAndBTS(k, 0x30ff, 0x8, 0x38);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_Draw0x38FramesOfLeftTreadmill(uint16 j, uint16 k) {  // 0x84AD58
+const uint8 *PlmInstr_Draw0x38FramesOfLeftTreadmill(const uint8 *plmp, uint16 k) {  // 0x84AD58
   WriteRowOfLevelDataBlockAndBTS(k, 0x30ff, 0x9, 0x38);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_GotoIfSamusHealthFull(uint16 j, uint16 k) {  // 0x84AE35
+const uint8 *PlmInstr_GotoIfSamusHealthFull(const uint8 *plmp, uint16 k) {  // 0x84AE35
   if (samus_max_health != samus_health)
-    return j + 2;
+    return plmp + 2;
   CallSomeSamusCode(1u);
-  return *(uint16 *)RomPtr_84(j);
+  return INSTRB_RETURN_ADDR(GET_WORD(plmp));
 }
 
-uint16 PlmInstr_GotoIfMissilesFull(uint16 j, uint16 k) {  // 0x84AEBF
+const uint8 *PlmInstr_GotoIfMissilesFull(const uint8 *plmp, uint16 k) {  // 0x84AEBF
   if (samus_max_missiles != samus_missiles)
-    return j + 2;
+    return plmp + 2;
   CallSomeSamusCode(1u);
-  return *(uint16 *)RomPtr_84(j);
+  return INSTRB_RETURN_ADDR(GET_WORD(plmp));
 }
 
-uint16 PlmInstr_PlaceSamusOnSaveStation(uint16 j, uint16 k) {  // 0x84B00E
+const uint8 *PlmInstr_PlaceSamusOnSaveStation(const uint8 *plmp, uint16 k) {  // 0x84B00E
   samus_x_pos = (samus_x_pos + 8) & 0xFFF0;
   MakeSamusFaceForward();
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_DisplayGameSavedMessageBox(uint16 j, uint16 k) {  // 0x84B024
+const uint8 *PlmInstr_DisplayGameSavedMessageBox(const uint8 *plmp, uint16 k) {  // 0x84B024
   DisplayMessageBox(0x18u);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_EnableMovementAndSetSaveStationUsed(uint16 j, uint16 k) {  // 0x84B030
+const uint8 *PlmInstr_EnableMovementAndSetSaveStationUsed(const uint8 *plmp, uint16 k) {  // 0x84B030
   CallSomeSamusCode(1u);
   save_station_lockout_flag = 1;
-  return j;
+  return plmp;
 }
 
 uint8 PlmSetup_SetrupWreckedShipEntrance(uint16 j) {  // 0x84B04A
@@ -1951,8 +1834,8 @@ uint8 PlmSetup_QuicksandSurfaceB_0(uint16 j) {  // 0x84B500
       R20_ = 0;
       return 1;
     } else {
-      if (word_84B53D[j >> 1] < *(uint16 *)((char *)&R18_ + 1))
-        *(uint16 *)((char *)&R18_ + 1) = word_84B53D[j >> 1];
+      if (word_84B53D[j >> 1] < R19_)
+        R19_ = word_84B53D[j >> 1];
       ++flag_samus_in_quicksand;
     }
   }
@@ -2206,9 +2089,9 @@ uint8 PlmSetup_B9C1_CrittersEscapeBlock(uint16 j) {  // 0x84B978
   return 0;
 }
 
-uint16 PlmInstr_SetCrittersEscapedEvent(uint16 j, uint16 k) {  // 0x84B9B9
+const uint8 *PlmInstr_SetCrittersEscapedEvent(const uint8 *plmp, uint16 k) {  // 0x84B9B9
   SetEventHappened(0xFu);
-  return j;
+  return plmp;
 }
 
 uint8 PlmSetup_B9ED_CrittersEscapeBlock(uint16 j) {  // 0x84B9C5
@@ -2234,11 +2117,11 @@ uint8  sub_84B9F1(uint16 j) {  // 0x84B9F1
   return 0;
 }
 
-uint16 PlmInstr_JumpIfSamusHasNoBombs(uint16 j, uint16 k) {  // 0x84BA6F
+const uint8 *PlmInstr_JumpIfSamusHasNoBombs(const uint8 *plmp, uint16 k) {  // 0x84BA6F
   if ((collected_items & 0x1000) != 0)
-    return j + 2;
+    return plmp + 2;
   else
-    return *(uint16 *)RomPtr_84(j);
+    return INSTRB_RETURN_ADDR(GET_WORD(plmp));
 }
 
 void UNUSED_sub_84BAD1(uint16 j) {  // 0x84BAD1
@@ -2254,9 +2137,9 @@ uint8 PlmSetup_BB30_CrateriaMainstreetEscape(uint16 j) {  // 0x84BB09
   return 0;
 }
 
-uint16 PlmInstr_MovePlmRight4Blocks(uint16 j, uint16 k) {  // 0x84BB25
+const uint8 *PlmInstr_MovePlmRight4Blocks(const uint8 *plmp, uint16 k) {  // 0x84BB25
   plm_block_indices[k >> 1] += 8;
-  return j;
+  return plmp;
 }
 
 void PlmPreInstr_WakePlmIfTriggered(uint16 k) {  // 0x84BB52
@@ -2293,18 +2176,17 @@ void PlmPreInstr_WakePlmIfTriggeredOrSamusAbovePlm(uint16 k) {  // 0x84BBA4
   }
 }
 
-uint16 PlmInstr_ClearTrigger(uint16 j, uint16 k) {  // 0x84BBDD
+const uint8 *PlmInstr_ClearTrigger(const uint8 *plmp, uint16 k) {  // 0x84BBDD
   plm_timers[k >> 1] = 0;
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_SpawnEnemyProjectile(uint16 j, uint16 k) {  // 0x84BBE1
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  SpawnEnemyProjectileWithRoomGfx(*v2, *v2);
-  return j + 2;
+const uint8 *PlmInstr_SpawnEnemyProjectile(const uint8 *plmp, uint16 k) {  // 0x84BBE1
+  SpawnEnemyProjectileWithRoomGfx(GET_WORD(plmp), 0);
+  return plmp + 2;
 }
 
-uint16 PlmInstr_WakeEnemyProjectileAtPlmPos(uint16 j, uint16 k) {  // 0x84BBF0
+const uint8 *PlmInstr_WakeEnemyProjectileAtPlmPos(const uint8 *plmp, uint16 k) {  // 0x84BBF0
   int i;
 
   uint16 v2 = plm_block_indices[k >> 1];
@@ -2314,9 +2196,8 @@ uint16 PlmInstr_WakeEnemyProjectileAtPlmPos(uint16 j, uint16 k) {  // 0x84BBF0
   }
   int v4 = i >> 1;
   enemy_projectile_instr_timers[v4] = 1;
-  ++enemy_projectile_instr_list_ptr[v4];
-  ++enemy_projectile_instr_list_ptr[v4];
-  return j + 2;
+  enemy_projectile_instr_list_ptr[v4] += 2;
+  return plmp + 2;
 }
 
 void PlmPreInstr_GoToLinkInstrIfShot(uint16 k) {  // 0x84BD0F
@@ -2439,9 +2320,9 @@ void PlmPreInstr_GotoLinkIfCrittersEscaped(uint16 k) {  // 0x84BE30
     PlmPreInstr_PlayDudSound(k);
 }
 
-uint16 PlmInstr_SetGreyDoorPreInstr(uint16 j, uint16 k) {  // 0x84BE3F
+const uint8 *PlmInstr_SetGreyDoorPreInstr(const uint8 *plmp, uint16 k) {  // 0x84BE3F
   plm_pre_instrs[k >> 1] = kGrayDoorPreInstrs[plm_variable[k >> 1] >> 1];
-  return j;
+  return plmp;
 }
 
 uint8 PlmSetup_C806_LeftGreenGateTrigger(uint16 j) {  // 0x84C54D
@@ -2650,9 +2531,9 @@ uint8 PlmSetup_Door_Strange(uint16 j) {  // 0x84C7E2
   return 0;
 }
 
-uint16 PlmInstr_SetBtsTo1(uint16 j, uint16 k) {  // 0x84CD93
-  *(uint16 *)&BTS[plm_block_indices[k >> 1] >> 1] = (BTS[(plm_block_indices[k >> 1] >> 1) + 1] << 8) | 1;
-  return j;
+const uint8 *PlmInstr_SetBtsTo1(const uint8 *plmp, uint16 k) {  // 0x84CD93
+  BTS[plm_block_indices[k >> 1] >> 1] = 1;
+  return plmp;
 }
 
 uint8 PlmSetup_D028_D02C_Unused(uint16 j) {  // 0x84CDC2
@@ -2836,9 +2717,9 @@ uint8 PlmSetup_D138(uint16 j) {  // 0x84D12B
   return 0;
 }
 
-uint16 PlmInstr_FxBaseYPos_0x2D2(uint16 j, uint16 k) {  // 0x84D155
+const uint8 *PlmInstr_FxBaseYPos_0x2D2(const uint8 *plmp, uint16 k) {  // 0x84D155
   fx_base_y_pos = 722;
-  return j;
+  return plmp;
 }
 
 void PlmPreInstr_DeletePlmAndSpawnTriggerIfBlockDestroyed(uint16 k) {  // 0x84D15C
@@ -2870,36 +2751,27 @@ uint8 PlmSetup_D6DA_LowerNorfairChozoHandTrigger(uint16 j) {  // 0x84D18F
 }
 
 void PlmPreInstr_IncrementRoomArgIfShotBySuperMissile(uint16 k) {  // 0x84D1E6
-  int16 v3;
-
   int v1 = k >> 1;
   uint16 v2 = plm_timers[v1];
-  if (v2) {
-    v3 = v2 & 0xF00;
-    if (v3 == 512 || v3 == 256) {
-      plm_timers[v1] = 0;
-      ++plm_room_arguments[v1];
-    }
-  }
+  if ((v2 & 0xF00) == 512 || (v2 & 0xF00) == 256)
+    plm_room_arguments[v1]++;
   plm_timers[v1] = 0;
 }
 
-uint16 PlmInstr_GotoIfRoomArgLess(uint16 j, uint16 k) {  // 0x84D2F9
-  uint8 *v2 = RomPtr_84(j);
-  if (plm_room_arguments[k >> 1] >= *(uint16 *)v2)
-    return j + 4;
+const uint8 *PlmInstr_GotoIfRoomArgLess(const uint8 *plmp, uint16 k) {  // 0x84D2F9
+  if (plm_room_arguments[k >> 1] >= GET_WORD(plmp))
+    return plmp + 4;
   else
-    return *((uint16 *)v2 + 1);
+    return INSTRB_RETURN_ADDR(GET_WORD(plmp + 2));
 }
 
-uint16 PlmInstr_SpawnFourMotherBrainGlass(uint16 j, uint16 k) {  // 0x84D30B
+const uint8 *PlmInstr_SpawnFourMotherBrainGlass(const uint8 *plmp, uint16 k) {  // 0x84D30B
   QueueSfx3_Max15(0x2Eu);
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  SpawnMotherBrainGlassShatteringShard(*v2);
-  SpawnMotherBrainGlassShatteringShard(v2[1]);
-  SpawnMotherBrainGlassShatteringShard(v2[2]);
-  SpawnMotherBrainGlassShatteringShard(v2[3]);
-  return j + 8;
+  SpawnMotherBrainGlassShatteringShard(GET_WORD(plmp + 0));
+  SpawnMotherBrainGlassShatteringShard(GET_WORD(plmp + 2));
+  SpawnMotherBrainGlassShatteringShard(GET_WORD(plmp + 4));
+  SpawnMotherBrainGlassShatteringShard(GET_WORD(plmp + 6));
+  return plmp + 8;
 }
 
 void SpawnMotherBrainGlassShatteringShard(uint16 a) {  // 0x84D331
@@ -2916,46 +2788,26 @@ void PlmPreInstr_WakePlmIfSamusHasBombs(uint16 k) {  // 0x84D33B
   }
 }
 
-uint16 PlmInstr_SpawnTorizoStatueBreaking(uint16 j, uint16 k) {  // 0x84D357
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  SpawnEnemyProjectileWithRoomGfx(0xA993, *v2);
-  return j + 2;
+const uint8 *PlmInstr_SpawnTorizoStatueBreaking(const uint8 *plmp, uint16 k) {  // 0x84D357
+  SpawnEnemyProjectileWithRoomGfx(0xA993, GET_WORD(plmp));
+  return plmp + 2;
 }
 
-uint16 PlmInstr_QueueSong1MusicTrack(uint16 j, uint16 k) {  // 0x84D3C7
+const uint8 *PlmInstr_QueueSong1MusicTrack(const uint8 *plmp, uint16 k) {  // 0x84D3C7
   QueueMusic_Delayed8(6u);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_TransferWreckedShipChozoSpikesToSlopes(uint16 j, uint16 k) {  // 0x84D3D7
+const uint8 *PlmInstr_TransferWreckedShipChozoSpikesToSlopes(const uint8 *plmp, uint16 k) {  // 0x84D3D7
   WriteLevelDataBlockTypeAndBts(0x1608, 0x1012);
   WriteLevelDataBlockTypeAndBts(0x160A, 0x1013);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_TransferWreckedShipSlopesToChozoSpikes(uint16 j, uint16 k) {  // 0x84D3F4
+const uint8 *PlmInstr_TransferWreckedShipSlopesToChozoSpikes(const uint8 *plmp, uint16 k) {  // 0x84D3F4
   WriteLevelDataBlockTypeAndBts(0x1608, 0xA000);
   WriteLevelDataBlockTypeAndBts(0x160A, 0xA000);
-  return j;
-}
-
-void UNUSED_sub_84D409(uint16 k) {  // 0x84D409
-  int v1 = k >> 1;
-  if ((plm_timers[v1] & 0xF00) == 1280) {
-    plm_instr_list_ptrs[v1] = plm_instruction_list_link_reg[v1];
-    plm_instruction_timer[v1] = 1;
-  }
-  plm_timers[v1] = 0;
-}
-
-void UNUSED_sub_84D476(void) {  // 0x84D476
-  fx_target_y_pos = 722;
-  fx_y_vel = 112;
-  fx_timer = 32;
-}
-
-void UNUSED_sub_84D489(void) {  // 0x84D489
-  fx_base_y_pos = 722;
+  return plmp;
 }
 
 void PlmPreInstr_WakeOnKeyPress(uint16 k) {  // 0x84D4BF
@@ -2967,24 +2819,24 @@ void PlmPreInstr_WakeOnKeyPress(uint16 k) {  // 0x84D4BF
   }
 }
 
-uint16 PlmInstr_EnableWaterPhysics(uint16 j, uint16 k) {  // 0x84D525
+const uint8 *PlmInstr_EnableWaterPhysics(const uint8 *plmp, uint16 k) {  // 0x84D525
   fx_liquid_options &= ~4u;
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_SpawnN00bTubeCrackEnemyProjectile(uint16 j, uint16 k) {  // 0x84D52C
+const uint8 *PlmInstr_SpawnN00bTubeCrackEnemyProjectile(const uint8 *plmp, uint16 k) {  // 0x84D52C
   uint16 v2 = 0; // undefined
   SpawnEnemyProjectileWithRoomGfx(0xD904, v2);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_DiagonalEarthquake(uint16 j, uint16 k) {  // 0x84D536
+const uint8 *PlmInstr_DiagonalEarthquake(const uint8 *plmp, uint16 k) {  // 0x84D536
   earthquake_type = 11;
   earthquake_timer = 64;
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_Spawn10shardsAnd6n00bs(uint16 j, uint16 k) {  // 0x84D543
+const uint8 *PlmInstr_Spawn10shardsAnd6n00bs(const uint8 *plmp, uint16 k) {  // 0x84D543
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 2u);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 4u);
@@ -3001,17 +2853,17 @@ uint16 PlmInstr_Spawn10shardsAnd6n00bs(uint16 j, uint16 k) {  // 0x84D543
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 6u);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 8u);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 0xA);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_DisableSamusControls(uint16 j, uint16 k) {  // 0x84D5E6
+const uint8 *PlmInstr_DisableSamusControls(const uint8 *plmp, uint16 k) {  // 0x84D5E6
   CallSomeSamusCode(0);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_EnableSamusControls(uint16 j, uint16 k) {  // 0x84D5EE
+const uint8 *PlmInstr_EnableSamusControls(const uint8 *plmp, uint16 k) {  // 0x84D5EE
   CallSomeSamusCode(1);
-  return j;
+  return plmp;
 }
 
 uint8 PlmSetup_MotherBrainGlass(uint16 j) {  // 0x84D5F6
@@ -3095,31 +2947,29 @@ void PlmPreInstr_WakePlmIfRoomArgumentDoorIsSet(uint16 k) {  // 0x84D753
   }
 }
 
-uint16 PlmInstr_ShootEyeDoorProjectileWithProjectileArg(uint16 j, uint16 k) {  // 0x84D77A
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorProjectile, *v2);
+const uint8 *PlmInstr_ShootEyeDoorProjectileWithProjectileArg(const uint8 *plmp, uint16 k) {  // 0x84D77A
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorProjectile, GET_WORD(plmp));
   QueueSfx2_Max6(0x4Cu);
-  return j + 2;
+  return plmp + 2;
 }
 
-uint16 PlmInstr_SpawnEyeDoorSweatEnemyProjectile(uint16 j, uint16 k) {  // 0x84D790
-  uint16 *v2 = (uint16 *)RomPtr_84(j);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorSweat, *v2);
-  return j + 2;
+const uint8 *PlmInstr_SpawnEyeDoorSweatEnemyProjectile(const uint8 *plmp, uint16 k) {  // 0x84D790
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorSweat, GET_WORD(plmp));
+  return plmp + 2;
 }
 
-uint16 PlmInstr_SpawnTwoEyeDoorSmoke(uint16 j, uint16 k) {  // 0x84D79F
+const uint8 *PlmInstr_SpawnTwoEyeDoorSmoke(const uint8 *plmp, uint16 k) {  // 0x84D79F
   SpawnEnemyProjectileWithRoomGfx(0xE517, 0x30A);
   SpawnEnemyProjectileWithRoomGfx(0xE517, 0x30A);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_SpawnEyeDoorSmokeProjectile(uint16 j, uint16 k) {  // 0x84D7B6
+const uint8 *PlmInstr_SpawnEyeDoorSmokeProjectile(const uint8 *plmp, uint16 k) {  // 0x84D7B6
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorSmoke, 0xB);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_MoveUpAndMakeBlueDoorFacingRight(uint16 j, uint16 k) {  // 0x84D7C3
+const uint8 *PlmInstr_MoveUpAndMakeBlueDoorFacingRight(const uint8 *plmp, uint16 k) {  // 0x84D7C3
   int v2 = k >> 1;
   uint16 v3 = (__PAIR32__(plm_block_indices[v2] - room_width_in_blocks, plm_block_indices[v2])
         - __PAIR32__(room_width_in_blocks, room_width_in_blocks)) >> 16;
@@ -3127,10 +2977,10 @@ uint16 PlmInstr_MoveUpAndMakeBlueDoorFacingRight(uint16 j, uint16 k) {  // 0x84D
   uint16 v4 = v3;
   WriteLevelDataBlockTypeAndBts(v3, 0xC041);
   sub_84D7EF(v4);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_MoveUpAndMakeBlueDoorFacingLeft(uint16 j, uint16 k) {  // 0x84D7DA
+const uint8 *PlmInstr_MoveUpAndMakeBlueDoorFacingLeft(const uint8 *plmp, uint16 k) {  // 0x84D7DA
   int v2 = k >> 1;
   uint16 v3 = (__PAIR32__(plm_block_indices[v2] - room_width_in_blocks, plm_block_indices[v2])
         - __PAIR32__(room_width_in_blocks, room_width_in_blocks)) >> 16;
@@ -3138,7 +2988,7 @@ uint16 PlmInstr_MoveUpAndMakeBlueDoorFacingLeft(uint16 j, uint16 k) {  // 0x84D7
   uint16 v4 = v3;
   WriteLevelDataBlockTypeAndBts(v3, 0xC040);
   sub_84D7EF(v4);
-  return j;
+  return plmp;
 }
 
 void sub_84D7EF(uint16 k) {  // 0x84D7EF
@@ -3146,9 +2996,7 @@ void sub_84D7EF(uint16 k) {  // 0x84D7EF
   WriteLevelDataBlockTypeAndBts(v1, 0xD0FF);
   uint16 v2 = room_width_in_blocks * 2 + v1;
   WriteLevelDataBlockTypeAndBts(v2, 0xD0FE);
-  WriteLevelDataBlockTypeAndBts(
-    room_width_in_blocks * 2 + v2,
-    0xD0FDu);
+  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xD0FDu);
 }
 
 uint8 PlmSetup_EyeDoorEye(uint16 j) {  // 0x84DA8C
@@ -3156,11 +3004,7 @@ uint8 PlmSetup_EyeDoorEye(uint16 j) {  // 0x84DA8C
   if ((bitmask & opened_door_bit_array[idx]) == 0) {
     int v1 = j >> 1;
     WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC044);
-    WriteLevelDataBlockTypeAndBts(
-      room_width_in_blocks
-      + room_width_in_blocks
-      + plm_block_indices[v1],
-      0xD0FFu);
+    WriteLevelDataBlockTypeAndBts(2 * room_width_in_blocks + plm_block_indices[v1], 0xD0FFu);
   }
   return 0;
 }
@@ -3216,17 +3060,15 @@ void SetPlmVarPtr(uint16 k, uint16 a) {
   *(uint16 *)&g_ram[plm_variable[k >> 1]] = a;
 }
 
-uint16 PlmInstr_DamageDraygonTurret(uint16 j, uint16 k) {  // 0x84DB8E
+const uint8 *PlmInstr_DamageDraygonTurret(const uint8 *plmp, uint16 k) {  // 0x84DB8E
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003);
-  WriteLevelDataBlockTypeAndBts(
-    room_width_in_blocks * 2 + v2,
-    0xA003u);
-  return j;
+  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xA003u);
+  return plmp;
 }
 
-uint16 PlmInstr_DamageDraygonTurretFacingDownRight(uint16 j, uint16 k) {  // 0x84DBB8
+const uint8 *PlmInstr_DamageDraygonTurretFacingDownRight(const uint8 *plmp, uint16 k) {  // 0x84DBB8
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003);
@@ -3235,10 +3077,10 @@ uint16 PlmInstr_DamageDraygonTurretFacingDownRight(uint16 j, uint16 k) {  // 0x8
   uint16 v4 = room_width_in_blocks * 2 + v3;
   WriteLevelDataBlockTypeAndBts(v4, 0xA003);
   WriteLevelDataBlockTypeAndBts(v4 + 2, 0);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_DamageDraygonTurretFacingUpRight(uint16 j, uint16 k) {  // 0x84DBF7
+const uint8 *PlmInstr_DamageDraygonTurretFacingUpRight(const uint8 *plmp, uint16 k) {  // 0x84DBF7
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003);
@@ -3246,20 +3088,18 @@ uint16 PlmInstr_DamageDraygonTurretFacingUpRight(uint16 j, uint16 k) {  // 0x84D
   uint16 v4 = room_width_in_blocks * 2 + v2;
   WriteLevelDataBlockTypeAndBts(v4, 0xA003);
   WriteLevelDataBlockTypeAndBts(v4 + 2, 0xA003);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_DamageDraygonTurret2(uint16 j, uint16 k) {  // 0x84DC36
+const uint8 *PlmInstr_DamageDraygonTurret2(const uint8 *plmp, uint16 k) {  // 0x84DC36
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003);
-  WriteLevelDataBlockTypeAndBts(
-    room_width_in_blocks * 2 + v2,
-    0xA003u);
-  return j;
+  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xA003u);
+  return plmp;
 }
 
-uint16 PlmInstr_DamageDraygonTurretFacingDownLeft(uint16 j, uint16 k) {  // 0x84DC60
+const uint8 *PlmInstr_DamageDraygonTurretFacingDownLeft(const uint8 *plmp, uint16 k) {  // 0x84DC60
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003);
@@ -3267,10 +3107,10 @@ uint16 PlmInstr_DamageDraygonTurretFacingDownLeft(uint16 j, uint16 k) {  // 0x84
   uint16 v4 = room_width_in_blocks * 2 + v2;
   WriteLevelDataBlockTypeAndBts(v4, 0xA003);
   WriteLevelDataBlockTypeAndBts(v4 - 2, 0);
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_DamageDraygonTurretFacingUpLeft(uint16 j, uint16 k) {  // 0x84DC9F
+const uint8 *PlmInstr_DamageDraygonTurretFacingUpLeft(const uint8 *plmp, uint16 k) {  // 0x84DC9F
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003);
@@ -3278,7 +3118,7 @@ uint16 PlmInstr_DamageDraygonTurretFacingUpLeft(uint16 j, uint16 k) {  // 0x84DC
   uint16 v4 = v2 + room_width_in_blocks * 2;
   WriteLevelDataBlockTypeAndBts(v4, 0xA003);
   WriteLevelDataBlockTypeAndBts(v4 - 2, 0xA003);
-  return j;
+  return plmp;
 }
 
 uint8 PlmSetup_DraygonCannonFacingRight(uint16 j) {  // 0x84DE94
@@ -3354,20 +3194,21 @@ void PlmPreInstr_WakeIfTriggered(uint16 k) {  // 0x84DFE6
   }
 }
 
-uint16 PlmInstr_DrawItemFrame0(uint16 j, uint16 k) {  // 0x84E04F
+const uint8 *PlmInstr_DrawItemFrame0(const uint8 *plmp, uint16 k) {  // 0x84E04F
   plm_instruction_draw_ptr[k >> 1] = off_84E05F[plm_variables[k >> 1] >> 1];
-  return PlmInstr_DrawItemFrame_Common(j, k);
+  return PlmInstr_DrawItemFrame_Common(plmp, k);
 }
 
-uint16 PlmInstr_DrawItemFrame1(uint16 j, uint16 k) {  // 0x84E067
+const uint8 *PlmInstr_DrawItemFrame1(const uint8 *plmp, uint16 k) {  // 0x84E067
   plm_instruction_draw_ptr[k >> 1] = off_84E077[plm_variables[k >> 1] >> 1];
-  return PlmInstr_DrawItemFrame_Common(j, k);
+  return PlmInstr_DrawItemFrame_Common(plmp, k);
 }
 
-uint16 PlmInstr_DrawItemFrame_Common(uint16 j, uint16 k) {  // 0x84E07F
+const uint8 *PlmInstr_DrawItemFrame_Common(const uint8 *plmp, uint16 k) {  // 0x84E07F
   int v2 = k >> 1;
   plm_instruction_timer[v2] = 4;
-  plm_instr_list_ptrs[v2] = j;
+  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
+  plm_instr_list_ptrs[v2] = plmp - base;
   ProcessPlmDrawInstruction(k);
   uint16 v3 = plm_id;
   CalculatePlmBlockCoords(plm_id);
@@ -3375,14 +3216,14 @@ uint16 PlmInstr_DrawItemFrame_Common(uint16 j, uint16 k) {  // 0x84E07F
   return 0;
 }
 
-uint16 PlmInstr_ClearChargeBeamCounter(uint16 j, uint16 k) {  // 0x84E29D
+const uint8 *PlmInstr_ClearChargeBeamCounter(const uint8 *plmp, uint16 k) {  // 0x84E29D
   flare_counter = 0;
-  return j;
+  return plmp;
 }
 
-uint16 PlmInstr_E63B(uint16 j, uint16 k) {  // 0x84E63B
+const uint8 *PlmInstr_E63B(const uint8 *plmp, uint16 k) {  // 0x84E63B
   fx_y_vel = -32;
-  return j;
+  return plmp;
 }
 
 uint8 sub_84EE4D(uint16 j) {  // 0x84EE4D

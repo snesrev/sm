@@ -4,7 +4,11 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
-#define kCreateSprite_Ilists ((uint16*)RomPtr(0xb4bda8))
+
+#define kCreateSprite_Ilists ((uint16*)RomFixedPtr(0xb4bda8))
+
+
+
 
 void CreateSpriteAtPos(void) {  // 0xB4BC26
   int v0 = 62;
@@ -39,34 +43,31 @@ void CallSpriteObjectInstr(uint32 ea) {
 void HandleSpriteObjects(void) {  // 0xB4BC82
   uint16 v1;
 
-  if (!(debug_time_frozen_for_enemies | time_is_frozen_flag)) {
-    sprite_object_index = 62;
-    while (1) {
-      int v0;
-      v0 = sprite_object_index >> 1;
-      if (!sprite_instr_list_ptrs[v0] || (sprite_disable_flag[v0] & 1) != 0)
-        goto LABEL_9;
-      v1 = sprite_instr_timer[v0];
-      if ((v1 & 0x8000u) != 0)
-        break;
-      sprite_instr_timer[v0] = v1 - 1;
-      if (v1 == 1) {
-        uint16 v3 = sprite_instr_list_ptrs[v0] + 4;
-        sprite_instr_list_ptrs[v0] = v3;
-        v1 = *(uint16 *)RomPtr_B4(v3);
-        if (!sign16(v1 + 0x8000))
-          break;
-        sprite_instr_timer[sprite_object_index >> 1] = v1;
-      }
-LABEL_9:
-      sprite_object_index -= 2;
-      if ((sprite_object_index & 0x8000u) != 0)
-        return;
+  if (debug_time_frozen_for_enemies | time_is_frozen_flag)
+    return;
+
+  sprite_object_index = 62;
+  do {
+    int v0;
+    v0 = sprite_object_index >> 1;
+    if (!sprite_instr_list_ptrs[v0] || (sprite_disable_flag[v0] & 1) != 0)
+      continue;
+    v1 = sprite_instr_timer[v0];
+    if (sign16(v1)) {
+BREAKLABEL:
+      CallSpriteObjectInstr(v1 | 0xB40000);
+      continue;
     }
-    R18_ = v1;
-    CallSpriteObjectInstr(v1 | 0xB40000);
-    goto LABEL_9;
-  }
+    sprite_instr_timer[v0] = v1 - 1;
+    if (v1 == 1) {
+      uint16 v3 = sprite_instr_list_ptrs[v0] + 4;
+      sprite_instr_list_ptrs[v0] = v3;
+      v1 = *(uint16 *)RomPtr_B4(v3);
+      if (sign16(v1))
+        goto BREAKLABEL;
+      sprite_instr_timer[sprite_object_index >> 1] = v1;
+    }
+  } while (!sign16(sprite_object_index -= 2));
 }
 
 void SpriteObject_Instr_RepeatLast(void) {  // 0xB4BCF0
@@ -80,9 +81,9 @@ void SpriteObject_Instr_Terminate(void) {  // 0xB4BD07
 }
 
 void SpriteObject_Instr_Goto(void) {  // 0xB4BD12
-  uint16 v2 = *((uint16 *)RomPtr_B4(sprite_instr_list_ptrs[sprite_object_index >> 1]) + 1);
+  uint16 v2 = GET_WORD(RomPtr_B4(sprite_instr_list_ptrs[sprite_object_index >> 1]) + 2);
   sprite_instr_list_ptrs[sprite_object_index >> 1] = v2;
-  sprite_instr_timer[sprite_object_index >> 1] = *(uint16 *)RomPtr_B4(v2);
+  sprite_instr_timer[sprite_object_index >> 1] = GET_WORD(RomPtr_B4(v2));
 }
 
 void DrawSpriteObjects(void) {  // 0xB4BD32
@@ -98,8 +99,8 @@ void DrawSpriteObjects(void) {  // 0xB4BD32
             if (sign16(v2 - 272)) {
               R3_.addr = sprite_palettes[v1] & 0xE00;
               R0_.addr = sprite_palettes[v1] & 0x1FF;
-              uint8 *v3 = RomPtr_B4(sprite_instr_list_ptrs[v1]);
-              DrawSpritemapWithBaseTile(0xB4, *((uint16 *)v3 + 1));
+              const uint8 *v3 = RomPtr_B4(sprite_instr_list_ptrs[v1]);
+              DrawSpritemapWithBaseTile(0xB4, GET_WORD(v3 + 2));
             }
           }
         }

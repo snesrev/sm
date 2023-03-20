@@ -4,58 +4,27 @@
 #include "variables.h"
 #include "funcs.h"
 #include "enemy_types.h"
-#define kDraygon_MorePalettes ((uint16*)RomPtr(0xa5a217))
-#define kDraygon_MorePalettes2 ((uint16*)RomPtr(0xa5a277))
-#define g_word_A5A297 ((uint16*)RomPtr(0xa5a297))
-#define g_word_A587DC ((uint16*)RomPtr(0xa587dc))
-#define g_word_A596AF ((uint16*)RomPtr(0xa596af))
-#define g_word_A596EF ((uint16*)RomPtr(0xa596ef))
-#define g_word_A5A19F ((uint16*)RomPtr(0xa5a19f))
-#define g_word_A5A1AF ((uint16*)RomPtr(0xa5a1af))
-#define g_word_A5A1C7 ((uint16*)RomPtr(0xa5a1c7))
-#define g_word_A5A1DF ((uint16*)RomPtr(0xa5a1df))
-#define g_byte_A5CE07 ((uint8*)RomPtr(0xa5ce07))
-#define g_word_A5E379 ((uint16*)RomPtr(0xa5e379))
-#define g_word_A5E3F9 ((uint16*)RomPtr(0xa5e3f9))
-#define g_word_A5E4F9 ((uint16*)RomPtr(0xa5e4f9))
-#define g_word_A5E5D9 ((uint16*)RomPtr(0xa5e5d9))
 
-#define kSporeSpawn_Palette ((uint16*)RomPtr(0xa5e359))
 
-uint16 EnemyInstr_Goto_A5(uint16 k, uint16 j) {  // 0xA580ED
-  return *(uint16 *)RomPtr_A5(j);
-}
+#define kDraygon_MorePalettes ((uint16*)RomFixedPtr(0xa5a217))
+#define kDraygon_MorePalettes2 ((uint16*)RomFixedPtr(0xa5a277))
+#define g_word_A5A297 ((uint16*)RomFixedPtr(0xa5a297))
+#define g_word_A587DC ((uint16*)RomFixedPtr(0xa587dc))
+#define g_word_A596AF ((uint16*)RomFixedPtr(0xa596af))
+#define g_word_A596EF ((uint16*)RomFixedPtr(0xa596ef))
+#define g_word_A5A19F ((uint16*)RomFixedPtr(0xa5a19f))
+#define g_word_A5A1AF ((uint16*)RomFixedPtr(0xa5a1af))
+#define g_word_A5A1C7 ((uint16*)RomFixedPtr(0xa5a1c7))
+#define g_word_A5A1DF ((uint16*)RomFixedPtr(0xa5a1df))
+#define g_byte_A5CE07 ((uint8*)RomFixedPtr(0xa5ce07))
+#define g_word_A5E379 ((uint16*)RomFixedPtr(0xa5e379))
+#define g_word_A5E3F9 ((uint16*)RomFixedPtr(0xa5e3f9))
+#define g_word_A5E4F9 ((uint16*)RomFixedPtr(0xa5e4f9))
+#define g_word_A5E5D9 ((uint16*)RomFixedPtr(0xa5e5d9))
+#define kSporeSpawn_Palette ((uint16*)RomFixedPtr(0xa5e359))
 
-uint16 EnemyInstr_DecTimerAndGoto2_A5(uint16 k, uint16 j) {  // 0xA58110
-  EnemyData *v2 = gEnemyData(k);
-  if (v2->timer-- == 1)
-    return j + 2;
-  else
-    return EnemyInstr_Goto_A5(k, j);
-}
 
-uint16 EnemyInstr_SetTimer_A5(uint16 k, uint16 j) {  // 0xA58123
-  uint16 v2 = *(uint16 *)RomPtr_A5(j);
-  gEnemyData(k)->timer = v2;
-  return j + 2;
-}
-uint16 EnemyInstr_Sleep_A5(uint16 k, uint16 j) {  // 0xA5812F
-  gEnemyData(k)->current_instruction = j - 2;
-  return 0;
-}
-uint16 EnemyInstr_StopScript_A5(uint16 k, uint16 j) {  // 0xA5807C
-  EnemyData *v2 = gEnemyData(k);
-  v2->properties |= kEnemyProps_Deleted;
-  return 0;
-}
 
-uint16 EnemyInstr_WaitNframes_A5(uint16 k, uint16 j) {  // 0xA5813A
-  uint16 v2 = *(uint16 *)RomPtr_A5(j);
-  EnemyData *v3 = gEnemyData(k);
-  v3->instruction_timer = v2;
-  v3->current_instruction = j + 2;
-  return 0;
-}
 
 void Enemy_GrappleReact_NoInteract_A5(void) {  // 0xA58000
   SwitchEnemyAiToMainAi();
@@ -1041,37 +1010,24 @@ void Draygon_Func_40(uint16 k) {  // 0xA594A9
   }
 }
 
-uint16 Draygon_Instr_1(uint16 k, uint16 j) {  // 0xA594DD
-  uint16 *v2 = (uint16 *)RomPtr_A5(j);
-  Get_Draygon(0)->base.current_instruction = *v2;
-  Get_Draygon(0x40u)->base.current_instruction = v2[1];
-  Get_Draygon(0x80)->base.current_instruction = v2[2];
-  Enemy_Draygon *E = Get_Draygon(0xC0u);
-  E->base.current_instruction = v2[3];
+const uint16 *Draygon_Instr_1(uint16 k, const uint16 *jp) {  // 0xA594DD
+  Get_Draygon(0)->base.current_instruction = jp[0];
+  Get_Draygon(0x40)->base.current_instruction = jp[1];
+  Get_Draygon(0x80)->base.current_instruction = jp[2];
+  Get_Draygon(0xC0)->base.current_instruction = jp[3];
   Get_Draygon(0)->base.instruction_timer = 1;
-  Get_Draygon(0x40u)->base.instruction_timer = 1;
+  Get_Draygon(0x40)->base.instruction_timer = 1;
   Get_Draygon(0x80)->base.instruction_timer = 1;
-  E->base.instruction_timer = 1;
-  return j + 8;
+  Get_Draygon(0xC0)->base.instruction_timer = 1;
+  return jp + 4;
 }
 
 void Draygon_Hurt(void) {  // 0xA5954D
-  int16 v2;
-  int16 v7;
-  int16 v9;
-
   uint16 v0 = addr_kDraygon_MorePalettes2;
   if ((Get_Draygon(cur_enemy_index)->base.flash_timer & 2) != 0)
     v0 = addr_word_A5A297;
-  uint16 v1 = addr_kDraygon_BigSprmap_C08F__plus__17;
-  remaining_enemy_spritemap_entries = 16;
-  do {
-    v2 = *(uint16 *)RomPtr_A5(v0);
-    *(uint16 *)RomPtr_7E(v1) = v2;
-    v1 += 2;
-    v0 += 2;
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+  memcpy(g_ram + addr_kDraygon_BigSprmap_C08F__plus__17, RomPtr_A5(v0), 32);
+
   if ((Get_Draygon(cur_enemy_index)->base.flash_timer & 2) == 0) {
     uint16 v3 = 4 * Get_Draygon(0)->draygon_var_0E;
     for (int i = 0; i != 8; i += 2) {
@@ -1082,19 +1038,12 @@ void Draygon_Hurt(void) {  // 0xA5954D
   uint16 v5 = addr_kDraygon_Palette;
   if ((Get_Draygon(cur_enemy_index)->base.flash_timer & 2) != 0)
     v5 = addr_word_A5A297;
-  uint16 v6 = addr_kDraygon_BigSprmap_C11B__plus__197;
-  remaining_enemy_spritemap_entries = 16;
-  do {
-    v7 = *(uint16 *)RomPtr_A5(v5);
-    *(uint16 *)RomPtr_7E(v6) = v7;
-    v6 += 2;
-    v5 += 2;
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+  memcpy(g_ram + addr_kDraygon_BigSprmap_C11B__plus__197, RomPtr_A5(v5), 32);
+
   if ((samus_grapple_flags & 1) != 0) {
     Enemy_Draygon *E = Get_Draygon(0);
     if ((E->base.frame_counter & 7) == 0) {
-      v9 = E->base.health - 256;
+      int16 v9 = E->base.health - 256;
       if (v9 < 0)
         v9 = 0;
       E->base.health = v9;
@@ -1173,42 +1122,41 @@ void Draygon_Func_41(void) {  // 0xA59701
   }
 }
 
-uint16 Draygon_Instr_13(uint16 k, uint16 j) {  // 0xA59736
-  uint16 v2 = *(uint16 *)RomPtr_A5(j);
-  Get_Draygon(k)->draygon_var_A = v2;
-  return j + 2;
+const uint16 *Draygon_Instr_13(uint16 k, const uint16 *jp) {  // 0xA59736
+  Get_Draygon(k)->draygon_var_A = jp[0];
+  return jp + 1;
 }
 
-uint16 Draygon_Instr_8(uint16 k, uint16 j) {  // 0xA5973F
+const uint16 *Draygon_Instr_8(uint16 k, const uint16 *jp) {  // 0xA5973F
   Draygon_Func_47();
   R22_ = 21;
   R24_ = 0;
   CreateSpriteAtPos();
-  return j;
+  return jp;
 }
 
-uint16 Draygon_Instr_7(uint16 k, uint16 j) {  // 0xA59752
+const uint16 *Draygon_Instr_7(uint16 k, const uint16 *jp) {  // 0xA59752
   Draygon_Func_47();
   R22_ = 3;
   R24_ = 0;
   CreateSpriteAtPos();
-  return j;
+  return jp;
 }
 
-uint16 Draygon_Instr_6(uint16 k, uint16 j) {  // 0xA59765
+const uint16 *Draygon_Instr_6(uint16 k, const uint16 *jp) {  // 0xA59765
   Draygon_Func_47();
   R22_ = 29;
   R24_ = 0;
   CreateSpriteAtPos();
-  return j;
+  return jp;
 }
 
-uint16 Draygon_Instr_9(uint16 k, uint16 j) {  // 0xA59778
+const uint16 *Draygon_Instr_9(uint16 k, const uint16 *jp) {  // 0xA59778
   Draygon_Func_47();
   R22_ = 24;
   R24_ = 0;
   CreateSpriteAtPos();
-  return j;
+  return jp;
 }
 
 void Draygon_Func_47(void) {  // 0xA5978B
@@ -1220,12 +1168,12 @@ void Draygon_Func_47(void) {  // 0xA5978B
   R20_ += E->base.y_pos;
 }
 
-uint16 Draygon_Instr_2(uint16 k, uint16 j) {  // 0xA59895
+const uint16 *Draygon_Instr_2(uint16 k, const uint16 *jp) {  // 0xA59895
   room_loading_irq_handler = 12;
-  return j;
+  return jp;
 }
 
-uint16 Draygon_Instr_11(uint16 k, uint16 j) {  // 0xA598D3
+const uint16 *Draygon_Instr_11(uint16 k, const uint16 *jp) {  // 0xA598D3
   Enemy_Draygon *E2 = Get_Draygon(0x80);
   E2->base.instruction_timer = 1;
   E2->base.current_instruction = addr_kDraygon_Ilist_97B9;
@@ -1233,20 +1181,20 @@ uint16 Draygon_Instr_11(uint16 k, uint16 j) {  // 0xA598D3
   Enemy_Draygon *E3 = Get_Draygon(0xC0u);
   E3->base.instruction_timer = 1;
   E3->base.current_instruction = addr_kDraygon_Ilist_97B9;
-  return j;
+  return jp;
 }
 
-uint16 Draygon_Instr_5(uint16 k, uint16 j) {  // 0xA598EF
+const uint16 *Draygon_Instr_5(uint16 k, const uint16 *jp) {  // 0xA598EF
   Enemy_Draygon *E = Get_Draygon(0);
   E->base.properties |= kEnemyProps_Tangible;
-  return j;
+  return jp;
 }
 
-uint16 Draygon_Instr_15(uint16 k, uint16 j) {  // 0xA59B9A
+const uint16 *Draygon_Instr_15(uint16 k, const uint16 *jp) {  // 0xA59B9A
   Enemy_Draygon *E = Get_Draygon(0);
   E->draygon_var_0F = 24;
-  uint8 *v3 = RomPtr_A0(E->base.enemy_ptr);
-  uint16 v4 = SuitDamageDivision(*((uint16 *)v3 + 3));
+  const uint8 *v3 = RomPtr_A0(E->base.enemy_ptr);
+  uint16 v4 = SuitDamageDivision(GET_WORD(v3 + 6));
   Samus_DealDamage(v4);
   earthquake_timer = 32;
   earthquake_type = 7;
@@ -1255,56 +1203,52 @@ uint16 Draygon_Instr_15(uint16 k, uint16 j) {  // 0xA59B9A
   R22_ = 21;
   R24_ = 0;
   CreateSpriteAtPos();
-  return j;
+  return jp;
 }
 
-uint16 Draygon_Instr_17(uint16 k, uint16 j) {  // 0xA59C8A
+const uint16 *Draygon_Instr_17(uint16 k, const uint16 *jp) {  // 0xA59C8A
   room_loading_irq_handler = 12;
-  return j;
+  return jp;
 }
 
-uint16 Draygon_Instr_14(uint16 k, uint16 j) {  // 0xA59E0A
-  uint8 *v2 = RomPtr_A5(j);
+const uint16 *Draygon_Instr_14(uint16 k, const uint16 *jp) {  // 0xA59E0A
   Enemy_Draygon *E = Get_Draygon(0);
-  E->draygon_var_5E = *(uint16 *)v2;
-  E->draygon_var_5F = *((uint16 *)v2 + 1);
-  return j + 4;
+  E->draygon_var_5E = jp[0];
+  E->draygon_var_5F = jp[1];
+  return jp + 2;
 }
 
-uint16 Draygon_Instr_16(uint16 k, uint16 j) {  // 0xA59F57
-  uint16 v2 = *(uint16 *)RomPtr_A5(j);
-  Get_Draygon(0)->draygon_var_A = v2;
-  return j + 2;
+const uint16 *Draygon_Instr_16(uint16 k, const uint16 *jp) {  // 0xA59F57
+  Get_Draygon(0)->draygon_var_A = jp[0];
+  return jp + 1;
 }
 
-uint16 Draygon_Instr_10(uint16 k, uint16 j) {  // 0xA59F60
-  uint16 *v2 = (uint16 *)RomPtr_A5(j);
-  QueueSfx2_Max6(*v2);
-  return j + 2;
+const uint16 *Draygon_Instr_10(uint16 k, const uint16 *jp) {  // 0xA59F60
+  QueueSfx2_Max6(jp[0]);
+  return jp + 1;
 }
 
-uint16 Draygon_Instr_4(uint16 k, uint16 j) {  // 0xA59F6E
-  uint16 *v2 = (uint16 *)RomPtr_A5(j);
-  QueueSfx3_Max6(*v2);
-  return j + 2;
+const uint16 *Draygon_Instr_4(uint16 k, const uint16 *jp) {  // 0xA59F6E
+  QueueSfx3_Max6(jp[0]);
+  return jp + 1;
 }
 
-uint16 Draygon_Instr_12(uint16 k, uint16 j) {  // 0xA59F7C
+const uint16 *Draygon_Instr_12(uint16 k, const uint16 *jp) {  // 0xA59F7C
   Enemy_Draygon *E = Get_Draygon(0);
   R18_ = E->base.x_pos - 28;
   R20_ = E->base.y_pos - 16;
   enemy_projectile_unk1995 = (NextRandom() & 0x3F) + 128;
   SpawnEnemyProjectileWithGfx(2u, cur_enemy_index, addr_stru_868E50);
-  return j;
+  return jp;
 }
 
-uint16 Draygon_Instr_18(uint16 k, uint16 j) {  // 0xA59FAE
+const uint16 *Draygon_Instr_18(uint16 k, const uint16 *jp) {  // 0xA59FAE
   Enemy_Draygon *E = Get_Draygon(0);
   R18_ = E->base.x_pos + 24;
   R20_ = E->base.y_pos - 16;
   enemy_projectile_unk1995 = (NextRandom() & 0x3F) + 192;
   SpawnEnemyProjectileWithGfx(2u, cur_enemy_index, addr_stru_868E50);
-  return j;
+  return jp;
 }
 
 void Draygon_Func_42(void) {  // 0xA59FE0
@@ -1422,10 +1366,9 @@ void DraygonsEye_Init(void) {  // 0xA5C46B
   E->draygon_var_A = FUNC16(nullsub_169_A5);
 }
 
-uint16 Draygon_Instr_3(uint16 k, uint16 j) {  // 0xA5C47B
-  uint16 v2 = *(uint16 *)RomPtr_A5(j);
-  Get_Draygon(0x40u)->draygon_var_A = v2;
-  return j + 2;
+const uint16 *Draygon_Instr_3(uint16 k, const uint16 *jp) {  // 0xA5C47B
+  Get_Draygon(0x40u)->draygon_var_A = jp[0];
+  return jp + 1;
 }
 
 void DraygonsEye_Main(void) {  // 0xA5C486
@@ -1515,32 +1458,31 @@ void DraygonsArms_Init(void) {  // 0xA5C5AD
   v0->layer = 2;
 }
 
-uint16 Draygon_Instr_25(uint16 k, uint16 j) {  // 0xA5E75F
+const uint16 *Draygon_Instr_25(uint16 k, const uint16 *jp) {  // 0xA5E75F
   Enemy_Draygon *E = Get_Draygon(0);
   if (sign16(E->draygon_var_0B - 40))
     E->draygon_var_0B += 8;
-  return j;
+  return jp;
 }
 
-uint16 Draygon_Instr_24(uint16 k, uint16 j) {  // 0xA5E771
+const uint16 *Draygon_Instr_24(uint16 k, const uint16 *jp) {  // 0xA5E771
   Get_Draygon(0)->draygon_var_2F = 0;
-  return j;
+  return jp;
 }
 
 void Draygon_Func_50(uint16 j) {  // 0xA5E811
-  uint8 *v1 = RomPtr_A5(j);
+  const uint8 *v1 = RomPtr_A5(j);
   Enemy_Draygon *E = Get_Draygon(0);
-  E->draygon_var_0B = *(uint16 *)v1;
-  E->draygon_var_0C = *((uint16 *)v1 + 1);
-  E->draygon_var_0A = *((uint16 *)v1 + 2);
+  E->draygon_var_0B = GET_WORD(v1);
+  E->draygon_var_0C = GET_WORD(v1 + 2);
+  E->draygon_var_0A = GET_WORD(v1 + 4);
 }
 
-uint16 Draygon_Instr_21(uint16 k, uint16 j) {  // 0xA5E82D
-  uint8 *v2 = RomPtr_A5(j);
+const uint16 *Draygon_Instr_21(uint16 k, const uint16 *jp) {  // 0xA5E82D
   Enemy_Draygon *E = Get_Draygon(0);
-  E->draygon_var_0B = *(uint16 *)v2;
-  E->draygon_var_0C = *((uint16 *)v2 + 1);
-  return j + 4;
+  E->draygon_var_0B = jp[0];
+  E->draygon_var_0C = jp[1];
+  return jp + 2;
 }
 
 void Draygon_Func_51(uint16 j) {  // 0xA5E840
@@ -1559,95 +1501,57 @@ uint16 Draygon_Instr_53(uint16 k, uint16 j) {  // 0xA5E854
   return j + 2;
 }
 
-uint16 Draygon_Instr_54(uint16 k, uint16 j) {  // 0xA5E863
-  Enemy_Draygon *E = Get_Draygon(0);
-  E->draygon_var_0C += *(uint16 *)RomPtr_A5(j);
-  return j + 2;
+const uint16 *Draygon_Instr_22(uint16 k, const uint16 *jp) {  // 0xA5E872
+  kraid_unk9000 = jp[0];
+  return jp + 1;
 }
 
-uint16 Draygon_Instr_22(uint16 k, uint16 j) {  // 0xA5E872
-  kraid_unk9000 = *(uint16 *)RomPtr_A5(j);
-  return j + 2;
-}
-
-uint16 Draygon_Instr_27(uint16 k, uint16 j) {  // 0xA5E87C
+const uint16 *Draygon_Instr_27(uint16 k, const uint16 *jp) {  // 0xA5E87C
   Enemy_Draygon *E = Get_Draygon(0);
   E->base.x_pos = 128;
   E->base.y_pos = 624;
   E->base.properties = E->base.properties & 0x5BFF | 0xA000;
-  return j;
+  return jp;
 }
 
-uint16 Draygon_Instr_23(uint16 k, uint16 j) {  // 0xA5E895
-  uint16 *v2 = (uint16 *)RomPtr_A5(j);
-  QueueSfx2_Max6(*v2);
-  return j + 2;
+const uint16 *Draygon_Instr_23(uint16 k, const uint16 *jp) {  // 0xA5E895
+  QueueSfx2_Max6(jp[0]);
+  return jp + 1;
 }
 
-uint16 Draygon_Instr_55(uint16 k, uint16 j) {  // 0xA5E8A3
-  uint16 *v2 = (uint16 *)RomPtr_A5(j);
-  QueueSfx3_Max6(*v2);
-  return j + 2;
-}
-
-uint16 Draygon_Instr_30(uint16 k, uint16 j) {  // 0xA5E8B1
+const uint16 *Draygon_Instr_30(uint16 k, const uint16 *jp) {  // 0xA5E8B1
   Enemy_ItemDrop_SporeSpawn(k);
-  return j;
+  return jp;
 }
 
-uint16 Draygon_Instr_20(uint16 k, uint16 j) {  // 0xA5E8BA
-  uint16 v2 = *(uint16 *)RomPtr_A5(j);
-  Get_Draygon(cur_enemy_index)->draygon_var_A = v2;
-  return j + 2;
+const uint16 *Draygon_Instr_20(uint16 k, const uint16 *jp) {  // 0xA5E8BA
+  Get_Draygon(cur_enemy_index)->draygon_var_A = jp[0];
+  return jp + 1;
 }
 
-uint16 Draygon_Instr_29(uint16 k, uint16 j) {  // 0xA5E8CA
-  uint16 m;
-  uint16 n;
-
-  R18_ = j;
-  uint16 v2 = *(uint16 *)RomPtr_A5(j);
-  for (int i = 0; i != 32; i += 2) {
-    palette_buffer[(i >> 1) + 144] = g_word_A5E3F9[v2 >> 1];
-    v2 += 2;
-  }
-  uint16 v4 = *(uint16 *)RomPtr_A5(R18_);
-  for (m = 0; m != 32; m += 2) {
-    palette_buffer[(m >> 1) + 64] = g_word_A5E4F9[v4 >> 1];
-    v4 += 2;
-  }
-  uint16 v6 = *(uint16 *)RomPtr_A5(R18_);
-  for (n = 0; n != 32; n += 2) {
-    palette_buffer[(n >> 1) + 112] = g_word_A5E5D9[v6 >> 1];
-    v6 += 2;
-  }
-  return j + 2;
+const uint16 *Draygon_Instr_29(uint16 k, const uint16 *jp) {  // 0xA5E8CA
+  uint16 v2 = jp[0];
+  for (int i = 0; i != 32; i += 2)
+    palette_buffer[(i >> 1) + 144] = g_word_A5E3F9[(v2 + i) >> 1];
+  for (int i = 0; i != 32; i += 2)
+    palette_buffer[(i >> 1) + 64] = g_word_A5E4F9[(v2 + i) >> 1];
+  for (int i = 0; i != 32; i += 2)
+    palette_buffer[(i >> 1) + 112] = g_word_A5E5D9[(v2 + i) >> 1];
+  return jp + 1;
 }
 
-uint16 Draygon_Instr_19(uint16 k, uint16 j) {  // 0xA5E91C
-  uint16 m;
-  uint16 n;
-
-  R18_ = j;
-  uint16 v2 = *(uint16 *)RomPtr_A5(j);
-  for (int i = 0; i != 32; i += 2) {
-    target_palettes[(i >> 1) + 144] = g_word_A5E3F9[v2 >> 1];
-    v2 += 2;
-  }
-  uint16 v4 = *(uint16 *)RomPtr_A5(R18_);
-  for (m = 0; m != 32; m += 2) {
-    target_palettes[(m >> 1) + 64] = g_word_A5E4F9[v4 >> 1];
-    v4 += 2;
-  }
-  uint16 v6 = *(uint16 *)RomPtr_A5(R18_);
-  for (n = 0; n != 32; n += 2) {
-    target_palettes[(n >> 1) + 112] = g_word_A5E5D9[v6 >> 1];
-    v6 += 2;
-  }
-  return j + 2;
+const uint16 *Draygon_Instr_19(uint16 k, const uint16 *jp) {  // 0xA5E91C
+  uint16 v2 = jp[0];
+  for (int i = 0; i != 32; i += 2)
+    target_palettes[(i >> 1) + 144] = g_word_A5E3F9[(v2 + i) >> 1];
+  for (int i = 0; i != 32; i += 2)
+    target_palettes[(i >> 1) + 64] = g_word_A5E4F9[(v2 + i) >> 1];
+  for (int i = 0; i != 32; i += 2)
+    target_palettes[(i >> 1) + 112] = g_word_A5E5D9[(v2 + i) >> 1];
+  return jp + 1;
 }
 
-uint16 Draygon_Instr_28(uint16 k, uint16 j) {  // 0xA5E96E
+const uint16 *Draygon_Instr_28(uint16 k, const uint16 *jp) {  // 0xA5E96E
   NextRandom();
   R18_ = (random_number & 0x7F) - 64;
   Enemy_Draygon *E = Get_Draygon(0);
@@ -1656,10 +1560,10 @@ uint16 Draygon_Instr_28(uint16 k, uint16 j) {  // 0xA5E96E
   R20_ += E->base.y_pos;
   SpawnEnemyProjectileWithRoomGfx(0xE509, 0x15);
   QueueSfx2_Max6(0x29u);
-  return j;
+  return jp;
 }
 
-uint16 Draygon_Instr_26(uint16 k, uint16 j) {  // 0xA5E9B1
+const uint16 *Draygon_Instr_26(uint16 k, const uint16 *jp) {  // 0xA5E9B1
   NextRandom();
   R18_ = (random_number & 0x7F) - 64;
   Enemy_Draygon *E = Get_Draygon(0);
@@ -1670,7 +1574,7 @@ uint16 Draygon_Instr_26(uint16 k, uint16 j) {  // 0xA5E9B1
   R24_ = 0;
   CreateSpriteAtPos();
   QueueSfx2_Max6(0x25u);
-  return j;
+  return jp;
 }
 
 void sub_A5E9F5(void) {  // 0xA5E9F5
