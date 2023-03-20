@@ -2224,8 +2224,6 @@ void Phantoon_Func_2(uint16 k) {  // 0xA7CF0C
 }
 
 uint8 Phantoon_Func_3(void) {  // 0xA7CF27
-  char v2; // t1
-
   Enemy_Phantoon *E = Get_Phantoon(0xC0u);
   if (E->phant_var_E) {
     uint16 phant_var_D = E->phant_var_D;
@@ -2236,13 +2234,10 @@ uint8 Phantoon_Func_3(void) {  // 0xA7CF27
       return 1;
     }
   } else {
-    R22_ = (uint8)((uint16)(R20_ & 0xFF00) >> 8);
+    R22_ = (R20_ & 0xFF00) >> 8;
     uint16 v1 = R18_ + E->phant_var_D;
     E->phant_var_D = v1;
-    v1 &= 0xFF00u;
-    v2 = v1;
-    LOBYTE(v1) = HIBYTE(v1);
-    HIBYTE(v1) = v2;
+    v1 = (v1 & 0xFF00) >> 8;
     if (!sign16(v1 - R22_))
       E->phant_var_D = R20_;
   }
@@ -3244,26 +3239,13 @@ uint8 Phantoon_Func_9(void) {  // 0xA7DC5A
 }
 
 uint16 Phantoon_Func_10_CalculateNthTransitionColorFromXtoY(uint16 a, uint16 k, uint16 j) {  // 0xA7DC95
-  int16 v3;
-  char v4; // t0
-  int16 v8;
-
-  uint16 v7 = Phantoon_CalculateNthTransitionColorComponentFromXtoY(a, k & 0x1F, j & 0x1F);
-  v8 = v7 | (32 * Phantoon_CalculateNthTransitionColorComponentFromXtoY(a, (k >> 5) & 0x1F, (j >> 5) & 0x1F));
-  v3 = 4
-    * Phantoon_CalculateNthTransitionColorComponentFromXtoY(
-      a,
-      ((uint16)(k >> 2) >> 8) & 0x1F,
-      ((uint16)(j >> 2) >> 8) & 0x1F);
-  v4 = v3;
-  LOBYTE(v3) = HIBYTE(v3);
-  HIBYTE(v3) = v4;
-  return v8 | v3;
+  return Phantoon_CalculateNthTransitionColorComponentFromXtoY(a, k & 0x1F, j & 0x1F) + 
+         (Phantoon_CalculateNthTransitionColorComponentFromXtoY(a, (k >> 5) & 0x1F, (j >> 5) & 0x1F) << 5) +
+         (Phantoon_CalculateNthTransitionColorComponentFromXtoY(a, (k >> 10) & 0x1F, (j >> 10) & 0x1F) << 10);
 }
 
 uint16 Phantoon_CalculateNthTransitionColorComponentFromXtoY(uint16 a, uint16 k, uint16 j) {  // 0xA7DCF1
   int16 v4;
-  int16 v9;
 
   if (!a)
     return k;
@@ -3276,9 +3258,7 @@ uint16 Phantoon_CalculateNthTransitionColorComponentFromXtoY(uint16 a, uint16 k,
   uint8 v6 = abs16(R18_);
   uint16 RegWord = SnesDivide(v6 << 8, LOBYTE(E->phant_var_D) - R20_ + 1);
   R18_ = sign16(R18_) ? -RegWord : RegWord;
-  LOBYTE(v9) = HIBYTE(k);
-  HIBYTE(v9) = k;
-  return (uint16)(R18_ + v9) >> 8;
+  return (uint16)(R18_ + swap16(k)) >> 8;
 }
 
 void Phantoon_Hurt(void) {  // 0xA7DD3F
@@ -3833,12 +3813,9 @@ void Dachora_Main(void) {  // 0xA7F52E
   CallEnemyPreInstr(E->dachor_var_F | 0xA70000);
 }
 void Dachora_Func_1(uint16 j, uint16 k) {  // 0xA7F535
-  uint16 v3;
-
   *(VoidP *)((char *)&R0_.addr + 1) = 32256;
   Enemy_Dachora *E = Get_Dachora(k);
-  LOBYTE(v3) = HIBYTE(E->base.palette_index);
-  HIBYTE(v3) = E->base.palette_index;
+  uint16 v3 = swap16(E->base.palette_index);
   R0_.addr = g_off_A7F55F[v3 >> 1];
   uint16 v5 = 0;
   do {

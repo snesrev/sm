@@ -428,21 +428,14 @@ void HandleMode7TransformationNoRotation(void) {  // 0x8B8518
 }
 
 void HandleMode7TransformationMatrix(void) {  // 0x8B8532
-  uint16 v0;
-  uint16 v1;
-
   R38 = kSinCosTable8bit_Sext[((uint8)(cinematic_var5 + 64)) + 64];
   R40 = cinematic_var6;
   Smult16x16Shr16();
-  HIBYTE(v0) = R42;
-  LOBYTE(v0) = HIBYTE(R44);
-  reg_M7A = v0;
-  reg_M7D = v0;
+  reg_M7D = reg_M7A = PAIR16(R42, HIBYTE(R44));
   R38 = kSinCosTable8bit_Sext[((uint8)cinematic_var5) + 64];
   R40 = cinematic_var6;
   Smult16x16Shr16();
-  HIBYTE(v1) = R42;
-  LOBYTE(v1) = HIBYTE(R44);
+  uint16 v1 = PAIR16(R42, HIBYTE(R44));
   reg_M7B = v1;
   reg_M7C = -v1;
   reg_BG1HOFS = cinematic_var8;
@@ -685,118 +678,77 @@ void Mult0x80Add(void) {  // 0x8B8A2C
 }
 
 void Samus_CalcPos_Mode7(void) {  // 0x8B8A52
-  uint16 v0;
-  int16 v1;
-  uint16 v2;
-  int16 v3;
-
   R34 = samus_x_pos - reg_M7X;
   R36 = reg_M7Y - samus_y_pos;
   R38 = samus_x_pos - reg_M7X;
   R40 = reg_M7A;
   Smult16x16Shr16();
-  HIBYTE(v0) = R42;
-  LOBYTE(v0) = HIBYTE(R44);
-  R26_ = v0;
+  R26_ = PAIR16(R42, HIBYTE(R44));
   R38 = reg_M7B;
   R40 = R36;
   Smult16x16Shr16();
-  HIBYTE(v1) = R42;
-  LOBYTE(v1) = HIBYTE(R44);
-  R26_ += v1;
+  R26_ += PAIR16(R42, HIBYTE(R44));
   samus_x_pos = R26_ + reg_M7X;
   R38 = reg_M7C;
   R40 = R34;
   Smult16x16Shr16();
-  HIBYTE(v2) = R42;
-  LOBYTE(v2) = HIBYTE(R44);
-  R26_ = v2;
+  R26_ = PAIR16(R42, HIBYTE(R44));
   R38 = reg_M7A;
   R40 = R36;
   Smult16x16Shr16();
-  HIBYTE(v3) = R42;
-  LOBYTE(v3) = HIBYTE(R44);
-  R26_ += v3;
+  R26_ += PAIR16(R42, HIBYTE(R44));
   samus_y_pos = reg_M7Y - R26_;
 }
 
 void CalcExplosion_Mode7(uint16 k) {  // 0x8B8AD9
-  uint16 v2;
-  int16 v3;
-  uint16 v4;
-  int16 v5;
-
   int v1 = k >> 1;
   R34 = projectile_x_pos[v1] - reg_M7X;
   R36 = reg_M7Y - projectile_y_pos[v1];
   R38 = R34;
   R40 = reg_M7A;
   Smult16x16Shr16();
-  HIBYTE(v2) = R42;
-  LOBYTE(v2) = HIBYTE(R44);
-  R26_ = v2;
+  R26_ = PAIR16(R42, HIBYTE(R44));
   R38 = reg_M7B;
   R40 = R36;
   Smult16x16Shr16();
-  HIBYTE(v3) = R42;
-  LOBYTE(v3) = HIBYTE(R44);
-  R26_ += v3;
+  R26_ += PAIR16(R42, HIBYTE(R44));
   R20_ = R26_ + reg_M7X - layer1_x_pos;
   R38 = reg_M7C;
   R40 = R34;
   Smult16x16Shr16();
-  HIBYTE(v4) = R42;
-  LOBYTE(v4) = HIBYTE(R44);
-  R26_ = v4;
+  R26_ = PAIR16(R42, HIBYTE(R44));
   R38 = reg_M7A;
   R40 = R36;
   Smult16x16Shr16();
-  HIBYTE(v5) = R42;
-  LOBYTE(v5) = HIBYTE(R44);
-  R26_ += v5;
+  R26_ += PAIR16(R42, HIBYTE(R44));
   R18_ = reg_M7Y - R26_ - layer1_y_pos;
 }
 
 void CalcCeresSteamPos_Mode7(void) {  // 0x8B8B66
-  uint16 v0;
-  int16 v1;
-  uint16 v2;
-  int16 v3;
-
   R34 = R18_ - reg_M7X;
   R36 = reg_M7Y - R20_;
   R38 = R18_ - reg_M7X;
   R40 = reg_M7A;
   Smult16x16Shr16();
-  HIBYTE(v0) = R42;
-  LOBYTE(v0) = HIBYTE(R44);
-  R26_ = v0;
+  R26_ = PAIR16(R42, HIBYTE(R44));
   R38 = reg_M7B;
   R40 = R36;
   Smult16x16Shr16();
-  HIBYTE(v1) = R42;
-  LOBYTE(v1) = HIBYTE(R44);
-  R26_ += v1;
+  R26_ += PAIR16(R42, HIBYTE(R44));
   R18_ = R26_ + reg_M7X;
   R38 = reg_M7C;
   R40 = R34;
   Smult16x16Shr16();
-  HIBYTE(v2) = R42;
-  LOBYTE(v2) = HIBYTE(R44);
-  R26_ = v2;
+  R26_ = PAIR16(R42, HIBYTE(R44));
   R38 = reg_M7A;
   R40 = R36;
   Smult16x16Shr16();
-  HIBYTE(v3) = R42;
-  LOBYTE(v3) = HIBYTE(R44);
-  R26_ += v3;
+  R26_ += PAIR16(R42, HIBYTE(R44));
   R20_ = reg_M7Y - R26_;
 }
 
 void CopyPalettesToFadingPalettes(void) {  // 0x8B8BE9
-  int16 v0;
-
-  v0 = 256;
+  int v0 = 256;
   uint16 v1 = 0;
   do {
     tilemap_stuff[(v1 >> 1) + 256] = palette_buffer[v1 >> 1];
@@ -806,35 +758,22 @@ void CopyPalettesToFadingPalettes(void) {  // 0x8B8BE9
 }
 
 void DecomposePaletteDataForFading(void) {  // 0x8B8C09
-  int16 v1;
-  uint16 v3;
-  char v5; // t2
-  char v7; // tt
-
   uint16 v0 = 0;
-  v1 = 256;
+  int v1 = 256;
   do {
     int v2 = v0 >> 1;
     R18_ = tilemap_stuff[v2 + 256];
-    LOBYTE(v3) = 0;
-    HIBYTE(v3) = R18_ & 0x1F;
-    tilemap_stuff[v2 + 512] = v3;
-    tilemap_stuff[v2 + 1280] = 8 * HIBYTE(v3);
-    uint16 v4 = 8 * (R18_ & 0x3E0);
-    tilemap_stuff[v2 + 768] = v4;
-    v5 = v4;
-    LOBYTE(v4) = HIBYTE(v4);
-    HIBYTE(v4) = v5;
-    tilemap_stuff[v2 + 1536] = 8 * v4;
-    uint16 v6 = (uint16)(R18_ & 0x7C00) >> 2;
-    tilemap_stuff[v2 + 1024] = v6;
-    v7 = v6;
-    LOBYTE(v6) = HIBYTE(v6);
-    HIBYTE(v6) = v7;
-    tilemap_stuff[v2 + 1792] = 8 * v6;
+    int v3 = (R18_ & 0x1F);
+    tilemap_stuff[v2 + 512] = v3 << 8;
+    tilemap_stuff[v2 + 1280] = v3 << 3;
+    int v4 = (R18_ & 0x3E0) >> 5;
+    tilemap_stuff[v2 + 768] = v4 << 8;
+    tilemap_stuff[v2 + 1536] = v4 << 3;
+    int v6 = (R18_ & 0x7C00) >> 10;
+    tilemap_stuff[v2 + 1024] = v6 << 8;
+    tilemap_stuff[v2 + 1792] = v6 << 3;
     v0 += 2;
-    --v1;
-  } while (v1);
+  } while (--v1);
 }
 
 void ClearYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C5E
@@ -845,8 +784,7 @@ void ClearYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C5E
     tilemap_stuff[v2 + 768] = 0;
     tilemap_stuff[v2 + 1024] = 0;
     k += 2;
-    --j;
-  } while (j);
+  } while (--j);
 }
 
 void FadeOutYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C83
@@ -856,8 +794,7 @@ void FadeOutYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C83
     tilemap_stuff[v2 + 768] -= tilemap_stuff[v2 + 1536];
     tilemap_stuff[v2 + 1024] -= tilemap_stuff[v2 + 1792];
     k += 2;
-    --j;
-  } while (j);
+  } while (--j);
 }
 
 void FadeInYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8CB2
@@ -867,25 +804,21 @@ void FadeInYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8CB2
     tilemap_stuff[v2 + 768] = (tilemap_stuff[v2 + 1536] + tilemap_stuff[v2 + 768]) & 0x1FFF;
     tilemap_stuff[v2 + 1024] = (tilemap_stuff[v2 + 1792] + tilemap_stuff[v2 + 1024]) & 0x1FFF;
     k += 2;
-    --j;
-  } while (j);
+  } while (--j);
 }
 
 void ComposeFadingPalettes(void) {  // 0x8B8CEA
-  int16 v1;
-
   uint16 v0 = 0;
-  v1 = 256;
+  int v1 = 256;
   do {
     int v2 = v0 >> 1;
-    R18_ = HIBYTE(tilemap_stuff[v2 + 512]) & 0x1F;
-    R18_ |= (tilemap_stuff[v2 + 768] >> 3) & 0x3E0;
-    uint16 v3 = R18_ | (4 * tilemap_stuff[v2 + 1024]) & 0x7C00;
+    int R18 = HIBYTE(tilemap_stuff[v2 + 512]) & 0x1F;
+    R18 |= (tilemap_stuff[v2 + 768] >> 3) & 0x3E0;
+    uint16 v3 = R18 | (tilemap_stuff[v2 + 1024] << 2) & 0x7C00;
     tilemap_stuff[v2] = v3;
     palette_buffer[v2] = v3;
     v0 += 2;
-    --v1;
-  } while (v1);
+  } while (--v1);
 }
 
 void CinematicFunction_Intro_Func20(uint16 j) {  // 0x8B8D23
@@ -3995,8 +3928,6 @@ void CinematicFunction_Intro_Func50(uint16 k) {  // 0x8BBA5E
 }
 
 void CinematicFunction_Intro_Func51(uint16 k) {  // 0x8BBA73
-  int16 v2;
-
   int v1 = k >> 1;
   if (cinematicbg_arr8[v1] == 145) {
     SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCEF1, 0);
@@ -4011,13 +3942,8 @@ void CinematicFunction_Intro_Func51(uint16 k) {  // 0x8BBA73
   } else if (sign16(cinematic_var17 - 544)) {
     cinematic_var17 += 32;
   }
-  LOBYTE(v2) = HIBYTE(cinematic_var17);
-  HIBYTE(v2) = cinematic_var17;
-  R20_ = v2 & 0xFF00;
-  uint16 v3 = HIBYTE(cinematic_var17);
-  if ((cinematic_var17 & 0x8000u) != 0)
-    v3 = HIBYTE(cinematic_var17) | 0xFF00;
-  R18_ = v3;
+  R20_ = cinematic_var17 << 8;
+  R18_ = (int8)(cinematic_var17 >> 8);
   uint16 v4 = cinematicspr_arr7[v1];
   bool v5 = __CFADD__uint16(R20_, v4);
   cinematicspr_arr7[v1] = R20_ + v4;
@@ -4040,10 +3966,6 @@ void CinematicFunction_Intro_Func52(uint16 k) {  // 0x8BBB0D
 }
 
 void CinematicFunction_Intro_Func53(uint16 k) {  // 0x8BBB24
-  int16 v4;
-  int16 v5;
-  int16 v8;
-
   if (cinematic_var13) {
     int v2 = k >> 1;
     if (sign16(cinematicspr_goto_timer[v2] - 128)) {
@@ -4058,14 +3980,9 @@ void CinematicFunction_Intro_Func53(uint16 k) {  // 0x8BBB24
     } else if (sign16(cinematic_var14 - 640)) {
       cinematic_var14 += 32;
     }
-    LOBYTE(v4) = HIBYTE(cinematic_var14);
-    HIBYTE(v4) = cinematic_var14;
-    R20_ = v4 & 0xFF00;
-    v5 = HIBYTE(cinematic_var14);
-    if ((cinematic_var14 & 0x8000u) != 0)
-      v5 = HIBYTE(cinematic_var14) | 0xFF00;
-    R18_ = v5;
-    if (v5 >= 0)
+    R20_ = cinematic_var14 << 8;
+    R18_ = (int8)GET_HIBYTE(cinematic_var14);
+    if (!sign16(R18_))
       cinematic_var15 = -1;
     else
       cinematic_var15 = 1;
@@ -4079,13 +3996,8 @@ void CinematicFunction_Intro_Func53(uint16 k) {  // 0x8BBB24
     } else if (sign16(cinematic_var17 - 544)) {
       cinematic_var17 += 32;
     }
-    LOBYTE(v8) = HIBYTE(cinematic_var17);
-    HIBYTE(v8) = cinematic_var17;
-    R20_ = v8 & 0xFF00;
-    uint16 v9 = HIBYTE(cinematic_var17);
-    if ((cinematic_var17 & 0x8000u) != 0)
-      v9 = HIBYTE(cinematic_var17) | 0xFF00;
-    R18_ = v9;
+    R20_ = cinematic_var17 << 8;
+    R18_ = (int8)GET_HIBYTE(cinematic_var17);
     uint16 v10 = cinematicspr_arr7[v2];
     v7 = __CFADD__uint16(R20_, v10);
     cinematicspr_arr7[v2] = R20_ + v10;
@@ -4801,16 +4713,11 @@ void CinematicFunction_Intro_Func90(uint16 k) {  // 0x8BC84E
 }
 
 void CinematicFunction_Intro_Func91(uint16 k) {  // 0x8BC85D
-  char v3; // t0
-
   int v1 = k >> 1;
   uint16 v2 = cinematicspr_goto_timer[v1] + 64;
   cinematicspr_goto_timer[v1] = v2;
-  v3 = v2;
-  LOBYTE(v2) = HIBYTE(v2);
-  HIBYTE(v2) = v3;
-  R20_ = v2 & 0xFF00;
-  R18_ = (uint8)v2;
+  R20_ = v2 << 8;
+  R18_ = (uint8)(v2 >> 8);
   uint16 v4 = cinematicspr_arr7[v1];
   bool v5 = v4 < R20_;
   cinematicspr_arr7[v1] = v4 - R20_;
@@ -4835,16 +4742,11 @@ void CinematicFunction_Intro_Func93(uint16 k) {  // 0x8BC8AA
 }
 
 void CinematicFunction_Intro_Func94(uint16 k) {  // 0x8BC8B9
-  char v3; // t0
-
   int v1 = k >> 1;
   uint16 v2 = cinematicspr_goto_timer[v1] + 32;
   cinematicspr_goto_timer[v1] = v2;
-  v3 = v2;
-  LOBYTE(v2) = HIBYTE(v2);
-  HIBYTE(v2) = v3;
-  R20_ = v2 & 0xFF00;
-  R18_ = (uint8)v2;
+  R20_ = v2 << 8;
+  R18_ = (uint8)(v2 >> 8);
   uint16 v4 = cinematicspr_arr7[v1];
   bool v5 = v4 < R20_;
   cinematicspr_arr7[v1] = v4 - R20_;
@@ -4863,16 +4765,11 @@ void CinematicFunction_Intro_Func96(uint16 k) {  // 0x8BC8F9
 }
 
 void CinematicFunction_Intro_Func97(uint16 k) {  // 0x8BC908
-  char v3; // t0
-
   int v1 = k >> 1;
   uint16 v2 = cinematicspr_goto_timer[v1] + 32;
   cinematicspr_goto_timer[v1] = v2;
-  v3 = v2;
-  LOBYTE(v2) = HIBYTE(v2);
-  HIBYTE(v2) = v3;
-  R20_ = v2 & 0xFF00;
-  R18_ = (uint8)v2;
+  R20_ = v2 << 8;
+  R18_ = (uint8)(v2 >> 8);
   uint16 v4 = cinematicspr_arr7[v1];
   bool v5 = v4 < R20_;
   cinematicspr_arr7[v1] = v4 - R20_;

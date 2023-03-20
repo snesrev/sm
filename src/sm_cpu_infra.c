@@ -175,6 +175,9 @@ static const  uint32 kPatchedCarrys[] = {
   0x94B176,
   0x94B156,
 
+  // MotherBrain
+  0xA99413,
+
   // room_width_in_blocks etc
   0x80ab5d,
   0x84865c,

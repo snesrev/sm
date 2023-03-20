@@ -633,8 +633,6 @@ void Fune_Func_4(void) {  // 0xA8979B
 }
 
 void WreckedShipGhost_Init(void) {  // 0xA89AEE
-  int16 v2;
-
   Enemy_WreckedShipGhost *E = Get_WreckedShipGhost(cur_enemy_index);
   E->base.properties |= kEnemyProps_DisableSamusColl | kEnemyProps_Tangible | kEnemyProps_Invisible;
   E->base.instruction_timer = 1;
@@ -643,15 +641,13 @@ void WreckedShipGhost_Init(void) {  // 0xA89AEE
   E->wsgt_var_A = FUNC16(WreckedShipGhost_Func_6);
   E->wsgt_var_B = g_word_A89AA4 + 160;
 
-  LOBYTE(v2) = HIBYTE(E->base.palette_index);
-  HIBYTE(v2) = E->base.palette_index;
+  uint16 v2 = swap16(E->base.palette_index);
   uint16 v3 = 16 * v2 + 256;
-  R18_ = 16;
+  int n = 16;
   do {
     target_palettes[v3 >> 1] = 0;
     v3 += 2;
-    --R18_;
-  } while ((R18_ & 0x8000u) == 0);
+  } while (--n >= 0);
 }
 
 void CallWreckedShipGhost(uint32 ea, uint16 k) {
@@ -672,17 +668,11 @@ void WreckedShipGhost_Main(void) {  // 0xA89B3C
 }
 
 void WreckedShipGhost_Func_1(uint16 k) {  // 0xA89B42
-  int16 v1;
-  int16 v3;
-  int16 v7;
-
   WreckedShipGhost_Func_3(k);
-  v1 = 16;
   Enemy_WreckedShipGhost *E = Get_WreckedShipGhost(cur_enemy_index);
-  LOBYTE(v3) = HIBYTE(E->base.palette_index);
-  HIBYTE(v3) = E->base.palette_index;
+  uint16 v3 = swap16(E->base.palette_index);
   uint16 v4 = 16 * v3 + 256;
-  R18_ = 16;
+  int n = 16, v1 = 0;
   do {
     int v5 = v4 >> 1;
     if (sign16((palette_buffer[v5] & 0x1F) - 31)) {
@@ -690,12 +680,10 @@ void WreckedShipGhost_Func_1(uint16 k) {  // 0xA89B42
       --v1;
     }
     v4 += 2;
-    --R18_;
-  } while (R18_);
+  } while (--n);
   if ((int16)(v1 - 16) >= 0) {
     E->wsgt_var_A = FUNC16(WreckedShipGhost_Func_2);
-    LOBYTE(v7) = HIBYTE(E->base.palette_index);
-    HIBYTE(v7) = E->base.palette_index;
+    uint16 v7 = swap16(E->base.palette_index);
     uint16 v8 = 16 * v7 + 256;
     uint16 v9 = 0;
     do {
@@ -771,8 +759,6 @@ void WreckedShipGhost_Func_4(uint16 k) {  // 0xA89C69
 }
 
 void WreckedShipGhost_Func_5(uint16 k) {  // 0xA89C8A
-  int16 v8;
-
   Enemy_WreckedShipGhost *E = Get_WreckedShipGhost(k);
   uint16 y_subpos = E->base.y_subpos;
   bool v3 = __CFADD__uint16(E->wsgt_var_01, y_subpos);
@@ -795,15 +781,15 @@ void WreckedShipGhost_Func_5(uint16 k) {  // 0xA89C8A
   if (!v6) {
     E->wsgt_var_A = FUNC16(WreckedShipGhost_Func_4);
     E->base.properties |= kEnemyProps_Tangible;
-    LOBYTE(v8) = HIBYTE(E->base.palette_index);
-    HIBYTE(v8) = E->base.palette_index;
-    uint16 v9 = 16 * v8 + 256;
-    R18_ = 16;
+    
+    int t = E->base.palette_index * 256;
+    uint16 v9 = 16 * t + 256;
+    int n = 16;
     do {
       target_palettes[v9 >> 1] = 0x7FFF;
       v9 += 2;
-      --R18_;
-    } while ((R18_ & 0x8000u) == 0);
+      n--;
+    } while ((n & 0x8000u) == 0);
   }
 }
 
@@ -888,7 +874,6 @@ LABEL_13:
 }
 
 uint16 WreckedShipGhost_Func_8(void) {  // 0xA89E88
-  int16 v2;
   int16 v5;
   int16 v7;
   int16 v9;
@@ -896,8 +881,7 @@ uint16 WreckedShipGhost_Func_8(void) {  // 0xA89E88
   uint16 v0 = 0;
   if (!door_transition_flag_enemies) {
     Enemy_WreckedShipGhost *E = Get_WreckedShipGhost(cur_enemy_index);
-    LOBYTE(v2) = HIBYTE(E->base.palette_index);
-    HIBYTE(v2) = E->base.palette_index;
+    uint16 v2 = swap16(E->base.palette_index);
     uint16 v3 = 16 * v2 + 256;
     R20_ = 16 * v2 + 288;
     do {
@@ -3384,17 +3368,11 @@ void MaridiaPuffer_Func_5(void) {  // 0xA8D9AA
 }
 
 void MaridiaPuffer_Func_6(void) {  // 0xA8D9DB
-  char v2; // t0
-
   R26_ = 0;
   R18_ = kSine16bit[(uint8)(Get_MaridiaPuffer(cur_enemy_index)->mpr_var_02 + 64)];
   if ((R18_ & 0x8000u) != 0)
     ++R26_;
-  uint16 v1 = Abs16(R18_) & 0xFF00;
-  v2 = v1;
-  LOBYTE(v1) = HIBYTE(v1);
-  HIBYTE(v1) = v2;
-  R22_ = v1;
+  R22_ = (Abs16(R18_) & 0xFF00) >> 8;
   Enemy_MaridiaPuffer *E = Get_MaridiaPuffer(cur_enemy_index);
   R24_ = E->mpr_var_D;
   MaridiaPuffer_Func_10();
@@ -3407,18 +3385,12 @@ void MaridiaPuffer_Func_6(void) {  // 0xA8D9DB
 }
 
 void MaridiaPuffer_Func_7(void) {  // 0xA8DA28
-  char v2; // t0
-
+  Enemy_MaridiaPuffer *E = Get_MaridiaPuffer(cur_enemy_index);
   R26_ = 0;
-  R18_ = kSine16bit[(uint8)Get_MaridiaPuffer(cur_enemy_index)->mpr_var_02];
+  R18_ = kSine16bit[(uint8)E->mpr_var_02];
   if ((R18_ & 0x8000u) != 0)
     ++R26_;
-  uint16 v1 = Abs16(R18_) & 0xFF00;
-  v2 = v1;
-  LOBYTE(v1) = HIBYTE(v1);
-  HIBYTE(v1) = v2;
-  R22_ = v1;
-  Enemy_MaridiaPuffer *E = Get_MaridiaPuffer(cur_enemy_index);
+  R22_ = (Abs16(R18_) & 0xFF00) >> 8;
   R24_ = E->mpr_var_D;
   MaridiaPuffer_Func_10();
   if (R26_)
@@ -3448,15 +3420,11 @@ void MaridiaPuffer_Func_9(uint16 k) {  // 0xA8DA92
 }
 
 void MaridiaPuffer_Func_10(void) {  // 0xA8DAB3
-  int16 v1;
-
   uint16 prod1 = Mult8x8(R22_, R24_);
   uint16 prod2 = Mult8x8(R22_, HIBYTE(R24_));
   R28_ = prod1;
-  R30_ = (uint8)((uint16)(prod2 & 0xFF00) >> 8);
-  uint16 RegWord = (uint8)prod2;
-  LOBYTE(v1) = HIBYTE(RegWord);
-  HIBYTE(v1) = RegWord;
+  R30_ = (uint8)(prod2 >> 8);
+  uint16 v1 = (uint8)prod2 << 8;
   bool v2 = __CFADD__uint16(R28_, v1);
   R28_ += v1;
   if (v2)
@@ -4517,7 +4485,6 @@ void KiHunter_Func_16(uint16 k) {  // 0xA8F96A
 }
 
 void KiHunter_Func_17(void) {  // 0xA8F98D
-  char v4; // t0
   uint16 v5;
 
   Enemy_KiHunter *E = Get_KiHunter(cur_enemy_index);
@@ -4526,10 +4493,7 @@ void KiHunter_Func_17(void) {  // 0xA8F98D
   do {
     uint16 v3 = E->khr_var_0A + 384;
     E->khr_var_0A = v3;
-    v3 &= 0xFF00u;
-    v4 = v3;
-    LOBYTE(v3) = HIBYTE(v3);
-    HIBYTE(v3) = v4;
+    v3 >>= 8;
     v5 = *(uint16 *)((char *)kCommonEnemySpeeds_Quadratic + (uint16)(8 * v3) + 1) + E->khr_var_D;
     E->khr_var_D = v5;
   } while (sign16(v5 - 0x2000));

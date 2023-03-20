@@ -665,12 +665,9 @@ static Func_V *const kXrayHdmaFuncs[5] = {  // 0x91BE11
 };
 
 void CalculateXrayHdmaTable_OriginOffScreen(uint16 k, uint16 j) {
-  int16 v2;
-  uint16 v3;
+  int v3;
 
-  LOBYTE(v2) = HIBYTE(k);
-  HIBYTE(v2) = k;
-  R22_ = v2 & 0xFF00;
+  R22_ = (k << 8);
   R24_ = j;
   R26_ = R18_ - R20_;
   R26_ += (R26_ & 0x8000u) != 0 ? 0x100 : 0;
@@ -1411,12 +1408,9 @@ void XrayHdmaFunc_BeamHoriz(void) {  // 0x91C505
 }
 
 void CalculateXrayHdmaTable_OriginOnScreen(uint16 k, uint16 j) {  // 0x91C54B
-  int16 v2;
-  uint16 v3;
+  int v3;
 
-  LOBYTE(v2) = HIBYTE(k);
-  HIBYTE(v2) = k;
-  R22_ = v2 & 0xFF00;
+  R22_ = k << 8;
   R24_ = j;
   R26_ = R18_ - R20_;
   R26_ += (R26_ & 0x8000u) != 0 ? 0x100 : 0;
@@ -2395,10 +2389,10 @@ void Xray_SetupStage7(void) {  // 0x91D1A0
     v1->vram_dst = ((reg_BG2SC & 0xFC) << 8) + 1024;
     vram_write_queue_tail = v0 + 7;
   }
-  mov24((LongPtr *)&demo_enable, 0x9800E4);
-  mov24((LongPtr *)((char *)&demo_num_input_frames + 1), 0x98C8E4);
-  mov24((LongPtr *)&demo_input_prev_new, 0x999098);
-  *(uint16 *)((char *)&demo_backup_prev_controller_input + 1) = 0;
+  mov24(&hdma_ptr_1, 0x9800E4);
+  mov24(&hdma_ptr_2, 0x98C8E4);
+  mov24(&hdma_ptr_3, 0x999098);
+  hdma_var_1 = 0;
   demo_input_pre_instr = 0;
   demo_input_instr_timer = 0;
   demo_input_instr_ptr = 0;
@@ -2411,7 +2405,7 @@ void Xray_SetupStage7(void) {  // 0x91D1A0
 }
 
 void HdmaobjPreInstr_XraySetup(uint16 k) {  // 0x91D27F
-  int16 v1;
+  uint16 v1;
 
   v1 = 4096;
   if (fx_type == 36) {
@@ -2433,10 +2427,6 @@ LABEL_5:
 
 void Xray_SetupStage8_SetBackdropColor(void) {  // 0x91D2BC
   palette_buffer[0] = 3171;
-}
-
-void sub_91D2D1(void) {  // 0x91D2D1
-  ;
 }
 
 void GameState_28_Unused_(void) {  // 0x91D4DA
@@ -2534,10 +2524,10 @@ void InitializeSuitPickupHdma(void) {  // 0x91D692
   reg_COLDATA[0] = suit_pickup_color_math_R;
   reg_COLDATA[1] = suit_pickup_color_math_G;
   reg_COLDATA[2] = suit_pickup_color_math_B;
-  mov24((LongPtr *)&demo_enable, 0x9800E4);
-  mov24((LongPtr *)((char *)&demo_num_input_frames + 1), 0x98C8E4);
-  mov24((LongPtr *)&demo_input_prev_new, 0x999098);
-  *(uint16 *)((char *)&demo_backup_prev_controller_input + 1) = 0;
+  mov24(&hdma_ptr_1, 0x9800E4);
+  mov24(&hdma_ptr_2, 0x98C8E4);
+  mov24(&hdma_ptr_3, 0x999098);
+  hdma_var_1 = 0;
 }
 
 
@@ -2563,6 +2553,7 @@ void Samus_HandlePalette(void) {
   }
   HandleMiscSamusPalette();
 }
+
 uint8 HandleBeamChargePalettes(void) {  // 0x91D743
   if (charged_shot_glow_timer) {
     if (hyper_beam_flag) {
@@ -2571,7 +2562,7 @@ uint8 HandleBeamChargePalettes(void) {  // 0x91D743
           charged_shot_glow_timer = 0;
           return 1;
         }
-        CopyToSamusSuitPalette(kSamusPalette_HyperBeam[(uint8)(charged_shot_glow_timer & 0x1E) >> 1]);
+        CopyToSamusSuitPalette(kSamusPalette_HyperBeam[(charged_shot_glow_timer & 0x1E) >> 1]);
       }
       --charged_shot_glow_timer;
       return 0;
@@ -2590,8 +2581,7 @@ uint8 HandleBeamChargePalettes(void) {  // 0x91D743
       R36 = kSamusPalette_PseudoScrew[samus_suit_palette_index >> 1];
     else
       R36 = kSamusPalette_NonPseudoScrew[samus_suit_palette_index >> 1];
-    uint16 v0 = *(uint16 *)RomPtr_91(R36 + samus_charge_palette_index);
-    CopyToSamusSuitPalette(v0);
+    CopyToSamusSuitPalette(*(uint16 *)RomPtr_91(R36 + samus_charge_palette_index));
     uint16 v1 = samus_charge_palette_index + 2;
     if (!sign16(samus_charge_palette_index - 10))
       v1 = 0;
@@ -2604,10 +2594,6 @@ uint8 HandleBeamChargePalettes(void) {  // 0x91D743
 }
 
 uint8 HandleVisorPalette(void) {  // 0x91D83F
-  int16 v2;
-  uint16 v3;
-  char v4; // t0
-
   if (timer_for_shine_timer == 8)
     return 0;
   if (fx_layer_blending_config_a == 40 || fx_layer_blending_config_a == 42) {
@@ -2617,13 +2603,10 @@ uint8 HandleVisorPalette(void) {  // 0x91D83F
       return 0;
     samus_visor_palette_timer_index = v1 | 5;
     palette_buffer[196] = word_9BA3C0[HIBYTE(v1) >> 1];
-    v2 = HIBYTE(v1) + 2;
+    int v2 = HIBYTE(v1) + 2;
     if (sign16(v2 - 12)) {
-      v4 = v2;
-      LOBYTE(v3) = HIBYTE(v2);
-      HIBYTE(v3) = v4;
-      R18_ = v3;
-      samus_visor_palette_timer_index = v3 | (uint8)samus_visor_palette_timer_index;
+      R18_ = swap16(v2);
+      samus_visor_palette_timer_index = R18_ | (uint8)samus_visor_palette_timer_index;
     } else {
       samus_visor_palette_timer_index = (uint8)samus_visor_palette_timer_index | 0x600;
     }
@@ -2828,27 +2811,11 @@ uint8 Samus_HandleCrystalFlashPals(void) {  // 0x91DB93
 }
 
 void Samus_Copy10PalColors(uint16 v0) {  // 0x91DC34
-  const uint16 *v1 = (const uint16 *)RomPtr_9B(v0);
-  palette_buffer[224] = *v1;
-  palette_buffer[225] = v1[1];
-  palette_buffer[226] = v1[2];
-  palette_buffer[227] = v1[3];
-  palette_buffer[228] = v1[4];
-  palette_buffer[229] = v1[5];
-  palette_buffer[230] = v1[6];
-  palette_buffer[231] = v1[7];
-  palette_buffer[232] = v1[8];
-  palette_buffer[233] = v1[9];
+  memcpy(&palette_buffer[224], RomPtr_9B(v0), 20);
 }
 
 void Samus_Copy6PalColors(uint16 j) {  // 0x91DC82
-  const uint16 *v1 = (const uint16 *)RomPtr_9B(j);
-  palette_buffer[234] = *v1;
-  palette_buffer[235] = v1[1];
-  palette_buffer[236] = v1[2];
-  palette_buffer[237] = v1[3];
-  palette_buffer[238] = v1[4];
-  palette_buffer[239] = v1[5];
+  memcpy(&palette_buffer[234], RomPtr_9B(j), 12);
 }
 
 uint8 Samus_HandleXrayPals(void) {  // 0x91DCB4
@@ -3129,11 +3096,11 @@ uint8 Xray_Initialize(void) {  // 0x91E16D
   DisablePLMs();
   DisableAnimtiles();
   DisablePaletteFx();
-  mov24((LongPtr *)&demo_enable, 0x980001);
+  mov24(&hdma_ptr_1, 0x980001);
   *(uint16 *)((char *)&demo_num_input_frames + 1) = 0;
   demo_input_prev = -26424;
-  mov24((LongPtr *)&demo_input_prev_new, 0x999098);
-  *(uint16 *)((char *)&demo_backup_prev_controller_input + 1) = 0;
+  mov24(&hdma_ptr_3, 0x999098);
+  hdma_var_1 = 0;
   demo_input_pre_instr = 0;
   demo_input_instr_timer = 0;
   demo_input_instr_ptr = 0;

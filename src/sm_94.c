@@ -467,13 +467,10 @@ void PostGrappleCollisionDetect_Y(void) {  // 0x9484CD
 }
 
 uint8 BlockColl_Horiz_Slope_NonSquare(void) {  // 0x9484D6
-  uint16 v2;
-
   if ((current_slope_bts & 0x80) != 0 || __PAIR32__(samus_y_speed, samus_y_subspeed))
     return 0;
   uint16 v1 = 4 * (current_slope_bts & 0x1F);
-  HIBYTE(v2) = R18_;
-  LOBYTE(v2) = HIBYTE(R20_);
+  uint16 v2 = PAIR16(R18_, HIBYTE(R20_));
   if ((R18_ & 0x8000) == 0) {
     Multiply16x16(v2, kBlockColl_Horiz_Slope_NonSquare_Tab[(v1 >> 1) + 1]);
     R20_ = mult_product_lo;
@@ -484,7 +481,6 @@ uint8 BlockColl_Horiz_Slope_NonSquare(void) {  // 0x9484D6
   }
   return 0;
 }
-
 
 uint8 BlockColl_Vert_Slope_NonSquare(uint16 k) {  // 0x9486FE
   int16 v1;
@@ -554,26 +550,18 @@ uint8 BlockColl_Vert_Slope_NonSquare(uint16 k) {  // 0x9486FE
 }
 
 void Samus_AlignYPosSlope(void) {  // 0x9487F4
-  int16 v0;
-  char v1;
-  int16 v2;
-  int16 v3;
-  char v4;
-  int16 v6;
-
   if ((enable_horiz_slope_coll & 2) != 0) {
     R26_ = samus_x_pos;
     R28_ = samus_y_radius + samus_y_pos - 1;
     CalculateBlockAt(R26_, R28_, 0, 0);
-    if ((level_data[cur_block_index] & 0xF000) == 4096
-        && (BTS[cur_block_index] & 0x1F) >= 5) {
-      uint16 temp_collision_DD4 = ((uint8)samus_y_radius + (uint8)samus_y_pos - 1) & 0xF;
+    if ((level_data[cur_block_index] & 0xF000) == 4096 && (BTS[cur_block_index] & 0x1F) >= 5) {
+      uint16 temp_collision_DD4 = (samus_y_radius + samus_y_pos - 1) & 0xF;
       uint16 temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
-      v0 = BTS[cur_block_index];
+      uint8 v0 = BTS[cur_block_index];
       if (!(v0 & 0x80)) {
-        v1 = (v0 & 0x40) != 0 ? samus_x_pos ^ 0xF : samus_x_pos;
-        v2 = (kAlignYPos_Tab0[(uint16)(temp_collision_DD6 + (v1 & 0xF))] & 0x1F) - temp_collision_DD4 - 1;
-        if (v2 < 0) {
+        uint16 v1 = (v0 & 0x40) != 0 ? samus_x_pos ^ 0xF : samus_x_pos;
+        uint16 v2 = (kAlignYPos_Tab0[temp_collision_DD6 + (v1 & 0xF)] & 0x1F) - temp_collision_DD4 - 1;
+        if ((int16)v2 < 0) {
           samus_y_pos += v2;
           samus_pos_adjusted_by_slope_flag = 1;
         }
@@ -582,19 +570,14 @@ void Samus_AlignYPosSlope(void) {  // 0x9487F4
     R26_ = samus_x_pos;
     R28_ = samus_y_pos - samus_y_radius;
     CalculateBlockAt(R26_, R28_, 0, 0);
-    if ((level_data[cur_block_index] & 0xF000) == 4096
-        && (BTS[cur_block_index] & 0x1F) >= 5) {
-      uint16 temp_collision_DD4 = ((uint8)samus_y_pos - (uint8)samus_y_radius) & 0xF ^ 0xF;
+    if ((level_data[cur_block_index] & 0xF000) == 4096 && (BTS[cur_block_index] & 0x1F) >= 5) {
+      uint16 temp_collision_DD4 = (samus_y_pos - samus_y_radius) & 0xF ^ 0xF;
       uint16 temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
-      v3 = BTS[cur_block_index];
+      uint8 v3 = BTS[cur_block_index];
       if (v3 & 0x80) {
-        if ((v3 & 0x40) != 0)
-          v4 = samus_x_pos ^ 0xF;
-        else
-          v4 = samus_x_pos;
-        uint16 v5 = temp_collision_DD6 + (v4 & 0xF);
-        v6 = (kAlignYPos_Tab0[v5] & 0x1F) - temp_collision_DD4 - 1;
-        if ((kAlignYPos_Tab0[v5] & 0x1F) - temp_collision_DD4 == 1 || v6 < 0) {
+        uint16 v4 = (v3 & 0x40) != 0 ? samus_x_pos ^ 0xF : samus_x_pos;
+        uint16 v6 = (kAlignYPos_Tab0[temp_collision_DD6 + (v4 & 0xF)] & 0x1F) - temp_collision_DD4 - 1;
+        if ((int16)v6 <= 0) {
           samus_y_pos -= v6;
           samus_pos_adjusted_by_slope_flag = 1;
         }

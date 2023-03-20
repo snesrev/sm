@@ -394,15 +394,10 @@ void UNUSED_sub_9BBA31(void) {  // 0x9BBA31
 }
 
 void HandleConnectingGrapple_Swinging(void) {  // 0x9BBA61
-  char v1; // t0
-
   samus_special_transgfx_index = 9;
   R18_ = samus_x_pos - grapple_beam_end_x_pos;
   R20_ = samus_y_pos - grapple_beam_end_y_pos;
-  uint16 v0 = CalculateAngleFromXY();
-  v1 = v0;
-  LOBYTE(v0) = HIBYTE(v0);
-  HIBYTE(v0) = v1;
+  uint16 v0 = swap16(CalculateAngleFromXY());
   *(uint16 *)&grapple_beam_end_subangle = v0;
   grapple_beam_end_angles_mirror = v0;
   grapple_beam_length_delta = 0;
@@ -412,15 +407,10 @@ void HandleConnectingGrapple_Swinging(void) {  // 0x9BBA61
 }
 
 void HandleConnectingGrapple_StuckInPlace(void) {  // 0x9BBA9B
-  char v1; // t0
-
   samus_special_transgfx_index = 10;
   R18_ = samus_x_pos - grapple_beam_end_x_pos;
   R20_ = samus_y_pos - grapple_beam_end_y_pos;
-  uint16 v0 = CalculateAngleFromXY();
-  v1 = v0;
-  LOBYTE(v0) = HIBYTE(v0);
-  HIBYTE(v0) = v1;
+  uint16 v0 = swap16(CalculateAngleFromXY());
   *(uint16 *)&grapple_beam_end_subangle = v0;
   grapple_beam_end_angles_mirror = v0;
   grapple_beam_length_delta = 0;
@@ -430,9 +420,6 @@ void HandleConnectingGrapple_StuckInPlace(void) {  // 0x9BBA9B
 }
 
 uint8 HandleSpecialGrappleBeamAngles(void) {  // 0x9BBAD5
-  int16 v2;
-  int16 v3;
-
   uint16 v0 = 7;
   while (*(uint16 *)&grapple_beam_end_subangle != grapple_beam_special_angles[v0].field_0) {
     if ((--v0 & 0x8000u) != 0)
@@ -444,14 +431,14 @@ uint8 HandleSpecialGrappleBeamAngles(void) {  // 0x9BBAD5
   grapple_beam_function = grapple_beam_special_angles[v0].field_8;
   samus_special_transgfx_index = 0;
   slow_grabble_scrolling_flag = 0;
-  v2 = samus_x_pos - samus_prev_x_pos;
+  int16 v2 = samus_x_pos - samus_prev_x_pos;
   if ((int16)(samus_x_pos - samus_prev_x_pos) < 0) {
     if (sign16(v2 + 12))
       samus_prev_x_pos = samus_x_pos + 12;
   } else if (!sign16(v2 - 13)) {
     samus_prev_x_pos = samus_x_pos - 12;
   }
-  v3 = samus_y_pos - samus_prev_y_pos;
+  int16 v3 = samus_y_pos - samus_prev_y_pos;
   if ((int16)(samus_y_pos - samus_prev_y_pos) < 0) {
     if (sign16(v3 + 12))
       samus_prev_y_pos = samus_y_pos + 12;

@@ -145,6 +145,8 @@ typedef struct Point16U {
 
 #define GET_HIBYTE(x) (((x) & 0xff00) >> 8)
 
+#define PAIR16(high, low) ((uint16)((high) << 8) | (uint8)low)
+
 // Generate a pair of operands.
 #define __PAIR32__(high, low)   (((uint32) (high) << 16) | (uint16)(low))
 

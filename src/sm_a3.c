@@ -2003,16 +2003,10 @@ void Bang_Func_13(void) {  // 0xA3BD89
 }
 
 void Bang_Func_14(void) {  // 0xA3BDB9
-  char v2; // t0
-
   R18_ = kSine16bit[(uint8)(Get_Bang(cur_enemy_index)->bang_var_01 + 64)];
   if ((R18_ & 0x8000u) != 0)
     Get_Bang(cur_enemy_index)->bang_var_07 = 1;
-  uint16 v1 = Abs16(R18_) & 0xFF00;
-  v2 = v1;
-  LOBYTE(v1) = HIBYTE(v1);
-  HIBYTE(v1) = v2;
-  R22_ = v1;
+  R22_ = (uint16)Abs16(R18_) >> 8;
   Enemy_Bang *E = Get_Bang(cur_enemy_index);
   R24_ = E->bang_var_0A;
   Bang_Func_16();
@@ -2030,16 +2024,10 @@ void Bang_Func_14(void) {  // 0xA3BDB9
 }
 
 void Bang_Func_15(void) {  // 0xA3BE1C
-  char v2; // t0
-
   R18_ = kSine16bit[(uint8)Get_Bang(cur_enemy_index)->bang_var_01];
   if ((R18_ & 0x8000u) != 0)
     Get_Bang(cur_enemy_index)->bang_var_08 = 1;
-  uint16 v1 = Abs16(R18_) & 0xFF00;
-  v2 = v1;
-  LOBYTE(v1) = HIBYTE(v1);
-  HIBYTE(v1) = v2;
-  R22_ = v1;
+  R22_ = (uint16)Abs16(R18_) >> 8;
   Enemy_Bang *E = Get_Bang(cur_enemy_index);
   R24_ = E->bang_var_0A;
   Bang_Func_16();
@@ -2057,14 +2045,10 @@ void Bang_Func_15(void) {  // 0xA3BE1C
 }
 
 void Bang_Func_16(void) {  // 0xA3BE7B
-  int16 v1;
-
   R28_ = Mult8x8(R22_, R24_);
   uint16 prod = Mult8x8(R22_, HIBYTE(R24_));
-  R30_ = (uint8)((uint16)(prod & 0xFF00) >> 8);
-  uint16 RegWord = (uint8)prod;
-  LOBYTE(v1) = HIBYTE(RegWord);
-  HIBYTE(v1) = RegWord;
+  R30_ = (prod & 0xFF00) >> 8;
+  uint16 v1 = prod << 8;
   bool v2 = __CFADD__uint16(R28_, v1);
   R28_ += v1;
   if (v2)

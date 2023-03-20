@@ -523,6 +523,13 @@ extern uint8 g_ram[0x20000];
 #define demo_input (*(uint16*)(g_ram+0xA84))
 #define demo_input_new (*(uint16*)(g_ram+0xA86))
 #define demo_enable (*(uint16*)(g_ram+0xA88))
+
+// These are aliased
+#define hdma_ptr_1 (*(LongPtr*)(g_ram+0xA88))
+#define hdma_ptr_2 (*(LongPtr*)(g_ram+0xA8B))
+#define hdma_ptr_3 (*(LongPtr*)(g_ram+0xA8E))
+#define hdma_var_1 (*(uint16*)(g_ram+0xA91))
+
 #define demo_num_input_frames (*(uint16*)(g_ram+0xA8A))
 #define demo_input_prev (*(uint16*)(g_ram+0xA8C))
 #define demo_input_prev_new (*(uint16*)(g_ram+0xA8E))

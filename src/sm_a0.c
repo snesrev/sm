@@ -1893,22 +1893,13 @@ void DeleteEnemyAndConnectedEnemies(void) {  // 0xA0922B
 }
 
 uint16 SpawnEnemy(uint8 db, uint16 k) {  // 0xA09275
-  int16 v3;
   VoidP v7;
-  int16 v12;
-  EnemyPopulation *v13;
-  EnemyPopulation *v16;
-  EnemyDef_A2 *v17;
-  EnemyDef_A2 *EnemyDef_A2;
-  EnemyPopulation *EnemyPopulation;
-
-  uint8 v19 = db;
   enemy_population_ptr = k;
   cur_enemy_index_backup = cur_enemy_index;
   enemy_ai_pointer_backup.addr = enemy_ai_pointer.addr;
   *(uint16 *)&enemy_ai_pointer_backup.bank = *(uint16 *)&enemy_ai_pointer.bank;
   uint16 enemy_ptr = get_EnemyPopulation(db, k)->enemy_ptr;
-  v3 = get_EnemyDef_A2(enemy_ptr)->num_parts - 1;
+  int16 v3 = get_EnemyDef_A2(enemy_ptr)->num_parts - 1;
   if (v3 < 0)
     v3 = 0;
   draw_oam_x_offset = v3;
@@ -1921,41 +1912,37 @@ uint16 SpawnEnemy(uint8 db, uint16 k) {  // 0xA09275
         if (!draw_oam_x_offset) {
           while (1) {
             uint16 v5 = new_enemy_index;
-            EnemyPopulation = get_EnemyPopulation(v19, enemy_population_ptr);
-            v7 = EnemyPopulation->enemy_ptr;
+            EnemyPopulation *EP = get_EnemyPopulation(db, enemy_population_ptr);
+            v7 = EP->enemy_ptr;
             uint16 v8 = 0;
-            if (EnemyPopulation->enemy_ptr == enemy_def_ptr[0]
+            if (EP->enemy_ptr == enemy_def_ptr[0]
                 || (v8 = 2, v7 == enemy_def_ptr[1])
                 || (v8 = 4, v7 == enemy_def_ptr[2])
                 || (v8 = 6, v7 == enemy_def_ptr[3])) {
               int v10 = v8 >> 1;
               EnemyData *v11 = gEnemyData(new_enemy_index);
               v11->vram_tiles_index = enemy_gfxdata_tiles_index[v10];
-              LOBYTE(v12) = HIBYTE(enemy_gfxdata_vram_ptr[v10]);
-              HIBYTE(v12) = enemy_gfxdata_vram_ptr[v10];
-              v11->palette_index = 2 * v12;
+              v11->palette_index = 2 * swap16(enemy_gfxdata_vram_ptr[v10]);
             } else {
               EnemyData *v9 = gEnemyData(new_enemy_index);
               v9->vram_tiles_index = 0;
               v9->palette_index = 0;
             }
-            v13 = get_EnemyPopulation(v19, enemy_population_ptr);
-            EnemyDef_A2 = get_EnemyDef_A2(v13->enemy_ptr);
+            EnemyDef_A2 * edef = get_EnemyDef_A2(EP->enemy_ptr);
             EnemyData *v15 = gEnemyData(v5);
-            v15->x_width = EnemyDef_A2->x_radius;
-            v15->y_height = EnemyDef_A2->y_radius;
-            v15->health = EnemyDef_A2->health;
-            v15->layer = EnemyDef_A2->layer;
-            *(uint16 *)&v15->bank = *(uint16 *)&EnemyDef_A2->bank;
-            v16 = get_EnemyPopulation(v19, enemy_population_ptr);
-            v15->enemy_ptr = v16->enemy_ptr;
-            v15->x_pos = v16->x_pos;
-            v15->y_pos = v16->y_pos;
-            v15->current_instruction = v16->init_param;
-            v15->properties = v16->properties;
-            v15->extra_properties = v16->extra_properties;
-            v15->parameter_1 = v16->parameter1;
-            v15->parameter_2 = v16->parameter2;
+            v15->x_width = edef->x_radius;
+            v15->y_height = edef->y_radius;
+            v15->health = edef->health;
+            v15->layer = edef->layer;
+            *(uint16 *)&v15->bank = *(uint16 *)&edef->bank;
+            v15->enemy_ptr = EP->enemy_ptr;
+            v15->x_pos = EP->x_pos;
+            v15->y_pos = EP->y_pos;
+            v15->current_instruction = EP->init_param;
+            v15->properties = EP->properties;
+            v15->extra_properties = EP->extra_properties;
+            v15->parameter_1 = EP->parameter1;
+            v15->parameter_2 = EP->parameter2;
             v15->frame_counter = 0;
             v15->timer = 0;
             v15->ai_var_A = 0;
@@ -1968,12 +1955,8 @@ uint16 SpawnEnemy(uint8 db, uint16 k) {  // 0xA09275
             v15->frame_counter = 0;
             RecordEnemySpawnData(v5);
             cur_enemy_index = v5;
-            v17 = get_EnemyDef_A2(v15->enemy_ptr);
-            if (!sign16(v17->ai_init + 0x8000)) {
-              enemy_ai_pointer.addr = v17->ai_init;
-              *(uint16 *)&enemy_ai_pointer.bank = *(uint16 *)&v17->bank;
-              CallEnemyAi(Load24(&enemy_ai_pointer));
-            }
+            if (sign16(edef->ai_init))
+              CallEnemyAi(edef->bank << 16 | edef->ai_init);
             EnemyData *v18 = gEnemyData(v5);
             if ((v18->properties & 0x2000) != 0)
               v18->spritemap_pointer = addr_kSpritemap_Nothing_A0;
@@ -3649,15 +3632,10 @@ uint16 SineMult8bitNegative(uint16 a) {  // 0xA0B0C6
   return SineMult8bit();
 }
 
-
 uint16 SineMult8bit(void) {  // 0xA0B0DA
-  int16 v1;
-
   uint16 RegWord = Mult8x8(kSine8bit[enemy_drawing_queue_index & 0x7F], draw_enemy_layer);
-  LOBYTE(v1) = HIBYTE(RegWord);
-  HIBYTE(v1) = RegWord;
-  loop_index_end = HIBYTE(RegWord);
-  loop_index = v1 & 0xFF00;
+  loop_index_end = RegWord >> 8;
+  loop_index = RegWord << 8;
   if ((enemy_drawing_queue_index & 0x80) != 0) {
     loop_index_end = -loop_index_end;
     loop_index = -loop_index;

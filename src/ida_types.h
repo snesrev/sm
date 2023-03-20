@@ -1552,6 +1552,7 @@ enum Consts_81 {
   addr_kMenuTilemap_ClearSamusA = 0xB69A,
   addr_kMenuTilemap_DataCleared = 0xB6DA,
   addr_kAreaSelectForegroundTilemap = 0xB71A,
+  addr_kAreaSelectBackgroundTilemaps = 0xBF1A,
 };
 enum Consts_82 {
   addr_kPauseMenuMapData = 0x9717,

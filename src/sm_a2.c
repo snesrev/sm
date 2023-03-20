@@ -920,7 +920,7 @@ void ThinHoppingBlobs_Func4(void) {  // 0xA29B06
 }
 
 void ThinHoppingBlobs_Func5(void) {  // 0xA29B1A
-  int16 v2;
+  uint16 v2;
   Enemy_ThinHoppingBlobs *E = Get_ThinHoppingBlobs(cur_enemy_index);
   uint16 thbs_var_F = E->thbs_var_F;
   R22_ = 0;
@@ -931,8 +931,7 @@ void ThinHoppingBlobs_Func5(void) {  // 0xA29B1A
                         + (uint16)(8 * (uint8)((uint16)(R22_ & 0xFF00) >> 8))
                         + 1);
     thbs_var_F = E->thbs_var_F;
-    LOBYTE(v2) = HIBYTE(*(uint16 *)((char *)&g_word_A29A07 + thbs_var_F));
-    HIBYTE(v2) = *(uint16 *)((char *)&g_word_A29A07 + thbs_var_F);
+    v2 = swap16(*(uint16 *)((char *)&g_word_A29A07 + thbs_var_F));
   } while (!sign16(v2 - R24_));
   E->thbs_var_B = R22_;
   E->thbs_var_03 = 0;
@@ -969,19 +968,11 @@ void ThinHoppingBlobs_Func7(void) {  // 0xA29B81
 }
 
 void ThinHoppingBlobs_Func8(void) {  // 0xA29B88
-  int16 thbs_var_B;
-  int16 v4;
-  char v5; // t0
-
   Enemy_ThinHoppingBlobs *E = Get_ThinHoppingBlobs(cur_enemy_index);
-  thbs_var_B = E->thbs_var_B;
+  uint16 thbs_var_B = E->thbs_var_B;
   if (!sign16(thbs_var_B - 0x4000))
     thbs_var_B = 0x4000;
-  v4 = thbs_var_B & 0xFF00;
-  v5 = v4;
-  LOBYTE(v4) = HIBYTE(v4);
-  HIBYTE(v4) = v5;
-  uint16 v6 = 8 * v4;
+  uint16 v6 = 8 * swap16(thbs_var_B);
   if (E->thbs_var_03)
     v6 -= 4;
   int v7 = v6 >> 1;
@@ -1836,20 +1827,15 @@ void GunshipTop_20(uint16 k) {  // 0xA2AD0E
 }
 
 void GunshipTop_21(uint16 k) {  // 0xA2AD2D
-  int16 v4;
-  unsigned int v6; // kr00_4
-
   Enemy_GunshipTop *E = Get_GunshipTop(k + 64);
   uint16 v3 = E->gtp_var_F + 64;
   E->gtp_var_F = v3;
   if (!sign16((v3 & 0xFF00) - 2560))
     E->gtp_var_F = 2304;
-  LOBYTE(v4) = HIBYTE(E->gtp_var_F);
-  HIBYTE(v4) = E->gtp_var_F;
-  R20_ = v4 & 0xFF00;
-  R18_ = (uint8)v4;
-  v6 = __PAIR32__(samus_y_pos, samus_y_subpos) - __PAIR32__((uint8)v4, v4 & 0xFF00);
-  uint16 v5 = (__PAIR32__(samus_y_pos, samus_y_subpos) - __PAIR32__((uint8)v4, v4 & 0xFF00)) >> 16;
+  R20_ = E->gtp_var_F << 8;
+  R18_ = E->gtp_var_F >> 8;
+  uint32 v6 = __PAIR32__(samus_y_pos, samus_y_subpos) - __PAIR32__(R18_, R20_);
+  uint16 v5 = (__PAIR32__(samus_y_pos, samus_y_subpos) - __PAIR32__(R18_, R20_)) >> 16;
   samus_y_subpos = v6;
   samus_y_pos = v5;
   v5 -= 17;
@@ -3202,26 +3188,19 @@ void MaridiaLargeSnail_Func_6(void) {  // 0xA2CF40
 }
 
 void MaridiaLargeSnail_Func_7(uint16 k) {  // 0xA2CF66
-  int16 v2;
-  int16 v3;
-  char v4; // t0
-  int16 v6;
-
   Enemy_MaridiaLargeSnail *E = Get_MaridiaLargeSnail(k);
-  v2 = E->mlsl_var_B + 384;
-  if (!sign16(E->mlsl_var_B - 16000))
+  uint16 v2 = E->mlsl_var_B + 384;
+  if (!sign16(v2 - 0x4000))
     v2 = 0x4000;
   E->mlsl_var_B = v2;
-  v3 = v2 & 0xFF00;
-  v4 = v3;
-  LOBYTE(v3) = HIBYTE(v3);
-  HIBYTE(v3) = v4;
+  
+  uint16 v3 = swap16(v2);
   int v5 = (uint16)(8 * v3) >> 1;
   R18_ = kCommonEnemySpeeds_Quadratic[v5];
   R20_ = kCommonEnemySpeeds_Quadratic[v5 + 1];
   if (Enemy_MoveDown(k) & 1) {
     --E->mlsl_var_E;
-    v6 = E->mlsl_var_B - 4096;
+    int16 v6 = E->mlsl_var_B - 4096;
     if (v6 < 0)
       E->mlsl_var_E = 0;
     E->mlsl_var_B = v6;
@@ -3230,18 +3209,11 @@ void MaridiaLargeSnail_Func_7(uint16 k) {  // 0xA2CF66
 }
 
 void MaridiaLargeSnail_Func_8(uint16 k) {  // 0xA2CFA9
-  int16 v2;
-  int16 v3;
-  char v4; // t0
-
   Enemy_MaridiaLargeSnail *E = Get_MaridiaLargeSnail(k);
-  v2 = E->mlsl_var_B - 384;
+  int16 v2 = E->mlsl_var_B - 384;
   E->mlsl_var_B = v2;
   if (v2 >= 0) {
-    v3 = v2 & 0x7F00;
-    v4 = v3;
-    LOBYTE(v3) = HIBYTE(v3);
-    HIBYTE(v3) = v4;
+    uint16 v3 = (v2 & 0x7F00) >> 8;
     int v5 = (uint16)(8 * v3) >> 1;
     R18_ = kCommonEnemySpeeds_Quadratic[v5 + 2];
     R20_ = kCommonEnemySpeeds_Quadratic[v5 + 3];

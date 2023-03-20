@@ -140,9 +140,6 @@ void MotherBrain_CalcHdma_BeamAimedUp(void) {
 }
 
 void MotherBrain_CalcHdma_Up_UpRight(void) {  // 0xADE02C
-  char v6; // t0
-  int16 v8;
-
   hdma_table_2[0] = 255;
   hdma_table_2[1] = 255;
   Enemy_MotherBrain *E = Get_MotherBrain(0);
@@ -157,17 +154,13 @@ void MotherBrain_CalcHdma_Up_UpRight(void) {  // 0xADE02C
     if (__CFADD__uint16(R18_, R22_))
       v4 = -1;
     R22_ = v4;
-    uint16 v5 = v4 & 0xFF00;
-    v6 = v5;
-    LOBYTE(v5) = HIBYTE(v5);
-    HIBYTE(v5) = v6;
-    R36 = v5;
+    R36 = (v4 >> 8) & 0xff;
     uint16 v7 = R20_ + R24_;
     if (__CFADD__uint16(R20_, R24_))
       v7 = -1;
     R24_ = v7;
-    v8 = R36 | v7 & 0xFF00;
-    if (v8 == -1)
+    uint16 v8 = R36 | v7 & 0xFF00;
+    if (v8 == 0xffff)
       v8 = 255;
     *v2-- = v8;
     --mbn_var_3D;
@@ -175,9 +168,6 @@ void MotherBrain_CalcHdma_Up_UpRight(void) {  // 0xADE02C
 }
 
 void MotherBrain_CalcHdma_Up_Up(void) {  // 0xADE0A6
-  char v6; // t0
-  int16 v8;
-
   hdma_table_2[0] = 255;
   hdma_table_2[1] = 255;
   Enemy_MotherBrain *E = Get_MotherBrain(0);
@@ -192,17 +182,13 @@ void MotherBrain_CalcHdma_Up_Up(void) {  // 0xADE0A6
     if (R22_ < R18_)
       v4 = 0;
     R22_ = v4;
-    uint16 v5 = v4 & 0xFF00;
-    v6 = v5;
-    LOBYTE(v5) = HIBYTE(v5);
-    HIBYTE(v5) = v6;
-    R26_ = v5;
+    R26_ = (uint8)(v4 >> 8);
     uint16 v7 = R20_ + R24_;
     if (__CFADD__uint16(R20_, R24_))
       v7 = -1;
     R24_ = v7;
-    v8 = R26_ | v7 & 0xFF00;
-    if (v8 == -1)
+    uint16 v8 = R26_ | v7 & 0xFF00;
+    if (v8 == 0xffff)
       v8 = 255;
     *v2-- = v8;
     --mbn_var_3D;
@@ -210,9 +196,6 @@ void MotherBrain_CalcHdma_Up_Up(void) {  // 0xADE0A6
 }
 
 void MotherBrain_CalcHdma_Up_UpLeft(void) {  // 0xADE124
-  char v6; // t0
-  int16 v8;
-
   hdma_table_2[0] = 255;
   hdma_table_2[1] = 255;
   Enemy_MotherBrain *E = Get_MotherBrain(0);
@@ -227,17 +210,13 @@ void MotherBrain_CalcHdma_Up_UpLeft(void) {  // 0xADE124
     if (R22_ < R18_)
       v4 = 0;
     R22_ = v4;
-    uint16 v5 = v4 & 0xFF00;
-    v6 = v5;
-    LOBYTE(v5) = HIBYTE(v5);
-    HIBYTE(v5) = v6;
-    R36 = v5;
+    R36 = v4 >> 8;
     uint16 v7 = R24_ - R20_;
     if (R24_ < R20_)
       v7 = 0;
     R24_ = v7;
-    v8 = R36 | v7 & 0xFF00;
-    if (v8 == -1)
+    uint16 v8 = R36 | v7 & 0xFF00;
+    if (v8 == 0xffff)
       v8 = 255;
     *v2-- = v8;
     --mbn_var_3D;
@@ -264,16 +243,12 @@ void MotherBrain_CalcHdma_Down(void) {  // 0xADE1A6
 }
 
 void MotherBrain_CalcHdma_Down_DownRight(void) {  // 0xADE216
-  int16 v1;
-  char v6; // t0
-  int16 v8;
-
   hdma_table_2[0] = 255;
   hdma_table_2[1] = 255;
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   R18_ = kTanTable[LOBYTE(E->mbn_var_3A)];
   R20_ = kTanTable[LOBYTE(E->mbn_var_3B)];
-  v1 = E->mbn_var_3D - 32;
+  uint16 v1 = E->mbn_var_3D - 32;
   uint16 *dst = hdma_table_2 + 1;
   do {
     *dst++ = 255;
@@ -284,16 +259,12 @@ void MotherBrain_CalcHdma_Down_DownRight(void) {  // 0xADE216
     if (__CFADD__uint16(R18_, R22_))
       v4 = -1;
     R22_ = v4;
-    uint16 v5 = v4 & 0xFF00;
-    v6 = v5;
-    LOBYTE(v5) = HIBYTE(v5);
-    HIBYTE(v5) = v6;
-    R26_ = v5;
+    R26_ = v4 >> 8;
     uint16 v7 = R20_ + R24_;
     if (__CFADD__uint16(R20_, R24_))
       v7 = -1;
     R24_ = v7;
-    v8 = R26_ | v7 & 0xFF00;
+    uint16 v8 = R26_ | v7 & 0xFF00;
     if (v8 == -1)
       v8 = 255;
     *dst++ = v8;
@@ -302,16 +273,12 @@ void MotherBrain_CalcHdma_Down_DownRight(void) {  // 0xADE216
 }
 
 void MotherBrain_CalcHdma_Down_Down(void) {  // 0xADE293
-  int16 v1;
-  char v6; // t0
-  int16 v8;
-
   hdma_table_2[0] = 255;
   hdma_table_2[1] = 255;
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   R18_ = kTanTable[(uint8)-LOBYTE(E->mbn_var_3A)];
   R20_ = kTanTable[LOBYTE(E->mbn_var_3B)];
-  v1 = E->mbn_var_3D - 32;
+  uint16 v1 = E->mbn_var_3D - 32;
   uint16 *dst = hdma_table_2 + 1;
   do {
     *dst++ = 255;
@@ -322,17 +289,13 @@ void MotherBrain_CalcHdma_Down_Down(void) {  // 0xADE293
     if (R22_ < R18_)
       v4 = 0;
     R22_ = v4;
-    uint16 v5 = v4 & 0xFF00;
-    v6 = v5;
-    LOBYTE(v5) = HIBYTE(v5);
-    HIBYTE(v5) = v6;
-    R26_ = v5;
+    R26_ = v4 >> 8;
     uint16 v7 = R20_ + R24_;
     if (__CFADD__uint16(R20_, R24_))
       v7 = -1;
     R24_ = v7;
-    v8 = R26_ | v7 & 0xFF00;
-    if (v8 == -1)
+    uint16 v8 = R26_ | v7 & 0xFF00;
+    if (v8 == 0xffff)
       v8 = 255;
     *dst++ = v8;
     ++mbn_var_3D;
@@ -340,16 +303,12 @@ void MotherBrain_CalcHdma_Down_Down(void) {  // 0xADE293
 }
 
 void MotherBrain_CalcHdma_Down_DownLeft(void) {  // 0xADE314
-  int16 v1;
-  char v6; // t0
-  int16 v8;
-
   hdma_table_2[0] = 255;
   hdma_table_2[1] = 255;
   Enemy_MotherBrain *E = Get_MotherBrain(0);
   R18_ = kTanTable[(uint8)-LOBYTE(E->mbn_var_3A)];
   R20_ = kTanTable[(uint8)-LOBYTE(E->mbn_var_3B)];
-  v1 = E->mbn_var_3D - 32;
+  uint16 v1 = E->mbn_var_3D - 32;
   uint16 *dst = hdma_table_2 + 1;
   do {
     *dst++ = 255;
@@ -360,16 +319,13 @@ void MotherBrain_CalcHdma_Down_DownLeft(void) {  // 0xADE314
     if (R22_ < R18_)
       v4 = 0;
     R22_ = v4;
-    uint16 v5 = v4 & 0xFF00;
-    v6 = v5;
-    LOBYTE(v5) = HIBYTE(v5);
-    HIBYTE(v5) = v6;
+    uint16 v5 = v4 >> 8;
     R26_ = v5;
     uint16 v7 = R24_ - R20_;
     if (R24_ < R20_)
       v7 = 0;
     R24_ = v7;
-    v8 = R26_ | v7 & 0xFF00;
+    uint16 v8 = R26_ | v7 & 0xFF00;
     if (!v8)
       v8 = 255;
     *dst++ = v8;

@@ -38,18 +38,14 @@ void SoftReset(void) {
 }
 
 void SaveToSram(uint16 a) {  // 0x818000
-  char v0 = a;
-  uint16 v2;
-  int16 v7;
-  int16 v11;
+  uint16 v7;
+  uint16 v11;
 
-  R20_ = 0;
-  R18_ = 2 * (v0 & 3);
+  uint16 R20 = 0;
+  uint16 R18 = 2 * (a & 3);
   for (int i = 94; i >= 0; i -= 2)
     player_data_saved[i >> 1] = *(uint16 *)((char *)&equipped_items + i);
-  LOBYTE(v2) = HIBYTE(area_index);
-  HIBYTE(v2) = area_index;
-  uint16 v3 = v2;
+  uint16 v3 = area_index * 256;
   uint16 v4 = 0;
   do {
     explored_map_tiles_saved[v3 >> 1] = *(uint16 *)&map_tiles_explored[v4];
@@ -59,18 +55,18 @@ void SaveToSram(uint16 a) {  // 0x818000
   PackMapToSave();
   sram_save_station_index = load_station_index;
   sram_area_index = area_index;
-  uint16 v5 = kOffsetToSaveSlot[R18_ >> 1];
+  uint16 v5 = kOffsetToSaveSlot[R18 >> 1];
   uint16 *v6 = player_data_saved;
   do {
     v7 = *v6++;
     *(uint16 *)(&g_sram[2 * (v5 >> 1)]) = v7;
-    R20_ += v7;
+    R20 += v7;
     v5 += 2;
   } while (v6 != plm_instruction_timer);
-  uint16 v8 = R18_;
-  uint16 v9 = R20_;
-  int v10 = R18_ >> 1;
-  *(uint16 *)(&g_sram[2 * v10]) = R20_;
+  uint16 v8 = R18;
+  uint16 v9 = R20;
+  int v10 = R18 >> 1;
+  *(uint16 *)(&g_sram[2 * v10]) = R20;
   *(uint16 *)(&g_sram[2 * v10 + 0x1FF0]) = v9;
   v11 = ~v9;
   *(uint16 *)(&g_sram[2 * v10 + 8]) = v11;
@@ -2038,16 +2034,11 @@ void FileSelectMap_3_LoadAreaSelectBackgroundTilemap(void) {  // 0x81A582
 }
 
 void LoadAreaSelectBackgroundTilemap(uint16 j) {  // 0x81A58A
-  VramWriteEntry *v2;
-  int16 v3;
-
   uint16 v1 = vram_write_queue_tail;
-  v2 = gVramWriteEntry(vram_write_queue_tail);
+  VramWriteEntry *v2 = gVramWriteEntry(vram_write_queue_tail);
   v2->size = 2048;
-  LOBYTE(v3) = HIBYTE(j);
-  HIBYTE(v3) = j;
-  v2->src.addr = 8 * v3 - 16614;
-  *(uint16 *)&v2->src.bank = 129;
+  v2->src.addr = 8 * 256 * j + addr_kAreaSelectBackgroundTilemaps;
+  v2->src.bank = 0x81;
   v2->vram_dst = (reg_BG3SC & 0xFC) << 8;
   vram_write_queue_tail = v1 + 7;
 }

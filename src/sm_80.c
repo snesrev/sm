@@ -735,20 +735,17 @@ void QueueSfx1_Max6(uint16 a) {  // 0x809049
 }
 
 void QueueSfx1_Internal(uint16 a) {  // 0x809051
-  uint16 v2;
-
   sfx_max_queued[0] = a;
   if ((uint8)((sfx_writepos[0] - sfx_readpos[0]) & 0xF) < (uint8)a) {
-    LOBYTE(v2) = HIBYTE(a);
-    HIBYTE(v2) = (sfx_writepos[0] - sfx_readpos[0]) & 0xF;
+    uint8 v2 = GET_HIBYTE(a);
     if (!debug_disable_sounds && game_state < 0x28u && (power_bomb_explosion_status & 0x8000u) == 0) {
-      uint16 v1 = sfx_writepos[0];
-      uint16 v3 = sfx_writepos[0] + 1;
-      if ((uint8)(sfx_writepos[0] + 1) >= 0x10u)
+      uint8 v1 = sfx_writepos[0];
+      uint8 v3 = sfx_writepos[0] + 1;
+      if (v3 >= 0x10u)
         v3 = 0;
       if (v3 == sfx_readpos[0]) {
-        if (v2 < *(uint16 *)&sfx1_queue[v1])
-          *(uint16 *)&sfx1_queue[v1] = v2;
+        if (v2 < sfx1_queue[v1])
+          sfx1_queue[v1] = v2;
       } else {
         sfx1_queue[sfx_writepos[0]] = v2;
         sfx_writepos[0] = v3;
@@ -779,21 +776,17 @@ void QueueSfx2_Max6(uint16 a) {  // 0x8090CB
 }
 
 void QueueSfx2_Internal(uint16 a) {  // 0x8090D3
-  uint16 v1;
-  uint16 v2;
-
   sfx_max_queued[1] = a;
   if ((uint8)((sfx_writepos[1] - sfx_readpos[1]) & 0xF) < (uint8)a) {
-    LOBYTE(v2) = HIBYTE(a);
-    HIBYTE(v2) = (sfx_writepos[1] - sfx_readpos[1]) & 0xF;
+    uint8 v2 = GET_HIBYTE(a);
     if (!debug_disable_sounds && game_state < 0x28u && (power_bomb_explosion_status & 0x8000u) == 0) {
-      LOBYTE(v1) = sfx_writepos[1];
+      uint8 v1 = sfx_writepos[1];
       uint8 v3 = sfx_writepos[1] + 1;
-      if ((uint8)(sfx_writepos[1] + 1) >= 0x10u)
+      if (v3 >= 0x10u)
         v3 = 0;
       if (v3 == sfx_readpos[1]) {
-        if (v2 < *(uint16 *)&sfx2_queue[v1])
-          *(uint16 *)&sfx2_queue[v1] = v2;
+        if (v2 < sfx2_queue[v1])
+          sfx2_queue[v1] = v2;
       } else {
         sfx2_queue[sfx_writepos[1]] = v2;
         sfx_writepos[1] = v3;
@@ -826,17 +819,15 @@ void QueueSfx3_Max6(uint16 a) {  // 0x80914D
 void QueueSfx3_Internal(uint16 a) {  // 0x809155
   sfx_max_queued[2] = a;
   if ((uint8)((sfx_writepos[2] - sfx_readpos[2]) & 0xF) < (uint8)a) {
-    uint16 v2 = 0;
-    LOBYTE(v2) = HIBYTE(a);
-    HIBYTE(v2) = (sfx_writepos[2] - sfx_readpos[2]) & 0xF;
+    uint8 v2 = GET_HIBYTE(a);
     if (!debug_disable_sounds && game_state < 0x28u && (power_bomb_explosion_status & 0x8000u) == 0) {
-      uint16 v1 = sfx_writepos[2];
-      int v3 = sfx_writepos[2] + 1;
+      uint8 v1 = sfx_writepos[2];
+      uint8 v3 = sfx_writepos[2] + 1;
       if (v3 >= 0x10u)
         v3 = 0;
       if (v3 == sfx_readpos[2]) {
-        if (v2 < *(uint16 *)&sfx3_queue[v1])
-          *(uint16 *)&sfx3_queue[v1] = v2;
+        if (v2 < sfx3_queue[v1])
+          sfx3_queue[v1] = v2;
       } else {
         sfx3_queue[sfx_writepos[2]] = v2;
         sfx_writepos[2] = v3;

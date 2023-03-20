@@ -4362,25 +4362,17 @@ void Ridley_Func_115(void) {  // 0xA6D97D
 }
 
 void Ridley_Func_116(void) {  // 0xA6D9A8
-  int16 v1;
-  int16 v3;
-  char v4; // t0
-
   Enemy_Ridley *E = Get_Ridley(0);
   R18_ = abs16(E->ridley_var_B);
-  v1 = R18_ + abs16(E->ridley_var_C);
+  uint16 v1 = R18_ + abs16(E->ridley_var_C);
   if (v1) {
     uint16 v2 = v1 - R18_;
     if (sign16(v2 - R18_))
       v2 = R18_;
-    v3 = (4 * v2) & 0xF00;
-    v4 = v3;
-    LOBYTE(v3) = HIBYTE(v3);
-    HIBYTE(v3) = v4;
-    uint16 v5 = 2 * v3;
-    if (v5 >= 0xEu)
-      v5 = 14;
-    uint16 v6 = g_word_A6D9ED[v5 >> 1];
+    int v5 = (((4 * v2) & 0xF00) >> 8);
+    if (v5 >= 7)
+      v5 = 7;
+    uint16 v6 = g_word_A6D9ED[v5];
     if ((E->ridley_var_C & 0x8000u) == 0)
       v6 >>= 1;
     E->ridley_var_08 = v6;
@@ -4540,54 +4532,27 @@ LABEL_7:
 }
 
 void sub_A6DC13(uint16 j) {  // 0xA6DC13
-  int16 *v5;
-  int16 v6;
-  int16 v7;
-  char v8; // t0
-  int16 v9;
-  int16 v10;
-  OamEnt *v11;
-  int16 v13;
-  int16 v15;
-
-  const uint16 *v1 = (const uint16 *)RomPtr_A6(j);
-  uint16 v2 = j + 2;
-  R24_ = *v1;
-  uint16 v3 = oam_next_ptr;
+  const uint8 *p = RomPtr_A6(j);
+  int n = GET_WORD(p);
+  p += 2;
+  int v3 = oam_next_ptr;
   do {
-    const uint8 *v4 = RomPtr_A6(v2);
-    v5 = (int16 *)v4;
-    v6 = v4[2] << 8;
-    if ((v4[2] & 0x80) != 0)
-      v6 |= 0xFFu;
-    v8 = v6;
-    LOBYTE(v7) = HIBYTE(v6);
-    HIBYTE(v7) = v8;
-    v9 = R20_ + v7 - layer1_y_pos;
+    int16 v9 = R20_ + (int8)p[2] - layer1_y_pos;
     if (v9 >= 0 && sign16(v9 - 224)) {
-      R26_ = v9;
-      v10 = R18_ + GET_WORD(v4) - layer1_x_pos;
-      v11 = gOamEnt(v3);
-      *(uint16 *)&v11->xcoord = v10;
-      if ((v10 & 0x100) != 0) {
-        int v12 = v3 >> 1;
-        R28_ = kOamExtra_Address_And_X8Large[v12];
-        v13 = kOamExtra_X8Small_And_Large[v12] | *(uint16 *)RomPtr_RAM(R28_);
-        *(uint16 *)RomPtr_RAM(R28_) = v13;
-      }
-      if (*v5 < 0) {
-        int v14 = v3 >> 1;
-        R28_ = kOamExtra_Address_And_X8Large[v14];
-        v15 = kOamExtra_X8Small_And_Large[v14 + 1] | *(uint16 *)RomPtr_RAM(R28_);
-        *(uint16 *)RomPtr_RAM(R28_) = v15;
-      }
-      *(uint16 *)&v11->ycoord = R26_;
-      *(uint16 *)&v11->charnum = R22_ | *(int16 *)((char *)v5 + 3);
+      uint16 v10 = R18_ + GET_WORD(p) - layer1_x_pos;
+      OamEnt *v11 = gOamEnt(v3);
+      v11->xcoord = v10;
+      int v12 = v3 >> 1;
+      if ((v10 & 0x100) != 0)
+        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v12]) |= kOamExtra_X8Small_And_Large[v12];
+      if (sign16(GET_WORD(p)))
+        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v12]) |= kOamExtra_X8Small_And_Large[v12 + 1];
+      v11->ycoord = v9;
+      *(uint16 *)&v11->charnum = R22_ | GET_WORD(p + 3);
       v3 = (v3 + 4) & 0x1FF;
     }
-    v2 += 5;
-    --R24_;
-  } while (R24_);
+    p += 5;
+  } while (--n);
   oam_next_ptr = v3;
 }
 

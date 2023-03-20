@@ -3599,44 +3599,22 @@ uint8 AdvancePaletteFadeForAllPalettes(void) {  // 0x82DA02
 }
 
 uint16 CalculateNthTransitionColorFromXtoY(uint16 a, uint16 k, uint16 j) {  // 0x82DA4A
-  int16 v3;
-  char v4; // t0
-  int16 v8;
-
-  uint16 v7 = CalculateNthTransitionColorComponentFromXtoY(a, k & 0x1F, j & 0x1F);
-  v8 = v7 | (32 * CalculateNthTransitionColorComponentFromXtoY(a, (k >> 5) & 0x1F, (j >> 5) & 0x1F));
-  v3 = 4
-    * CalculateNthTransitionColorComponentFromXtoY(
-      a,
-      ((uint16)(k >> 2) >> 8) & 0x1F,
-      ((uint16)(j >> 2) >> 8) & 0x1F);
-  v4 = v3;
-  LOBYTE(v3) = HIBYTE(v3);
-  HIBYTE(v3) = v4;
-  return v8 | v3;
+  return CalculateNthTransitionColorComponentFromXtoY(a, k & 0x1F, j & 0x1F) |
+         CalculateNthTransitionColorComponentFromXtoY(a, (k >> 5) & 0x1F, (j >> 5) & 0x1F) << 5 |
+         CalculateNthTransitionColorComponentFromXtoY(a, (k >> 10) & 0x1F, (j >> 10) & 0x1F) << 10;
 }
 
 uint16 CalculateNthTransitionColorComponentFromXtoY(uint16 a, uint16 k, uint16 j) {  // 0x82DAA6
-  int16 v4;
-  char v6; // t0
-  int16 v8;
-
   if (!a)
     return k;
-  v4 = a - 1;
+  uint16 v4 = a - 1;
   if (v4 == palette_change_denom)
     return j;
   R20_ = v4 + 1;
   R18_ = j - k;
-  uint16 v5 = abs16(j - k);
-  v6 = v5;
-  LOBYTE(v5) = HIBYTE(v5);
-  HIBYTE(v5) = v6;
-  uint16 RegWord = SnesDivide(v5 & 0xFF00, palette_change_denom - R20_ + 1);
+  uint16 RegWord = SnesDivide((abs16(j - k) << 8) & 0xFF00, palette_change_denom - R20_ + 1);
   R18_ = sign16(R18_) ? -RegWord : RegWord;
-  LOBYTE(v8) = HIBYTE(k);
-  HIBYTE(v8) = k;
-  return (uint16)(R18_ + v8) >> 8;
+  return (uint16)(R18_ + (k << 8)) >> 8;
 }
 
 uint8 sub_82DAF7(uint16 a) {  // 0x82DAF7

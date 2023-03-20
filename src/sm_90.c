@@ -2484,7 +2484,6 @@ void InitializeMiniMapBroken(void) {  // 0x90A8EF
 
 void UpdateMinimap(void) {  // 0x90A91B
   int16 v4;
-  uint16 v5;
   int16 v10;
   int16 v11;
 
@@ -2511,16 +2510,10 @@ void UpdateMinimap(void) {  // 0x90A91B
     }
     R50 = v3;
     bg3_tilemap_offset = 2 * v4;
-    LOBYTE(v5) = HIBYTE(*(uint16 *)&map_tiles_explored[v3]);
-    HIBYTE(v5) = *(uint16 *)&map_tiles_explored[v3];
     int v6 = bg3_tilemap_offset >> 1;
-    R24_ = kShr0xFc00[v6] & v5;
-    LOBYTE(v5) = HIBYTE(*(uint16 *)&map_tiles_explored[v3 + 4]);
-    HIBYTE(v5) = *(uint16 *)&map_tiles_explored[v3 + 4];
-    R26_ = kShr0xFc00[v6] & v5;
-    LOBYTE(v5) = HIBYTE(*(uint16 *)&map_tiles_explored[v3 + 8]);
-    HIBYTE(v5) = *(uint16 *)&map_tiles_explored[v3 + 8];
-    R28_ = kShr0xFc00[v6] & v5;
+    R24_ = kShr0xFc00[v6] & swap16(*(uint16 *)&map_tiles_explored[v3]);
+    R26_ = kShr0xFc00[v6] & swap16(*(uint16 *)&map_tiles_explored[v3 + 4]);
+    R28_ = kShr0xFc00[v6] & swap16(*(uint16 *)&map_tiles_explored[v3 + 8]);
     R9_.bank = 130;
     R9_.addr = kPauseMenuMapData[area_index];
     *(uint16 *)((char *)&R14_ + 1) = R9_.addr;
@@ -2629,37 +2622,31 @@ void AdjustMapBitsForMapPageSpill(void) {  // 0x90AB75
   LOBYTE(R44) = map_tiles_explored[(uint8)R48];
   HIBYTE(R44) = IndirReadByte(R9_, 0);
   if ((uint8)R34 == 32) {
-    uint16 v1 = R44;
-    HIBYTE(R38) = HIBYTE(v1);
-    HIBYTE(R24_) = v1;
+    HIBYTE(R38) = HIBYTE(R44);
+    HIBYTE(R24_) = R44;
   } else {
-    uint16 v2 = R44;
-    LOBYTE(R38) = HIBYTE(v2);
-    LOBYTE(R24_) = v2;
+    LOBYTE(R38) = HIBYTE(R44);
+    LOBYTE(R24_) = R44;
   }
   LOBYTE(R44) = map_tiles_explored[v0 + 4];
   R9_.addr += 4;
   HIBYTE(R44) = IndirReadByte(R9_, 0);
   if ((uint8)R34 == 32) {
-    uint16 v3 = R44;
-    HIBYTE(R40) = HIBYTE(v3);
-    HIBYTE(R26_) = v3;
+    HIBYTE(R40) = HIBYTE(R44);
+    HIBYTE(R26_) = R44;
   } else {
-    uint16 v4 = R44;
-    LOBYTE(R40) = HIBYTE(v4);
-    LOBYTE(R26_) = v4;
+    LOBYTE(R40) = HIBYTE(R44);
+    LOBYTE(R26_) = R44;
   }
   LOBYTE(R44) = map_tiles_explored[v0 + 8];
   R9_.addr += 4;
   HIBYTE(R44) = IndirReadByte(R9_, 0);
   if ((uint8)R34 == 32) {
-    uint16 v5 = R44;
-    HIBYTE(R42) = HIBYTE(v5);
-    HIBYTE(R28_) = v5;
+    HIBYTE(R42) = HIBYTE(R44);
+    HIBYTE(R28_) = R44;
   } else {
-    uint16 v6 = R44;
-    LOBYTE(R42) = HIBYTE(v6);
-    LOBYTE(R28_) = v6;
+    LOBYTE(R42) = HIBYTE(R44);
+    LOBYTE(R28_) = R44;
   }
 }
 
@@ -3370,15 +3357,11 @@ void Missile_Func1(uint16 k) {  // 0x90B2F6
 }
 
 void SuperMissileBlockCollDetect_Y(void) {  // 0x90B366
-  int16 v1;
-  int16 v2;
-  char v3; // t0
-
   int v0 = projectile_index >> 1;
   if ((projectile_type[v0] & 0xF00) == 512 || (projectile_type[v0] & 0xF00) == 2048) {
     uint8 v5 = projectile_variables[v0];
     if (*((uint8 *)projectile_variables + projectile_index + 1)) {
-      v1 = abs16(projectile_bomb_y_speed[v0]) & 0xFF00;
+      uint16 v1 = abs16(projectile_bomb_y_speed[v0]) & 0xFF00;
       if (sign16(v1 - 2816)) {
         int v4 = projectile_index >> 1;
         if ((projectile_type[v4] & 0xF00) != 2048) {
@@ -3386,10 +3369,7 @@ void SuperMissileBlockCollDetect_Y(void) {  // 0x90B366
           return;
         }
       } else {
-        v3 = v1;
-        LOBYTE(v2) = HIBYTE(v1);
-        HIBYTE(v2) = v3;
-        R18_ = v2 - 10;
+        R18_ = (v1 >> 8) - 10;
         if ((projectile_bomb_y_speed[v0] & 0x8000u) == 0) {
           uint16 v6 = projectile_index;
           projectile_y_pos[v5 >> 1] = projectile_y_pos[v0] - R18_;
@@ -3422,15 +3402,11 @@ void Projectile_Func4(uint16 k) {  // 0x90B4A6
 }
 
 void SuperMissileBlockCollDetect_X(void) {  // 0x90B406
-  int16 v1;
-  int16 v2;
-  char v3; // t0
-
   int v0 = projectile_index >> 1;
   if ((projectile_type[v0] & 0xF00) == 512 || (projectile_type[v0] & 0xF00) == 2048) {
     uint8 v5 = projectile_variables[v0];
     if (*((uint8 *)projectile_variables + projectile_index + 1)) {
-      v1 = abs16(projectile_bomb_x_speed[v0]) & 0xFF00;
+      uint16 v1 = abs16(projectile_bomb_x_speed[v0]) & 0xFF00;
       if (sign16(v1 - 2816)) {
         int v4 = projectile_index >> 1;
         if ((projectile_type[v4] & 0xF00) != 2048) {
@@ -3438,10 +3414,7 @@ void SuperMissileBlockCollDetect_X(void) {  // 0x90B406
           return;
         }
       } else {
-        v3 = v1;
-        LOBYTE(v2) = HIBYTE(v1);
-        HIBYTE(v2) = v3;
-        R18_ = v2 - 10;
+        R18_ = (v1 >> 8) - 10;
         if ((projectile_bomb_x_speed[v0] & 0x8000u) == 0) {
           uint16 v6 = projectile_index;
           projectile_x_pos[v5 >> 1] = projectile_x_pos[v0] - R18_;
@@ -4167,9 +4140,6 @@ void ProjectileReflection(void) {  // 0x90BE00
 }
 
 void HudSelectionHandler_MissilesOrSuperMissiles(void) {  // 0x90BE62
-  uint16 v2;
-  char v6;
-
   if ((button_config_shoot_x & joypad1_newkeys) == 0 && (button_config_shoot_x & joypad1_newinput_samusfilter) == 0
       || !(Samus_CanFireSuperMissile() & 1)) {
     return;
@@ -4200,12 +4170,9 @@ LABEL_10:;
     int v1 = R20_ >> 1;
     projectile_timers[v1] = 4;
     uint16 v3 = hud_item_index;
-    LOBYTE(v2) = HIBYTE(v3);
-    v6 = v3;
-    HIBYTE(v2) = hud_item_index;
-    R18_ = v2;
-    projectile_type[v1] |= v2 | 0x8000;
-    uint16 v4 = 2 * (v6 & 0xF);
+    R18_ = swap16(hud_item_index);
+    projectile_type[v1] |= R18_ | 0x8000;
+    uint16 v4 = 2 * (v3 & 0xF);
     if (!cinematic_function)
       QueueSfx1_Max6(kNonBeamProjectile_Sfx[v4 >> 1]);
     InitializeProjectileSpeedOfType();
@@ -4254,9 +4221,6 @@ void Missile_Func2(void) {  // 0x90BF46
 }
 
 void HudSelectionHandler_MorphBall(void) {  // 0x90BF9D
-  uint16 v3;
-  char v6;
-
   if ((button_config_shoot_x & joypad1_lastkeys) != 0) {
     if (hud_item_index == 3) {
       if ((power_bomb_flag & 0x8000u) == 0) {
@@ -4273,13 +4237,11 @@ void HudSelectionHandler_MorphBall(void) {  // 0x90BF9D
                 }
               }
               R20_ = v2;
-              LOBYTE(v3) = HIBYTE(hud_item_index);
-              HIBYTE(v3) = hud_item_index;
-              R18_ = v3;
+              R18_ = swap16(hud_item_index);
               int v4 = v2 >> 1;
-              uint16 v5 = v3 | projectile_type[v4];
+              uint16 v5 = R18_ | projectile_type[v4];
               projectile_type[v4] = v5;
-              v6 = HIBYTE(v5);
+              uint8 v6 = HIBYTE(v5);
               projectile_dir[v4] = 0;
               projectile_x_pos[v4] = samus_x_pos;
               projectile_y_pos[v4] = samus_y_pos;
@@ -5380,10 +5342,6 @@ static const uint16 kBombSpread_Tab2[5] = { 0, 1, 2, 1, 0 };
 static const uint16 kBombSpread_Tab3[5] = { 0, 0, 0x8000, 0, 0 };
 
 void ProjPreInstr_SpreadBomb(uint16 k) {  // 0x90D8F7
-  int16 v13;
-  int16 v17;
-  uint16 v9;
-
   int v1 = k >> 1;
   if ((projectile_dir[v1] & 0xF0) != 0) {
     ClearProjectile(k);
@@ -5417,13 +5375,11 @@ void ProjPreInstr_SpreadBomb(uint16 k) {  // 0x90D8F7
     }
     k = projectile_index;
     int v8 = projectile_index >> 1;
-    LOBYTE(v9) = HIBYTE(projectile_bomb_x_speed[v8]);
-    HIBYTE(v9) = projectile_bomb_x_speed[v8];
-    R20_ = v9 & 0xFF00;
-    v9 = (uint8)v9;
-    R18_ = v9;
-    if ((v9 & 0x80) != 0) {
-      R18_ = v9 & 0x7F;
+    uint16 t = projectile_bomb_x_speed[v8];
+    R20_ = t << 8;
+    R18_ = t >> 8;
+    if (t & 0x8000) {
+      R18_ = R18_ & 0x7F;
       uint16 v11 = projectile_bomb_x_subpos[v8];
       v3 = v11 < R20_;
       projectile_bomb_x_subpos[v8] = v11 - R20_;
@@ -5437,26 +5393,22 @@ void ProjPreInstr_SpreadBomb(uint16 k) {  // 0x90D8F7
   }
   if (BlockCollSpreadBomb(k) & 1) {
     int v12 = projectile_index >> 1;
-    v17 = projectile_bomb_x_speed[v12];
-    LOBYTE(v13) = HIBYTE(v17);
-    HIBYTE(v13) = v17;
-    R20_ = v13 & 0xFF00;
-    R18_ = HIBYTE(v17) & 0x7F;
-    uint16 v15;
-    if (v17 >= 0) {
-      projectile_bomb_x_speed[v12] = v17 | 0x8000;
+    uint16 t = projectile_bomb_x_speed[v12];
+    R20_ = t << 8;
+    R18_ = (t >> 8) & 0x7F;
+    if (t & 0x8000) {
+      projectile_bomb_x_speed[v12] = t | 0x8000;
       uint16 v16 = projectile_bomb_x_subpos[v12];
       bool v3 = v16 < R20_;
       projectile_bomb_x_subpos[v12] = v16 - R20_;
-      v15 = projectile_x_pos[v12] - (v3 + R18_);
+      projectile_x_pos[v12] -= v3 + R18_;
     } else {
-      projectile_bomb_x_speed[v12] = v17 & 0x7FFF;
+      projectile_bomb_x_speed[v12] = t & 0x7FFF;
       uint16 v14 = projectile_bomb_x_subpos[v12];
       bool v3 = __CFADD__uint16(R20_, v14);
       projectile_bomb_x_subpos[v12] = R20_ + v14;
-      v15 = R18_ + v3 + projectile_x_pos[v12];
+      projectile_x_pos[v12] += R18_ + v3;
     }
-    projectile_x_pos[v12] = v15;
   }
 }
 
@@ -6356,97 +6308,68 @@ void Samus_CalcDisplacementMoveRight(void) {  // 0x90E4AD
 }
 
 void Samus_CalcSpeed_X(void) {  // 0x90E4E6
-  int16 v1;
-  uint16 v3;
-  char v4; // t1
-  uint16 v5;
-  char v6; // tt
-  uint16 v7;
-  char v8; // t1
-  uint16 v9;
-  char v10; // tt
-
   uint16 v0 = samus_x_speed_divisor;
   if (!sign16(samus_x_speed_divisor - 5))
     v0 = 4;
-  v1 = 2 * v0;
-  if (v1) {
-    switch (v1) {
-    case 2: {
-      bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, R20_);
-      R20_ += samus_x_extra_run_subspeed;
-      LOBYTE(v3) = (uint16)(samus_x_extra_run_speed + v2 + R18_) >> 8;
-      HIBYTE(v3) = samus_x_extra_run_speed + v2 + R18_;
-      v3 >>= 1;
-      v4 = v3;
-      LOBYTE(v3) = HIBYTE(v3);
-      HIBYTE(v3) = v4;
-      R18_ = (uint8)v3;
-      samus_total_x_speed = (uint8)v3;
-      R22_ = v3 & 0xFF00;
-      R20_ = (v3 & 0xFF00) + (R20_ >> 1);
-      samus_total_x_subspeed = R20_;
-      break;
-    }
-    case 4: {
-      bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, R20_);
-      R20_ += samus_x_extra_run_subspeed;
-      LOBYTE(v5) = (uint16)(samus_x_extra_run_speed + v2 + R18_) >> 8;
-      HIBYTE(v5) = samus_x_extra_run_speed + v2 + R18_;
-      v5 >>= 2;
-      v6 = v5;
-      LOBYTE(v5) = HIBYTE(v5);
-      HIBYTE(v5) = v6;
-      R18_ = (uint8)v5;
-      samus_total_x_speed = (uint8)v5;
-      R22_ = v5 & 0xFF00;
-      R20_ = (v5 & 0xFF00) + (R20_ >> 2);
-      samus_total_x_subspeed = R20_;
-      break;
-    }
-    case 6: {
-      bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, R20_);
-      R20_ += samus_x_extra_run_subspeed;
-      LOBYTE(v7) = (uint16)(samus_x_extra_run_speed + v2 + R18_) >> 8;
-      HIBYTE(v7) = samus_x_extra_run_speed + v2 + R18_;
-      v7 >>= 3;
-      v8 = v7;
-      LOBYTE(v7) = HIBYTE(v7);
-      HIBYTE(v7) = v8;
-      R18_ = (uint8)v7;
-      samus_total_x_speed = (uint8)v7;
-      R22_ = v7 & 0xFF00;
-      R20_ = (v7 & 0xFF00) + (R20_ >> 3);
-      samus_total_x_subspeed = R20_;
-      break;
-    }
-    case 8: {
-      bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, R20_);
-      R20_ += samus_x_extra_run_subspeed;
-      LOBYTE(v9) = (uint16)(samus_x_extra_run_speed + v2 + R18_) >> 8;
-      HIBYTE(v9) = samus_x_extra_run_speed + v2 + R18_;
-      v9 >>= 4;
-      v10 = v9;
-      LOBYTE(v9) = HIBYTE(v9);
-      HIBYTE(v9) = v10;
-      R18_ = (uint8)v9;
-      samus_total_x_speed = (uint8)v9;
-      R22_ = v9 & 0xFF00;
-      R20_ = (v9 & 0xFF00) + (R20_ >> 4);
-      samus_total_x_subspeed = R20_;
-      break;
-    }
-    default:
-      Unreachable();
-      while (1)
-        ;
-    }
-  } else {
+  switch (v0) {
+  case 0: {
     bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, R20_);
     R20_ += samus_x_extra_run_subspeed;
     samus_total_x_subspeed = R20_;
     R18_ += samus_x_extra_run_speed + v2;
     samus_total_x_speed = R18_;
+    break;
+  }
+  case 1: {
+    bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, R20_);
+    R20_ += samus_x_extra_run_subspeed;
+    uint16 t = samus_x_extra_run_speed + v2 + R18_;
+    uint16 v3 = swap16(swap16(t) >> 1);
+    R18_ = (uint8)v3;
+    samus_total_x_speed = (uint8)v3;
+    R22_ = v3 & 0xFF00;
+    R20_ = R22_ + (R20_ >> 1);
+    samus_total_x_subspeed = R20_;
+    break;
+  }
+  case 2: {
+    bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, R20_);
+    R20_ += samus_x_extra_run_subspeed;
+    uint16 t = samus_x_extra_run_speed + v2 + R18_;
+    uint16 v5 = swap16(swap16(t) >> 2);
+    R18_ = (uint8)v5;
+    samus_total_x_speed = (uint8)v5;
+    R22_ = v5 & 0xFF00;
+    R20_ = (v5 & 0xFF00) + (R20_ >> 2);
+    samus_total_x_subspeed = R20_;
+    break;
+  }
+  case 3: {
+    bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, R20_);
+    R20_ += samus_x_extra_run_subspeed;
+    uint16 t = samus_x_extra_run_speed + v2 + R18_;
+    uint16 v7 = swap16(swap16(t) >> 3);
+    R18_ = (uint8)v7;
+    samus_total_x_speed = (uint8)v7;
+    R22_ = v7 & 0xFF00;
+    R20_ = (v7 & 0xFF00) + (R20_ >> 3);
+    samus_total_x_subspeed = R20_;
+    break;
+  }
+  case 4: {
+    bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, R20_);
+    R20_ += samus_x_extra_run_subspeed;
+    uint16 t = samus_x_extra_run_speed + v2 + R18_;
+    uint16 v9 = swap16(swap16(t) >> 4);
+    R18_ = (uint8)v9;
+    samus_total_x_speed = (uint8)v9;
+    R22_ = v9 & 0xFF00;
+    R20_ = (v9 & 0xFF00) + (R20_ >> 4);
+    samus_total_x_subspeed = R20_;
+    break;
+  }
+  default:
+    Unreachable();
   }
 }
 
@@ -6872,8 +6795,6 @@ void Samus_JumpCheck(void) {  // 0x90EAB3
 }
 
 void Samus_Func10(void) {  // 0x90EB02
-  int16 v0;
-
   projectile_init_speed_samus_moved_left = 0;
   projectile_init_speed_samus_moved_left_fract = 0;
   projectile_init_speed_samus_moved_right = 0;
@@ -6884,9 +6805,7 @@ void Samus_Func10(void) {  // 0x90EB02
   projectile_init_speed_samus_moved_down_fract = 0;
   samus_anim_frame_skip = 0;
   new_projectile_direction_changed_pose = 0;
-  LOBYTE(v0) = HIBYTE(UNUSED_word_7E0DFA);
-  HIBYTE(v0) = UNUSED_word_7E0DFA;
-  UNUSED_word_7E0DFA = v0 & 0xFF00;
+  UNUSED_word_7E0DFA <<= 8;
   WORD(g_ram[0xa10]) = *(uint16 *)&samus_pose_x_dir;
 }
 

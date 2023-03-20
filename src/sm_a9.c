@@ -1272,57 +1272,27 @@ void MotherBrain_DrawNeckSegment(void) {  // 0xA993CB
 }
 
 void MotherBrain_AddSpritemapToOam(uint16 j) {  // 0xA993EE
-  int16 *v5;
-  int16 v6;
-  int16 v7;
-  char v8; // t0
-  int16 v10;
-  int16 v12;
-  OamEnt *v13;
-  int16 v15;
-  int16 v17;
-
-  const uint16 *v1 = (const uint16 *)RomPtr_A9(j);
-  uint16 v2 = j + 2;
-  R24_ = *v1;
-  uint16 v3 = oam_next_ptr;
+  const uint8 *p = RomPtr_A9(j);
+  int n = GET_WORD(p);
+  p += 2;
+  int v3 = oam_next_ptr;
   do {
-    const uint8 *v4 = RomPtr_A9(v2);
-    v5 = (int16 *)v4;
-    v6 = v4[2] << 8;
-    if ((v4[2] & 0x80) != 0)
-      v6 |= 0xFFu;
-    v8 = v6;
-    LOBYTE(v7) = HIBYTE(v6);
-    HIBYTE(v7) = v8;
-    uint16 v9 = R20_ + v7;
-    bool v11 = v9 < layer1_y_pos;
-    v10 = v9 - layer1_y_pos;
-    v11 = !v11;
+    int16 v10 = R20_ + (int8)p[2] - layer1_y_pos;
     if (v10 >= 0) {
-      R26_ = v10;
-      v12 = R18_ + v11 + *(uint16 *)v4 - layer1_x_pos;
-      v13 = gOamEnt(v3);
-      *(uint16 *)&v13->xcoord = v12;
-      if ((v12 & 0x100) != 0) {
-        int v14 = v3 >> 1;
-        R28_ = kOamExtra_Address_And_X8Large[v14];
-        v15 = kOamExtra_X8Small_And_Large[v14] | *(uint16 *)RomPtr_RAM(R28_);
-        *(uint16 *)RomPtr_RAM(R28_) = v15;
-      }
-      if (*v5 < 0) {
-        int v16 = v3 >> 1;
-        R28_ = kOamExtra_Address_And_X8Large[v16];
-        v17 = kOamExtra_X8Small_And_Large[v16 + 1] | *(uint16 *)RomPtr_RAM(R28_);
-        *(uint16 *)RomPtr_RAM(R28_) = v17;
-      }
-      *(uint16 *)&v13->ycoord = R26_;
-      *(uint16 *)&v13->charnum = R22_ | *(int16 *)((char *)v5 + 3);
+      uint16 v12 = R18_ + GET_WORD(p) - layer1_x_pos;
+      OamEnt *v13 = gOamEnt(v3);
+      v13->xcoord = v12;
+      int v14 = v3 >> 1;
+      if ((v12 & 0x100) != 0)
+        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v14]) |= kOamExtra_X8Small_And_Large[v14];
+      if (sign16(GET_WORD(p)))
+        *(uint16 *)RomPtr_RAM(kOamExtra_Address_And_X8Large[v14]) |= kOamExtra_X8Small_And_Large[v14 + 1];
+      v13->ycoord = v10;
+      *(uint16 *)&v13->charnum = R22_ | GET_WORD(p + 3);
       v3 = (v3 + 4) & 0x1FF;
     }
-    v2 += 5;
-    --R24_;
-  } while (R24_);
+    p += 5;
+  } while (--n);
   oam_next_ptr = v3;
 }
 

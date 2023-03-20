@@ -1415,7 +1415,6 @@ void Shaktool_DCD7(uint16 k) {  // 0xAADCD7
 }
 
 void Shaktool_DD25(uint16 k) {  // 0xAADD25
-  char v6; // t0
   int16 v7;
 
   Enemy_Shaktool *E = Get_Shaktool(k);
@@ -1441,10 +1440,7 @@ void Shaktool_DD25(uint16 k) {  // 0xAADD25
     }
     E->shakt_var_D = 0;
     uint16 v5 = CalculateAngleOfEnemyXfromEnemyY(k, E->shakt_var_E);
-    v6 = v5;
-    LOBYTE(v5) = HIBYTE(v5);
-    HIBYTE(v5) = v6;
-    v7 = v5 & 0xFF00;
+    v7 = v5 << 8;
     uint16 v8;
     if ((E->shakt_parameter_1 & 0x8000u) != 0)
       v8 = v7 - 0x4000;
