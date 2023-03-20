@@ -78,7 +78,8 @@ static bool g_display_perf;
 static int g_curr_fps;
 static int g_ppu_render_flags = 0;
 static int g_snes_width, g_snes_height;
-static int g_sdl_audio_mixer_volume = SDL_MIX_MAXVOLUME;
+static const int MIX_MAXVOLUME = 100;
+static int g_audio_mixer_volume = MIX_MAXVOLUME;
 static struct RendererFuncs g_renderer_funcs;
 static uint32 g_gamepad_modifiers;
 static uint16 g_gamepad_last_cmd[kGamepadBtn_Count];
@@ -224,11 +225,12 @@ static void SDLCALL AudioCallback(void *userdata, Uint8 *stream, int len) {
       g_audiobuffer_end = g_audiobuffer + g_frames_per_block * g_audio_channels * sizeof(int16);
     }
     int n = IntMin(len, g_audiobuffer_end - g_audiobuffer_cur);
-    if (g_sdl_audio_mixer_volume == SDL_MIX_MAXVOLUME) {
+    if (g_audio_mixer_volume == MIX_MAXVOLUME) {
       memcpy(stream, g_audiobuffer_cur, n);
     } else {
       SDL_memset(stream, 0, n);
-      SDL_MixAudioFormat(stream, g_audiobuffer_cur, AUDIO_S16, n, g_sdl_audio_mixer_volume);
+      const int current_volume = IntMin(IntMax(0, (SDL_MIX_MAXVOLUME*g_audio_mixer_volume)/MIX_MAXVOLUME), SDL_MIX_MAXVOLUME);
+      SDL_MixAudioFormat(stream, g_audiobuffer_cur, AUDIO_S16, n, current_volume);
     }
     g_audiobuffer_cur += n;
     stream += n;
@@ -742,28 +744,21 @@ static int GetVolumeLevel() {
 #if SYSTEM_VOLUME_MIXER_AVAILABLE
   return GetApplicationVolume();
 #else
-  return g_sdl_audio_mixer_volume;
+  return g_audio_mixer_volume;
 #endif
 }
 
 static void SetVolumeLevel(int new_volume) {
+  g_audio_mixer_volume = IntMin(IntMax(0, new_volume), MIX_MAXVOLUME);
 #if SYSTEM_VOLUME_MIXER_AVAILABLE
-  int new_volume = IntMin(IntMax(0, new_volume), 100);
-  SetApplicationVolume(new_volume);
-  printf("[System Volume]=%i\n", new_volume);
-#else
-  g_sdl_audio_mixer_volume = IntMin(IntMax(0, new_volume), SDL_MIX_MAXVOLUME);
-  printf("[SDL mixer volume]=%i\n", g_sdl_audio_mixer_volume);
+  SetApplicationVolume(g_audio_mixer_volume);
 #endif
+  printf("[Mixer Volume]=%i\n", g_audio_mixer_volume);
 }
 
 static void HandleVolumeAdjustment(int volume_adjustment) {
   int current_volume = GetVolumeLevel();
-#if SYSTEM_VOLUME_MIXER_AVAILABLE
   int new_volume = current_volume + volume_adjustment * 5;
-#else
-  int new_volume = current_volume + volume_adjustment * (SDL_MIX_MAXVOLUME >> 4);
-#endif
   SetVolumeLevel(new_volume);
 }
 
