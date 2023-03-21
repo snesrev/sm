@@ -19,7 +19,7 @@ Note: *Make sure you're using MINGW64, otherwise it won't work.*
   * [MSYS2](https://www.msys2.org)
 
 1. Install MSYS2 on your machine.
-2. Clone the SM repository. `git clone https://github.com/snesrev/sm`
+2. Clone the SM repository. `git clone --recursive https://github.com/snesrev/sm`
 3. Place the copy of your rom in the main directory.
 4. Install the necessary dependencies by inputting this command in the terminal.
 ```sh
