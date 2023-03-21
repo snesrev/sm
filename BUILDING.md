@@ -62,7 +62,7 @@ Download VS installer. On installer prompt, make sure you're on "Workloads" and 
 
 # Linux/MacOS
 
-Cd to your SM root folder and open the terminal and type:
+CD to your SM root folder and open the terminal and type:
 ```sh
 make
 ```
