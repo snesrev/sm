@@ -1,6 +1,7 @@
 # Requirements
   * A Super Metroid rom (Make sure to rename it to `sm.smc`)
   * libsdl2-dev
+  * Super Metroid repo `git clone --recursive https://github.com/snesrev/sm`
   
  For Linux/MacOS you must install these for your desired OS:
  * Ubuntu/Debian: `sudo apt install libsdl2-dev`
@@ -14,26 +15,26 @@
 
 Dependencies and requirements:
 
-Note: *Make sure you're using MINGW64, otherwise it won't work.*
   * The `libsdl2-dev` library
   * [MSYS2](https://www.msys2.org)
+  
+Note: *Make sure you're using MINGW64 and you're in `sm` folder in the terminal.*
 
 1. Install MSYS2 on your machine.
-2. Clone the SM repository. `git clone --recursive https://github.com/snesrev/sm`
-3. Place the copy of your rom in the main directory.
-4. Install the necessary dependencies by inputting this command in the terminal.
+2. Place the copy of your rom in the main directory.
+3. Install the necessary dependencies by inputting this command in the terminal.
+
 ```sh
 pacman -S mingw-w64-x86_64-SDL2 && pacman -S make && pacman -S mingw-w64-x86_64-gcc
 ```
-5. Type `sdl2-config --cflags`, it should output:
+4. Type `sdl2-config --cflags`, it should output:
 ```sh
 -IC:/msys64/mingw64/include/SDL2 -Dmain=SDL_main
 ```
-6. After that type `sdl2-config --libs`, should output:
+5. After that type `sdl2-config --libs`, should output:
 ```sh
 -LC:/msys64/mingw64/lib -lmingw32 -mwindows -lSDL2main -lSDL2
 ```
-NOTE: *Make sure you're in the `sm` directory.*
 
 After you've done installing everything, cd to `sm` folder. Type `make`
 In order to speed up the compilation, type `make -j16`
@@ -87,7 +88,7 @@ Dependencies and requirements:
 4. Type `pacman -S git switch-dev switch-sdl2 switch-tools` in the terminal to install the `switch-sdl2` library.
 5. CD to `switch` folder by typing `cd src/platfrom/switch` in the terminal on the `sm` root folder.
 6. type `make` to compile the Switch Port.
-7. Transfer the `.ini`, `nro`, `ncap` and the your rom file to the Switch.
+7. Transfer the `.ini`, `nro`, `ncap` and your rom file to the Switch.
 
 **OPTIONAL STEP**
 
