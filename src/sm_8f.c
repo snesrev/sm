@@ -515,8 +515,8 @@ void DoorCode_SetupElevatubeFromSouth(void) {  // 0x8FE26C
 
 void DoorCode_SetupElevatubeFromNorth(void) {  // 0x8FE291
   *(uint16 *)&room_main_asm_variables[4] = 256;
-  strcpy((uint8 *)&room_main_asm_variables[2], "@");
-  strcpy((uint8 *)&room_main_asm_variables[6], " ");
+  strcpy((char *)&room_main_asm_variables[2], "@");
+  strcpy((char *)&room_main_asm_variables[6], " ");
   CallSomeSamusCode(0);
   SpawnHardcodedPlm(&unk_8FE2B1);
 }
@@ -637,8 +637,8 @@ void DoorCode_CeresElevatorShaft(void) {  // 0x8FE4E0
   reg_M7X = 128;
   reg_M7Y = 1008;
   irq_enable_mode7 = 1;
-  strcpy((uint8 *)room_main_asm_variables, "\"");
-  strcpy((uint8 *)&room_main_asm_variables[2], "<");
+  strcpy((char *)room_main_asm_variables, "\"");
+  strcpy((char *)&room_main_asm_variables[2], "<");
 }
 
 void DoorCode_CeresElevatorShaft_2(void) {  // 0x8FE513
@@ -659,7 +659,7 @@ static const uint16 kRoomCode_SpawnCeresFallingDebris_Tab[16] = {  // 0x8FE525
 void RoomCode_SpawnCeresFallingDebris(void) {
 
   if (ceres_status && (-- * (uint16 *)room_main_asm_variables, *(int16 *)room_main_asm_variables < 0)) {
-    strcpy((uint8 *)room_main_asm_variables, "\b");
+    strcpy((char *)room_main_asm_variables, "\b");
     uint16 v0 = addr_stru_869734;
     if (random_number & 0x8000)
       v0 = addr_stru_869742;
@@ -684,7 +684,7 @@ LABEL_6:
       earthquake_type = v0;
     }
   } else if (NextRandom() < 0x200u) {
-    strcpy((uint8 *)room_main_asm_variables, "*");
+    strcpy((char *)room_main_asm_variables, "*");
     v0 = 23;
     goto LABEL_6;
   }
@@ -701,7 +701,7 @@ LABEL_6:
       *(uint16 *)&room_main_asm_variables[2] = v0;
     }
   } else if (NextRandom() < 0x180u) {
-    strcpy((uint8 *)room_main_asm_variables, "*");
+    strcpy((char *)room_main_asm_variables, "*");
     v0 = 26;
     goto LABEL_6;
   }
