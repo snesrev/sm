@@ -264,8 +264,8 @@ void MotherBrain_CalcHdma_Down_DownRight(void) {  // 0xADE216
     if (__CFADD__uint16(R20_, R24_))
       v7 = -1;
     R24_ = v7;
-    int16 v8 = R26_ | v7 & 0xFF00;
-    if (v8 == -1)
+    uint16 v8 = R26_ | v7 & 0xFF00;
+    if (v8 == 0xFFFF)
       v8 = 255;
     *dst++ = v8;
     ++mbn_var_3D;
