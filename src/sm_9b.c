@@ -3,7 +3,6 @@
 #include "variables.h"
 #include "funcs.h"
 
-
 #define g_off_9BA4B3 ((uint16*)RomFixedPtr(0x9ba4b3))
 #define g_off_9BA4CB ((uint16*)RomFixedPtr(0x9ba4cb))
 #define g_off_9BA4E3 ((uint16*)RomFixedPtr(0x9ba4e3))
@@ -44,8 +43,6 @@
 #define kGrappleBeam_Ext_Yvel ((uint16*)RomFixedPtr(0x9bc0ef))
 #define kGrappleBeam_Init_EndAngle ((uint16*)RomFixedPtr(0x9bc104))
 
-
-
 static const uint8 kDeathAnimationFrames[28] = {
   5, 5, 5, 5, 1, 5, 5, 0, 1,
   0, 5, 5, 5, 5, 5, 5, 5, 1,
@@ -73,16 +70,16 @@ static const uint8 kIsGrappleBannedForMovementType[28] = {
 };
 
 void ProjectileTrail_Func5(uint16 k, uint16 j) {  // 0x9BA3CC
-  ProjectileInsts_GetValue(k);
-  if ((ceres_status & 0x8000u) == 0) {
+  uint16 R22 = ProjectileInsts_GetValue(k);
+  uint16 r18, r20;
+  if ((ceres_status & 0x8000) == 0) {
     int v2 = k >> 1;
-    R18_ = projectile_x_pos[v2];
-    R20_ = projectile_y_pos[v2];
+    r18 = projectile_x_pos[v2];
+    r20 = projectile_y_pos[v2];
   } else {
-    CalcExplosion_Mode7(k);
-    uint16 v10 = R18_;
-    R18_ = layer1_x_pos + R20_;
-    R20_ = layer1_y_pos + v10;
+    Point16U pt = CalcExplosion_Mode7(k);
+    r18 = layer1_x_pos + pt.x;
+    r20 = layer1_y_pos + pt.y;
   }
   int v3 = k >> 1;
   uint16 v4 = projectile_type[v3], v5;
@@ -93,19 +90,19 @@ void ProjectileTrail_Func5(uint16 k, uint16 j) {  // 0x9BA3CC
   } else {
     v5 = g_off_9BA4B3[projectile_type[v3] & 0xF] + 2 * (projectile_dir[v3] & 0xF);
   }
-  uint16 v6 = *(uint16 *)RomPtr_9B(v5) + 4 * R22_;
+  uint16 v6 = *(uint16 *)RomPtr_9B(v5) + 4 * R22;
   const uint8 *p = RomPtr_9B(v6);
   int v7 = j >> 1;
-  projectiletrail_left_y_pos[v7] = R20_ + (int8)p[1] - 4;
-  projectiletrail_left_x_pos[v7] = R18_ + (int8)p[0] - 4;
-  projectiletrail_right_y_pos[v7] = R20_ + (int8)p[3] - 4;
-  projectiletrail_right_x_pos[v7] = R18_ + (int8)p[2] - 4;
+  projectiletrail_left_y_pos[v7] = r20 + (int8)p[1] - 4;
+  projectiletrail_left_x_pos[v7] = r18 + (int8)p[0] - 4;
+  projectiletrail_right_y_pos[v7] = r20 + (int8)p[3] - 4;
+  projectiletrail_right_x_pos[v7] = r18 + (int8)p[2] - 4;
 }
 
 void StartSamusDeathAnimation(void) {  // 0x9BB3A7
   uint16 v0 = samus_movement_type;
   if (samus_movement_type == 3)
-    QueueSfx1_Max6(0x32u);
+    QueueSfx1_Max6(0x32);
   uint16 v1 = kDeathAnimationFrames[v0];
   if (samus_pose_x_dir == 4)
     samus_pose = kPose_D8_FaceL_CrystalFlashEnd;
@@ -131,7 +128,7 @@ uint16 HandleSamusDeathSequence(void) {  // 0x9BB441
   if (sign16(g_word_7E0DE6 - 4))
     QueueTransferOfSamusDeathSequence(2 * g_word_7E0DE6);
   if (sign16(++g_word_7E0DE6 - 60)) {
-    bool v0 = (--game_options_screen_index & 0x8000u) != 0;
+    bool v0 = (--game_options_screen_index & 0x8000) != 0;
     if (!game_options_screen_index || v0) {
       if (g_word_7E0DE4) {
         g_word_7E0DE4 = 0;
@@ -162,8 +159,8 @@ void HandleSamusDeathSequence_Helper2(void) {  // 0x9BB4B6
 }
 
 void CopyPalettesForSamusDeath(uint16 v0) {  // 0x9BB5CE
-  int R20 = g_off_9BB6D2[samus_suit_palette_index >> 1];
-  const uint16 *v1 = (const uint16 *)RomPtr_9B(R20 + v0);
+  int r20 = g_off_9BB6D2[samus_suit_palette_index >> 1];
+  const uint16 *v1 = (const uint16 *)RomPtr_9B(r20 + v0);
   memcpy(&palette_buffer[192], RomPtr_9B(*v1), 32);
   memcpy(&palette_buffer[240], RomPtr_9B(kDeathSequencePals_Suitless[v0 >> 1]), 32);
 }
@@ -199,7 +196,7 @@ void GameState_24_SamusNoHealth_Explosion_1(void) {  // 0x9BB710
 }
 
 uint16 GameState_24_SamusNoHealth_Explosion_2(void) {  // 0x9BB758
-  bool v0 = (--game_options_screen_index & 0x8000u) != 0;
+  bool v0 = (--game_options_screen_index & 0x8000) != 0;
   if (!game_options_screen_index || v0) {
     if (!sign16(++g_word_7E0DE4 - 9)) {
       g_word_7E0DE6 = 21;
@@ -208,10 +205,10 @@ uint16 GameState_24_SamusNoHealth_Explosion_2(void) {  // 0x9BB758
       return 1;
     }
     if (!substate || sign16(g_word_7E0DE4 - 2)) {
-      game_options_screen_index = g_byte_9BB823[(uint16)(2 * g_word_7E0DE4)];
-      CopyPalettesForSamusDeath(2 * g_byte_9BB823[(uint16)(2 * g_word_7E0DE4) + 1]);
+      game_options_screen_index = g_byte_9BB823[(2 * g_word_7E0DE4)];
+      CopyPalettesForSamusDeath(2 * g_byte_9BB823[(2 * g_word_7E0DE4) + 1]);
     } else {
-      game_options_screen_index = g_byte_9BB823[(uint16)(2 * g_word_7E0DE4)];
+      game_options_screen_index = g_byte_9BB823[(2 * g_word_7E0DE4)];
     }
   }
   DrawSamusSuitExploding();
@@ -229,26 +226,18 @@ LABEL_2:
   }
   if (grapple_beam_function != FUNC16(GrappleBeamFunc_Inactive)
       && sign16(grapple_beam_function + 0x3882)) {
-    v0 = *(&kPoseParams[0].direction_shots_fired + (uint16)(8 * samus_pose));
+    v0 = kPoseParams[samus_pose].direction_shots_fired;
     if ((v0 & 0xF0) == 0) {
       if (v0 == grapple_beam_direction)
         return;
       if (grapple_varCF6) {
-        QueueSfx1_Max6(7u);
+        QueueSfx1_Max6(7);
         grapple_beam_function = FUNC16(GrappleBeamFunc_FireGoToCancel);
         return;
       }
     }
     goto LABEL_2;
   }
-}
-
-void UNUSED_sub_9BB8D5(void) {  // 0x9BB8D5
-  int16 v0;
-
-  v0 = *(&kPoseParams[0].direction_shots_fired + (uint16)(8 * samus_pose));
-  if ((v0 & 0xF0) == 0 && v0 != grapple_beam_direction)
-    grapple_beam_direction = *(&kPoseParams[0].direction_shots_fired + (uint16)(8 * samus_pose));
 }
 
 uint8 CheckIfGrappleIsConnectedToBlock(void) {  // 0x9BB8F1
@@ -260,11 +249,7 @@ uint8 CheckIfGrappleIsConnectedToBlock(void) {  // 0x9BB8F1
   return 1;
 }
 
-int ProcessEnemyGrappleBeamColl(uint16 a) {  // 0x9BB907
-  int16 v1;
-  uint16 v3;
-
-  v1 = 2 * a;
+static int ProcessEnemyGrappleBeamColl(uint16 a, uint16 r18) {  // 0x9BB907
   switch (a) {
   case 0:
   case 2:
@@ -276,17 +261,13 @@ int ProcessEnemyGrappleBeamColl(uint16 a) {  // 0x9BB907
   case 5:
     return 0;
   case 6:
-    R18_ = *((uint16 *)RomPtr_A0(R18_) + 3);
+    r18 = *((uint16 *)RomPtr_A0(r18) + 3);
     if ((equipped_items & 0x20) != 0) {
-      R18_ >>= 1;
-      R18_ >>= 1;
-      v3 = R18_;
-    } else {
-      if (equipped_items & 1)
-        R18_ >>= 1;
-      v3 = R18_;
+      r18 >>= 2;
+    } else if (equipped_items & 1) {
+      r18 >>= 1;
     }
-    Samus_DealDamage(v3);
+    Samus_DealDamage(r18);
     samus_invincibility_timer = 96;
     samus_knockback_timer = 5;
     knockback_x_dir = samus_pose_x_dir == 4;
@@ -318,22 +299,16 @@ void HandleConnectingGrapple(void) {  // 0x9BB97C
     grapple_beam_function = FUNC16(GrappleBeamFunc_ConnectedLockedInPlace);
     grapple_beam_length_delta = 0;
   } else {
-    uint16 v0 = 4 * grapple_beam_direction;
+    int v1 = 2 * grapple_beam_direction;
     if (samus_y_speed || samus_y_subspeed) {
-      int v2 = v0 >> 1;
-      grapple_beam_function = g_off_9BC3EE[v2];
-      grapple_beam_tmpD82 = g_off_9BC3EE[v2 + 1];
-      CallGrappleNextFunc(grapple_beam_tmpD82 | 0x9B0000);
+      grapple_beam_function = g_off_9BC3EE[v1];
+      CallGrappleNextFunc(g_off_9BC3EE[v1 + 1] | 0x9B0000);
+    } else if (samus_movement_type == 5) {
+      grapple_beam_function = g_off_9BC416[v1];
+      CallGrappleNextFunc(g_off_9BC416[v1 + 1] | 0x9B0000);
     } else {
-      int v1 = v0 >> 1;
-      if (samus_movement_type == 5) {
-        grapple_beam_function = g_off_9BC416[v1];
-        grapple_beam_tmpD82 = g_off_9BC416[v1 + 1];
-      } else {
-        grapple_beam_function = g_off_9BC3C6[v1];
-        grapple_beam_tmpD82 = g_off_9BC3C6[v1 + 1];
-      }
-      CallGrappleNextFunc(grapple_beam_tmpD82 | 0x9B0000);
+      grapple_beam_function = g_off_9BC3C6[v1];
+      CallGrappleNextFunc(g_off_9BC3C6[v1 + 1] | 0x9B0000);
     }
   }
 }
@@ -388,17 +363,10 @@ void GrappleNext_CrouchAimLeft(void) {  // 0x9BBA29
   HandleConnectingGrapple_StuckInPlace();
 }
 
-void UNUSED_sub_9BBA31(void) {  // 0x9BBA31
-  samus_new_pose_interrupted = 172;
-  HandleConnectingGrapple_StuckInPlace();
-}
-
 void HandleConnectingGrapple_Swinging(void) {  // 0x9BBA61
   samus_special_transgfx_index = 9;
-  R18_ = samus_x_pos - grapple_beam_end_x_pos;
-  R20_ = samus_y_pos - grapple_beam_end_y_pos;
-  uint16 v0 = swap16(CalculateAngleFromXY());
-  *(uint16 *)&grapple_beam_end_subangle = v0;
+  uint16 v0 = swap16(CalculateAngleFromXY(samus_x_pos - grapple_beam_end_x_pos, samus_y_pos - grapple_beam_end_y_pos));
+  grapple_beam_end_angle16 = v0;
   grapple_beam_end_angles_mirror = v0;
   grapple_beam_length_delta = 0;
   if (!sign16(grapple_beam_length - 64))
@@ -408,10 +376,8 @@ void HandleConnectingGrapple_Swinging(void) {  // 0x9BBA61
 
 void HandleConnectingGrapple_StuckInPlace(void) {  // 0x9BBA9B
   samus_special_transgfx_index = 10;
-  R18_ = samus_x_pos - grapple_beam_end_x_pos;
-  R20_ = samus_y_pos - grapple_beam_end_y_pos;
-  uint16 v0 = swap16(CalculateAngleFromXY());
-  *(uint16 *)&grapple_beam_end_subangle = v0;
+  uint16 v0 = swap16(CalculateAngleFromXY(samus_x_pos - grapple_beam_end_x_pos, samus_y_pos - grapple_beam_end_y_pos));
+  grapple_beam_end_angle16 = v0;
   grapple_beam_end_angles_mirror = v0;
   grapple_beam_length_delta = 0;
   if (!sign16(grapple_beam_length - 64))
@@ -421,8 +387,8 @@ void HandleConnectingGrapple_StuckInPlace(void) {  // 0x9BBA9B
 
 uint8 HandleSpecialGrappleBeamAngles(void) {  // 0x9BBAD5
   uint16 v0 = 7;
-  while (*(uint16 *)&grapple_beam_end_subangle != grapple_beam_special_angles[v0].field_0) {
-    if ((--v0 & 0x8000u) != 0)
+  while (grapple_beam_end_angle16 != grapple_beam_special_angles[v0].field_0) {
+    if ((--v0 & 0x8000) != 0)
       return 0;
   }
   samus_new_pose_interrupted = grapple_beam_special_angles[v0].field_2;
@@ -458,10 +424,10 @@ void GrappleBeamFunc_BB64(void) {  // 0x9BBB64
     else
       grapple_beam_length = 64;
   }
-  if (sign16((grapple_beam_end_angle << 8) - 0x4000) || !sign16((grapple_beam_end_angle << 8) + 0x4000))
+  if (sign16((grapple_beam_end_angle_hi << 8) - 0x4000) || !sign16((grapple_beam_end_angle_hi << 8) + 0x4000))
     goto LABEL_13;
   if ((joypad1_lastkeys & 0x200) != 0) {
-    if (grapple_beam_end_angle << 8 == 0x8000 && !grapple_beam_unkD26)
+    if (grapple_beam_end_angle_hi << 8 == 0x8000 && !grapple_beam_unkD26)
       grapple_beam_unkD26 = 256;
     if (grapple_beam_flags && (grapple_beam_flags & 1) != 0)
       grapple_beam_unkD2A = g_word_9BC11A >> 1;
@@ -473,7 +439,7 @@ LABEL_13:
       grapple_beam_unkD2A = 0;
       return;
     }
-    if (grapple_beam_end_angle << 8 == 0x8000 && !grapple_beam_unkD26)
+    if (grapple_beam_end_angle_hi << 8 == 0x8000 && !grapple_beam_unkD26)
       grapple_beam_unkD26 = -256;
     if (grapple_beam_flags && (grapple_beam_flags & 1) != 0)
       grapple_beam_unkD2A = -(g_word_9BC11A >> 1);
@@ -483,18 +449,18 @@ LABEL_13:
 }
 
 void GrappleBeamFunc_BC1F(void) {  // 0x9BBC1F
-  if ((*(uint16 *)&grapple_beam_end_subangle & 0xC000) == 0xC000) {
+  if ((grapple_beam_end_angle16 & 0xC000) == 0xC000) {
     grapple_beam_unkD2C = -(g_word_9BC11C >> 2);
     if (grapple_beam_flags && (grapple_beam_flags & 1) != 0)
       grapple_beam_unkD28 = -(g_word_9BC118 >> 3);
     else
       grapple_beam_unkD28 = -(g_word_9BC118 >> 2);
-  } else if (*(int16 *)&grapple_beam_end_subangle < 0) {
-    if (grapple_beam_end_angle << 8 == 0x8000) {
+  } else if (sign16(grapple_beam_end_angle16)) {
+    if (grapple_beam_end_angle_hi << 8 == 0x8000) {
       grapple_beam_unkD28 = 0;
       grapple_beam_unkD2C = 0;
       uint16 v0 = grapple_beam_unkD26;
-      if ((grapple_beam_unkD26 & 0x8000u) != 0)
+      if ((grapple_beam_unkD26 & 0x8000) != 0)
         v0 = ~(grapple_beam_unkD26 - 1);
       if (sign16(HIBYTE(v0) - 1))
         grapple_beam_unkD26 = 0;
@@ -505,7 +471,7 @@ void GrappleBeamFunc_BC1F(void) {  // 0x9BBC1F
       else
         grapple_beam_unkD28 = -g_word_9BC118;
     }
-  } else if ((*(uint16 *)&grapple_beam_end_subangle & 0x4000) != 0) {
+  } else if ((grapple_beam_end_angle16 & 0x4000) != 0) {
     grapple_beam_unkD2C = g_word_9BC11C;
     if (grapple_beam_flags && (grapple_beam_flags & 1) != 0)
       grapple_beam_unkD28 = g_word_9BC118 >> 1;
@@ -522,9 +488,9 @@ void GrappleBeamFunc_BC1F(void) {  // 0x9BBC1F
 
 void GrappleBeamFunc_BCFF(void) {  // 0x9BBCFF
   grapple_beam_unkD26 += grapple_beam_unkD2A + grapple_beam_unkD28;
-  if (((grapple_beam_unkD26 ^ *(uint16 *)&grapple_beam_end_subangle) & 0x8000u) != 0)
+  if (((grapple_beam_unkD26 ^ grapple_beam_end_angle16) & 0x8000) != 0)
     grapple_beam_unkD26 += grapple_beam_unkD2C;
-  if ((grapple_beam_unkD26 & 0x8000u) == 0) {
+  if ((grapple_beam_unkD26 & 0x8000) == 0) {
     if (grapple_beam_unkD26 >= g_word_9BC11E)
       grapple_beam_unkD26 = g_word_9BC11E;
   } else if ((uint16)-grapple_beam_unkD26 >= g_word_9BC11E) {
@@ -535,7 +501,7 @@ void GrappleBeamFunc_BCFF(void) {  // 0x9BBCFF
 void GrappleBeamFunc_BD44(void) {  // 0x9BBD44
   if (grapple_beam_unkD30 && (button_config_jump_a & joypad1_newkeys) != 0) {
     if (grapple_beam_unkD26) {
-      if ((grapple_beam_unkD26 & 0x8000u) != 0) {
+      if ((grapple_beam_unkD26 & 0x8000) != 0) {
         if (grapple_beam_flags && (grapple_beam_flags & 1) != 0)
           grapple_beam_unkD2E = -(g_word_9BC120 >> 1);
         else
@@ -564,7 +530,7 @@ LABEL_7:
     goto LABEL_8;
   }
   slow_grabble_scrolling_flag = 0;
-  if (grapple_beam_end_angle << 8 != 0x8000)
+  if (grapple_beam_end_angle_hi << 8 != 0x8000)
     goto LABEL_7;
   if (sign16(samus_anim_frame - 64)) {
     samus_anim_frame_timer = 8;
@@ -620,31 +586,31 @@ void GrappleBeamFunc_BEEB(void) {  // 0x9BBEEB
 }
 
 void GrappleBeamFunc_BF1B(void) {  // 0x9BBF1B
-  R22_ = *(&kPoseParams[0].y_offset_to_gfx + (uint16)(8 * samus_pose));
+  uint16 r22 = kPoseParams[samus_pose].y_offset_to_gfx;
   uint16 v0 = 2 * grapple_beam_direction;
   if (samus_pose == kPose_49_FaceL_Moonwalk || samus_pose == kPose_4A_FaceR_Moonwalk || samus_movement_type != 1) {
     int v1 = v0 >> 1;
     x_pos_of_start_of_grapple_beam = kGrappleBeam_OriginX_NoRun[v1] + samus_x_pos;
     x_pos_of_start_of_grapple_beam_prevframe = kGrappleBeam_0x0d1a_offs_NoRun[v1] + samus_x_pos;
-    y_pos_of_start_of_grapple_beam = kGrappleBeam_OriginY_NoRun[v1] + samus_y_pos - R22_;
-    y_pos_of_start_of_grapple_beam_prevframe = kGrappleBeam_0x0d1c_offs_NoRun[v1] + samus_y_pos - R22_;
+    y_pos_of_start_of_grapple_beam = kGrappleBeam_OriginY_NoRun[v1] + samus_y_pos - r22;
+    y_pos_of_start_of_grapple_beam_prevframe = kGrappleBeam_0x0d1c_offs_NoRun[v1] + samus_y_pos - r22;
   } else {
     int v2 = v0 >> 1;
     x_pos_of_start_of_grapple_beam = kGrappleBeam_OriginX_Run[v2] + samus_x_pos;
     x_pos_of_start_of_grapple_beam_prevframe = kGrappleBeam_0x0d1a_offs_Run[v2] + samus_x_pos;
-    y_pos_of_start_of_grapple_beam = kGrappleBeam_OriginY_Run[v2] + samus_y_pos - R22_;
-    y_pos_of_start_of_grapple_beam_prevframe = kGrappleBeam_0x0d1c_offs_Run[v2] + samus_y_pos - R22_;
+    y_pos_of_start_of_grapple_beam = kGrappleBeam_OriginY_Run[v2] + samus_y_pos - r22;
+    y_pos_of_start_of_grapple_beam_prevframe = kGrappleBeam_0x0d1c_offs_Run[v2] + samus_y_pos - r22;
   }
 }
 
 void UpdateGrappleBeamTilesAndIncrFlameCtr(void) {  // 0x9BBFA5
-  UpdateGrappleBeamTiles();
+  UpdateGrappleBeamTiles(); 
   if (sign16(flare_counter - 120))
     ++flare_counter;
 }
 
 void UpdateGrappleBeamTiles(void) {  // 0x9BBFBD
-  if ((--grapple_point_anim_timer & 0x8000u) != 0) {
+  if ((--grapple_point_anim_timer & 0x8000) != 0) {
     grapple_point_anim_timer = 5;
     grapple_point_anim_ptr += 512;
     if ((int16)(grapple_point_anim_ptr - g_off_9BC344) >= 0)
@@ -658,7 +624,7 @@ void UpdateGrappleBeamTiles(void) {  // 0x9BBFBD
   LOBYTE(gVramWriteEntry(v0++)->size) = -102;
   gVramWriteEntry(v0)->size = 25088;
   vram_write_queue_tail = v0 + 2;
-  uint16 v1 = (grapple_beam_end_angle >> 1) & 0xFE;
+  uint16 v1 = (grapple_beam_end_angle_hi >> 1) & 0xFE;
   v0 += 2;
   gVramWriteEntry(v0)->size = 128;
   v0 += 2;
@@ -675,25 +641,25 @@ void HandleGrappleBeamFlare(void) {  // 0x9BC036
       flare_animation_frame = 16;
       flare_animation_timer = 3;
     }
-    if ((--flare_animation_timer & 0x8000u) != 0) {
+    if ((--flare_animation_timer & 0x8000) != 0) {
       uint16 v0 = ++flare_animation_frame;
       if (kFlareAnimDelays_Main[flare_animation_frame] == 254) {
-        R18_ = kFlareAnimDelays_Main[(uint16)(flare_animation_frame + 1)];
-        flare_animation_frame -= R18_;
+        flare_animation_frame -= kFlareAnimDelays_Main[(uint16)(flare_animation_frame + 1)];
         v0 = flare_animation_frame;
       }
       flare_animation_timer = kFlareAnimDelays_Main[v0];
     }
+    uint16 r22;
     if (samus_pose_x_dir == 4)
-      R22_ = flare_animation_frame + g_word_93A22B[0];
+      r22 = flare_animation_frame + g_word_93A22B[0];
     else
-      R22_ = flare_animation_frame + g_word_93A225[0];
-    R20_ = x_pos_of_start_of_grapple_beam_prevframe - layer1_x_pos;
-    R18_ = y_pos_of_start_of_grapple_beam_prevframe - layer1_y_pos;
+      r22 = flare_animation_frame + g_word_93A225[0];
+    uint16 r20 = x_pos_of_start_of_grapple_beam_prevframe - layer1_x_pos;
+    uint16 r18 = y_pos_of_start_of_grapple_beam_prevframe - layer1_y_pos;
     if (((y_pos_of_start_of_grapple_beam_prevframe - layer1_y_pos) & 0xFF00) != 0)
       ;
     else
-      DrawBeamGrappleSpritemap(R22_);
+      DrawBeamGrappleSpritemap(r22, r20, r18);
   }
 }
 
@@ -723,20 +689,21 @@ void CallGrappleBeamFunc(uint32 ea) {
 }
 
 void GrappleBeamHandler(void) {  // 0x9BC490
+  uint16 r18;
   if (grapple_varCF6)
     --grapple_varCF6;
-  samus_grapple_flags &= ~1u;
+  samus_grapple_flags &= ~1;
   CancelGrappleBeamIfIncompatiblePose();
   CallGrappleBeamFunc(grapple_beam_function | 0x9B0000);
   if (grapple_beam_function != FUNC16(GrappleBeamFunc_Inactive)
-      && sign16(grapple_beam_function + 0x37AA)
+      && sign16(grapple_beam_function - FUNC16(GrappleBeamFunc_Cancel))
       && (samus_suit_palette_index & 4) == 0
       && fx_type
-      && (Samus_GetTopBottomBoundary(), (fx_y_pos & 0x8000u) == 0)
-      && sign16(fx_y_pos - R18_)) {
-    grapple_beam_flags |= 1u;
+      && (r18 = Samus_GetBottom_R18(), (fx_y_pos & 0x8000) == 0)
+      && sign16(fx_y_pos - r18)) {
+    grapple_beam_flags |= 1;
   } else {
-    grapple_beam_flags &= ~1u;
+    grapple_beam_flags &= ~1;
   }
 }
 
@@ -756,12 +723,15 @@ void GrappleBeamFunc_Inactive(void) {  // 0x9BC4F0
 }
 
 void GrappleBeamFunc_FireGoToCancel(void) {  // 0x9BC51E
+  uint16 r22;
+
   int v0;
   if (samus_pose == kPose_F0_FaceR_Draygon_Move || samus_pose == kPose_BE_FaceL_Draygon_Move) {
     v0 = CheckBannedDraygonGrappleDirs(samus_pose);
+    r22 = 6;
   } else {
-    R22_ = *(&kPoseParams[0].y_offset_to_gfx + (uint16)(8 * samus_pose));
-    v0 = *(&kPoseParams[0].direction_shots_fired + (uint16)(8 * samus_pose));
+    r22 = kPoseParams[samus_pose].y_offset_to_gfx;
+    v0 = kPoseParams[samus_pose].direction_shots_fired;
     if ((v0 & 0xF0) != 0) {
       grapple_beam_function = FUNC16(GrappleBeamFunc_Cancel);
       return;
@@ -771,27 +741,27 @@ void GrappleBeamFunc_FireGoToCancel(void) {  // 0x9BC51E
   int v1 = v0;
   grapple_beam_extension_x_velocity = kGrappleBeam_Ext_Xvel[v1];
   grapple_beam_extension_y_velocity = kGrappleBeam_Ext_Yvel[v1];
-  *(uint16 *)&grapple_beam_end_subangle = kGrappleBeam_Init_EndAngle[v1];
-  grapple_beam_end_angles_mirror = *(uint16 *)&grapple_beam_end_subangle;
+  grapple_beam_end_angle16 = kGrappleBeam_Init_EndAngle[v1];
+  grapple_beam_end_angles_mirror = grapple_beam_end_angle16;
   grapple_varCF6 = 10;
   if (samus_pose == kPose_49_FaceL_Moonwalk || samus_pose == kPose_4A_FaceR_Moonwalk || samus_movement_type != 1) {
     grapple_beam_origin_x_offset = kGrappleBeam_OriginX_NoRun[v1];
-    grapple_beam_origin_y_offset = kGrappleBeam_OriginY_NoRun[v1] - R22_;
+    grapple_beam_origin_y_offset = kGrappleBeam_OriginY_NoRun[v1] - r22;
     grapple_beam_end_x_pos = kGrappleBeam_OriginX_NoRun[v1] + samus_x_pos;
     x_pos_of_start_of_grapple_beam = grapple_beam_end_x_pos;
     x_pos_of_start_of_grapple_beam_prevframe = kGrappleBeam_0x0d1a_offs_NoRun[v1] + samus_x_pos;
-    grapple_beam_end_y_pos = kGrappleBeam_OriginY_NoRun[v1] + samus_y_pos - R22_;
+    grapple_beam_end_y_pos = kGrappleBeam_OriginY_NoRun[v1] + samus_y_pos - r22;
     y_pos_of_start_of_grapple_beam = grapple_beam_end_y_pos;
-    y_pos_of_start_of_grapple_beam_prevframe = kGrappleBeam_0x0d1c_offs_NoRun[v1] + samus_y_pos - R22_;
+    y_pos_of_start_of_grapple_beam_prevframe = kGrappleBeam_0x0d1c_offs_NoRun[v1] + samus_y_pos - r22;
   } else {
     grapple_beam_origin_x_offset = kGrappleBeam_OriginX_Run[v1];
-    grapple_beam_origin_y_offset = kGrappleBeam_OriginY_Run[v1] - R22_;
+    grapple_beam_origin_y_offset = kGrappleBeam_OriginY_Run[v1] - r22;
     grapple_beam_end_x_pos = kGrappleBeam_OriginX_Run[v1] + samus_x_pos;
     x_pos_of_start_of_grapple_beam = grapple_beam_end_x_pos;
     x_pos_of_start_of_grapple_beam_prevframe = kGrappleBeam_0x0d1a_offs_Run[v1] + samus_x_pos;
-    grapple_beam_end_y_pos = kGrappleBeam_OriginY_Run[v1] + samus_y_pos - R22_;
+    grapple_beam_end_y_pos = kGrappleBeam_OriginY_Run[v1] + samus_y_pos - r22;
     y_pos_of_start_of_grapple_beam = grapple_beam_end_y_pos;
-    y_pos_of_start_of_grapple_beam_prevframe = kGrappleBeam_0x0d1c_offs_Run[v1] + samus_y_pos - R22_;
+    y_pos_of_start_of_grapple_beam_prevframe = kGrappleBeam_0x0d1c_offs_Run[v1] + samus_y_pos - r22;
   }
   grapple_beam_end_x_subpos = 0;
   grapple_beam_end_y_subpos = 0;
@@ -814,13 +784,6 @@ void GrappleBeamFunc_FireGoToCancel(void) {  // 0x9BC51E
   grapple_beam_unkD3C = 0;
   grapple_point_anim_timer = 5;
   grapple_point_anim_ptr = g_off_9BC342;
-  grapple_beam_tmpD82 = 0;
-  grapple_beam_tmpD84 = 0;
-  grapple_beam_y_quarter_subvel = 0;
-  grapple_beam_y_quarter_vel = 0;
-  grapple_beam_tmpD8A = 0;
-  grapple_beam_varD8C = 0;
-  grapple_beam_varD8E = 0;
   grapple_beam_grapple_start_x = 0;
   grapple_beam_unkD38 = 0;
   grapple_beam_unkD36 = 0;
@@ -828,10 +791,10 @@ void GrappleBeamFunc_FireGoToCancel(void) {  // 0x9BC51E
   GrappleFunc_AF87();
   samus_draw_handler = FUNC16(sub_90EB86);
   grapple_walljump_timer = 0;
-  LoadProjectilePalette(2u);
+  LoadProjectilePalette(2);
   palette_buffer[223] = 32657;
   grapple_beam_function = FUNC16(GrappleBeamFunc_Firing);
-  QueueSfx1_Max1(5u);
+  QueueSfx1_Max1(5);
   flare_counter = 1;
   play_resume_charging_beam_sfx = 0;
   if (samus_movement_handler == FUNC16(Samus_MoveHandler_ReleaseFromGrapple))
@@ -840,7 +803,6 @@ void GrappleBeamFunc_FireGoToCancel(void) {  // 0x9BC51E
 
 uint16 CheckBannedDraygonGrappleDirs(uint16 a) {  // 0x9BC6B2
   if (a == kPose_BE_FaceL_Draygon_Move) {
-    R22_ = 6;
     if ((joypad1_lastkeys & kButton_Left) != 0) {
       if ((joypad1_lastkeys & kButton_Down) != 0)
         return 6;
@@ -849,7 +811,6 @@ uint16 CheckBannedDraygonGrappleDirs(uint16 a) {  // 0x9BC6B2
     }
     return 7;
   }
-  R22_ = 6;
   if ((joypad1_lastkeys & kButton_Right) == 0)
     return 2;
   if ((joypad1_lastkeys & kButton_Down) != 0)
@@ -873,7 +834,8 @@ void GrappleBeamFunc_Firing(void) {  // 0x9BC703
     grapple_beam_function = FUNC16(GrappleBeamFunc_Cancel);
     return;
   }
-  int v1 = ProcessEnemyGrappleBeamColl(GrappleBeam_CollDetect_Enemy());
+  PairU16 pair = GrappleBeam_CollDetect_Enemy();
+  int v1 = ProcessEnemyGrappleBeamColl(pair.k, pair.j);
   if (v1 >= 0) {
     if (v1) {
       grapple_beam_function = FUNC16(GrappleBeamFunc_Cancel);
@@ -888,25 +850,14 @@ void GrappleBeamFunc_Firing(void) {  // 0x9BC703
       return;
     }
   }
-  QueueSfx1_Max6(6u);
+  QueueSfx1_Max6(6);
   HandleConnectingGrapple();
   grapple_beam_length_delta = -8;
-  samus_grapple_flags |= 1u;
-}
-
-void UNUSED_sub_9BC759(void) {  // 0x9BC759
-  if ((button_config_shoot_x & joypad1_lastkeys) == 0
-      || (grapple_beam_length -= grapple_beam_length_delta, sign16(grapple_beam_length - 13))) {
-    grapple_beam_function = FUNC16(GrappleBeamFunc_Cancel);
-  } else {
-    BlockCollGrappleBeam();
-  }
+  samus_grapple_flags |= 1;
 }
 
 void GrappleBeamFunc_ConnectedLockedInPlace(void) {  // 0x9BC77E
-  if ((button_config_shoot_x & joypad1_lastkeys) != 0
-      && (GrappleBeam_CollDetect_Enemy() || CheckIfGrappleIsConnectedToBlock() & 1)) {
-    ClearCarry_11();
+  if ((button_config_shoot_x & joypad1_lastkeys) != 0 && (GrappleBeam_CollDetect_Enemy().k || CheckIfGrappleIsConnectedToBlock())) {
   } else {
     grapple_beam_function = FUNC16(GrappleBeamFunc_Cancel);
   }
@@ -921,22 +872,20 @@ void GrappleBeamFunc_Connected_Swinging(void) {  // 0x9BC79D
     GrappleBeamFunc_BCFF();
     GrappleBeamFunc_BD44();
     HandleMovementAndCollForSamusGrapple();
-    if ((grapple_beam_unkD36 & 0x8000u) != 0 && HandleSpecialGrappleBeamAngles() & 1) {
-      ClearCarry_11();
+    if ((grapple_beam_unkD36 & 0x8000) != 0 && HandleSpecialGrappleBeamAngles() & 1) {
       return;
     }
-    if (GrappleBeam_CollDetect_Enemy()) {
-      grapple_beam_flags |= 0x8000u;
+    if (GrappleBeam_CollDetect_Enemy().k) {
+      grapple_beam_flags |= 0x8000;
     } else if (!(CheckIfGrappleIsConnectedToBlock() & 1)) {
       goto LABEL_2;
     }
     BlockFunc_AC11();
-    ClearCarry_11();
     GrappleBeamFunc_BD95();
     return;
   }
 LABEL_2:
-  if (grapple_beam_unkD26 || *(uint16 *)&grapple_beam_end_subangle != 0x8000) {
+  if (grapple_beam_unkD26 || grapple_beam_end_angle16 != 0x8000) {
     PropelSamusFromGrappleSwing();
     grapple_beam_function = FUNC16(GrappleBeamFunc_ReleaseFromSwing);
     samus_movement_handler = FUNC16(Samus_MoveHandler_ReleaseFromGrapple);
@@ -947,7 +896,7 @@ LABEL_2:
 
 void GrappleBeamFunc_Wallgrab(void) {  // 0x9BC814
   if ((button_config_shoot_x & joypad1_lastkeys) != 0 && CheckIfGrappleIsConnectedToBlock() & 1) {
-    ClearCarry_11();
+
   } else {
     grapple_walljump_timer = 30;
     grapple_beam_function = FUNC16(GrappleBeamFunc_C832);
@@ -955,10 +904,8 @@ void GrappleBeamFunc_Wallgrab(void) {  // 0x9BC814
 }
 
 void GrappleBeamFunc_C832(void) {  // 0x9BC832
-  if ((--grapple_walljump_timer & 0x8000u) == 0) {
-    R18_ = 16;
-    R20_ = 0;
-    if (Samus_GrappleWallJumpCheck() & 1)
+  if ((--grapple_walljump_timer & 0x8000) == 0) {
+    if (Samus_GrappleWallJumpCheck(INT16_SHL16(16)))
       grapple_beam_function = FUNC16(GrappleBeamFunc_C9CE);
   } else {
     grapple_beam_function = FUNC16(GrappleBeam_Func2);
@@ -966,11 +913,11 @@ void GrappleBeamFunc_C832(void) {  // 0x9BC832
 }
 
 void GrappleBeamFunc_Cancel(void) {  // 0x9BC856
-  QueueSfx1_Max15(7u);
+  QueueSfx1_Max15(7);
   if (samus_movement_type == kMovementType_16_Grappling)
     Samus_Pose_CancelGrapple();
   else
-    CallSomeSamusCode(0x1Cu);
+    CallSomeSamusCode(0x1C);
   grapple_beam_unkD1E = 0;
   grapple_beam_unkD20 = 0;
   grapple_beam_direction = 0;
@@ -997,7 +944,7 @@ void GrappleBeamFunc_Cancel(void) {  // 0x9BC856
 }
 
 void GrappleBeam_Func2(void) {  // 0x9BC8C5
-  QueueSfx1_Max15(7u);
+  QueueSfx1_Max15(7);
   if (samus_pose == kPose_B2_FaceR_Grapple_Air)
     goto LABEL_5;
   if (samus_pose == kPose_B3_FaceL_Grapple_Air) {
@@ -1006,18 +953,18 @@ LABEL_6:
     goto LABEL_15;
   }
   if (sign16(samus_y_radius - 17)) {
-    if ((*(&kPoseParams[0].direction_shots_fired + (uint16)(8 * samus_pose)) & 0xF0) != 0) {
+    if ((kPoseParams[samus_pose].direction_shots_fired & 0xF0) != 0) {
       if (samus_pose_x_dir == 4)
         samus_new_pose_transitional = kPose_28_FaceL_Crouch;
       else
         samus_new_pose_transitional = kPose_27_FaceR_Crouch;
     } else {
       samus_new_pose_transitional = g_byte_9BC9C4[*(&kPoseParams[0].direction_shots_fired
-                                                    + (uint16)(8 * samus_pose))];
+                                                    + (8 * samus_pose))];
     }
     goto LABEL_15;
   }
-  if ((*(&kPoseParams[0].direction_shots_fired + (uint16)(8 * samus_pose)) & 0xF0) != 0) {
+  if ((kPoseParams[samus_pose].direction_shots_fired & 0xF0) != 0) {
     if (samus_pose_x_dir != 4) {
 LABEL_5:
       samus_new_pose_transitional = kPose_01_FaceR_Normal;
@@ -1026,7 +973,7 @@ LABEL_5:
     goto LABEL_6;
   }
   samus_new_pose_transitional = g_byte_9BC9BA[*(&kPoseParams[0].direction_shots_fired
-                                                + (uint16)(8 * samus_pose))];
+                                                + (8 * samus_pose))];
 LABEL_15:
   samus_hurt_switch_index = 0;
   input_to_pose_calc = 1;
@@ -1060,7 +1007,7 @@ LABEL_15:
 }
 
 void GrappleBeamFunc_C9CE(void) {  // 0x9BC9CE
-  QueueSfx1_Max15(7u);
+  QueueSfx1_Max15(7);
   if (samus_pose_x_dir == 8)
     samus_new_pose_transitional = kPose_84_FaceL_Walljump;
   else
@@ -1107,47 +1054,37 @@ void PropelSamusFromGrappleSwing(void) {  // 0x9BCA65
   int16 v2;
   uint16 v0;
 
-  if ((grapple_beam_unkD26 & 0x8000u) == 0) {
+  if ((grapple_beam_unkD26 & 0x8000) == 0) {
     v0 = 2 * grapple_beam_unkD26;
-    v2 = kSinCosTable8bit_Sext[((uint16)(2 * HIBYTE(*(uint16 *)&grapple_beam_end_subangle)) >> 1) + 64];
+    v2 = kSinCosTable8bit_Sext[HIBYTE(grapple_beam_end_angle16) + 64];
     if (v2 >= 0) {
-      Multiply16x16(v2, v0);
-      samus_y_subspeed = mult_product_lo;
-      samus_y_speed = mult_product_hi;
+      SetHiLo(&samus_y_speed, &samus_y_subspeed, Multiply16x16(v2, v0));
       samus_y_dir = 2;
     } else {
-      Multiply16x16(-v2, v0);
-      samus_y_subspeed = mult_product_lo;
-      samus_y_speed = mult_product_hi;
+      SetHiLo(&samus_y_speed, &samus_y_subspeed, Multiply16x16(-v2, v0));
       samus_y_dir = 1;
     }
   } else {
     v0 = -2 * grapple_beam_unkD26;
-    v1 = kSinCosTable8bit_Sext[((uint16)(2 * HIBYTE(*(uint16 *)&grapple_beam_end_subangle)) >> 1) + 64];
+    v1 = kSinCosTable8bit_Sext[HIBYTE(grapple_beam_end_angle16) + 64];
     if (v1 < 0) {
-      Multiply16x16(-v1, v0);
-      samus_y_subspeed = mult_product_lo;
-      samus_y_speed = mult_product_hi;
+      SetHiLo(&samus_y_speed, &samus_y_subspeed, Multiply16x16(-v1, v0));
       samus_y_dir = 2;
     } else {
-      Multiply16x16(v1, v0);
-      samus_y_subspeed = mult_product_lo;
-      samus_y_speed = mult_product_hi;
+      SetHiLo(&samus_y_speed, &samus_y_subspeed, Multiply16x16(v1, v0));
       samus_y_dir = 1;
     }
   }
   samus_x_accel_mode = 2;
-  R18_ = 3 * (v0 >> 9);
-  R18_ = 64 - R18_;
-  uint16 v3 = abs16(kSinCosTable8bit_Sext[((uint16)(2 * (uint8)(grapple_beam_end_angle - R18_)) >> 1) + 64]);
-  Multiply16x16(v3, v0);
-  samus_x_base_subspeed = mult_product_lo;
-  samus_x_base_speed = mult_product_hi;
+  uint16 r18 = 3 * (v0 >> 9);
+  r18 = 64 - r18;
+  uint16 v3 = abs16(kSinCosTable8bit_Sext[(uint8)(grapple_beam_end_angle_hi - r18) + 64]);
+  SetHiLo(&samus_x_base_speed, &samus_x_base_subspeed, Multiply16x16(v3, v0));
 }
 
 void GrappleBeamFunc_ReleaseFromSwing(void) {  // 0x9BCB8B
-  QueueSfx1_Max15(7u);
-  if ((grapple_beam_unkD26 & 0x8000u) == 0)
+  QueueSfx1_Max15(7);
+  if ((grapple_beam_unkD26 & 0x8000) == 0)
     samus_new_pose_transitional = kPose_52_FaceL_Jump_NoAim_MoveF;
   else
     samus_new_pose_transitional = kPose_51_FaceR_Jump_NoAim_MoveF;

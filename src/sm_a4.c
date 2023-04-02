@@ -88,7 +88,7 @@ const uint16 *Crocomire_Func_4(uint16 k, const uint16 *jp) {  // 0xA486F2
   Enemy_Crocomire *E = Get_Crocomire(0);
   uint16 v1 = abs16(E->base.x_pos - samus_x_pos);
   if (sign16(v1 - 224)) {
-    E->crocom_var_B |= 0x8000u;
+    E->crocom_var_B |= 0x8000;
     E->crocom_var_C = 18;
     return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BC56);
   }
@@ -97,7 +97,7 @@ const uint16 *Crocomire_Func_4(uint16 k, const uint16 *jp) {  // 0xA486F2
 
 const uint16 *Crocomire_Func_5(uint16 k, const uint16 *jp) {  // 0xA48717
   Enemy_Crocomire *E = Get_Crocomire(0);
-  if ((E->crocom_var_B & 0x800) != 0 && (E->crocom_var_B &= ~0x800u, E->crocom_var_D)) {
+  if ((E->crocom_var_B & 0x800) != 0 && (E->crocom_var_B &= ~0x800, E->crocom_var_D)) {
     jp = INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BC30);
     E->crocom_var_C = 12;
   } else if ((int16)(E->base.x_pos - g_word_A486A2) < 0) {
@@ -129,10 +129,9 @@ const uint16 *Crocomire_Func_7(uint16 k, const uint16 *jp) {  // 0xA4876C
   } else {
     uint16 crocom_var_F = E->crocom_var_F;
     if (sign16(crocom_var_F - 18)) {
-      ++E->crocom_var_F;
-      ++E->crocom_var_F;
+      E->crocom_var_F += 2;
       SpawnEnemyProjectileWithGfx(crocom_var_F, cur_enemy_index, addr_stru_868F8F);
-      QueueSfx3_Max6(0x1Cu);
+      QueueSfx3_Max6(0x1C);
     } else {
       jp = INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BBCA);
       E->crocom_var_C = 6;
@@ -182,14 +181,14 @@ const uint16 *Crocomire_Func_11(uint16 k, const uint16 *jp) {  // 0xA487FB
 
 const uint16 *Crocomire_Func_12(uint16 k, const uint16 *jp) {  // 0xA48805
   Enemy_Crocomire *E = Get_Crocomire(0);
-  E->crocom_var_B &= ~0x400u;
+  E->crocom_var_B &= ~0x400;
   return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BCD8);
 }
 
 const uint16 *Crocomire_Func_13(uint16 k, const uint16 *jp) {  // 0xA48812
   Enemy_Crocomire *E = Get_Crocomire(0);
   if ((E->crocom_var_B & 0x800) != 0) {
-    E->crocom_var_B &= ~0x800u;
+    E->crocom_var_B &= ~0x800;
     E->crocom_var_C = 20;
     return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BC30);
   } else if ((int16)(INSTR_ADDR_TO_PTR(0, jp) - addr_kCrocomire_Ilist_BDA2) >= 0) {
@@ -201,7 +200,7 @@ const uint16 *Crocomire_Func_13(uint16 k, const uint16 *jp) {  // 0xA48812
 const uint16 *Crocomire_Func_14(uint16 k, const uint16 *jp) {  // 0xA48836
   Enemy_Crocomire *E = Get_Crocomire(0);
   if ((E->crocom_var_B & 0x800) != 0) {
-    E->crocom_var_B &= ~0x800u;
+    E->crocom_var_B &= ~0x800;
     E->crocom_var_C = 12;
     return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BC30);
   } else if ((int16)(INSTR_ADDR_TO_PTR(0, jp) - addr_kCrocomire_Ilist_BDA2) >= 0) {
@@ -213,7 +212,7 @@ const uint16 *Crocomire_Func_14(uint16 k, const uint16 *jp) {  // 0xA48836
 const uint16 *Crocomire_Func_15(uint16 k, const uint16 *jp) {  // 0xA4885A
   Enemy_Crocomire *E = Get_Crocomire(0);
   if ((E->crocom_var_B & 0x800) != 0) {
-    E->crocom_var_B &= ~0x800u;
+    E->crocom_var_B &= ~0x800;
     E->crocom_var_C = 12;
     return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BC30);
   } else if ((int16)(INSTR_ADDR_TO_PTR(0, jp) - addr_kCrocomire_Ilist_BDA2) >= 0) {
@@ -242,7 +241,7 @@ const uint16 *Crocomire_Func_17(uint16 k, const uint16 *jp) {  // 0xA4889A
     E->crocom_var_D = 1;
     E->crocom_var_E = 10;
     E->crocom_var_C = 12;
-    QueueSfx2_Max6(0x54u);
+    QueueSfx2_Max6(0x54);
   } else {
     Get_Crocomire(cur_enemy_index)->crocom_var_C = 10;
     return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BD8E);
@@ -253,7 +252,7 @@ const uint16 *Crocomire_Func_17(uint16 k, const uint16 *jp) {  // 0xA4889A
 const uint16 *Crocomire_Func_18(uint16 k, const uint16 *jp) {  // 0xA488D2
   const uint16 *result = Crocomire_Func_2(cur_enemy_index, jp);
   Enemy_Crocomire *E = Get_Crocomire(0);
-  E->crocom_var_B |= 0x200u;
+  E->crocom_var_B |= 0x200;
   E->crocom_var_D = 32;
   E->crocom_var_C = 30;
   return result;
@@ -296,7 +295,7 @@ const uint16 *Crocomire_Func_22(uint16 k, const uint16 *jp) {  // 0xA48940
   jp = Crocomire_Func_2(k, jp);
   Enemy_Crocomire *E = Get_Crocomire(0);
   if (!E->crocom_var_D) {
-    E->crocom_var_B |= 0x2000u;
+    E->crocom_var_B |= 0x2000;
     jp = Crocomire_Func_3(k, jp);
     E->crocom_var_C = 36;
   }
@@ -334,11 +333,11 @@ const uint16 *Crocomire_Func_24(uint16 k, const uint16 *jp) {  // 0xA489A8
   if (!E->crocom_var_D || (v2 = E->crocom_var_D == 1, --E->crocom_var_D, v2)) {
     jp = Crocomire_Func_3(k, jp);
     E->crocom_var_C = 40;
-    E->crocom_var_B &= ~0x400u;
+    E->crocom_var_B &= ~0x400;
   } else {
     E->crocom_var_C = 36;
-    Get_Crocomire(0x40u)->crocom_var_D = 0;
-    E->crocom_var_B |= 0x400u;
+    Get_Crocomire(0x40)->crocom_var_D = 0;
+    E->crocom_var_B |= 0x400;
     return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BCD8);
   }
   return jp;
@@ -361,14 +360,14 @@ const uint16 *Crocomire_Func_26(uint16 k, const uint16 *jp) {  // 0xA489F9
     uint16 crocom_var_B = E->crocom_var_B;
     if ((crocom_var_B & 0x4000) != 0) {
       --E->crocom_var_D;
-      QueueSfx2_Max6(0x3Bu);
+      QueueSfx2_Max6(0x3B);
       return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BCD8);
     } else {
       E->crocom_var_B = crocom_var_B & 0xBFFF;
       E->crocom_var_C = 12;
     }
   } else {
-    E->crocom_var_B &= ~0x4000u;
+    E->crocom_var_B &= ~0x4000;
     E->base.instruction_timer = 1;
     E->crocom_var_C = E->crocom_var_F;
     return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BCD8);
@@ -391,12 +390,9 @@ void Crocomire_Init(void) {  // 0xA48A5A
     croco_target_0688 = 0;
     Enemy_Crocomire *E = Get_Crocomire(0);
     E->base.properties = E->base.properties & 0x7BFF | 0x400;
-    static const SpawnHardcodedPlmArgs unk_A48AFA = { 0x20, 0x03, 0xb753 };
-    static const SpawnHardcodedPlmArgs unk_A48B02 = { 0x1e, 0x03, 0xb753 };
-    static const SpawnHardcodedPlmArgs unk_A48B0A = { 0x61, 0x0b, 0xb747 };
-    SpawnHardcodedPlm(&unk_A48AFA);
-    SpawnHardcodedPlm(&unk_A48B02);
-    SpawnHardcodedPlm(&unk_A48B0A);
+    SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x20, 0x03, 0xb753 });
+    SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x1e, 0x03, 0xb753 });
+    SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x61, 0x0b, 0xb747 });
     E->crocom_var_A = 84;
     E->base.current_instruction = addr_kCrocomire_Ilist_E1CC;
     E->base.instruction_timer = 1;
@@ -428,7 +424,7 @@ void Crocomire_Init(void) {  // 0xA48A5A
     camera_distance_index = 2;
     enemy_bg2_tilemap_size = 1024;
     E->base.current_instruction = addr_kCrocomire_Ilist_BADE;
-    E->base.extra_properties |= 4u;
+    E->base.extra_properties |= 4;
     E->base.instruction_timer = 1;
   }
 }
@@ -442,7 +438,7 @@ void Crocomire_Func_27(uint16 k) {  // 0xA48B5B
     if (spritemap_pointer == g_off_A48B79[v1 >> 1])
       break;
     v1 -= 2;
-    if ((v1 & 0x8000u) != 0) {
+    if ((v1 & 0x8000) != 0) {
       Crocomire_8BA4();
       return;
     }
@@ -458,7 +454,6 @@ void Crocomire_8BA4(void) {  // 0xA48BA4
   E1->base.y_pos = E0->base.y_pos;
   uint16 x_pos = E0->base.x_pos;
   if ((int16)(x_pos - layer1_x_pos) >= 0) {
-    R18_ = layer1_x_pos + 256;
     if (sign16(E0->base.x_pos - 128 - (layer1_x_pos + 256)))
       goto LABEL_3;
 LABEL_6:
@@ -512,7 +507,7 @@ void Crocomire_Func_30(void) {  // 0xA48C95
   if (!E->crocom_var_A
       && (((__PAIR32__(E->base.x_pos - E->base.x_width, E->base.x_pos)
             - __PAIR32__(samus_x_radius, E->base.x_width)
-            - __PAIR32__(samus_x_pos, (E->base.x_pos < E->base.x_width) + samus_x_radius)) >> 16) & 0x8000u) != 0) {
+            - __PAIR32__(samus_x_pos, (E->base.x_pos < E->base.x_width) + samus_x_radius)) >> 16) & 0x8000) != 0) {
     NormalEnemyTouchAi();
     samus_x_pos = E->base.x_pos - E->base.x_width - samus_x_radius;
     samus_prev_x_pos = samus_x_pos;
@@ -525,28 +520,28 @@ void Crocomire_Func_31(void) {  // 0xA48CCB
   uint16 j;
 
   if (!door_transition_flag_enemies) {
-    if (Get_Crocomire(0)->base.flash_timer && (enemy_damage_routine_exec_count & 2) != 0) {
+    if (Get_Crocomire(0)->base.flash_timer && (random_enemy_counter & 2) != 0) {
       for (int i = 14; i >= 0; i -= 2)
         palette_buffer[(i >> 1) + 112] = 0x7FFF;
     } else {
-      for (j = 14; (j & 0x8000u) == 0; j -= 2)
+      for (j = 14; (j & 0x8000) == 0; j -= 2)
         palette_buffer[(j >> 1) + 112] = g_word_A4B89D[j >> 1];
     }
   }
 }
 
 const uint16 *Crocomire_Instr_11(uint16 k, const uint16 *jp) {  // 0xA48CFB
-  QueueSfx2_Max6(0x74u);
+  QueueSfx2_Max6(0x74);
   return jp;
 }
 
 const uint16 *Crocomire_Instr_7(uint16 k, const uint16 *jp) {  // 0xA48D07
-  QueueSfx2_Max6(0x25u);
+  QueueSfx2_Max6(0x25);
   return jp;
 }
 
 const uint16 *Crocomire_Instr_19(uint16 k, const uint16 *jp) {  // 0xA48D13
-  QueueSfx2_Max6(0x75u);
+  QueueSfx2_Max6(0x75);
   return jp;
 }
 
@@ -558,7 +553,7 @@ void Crocomire_Func_35(void) {  // 0xA48D1F
     E->crocom_var_20 = v2;
     if (!v2) {
       E->crocom_var_20 = 32;
-      QueueSfx3_Max6(0x22u);
+      QueueSfx3_Max6(0x22);
     }
   }
 }
@@ -582,10 +577,6 @@ void Crocomire_8D47(void) {  // 0xA48D47
 }
 
 void Crocomire_Func_37(void) {  // 0xA48D5E
-  static const SpawnHardcodedPlmArgs unk_A48DC2 = { 0x61, 0x0b, 0xb74b };
-  static const SpawnHardcodedPlmArgs unk_A48E0B = { 0x62, 0x0b, 0xb74b };
-  static const SpawnHardcodedPlmArgs unk_A48E13 = { 0x63, 0x0b, 0xb74b };
-  static const SpawnHardcodedPlmArgs unk_A48EA3 = { 0x4e, 0x03, 0xb757 };
 
   Enemy_Crocomire *E0 = Get_Crocomire(0);
   if (sign16(E0->base.x_pos - 1536)) {
@@ -596,8 +587,7 @@ void Crocomire_Func_37(void) {  // 0xA48D5E
   } else if (sign16(E0->base.x_pos - 1552)) {
     if (!kraid_unk9000) {
       kraid_unk9000 = 1;
-      R18_ = 1536;
-      R20_ = 176;
+      eproj_spawn_pt = (Point16U){ 1536, 176 };
       SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
     }
   } else if (sign16(E0->base.x_pos - 1552)) {
@@ -607,9 +597,8 @@ void Crocomire_Func_37(void) {  // 0xA48D5E
   } else if (sign16(E0->base.x_pos - 1568)) {
     if (!g_word_7E9002) {
       g_word_7E9002 = 1;
-      SpawnHardcodedPlm(&unk_A48DC2);
-      R18_ = 1568;
-      R20_ = 176;
+      SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x61, 0x0b, 0xb74b });
+      eproj_spawn_pt = (Point16U){ 1568, 176 };
       SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
     }
   } else {
@@ -620,10 +609,9 @@ void Crocomire_Func_37(void) {  // 0xA48D5E
     } else if (sign16(x_pos - 1584)) {
       if (!g_word_7E9006) {
         g_word_7E9006 = 1;
-        SpawnHardcodedPlm(&unk_A48E0B);
-        SpawnHardcodedPlm(&unk_A48E13);
-        R18_ = 1584;
-        R20_ = 176;
+        SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x62, 0x0b, 0xb74b });
+        SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x63, 0x0b, 0xb74b });
+        eproj_spawn_pt = (Point16U){ 1584, 176 };
         SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
       }
     } else if ((int16)(x_pos - g_word_A486A4) >= 0) {
@@ -632,30 +620,29 @@ void Crocomire_Func_37(void) {  // 0xA48D5E
       g_word_7E9018 = 1;
       uint16 v3 = cur_enemy_index;
       Enemy_Crocomire *EK = Get_Crocomire(cur_enemy_index);
-      ++EK->crocom_var_A;
-      ++EK->crocom_var_A;
+      EK->crocom_var_A += 2;
       Get_Crocomire(0)->crocom_var_00 = 2;
-      Get_Crocomire(0x40u)->crocom_var_00 = 2;
+      Get_Crocomire(0x40)->crocom_var_00 = 2;
       Get_Crocomire(0x80)->crocom_var_00 = 2;
-      Get_Crocomire(0xC0u)->crocom_var_00 = 2;
-      Get_Crocomire(0x100u)->crocom_var_00 = 2;
-      Get_Crocomire(0x140u)->crocom_var_00 = 2;
+      Get_Crocomire(0xC0)->crocom_var_00 = 2;
+      Get_Crocomire(0x100)->crocom_var_00 = 2;
+      Get_Crocomire(0x140)->crocom_var_00 = 2;
       Get_Crocomire(0)->crocom_var_01 = 0;
-      Get_Crocomire(0x40u)->crocom_var_01 = 0;
+      Get_Crocomire(0x40)->crocom_var_01 = 0;
       Get_Crocomire(0x80)->crocom_var_01 = 0;
-      Get_Crocomire(0xC0u)->crocom_var_01 = 0;
-      Get_Crocomire(0x100u)->crocom_var_01 = 0;
-      Get_Crocomire(0x140u)->crocom_var_01 = 0;
-      QueueSfx2_Max6(0x3Bu);
+      Get_Crocomire(0xC0)->crocom_var_01 = 0;
+      Get_Crocomire(0x100)->crocom_var_01 = 0;
+      Get_Crocomire(0x140)->crocom_var_01 = 0;
+      QueueSfx2_Max6(0x3B);
       *(uint16 *)((uint8 *)&g_word_7E9015 + 1) = 0;
-      SpawnHardcodedPlm(&unk_A48EA3);
+      SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x4e, 0x03, 0xb757 });
       EK->base.current_instruction = addr_kCrocomire_Ilist_BFB0;
       EK->base.instruction_timer = 1;
       EK->base.properties |= kEnemyProps_Tangible;
       Enemy_Crocomire *E1 = Get_Crocomire(cur_enemy_index + 64);
       E1->base.instruction_timer = 0x7FFF;
       E1->base.current_instruction = addr_kCrocomire_Ilist_BF62;
-      Get_Crocomire(0x40u)->base.properties |= 0x100u;
+      Get_Crocomire(0x40)->base.properties |= 0x100;
       EK->crocom_var_E = 0;
       EK->crocom_var_F = 0;
       EK->crocom_var_D = 2048;
@@ -665,70 +652,42 @@ void Crocomire_Func_37(void) {  // 0xA48D5E
 }
 
 void Crocomire_8EE5(void) {  // 0xA48EE5
-  static const SpawnHardcodedPlmArgs unk_A48DC2 = { 0x61, 0x0b, 0xb74b };
-  static const SpawnHardcodedPlmArgs unk_A48E0B = { 0x62, 0x0b, 0xb74b };
-  static const SpawnHardcodedPlmArgs unk_A48E13 = { 0x63, 0x0b, 0xb74b };
-  static const SpawnHardcodedPlmArgs unk_A48EA3 = { 0x4e, 0x03, 0xb757 };
-  static const SpawnHardcodedPlmArgs unk_A48EE9 = { 0x61, 0x0b, 0xb74f };
-  static const SpawnHardcodedPlmArgs unk_A48EF1 = { 0x62, 0x0b, 0xb74f };
-  static const SpawnHardcodedPlmArgs unk_A48EF9 = { 0x63, 0x0b, 0xb74f };
-  static const SpawnHardcodedPlmArgs unk_A48F01 = { 0x64, 0x0b, 0xb74f };
-  static const SpawnHardcodedPlmArgs unk_A48F09 = { 0x65, 0x0b, 0xb74f };
-  static const SpawnHardcodedPlmArgs unk_A48F11 = { 0x66, 0x0b, 0xb74f };
-  static const SpawnHardcodedPlmArgs unk_A48F19 = { 0x67, 0x0b, 0xb74f };
-  static const SpawnHardcodedPlmArgs unk_A48F21 = { 0x68, 0x0b, 0xb74f };
-  static const SpawnHardcodedPlmArgs unk_A48F29 = { 0x69, 0x0b, 0xb74f };
-  static const SpawnHardcodedPlmArgs unk_A48F31 = { 0x6a, 0x0b, 0xb74f };
-  SpawnHardcodedPlm(&unk_A48EE9);
-  SpawnHardcodedPlm(&unk_A48EF1);
-  SpawnHardcodedPlm(&unk_A48EF9);
-  SpawnHardcodedPlm(&unk_A48F01);
-  SpawnHardcodedPlm(&unk_A48F09);
-  SpawnHardcodedPlm(&unk_A48F11);
-  SpawnHardcodedPlm(&unk_A48F19);
-  SpawnHardcodedPlm(&unk_A48F21);
-  SpawnHardcodedPlm(&unk_A48F29);
-  SpawnHardcodedPlm(&unk_A48F31);
-  R18_ = 1536;
-  R20_ = 176;
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x61, 0x0b, 0xb74f });
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x62, 0x0b, 0xb74f });
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x63, 0x0b, 0xb74f });
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x64, 0x0b, 0xb74f });
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x65, 0x0b, 0xb74f });
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x66, 0x0b, 0xb74f });
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x67, 0x0b, 0xb74f });
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x68, 0x0b, 0xb74f });
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x69, 0x0b, 0xb74f });
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x6a, 0x0b, 0xb74f });
+  eproj_spawn_pt = (Point16U){ 1536, 176 };
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
-  R18_ = 1552;
-  R20_ = 192;
+  eproj_spawn_pt = (Point16U){ 1552, 192 };
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
-  R18_ = 1568;
-  R20_ = 176;
+  eproj_spawn_pt = (Point16U){ 1568, 176 };
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
-  R18_ = 1584;
-  R20_ = 192;
+  eproj_spawn_pt = (Point16U){ 1584, 192 };
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
-  R18_ = 1600;
-  R20_ = 192;
+  eproj_spawn_pt = (Point16U){ 1600, 192 };
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
-  R18_ = 1616;
-  R20_ = 192;
+  eproj_spawn_pt = (Point16U){ 1616, 192 };
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
-  R18_ = 1632;
-  R20_ = 192;
+  eproj_spawn_pt = (Point16U){ 1632, 192 };
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
-}
-
-void Crocomire_Func_38(uint16 k) {  // 0xA48FC2
-  Enemy_MoveDown(k);
 }
 
 const uint16 *Crocomire_Instr_2(uint16 k, const uint16 *jp) {  // 0xA48FC7
   earthquake_type = 4;
   earthquake_timer = 5;
-  QueueSfx2_Max6(0x76u);
+  QueueSfx2_Max6(0x76);
   return jp;
 }
 
 const uint16 *Crocomire_Instr_4(uint16 k, const uint16 *jp) {  // 0xA48FDF
-  if ((Get_Crocomire(0)->crocom_var_B & 0x800) == 0) {
-    R18_ = 0;
-    R20_ = -4;
-    Enemy_MoveRight_IgnoreSlopes(cur_enemy_index);
-  }
+  if ((Get_Crocomire(0)->crocom_var_B & 0x800) == 0)
+    Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(-4));
   return jp;
 }
 
@@ -750,36 +709,26 @@ void Crocomire_Func_43(void) {  // 0xA49004
 }
 
 const uint16 *Crocomire_Instr_16(uint16 k, const uint16 *jp) {  // 0xA4901D
-  R18_ = 0;
-  R20_ = -4;
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(-4)) & 1) {
     Get_Crocomire(0)->crocom_var_C = 14;
     return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BF3C);
   } else {
     uint16 v2 = 32;
     if (!sign16(random_number - 2048))
       v2 = -32;
-    R18_ = v2;
     return Crocomire_Func_87(jp, v2 + (random_number & 0xF));
   }
 }
 
 const uint16 *Crocomire_Instr_13(uint16 k, const uint16 *jp) {  // 0xA4905B
-  R18_ = 0;
-  R20_ = 4;
   Enemy_Crocomire *E = Get_Crocomire(0);
-  if ((int16)(((__PAIR32__(E->base.x_pos - E->base.x_width, E->base.x_pos)
-                - (E->base.x_width | 0x1000000)
-                - ((uint16)((E->base.x_pos < E->base.x_width) + 256) | 0x40000)) >> 16)
-              - layer1_x_pos) < 0)
-    Enemy_MoveRight_IgnoreSlopes(cur_enemy_index);
+  if ((int16)(E->base.x_pos - E->base.x_width - 260 - layer1_x_pos) < 0)
+    Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(4));
   return jp;
 }
 
 const uint16 *Crocomire_Instr_18(uint16 k, const uint16 *jp) {  // 0xA4907F
-  R18_ = 0;
-  R20_ = 4;
-  Enemy_MoveRight_IgnoreSlopes(k);
+  Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL16(4));
   return jp;
 }
 
@@ -794,20 +743,18 @@ const uint16 *Crocomire_Instr_17(uint16 k, const uint16 *jp) {  // 0xA49094
 }
 
 void Crocomire_Func_49(void) {  // 0xA49099
-  static const SpawnHardcodedPlmArgs unk_A490D4 = { 0x4e, 0x03, 0xb753 };
-
   Crocomire_Func_50();
   Crocomire_Func_53();
   Crocomire_Func_55();
   Enemy_Crocomire *E = Get_Crocomire(0);
   if (E->crocom_var_A == 62) {
-    QueueMusic_Delayed8(6u);
+    QueueMusic_Delayed8(6);
     E->crocom_var_A = 88;
     E->base.current_instruction = addr_kCrocomire_Ilist_E1D2;
     *(uint16 *)&scrolls[4] = 257;
     debug_disable_minimap = 0;
-    Get_Crocomire(0x40u)->base.properties |= 0x200u;
-    SpawnHardcodedPlm(&unk_A490D4);
+    Get_Crocomire(0x40)->base.properties |= 0x200;
+    SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x4e, 0x03, 0xb753 });
     camera_distance_index = 0;
     croco_target_0688 = 0;
   }
@@ -858,19 +805,14 @@ void Crocomire_Func_52(void) {  // 0xA49136
 }
 
 void Crocomire_Func_53(void) {  // 0xA4916C
-  int16 v0;
-
   if (!--g_word_7E9018) {
     g_word_7E9018 = 6;
-    v0 = random_number & 0x3F;
+    uint16 v0 = random_number & 0x3F;
     if ((random_number & 2) == 0)
       v0 = ~v0;
-    R18_ = Get_Crocomire(0)->base.x_pos + v0;
-    R20_ = (uint16)(random_number & 0x1F00) >> 8;
-    R20_ = lava_acid_y_pos + 16 - R20_;
-    R22_ = 21;
-    R24_ = 0;
-    CreateSpriteAtPos();
+    uint16 x = Get_Crocomire(0)->base.x_pos + v0;
+    uint16 y = lava_acid_y_pos + 16 - ((uint16)(random_number & 0x1F00) >> 8);
+    CreateSpriteAtPos(x, y, 21, 0);
   }
 }
 
@@ -890,19 +832,18 @@ void Crocomire_Func_55(void) {  // 0xA491C1
 
   Crocomire_Func_58();
   Enemy_Crocomire *E0 = Get_Crocomire(0);
-  E0->crocom_var_B &= ~0x800u;
+  E0->crocom_var_B &= ~0x800;
   Crocomire_Func_27(cur_enemy_index);
   Enemy_Crocomire *E = Get_Crocomire(cur_enemy_index);
   if (sign16(E->base.y_pos - 280)) {
     uint16 v3 = 8 * ((reg_BG2VOFS + 288) & 0xFFF8);
-    R18_ = 32;
+    int m = 32;
     do {
       tilemap_stuff[v3 >> 1] = 824;
       v3 += 2;
-      --R18_;
-    } while (R18_);
+    } while (--m);
     nmi_flag_bg2_enemy_vram_transfer = 1;
-    E0->base.extra_properties &= ~0x8000u;
+    E0->base.extra_properties &= ~0x8000;
     crocom_var_D = E->crocom_var_D;
     LOBYTE(E->crocom_var_D) = crocom_var_D + 0x80;
     v7 = __CFADD__uint8(crocom_var_D, 0x80) + HIBYTE(E->crocom_var_D) + 3;
@@ -1087,19 +1028,16 @@ void Crocomire_Func_59(void) {  // 0xA493ED
 
 void Crocomire_Func_60(void) {  // 0xA4943D
   int i;
-  int16 j;
 
   Enemy_Crocomire *E = Get_Crocomire(cur_enemy_index);
-  ++E->crocom_var_A;
-  ++E->crocom_var_A;
+  E->crocom_var_A += 2;
   g_word_7E0692 = 256;
   croco_cur_vline_idx = 0;
   g_word_7E0698 = *(uint16 *)((uint8 *)&g_word_A49BC5 + croco_word_7E069A);
   g_word_7E0694 = g_word_7E0698;
   g_word_7E0696 = *(uint16 *)((uint8 *)&g_word_A49BC7 + croco_word_7E069A);
   g_word_7E068E = *(uint16 *)((uint8 *)&g_word_A49BC9 + croco_word_7E069A);
-  R0_.addr = 0;
-  *(uint16 *)&R0_.bank = *(uint16 *)((uint8 *)&g_word_A49BCB + croco_word_7E069A);
+  uint8 bank = *(uint16 *)((uint8 *)&g_word_A49BCB + croco_word_7E069A);
   uint16 v6;
   for (i = croco_word_7E069A + 8; ; i = v6 + 4) {
     uint16 v2 = *(uint16 *)((uint8 *)&g_word_A49BC5 + i);
@@ -1109,13 +1047,13 @@ void Crocomire_Func_60(void) {  // 0xA4943D
     uint16 v3 = *(uint16 *)((uint8 *)&g_word_A49BC7 + i);
     int n = g_word_7E068E;
     do {
-      *(uint16 *)&g_ram[v3] = IndirReadWord(R0_, v2);
+      *(uint16 *)&g_ram[v3] = GET_WORD(RomPtrWithBank(bank, v2));
       v3 += 2, v2 += 2;
     } while (--n >= 0);
   }
   croco_word_7E069A = i + 2;
   g_word_7E068A = i + 2;
-  for (j = 128; j >= 0; j -= 2)
+  for (int j = 128; j >= 0; j -= 2)
     *(uint16 *)&croco_vline_height[(uint16)j] = 0;
 }
 
@@ -1145,12 +1083,12 @@ void Crocomire_Func_62(void) {  // 0xA494B6
 }
 
 void Crocomire_Func_64(void) {  // 0xA494FB
-  QueueSfx2_Max6(0x77u);
+  QueueSfx2_Max6(0x77);
   Crocomire_950F();
 }
 
 void Crocomire_9506(void) {  // 0xA49506
-  QueueSfx2_Max6(0x2Du);
+  QueueSfx2_Max6(0x2D);
   Crocomire_950F();
 }
 
@@ -1158,12 +1096,12 @@ void Crocomire_950F(void) {  // 0xA4950F
   static const SpawnHdmaObject_Args unk_A49559 = { 0x42, 0x10, 0x9563 };
   Enemy_Crocomire *v4; // r10
 
-  uint16 v1 = 2 * (Get_Crocomire(0x40u)->base.y_pos - 72);
+  uint16 v1 = 2 * (Get_Crocomire(0x40)->base.y_pos - 72);
   uint16 v2 = reg_BG2VOFS;
   do {
     crocomire_bg2_scroll_hdma_data[v1 >> 1] = v2;
     v1 -= 2;
-  } while ((v1 & 0x8000u) == 0);
+  } while ((v1 & 0x8000) == 0);
   Enemy_Crocomire *E = Get_Crocomire(cur_enemy_index);
   ++E->crocom_var_A;
   ++E->crocom_var_A;
@@ -1179,8 +1117,7 @@ void Crocomire_950F(void) {  // 0xA4950F
 
 void Crocomire_Func_63(void) {  // 0xA49576
   Enemy_Crocomire *E = Get_Crocomire(cur_enemy_index);
-  ++E->crocom_var_A;
-  ++E->crocom_var_A;
+  E->crocom_var_A += 2;
 }
 
 void Crocomire_Func_65(void) {  // 0xA49580
@@ -1198,7 +1135,6 @@ void Crocomire_Func_65(void) {  // 0xA49580
   if (!Crocomire_Func_67())
     goto LABEL_4;
   Crocomire_Func_27(cur_enemy_index);
-  R18_ = (uint8)((uint16)(g_word_7E0692 & 0xFF00) >> 8);
   uint16 v4;
   v4 = g_word_7E0694 - 3;
   if (sign16(g_word_7E0694 - 19)) {
@@ -1219,14 +1155,14 @@ LABEL_4:;
   if (!sign16(g_word_7E0692 - 20096))
     v5 = 20480;
   g_word_7E0692 = v5;
-  R18_ = 0;
+  uint16 r18 = 0;
   uint16 v6 = 2 * (E1->base.y_pos - 72);
   uint16 v7 = g_word_7E0694;
   message_box_animation_y1 = g_word_7E0694;
   do {
     crocomire_bg2_scroll_hdma_data[v6 >> 1] = reg_BG2VOFS + v7 - message_box_animation_y1;
-    bool v8 = __CFADD__uint16(g_word_7E0692, R18_);
-    R18_ += g_word_7E0692;
+    bool v8 = __CFADD__uint16(g_word_7E0692, r18);
+    r18 += g_word_7E0692;
     if (!v8)
       ++v7;
     ++message_box_animation_y1;
@@ -1265,11 +1201,9 @@ static const uint8 kCrocoEraseLineMasks[8] = { 0x7f, 0xbf, 0xdf, 0xef, 0xf7, 0xf
 
 //  Used when dissolving the crocomire thing
 uint16 Crocomire_Func_67(void) {  // 0xA496C8
-  VramWriteEntry *v9;
-
   int n = croco_word_068C;
-  R20_ = 0;
-  R22_ = 0;
+//  R20 = 0;
+  //R22_ = 0;
   while (1) {
     if (croco_cur_vline_idx > 48) // bugfix
       return 1;
@@ -1295,7 +1229,6 @@ uint16 Crocomire_Func_67(void) {  // 0xA496C8
     if (croco_vline_height[vline_idx] == 48)
       break;
     croco_vline_height[vline_idx]++;
-    --R18_;
   } while (--n);
 
   uint16 v7, v8;
@@ -1306,7 +1239,7 @@ uint16 Crocomire_Func_67(void) {  // 0xA496C8
       break;
     g_word_7E068A = 0;
   }
-  v9 = gVramWriteEntry(vram_write_queue_tail);
+  VramWriteEntry *v9 = gVramWriteEntry(vram_write_queue_tail);
   v9->size = *(uint16 *)((uint8 *)&g_word_A49BC5 + v7);
   v9->src.addr = *(uint16 *)((uint8 *)&g_word_A49BCB + v7);
   *(uint16 *)&v9->src.bank = *(uint16 *)((uint8 *)&g_word_A49BC9 + v7);
@@ -1317,21 +1250,19 @@ uint16 Crocomire_Func_67(void) {  // 0xA496C8
 }
 
 void Crocomire_Func_68(void) {  // 0xA497D3
-  static const SpawnHardcodedPlmArgs unk_A497EF = { 0x30, 0x03, 0xb757 };
-
   if (sign16(samus_x_pos - 640)) {
-    QueueMusic_Delayed8(5u);
+    QueueMusic_Delayed8(5);
     *(uint16 *)&scrolls[3] = 256;
-    SpawnHardcodedPlm(&unk_A497EF);
+    SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x30, 0x03, 0xb757 });
     camera_distance_index = 6;
     Enemy_Crocomire *E0 = Get_Crocomire(0);
     E0->base.properties = E0->base.properties & 0x7BFF | kEnemyProps_Tangible;
-    Enemy_Crocomire *E1 = Get_Crocomire(0x40u);
-    E1->base.properties |= 0x500u;
+    Enemy_Crocomire *E1 = Get_Crocomire(0x40);
+    E1->base.properties |= 0x500;
     E0->crocom_var_D = 4;
     E1->crocom_var_D = 0;
     Get_Crocomire(0x80)->crocom_var_D = 10;
-    Get_Crocomire(0xC0u)->crocom_var_D = 1;
+    Get_Crocomire(0xC0)->crocom_var_D = 1;
     E0->crocom_var_B = 0;
     E0->base.y_height = 56;
     Crocomire_9BB3();
@@ -1367,12 +1298,12 @@ void Crocomire_Func_70(void) {  // 0xA49859
     uint16 v3 = E1->crocom_var_D;
     int v4 = crocom_var_D >> 1;
     if (v3 == g_word_A498CA[v4]) {
-      if ((g_word_A498CA[crocom_var_D >> 1] & 0x8000u) != 0) {
+      if ((g_word_A498CA[crocom_var_D >> 1] & 0x8000) != 0) {
         uint16 v7 = E2->crocom_var_D;
         if (v7) {
           E2->crocom_var_D = v7 - 1;
           E0->crocom_var_D = crocom_var_D - 2;
-          QueueSfx2_Max6(0x2Bu);
+          QueueSfx2_Max6(0x2B);
           return;
         }
         uint16 v8 = crocom_var_D + 2;
@@ -1393,9 +1324,6 @@ void Crocomire_Func_70(void) {  // 0xA49859
 }
 
 void Crocomire_Func_71(void) {  // 0xA4990A
-  static const SpawnHardcodedPlmArgs unk_A4996E = { 0x20, 0x03, 0xb753 };
-  static const SpawnHardcodedPlmArgs unk_A49976 = { 0x1e, 0x03, 0xb757 };
-  static const SpawnHardcodedPlmArgs unk_A4997E = { 0x70, 0x0b, 0xb747 };
   int16 v3;
   VramWriteEntry *v6;
 
@@ -1411,8 +1339,7 @@ void Crocomire_Func_71(void) {  // 0xA4990A
       v6->size = 512;
       v6->src.addr = g_word_A499D9[v4];
       *(uint16 *)&v6->src.bank = 173;
-      R18_ = (reg_OBSEL & 7) << 13;
-      v6->vram_dst = g_word_A499CB[v4] + R18_;
+      v6->vram_dst = g_word_A499CB[v4] + ((reg_OBSEL & 7) << 13);
       vram_write_queue_tail = v5 + 7;
       croco_target_0688 = v3 + 2;
     }
@@ -1422,10 +1349,10 @@ void Crocomire_Func_71(void) {  // 0xA4990A
     Get_Crocomire(0x80)->crocom_var_D = 80;
     E->crocom_var_E = 0;
     E->crocom_var_F = 0;
-    SpawnHardcodedPlm(&unk_A4996E);
-    SpawnHardcodedPlm(&unk_A49976);
-    SpawnHardcodedPlm(&unk_A4997E);
-    QueueSfx2_Max6(0x29u);
+    SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x20, 0x03, 0xb753 });
+    SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x1e, 0x03, 0xb757 });
+    SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x70, 0x0b, 0xb747 });
+    QueueSfx2_Max6(0x29);
     E->base.current_instruction = addr_kCrocomire_Ilist_E158;
     E->base.instruction_timer = 1;
     E->base.palette_index = 0;
@@ -1433,12 +1360,11 @@ void Crocomire_Func_71(void) {  // 0xA4990A
       palette_buffer[(i >> 1) + 144] = g_word_A4B8FD[i >> 1];
     ClearEnemyProjectiles();
     uint16 v8 = 8;
-    R18_ = 8;
+    int n = 8;
     do {
       SpawnEnemyProjectileWithGfx(v8, cur_enemy_index, addr_kEproj_CrocomireSpikeWallPieces);
-      --R18_;
-    } while (R18_);
-    QueueSfx2_Max6(0x30u);
+    } while (--n);
+    QueueSfx2_Max6(0x30);
     Crocomire_9BB3();
   }
 }
@@ -1489,8 +1415,8 @@ void Crocomire_Func_73(void) {  // 0xA49A38
   uint16 v6 = E->crocom_var_F + v4 + E->base.x_pos;
   E->base.x_pos = v6;
   if (!sign16(v6 - 576)) {
-    QueueSfx2_Max6(0x25u);
-    Get_Crocomire(0x40u)->base.palette_index = E->base.palette_index;
+    QueueSfx2_Max6(0x25);
+    Get_Crocomire(0x40)->base.palette_index = E->base.palette_index;
     E->base.current_instruction = addr_kCrocomire_Ilist_E158;
     E->base.instruction_timer = 1;
     Crocomire_9BB3();
@@ -1518,7 +1444,7 @@ const uint16 *Crocomire_Instr_20(uint16 k, const uint16 *jp) {  // 0xA49AAF
 }
 
 const uint16 *Crocomire_Instr_21(uint16 k, const uint16 *jp) {  // 0xA49AB4
-  return Crocomire_Func_87(jp, 8u);
+  return Crocomire_Func_87(jp, 8);
 }
 
 const uint16 *Crocomire_Instr_22(uint16 k, const uint16 *jp) {  // 0xA49AB9
@@ -1550,16 +1476,11 @@ const uint16 *Crocomire_Instr_27(uint16 k, const uint16 *jp) {  // 0xA49AD7
 }
 
 const uint16 *Crocomire_Func_87(const uint16 *jp, uint16 a) {  // 0xA49ADA
-  R18_ = a;
   Enemy_Crocomire *E = Get_Crocomire(0);
-  R18_ = a + E->base.x_pos + (random_number & 7);
-  R20_ = E->base.y_height + E->base.y_pos - 16;
+  eproj_spawn_pt = (Point16U){ a + E->base.x_pos + (random_number & 7), E->base.y_height + E->base.y_pos - 16 };
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   return jp;
 }
-
-static const SpawnHardcodedPlmArgs unk_A49B3E = { 0x30, 0x03, 0xb753 };
-static const SpawnHardcodedPlmArgs unk_A49B74 = { 0x1e, 0x03, 0xb753 };
 
 void Crocomire_Func_88(void) {  // 0xA49B06
   int16 v3;
@@ -1579,18 +1500,16 @@ void Crocomire_Func_88(void) {  // 0xA49B06
     E->base.y_pos += 21;
     E->base.y_height = 28;
     E->base.x_width = 40;
-    SpawnHardcodedPlm(&unk_A49B3E);
-    printf("X unknown!\n");
+    SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x30, 0x03, 0xb753 });
     Enemy_ItemDrop_Crocomire(0);
     Crocomire_9BB3();
   }
 }
 
 void Crocomire_9B65(void) {  // 0xA49B65
-  static const SpawnHardcodedPlmArgs unk_A49B74 = { 0x1e, 0x03, 0xb753 };
   *(uint16 *)scrolls = 257;
   *(uint16 *)&scrolls[2] = 257;
-  SpawnHardcodedPlm(&unk_A49B74);
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x1e, 0x03, 0xb753 });
   Crocomire_9BB3();
 }
 
@@ -1605,10 +1524,10 @@ void Crocomire_Func_90(void) {  // 0xA49B7D
 }
 
 void Crocomire_9B86(void) {  // 0xA49B86
-  QueueMusic_Delayed8(6u);
+  QueueMusic_Delayed8(6);
   camera_distance_index = 0;
-  *(uint16 *)&boss_bits_for_area[area_index] |= 2u;
-  QueueMusic_Delayed8(6u);
+  *(uint16 *)&boss_bits_for_area[area_index] |= 2;
+  QueueMusic_Delayed8(6);
   Crocomire_Func_87(0, 0xFFF0);
   Crocomire_Func_87(0, 0x10);
   Crocomire_9BB3();
@@ -1627,7 +1546,7 @@ void Crocomire_Func_91(void) {  // 0xA49BBA
 void Crocomire_Func_92(void) {  // 0xA4B93D
   NormalEnemyTouchAi();
   Enemy_Crocomire *E = Get_Crocomire(0);
-  E->crocom_var_B |= 0x4000u;
+  E->crocom_var_B |= 0x4000;
   extra_samus_x_displacement = -4;
 }
 
@@ -1636,17 +1555,13 @@ void Crocomire_Func_93(void) {  // 0xA4B951
   uint16 v1 = E->crocom_var_B & 0xF;
   if (sign16(v1 - 15))
     ++v1;
-  R18_ = v1;
   E->crocom_var_B |= v1;
 }
 
 void Crocomire_Func_94(void) {  // 0xA4B968
   int v0 = collision_detection_index;
-  R18_ = projectile_x_pos[v0];
-  R20_ = projectile_y_pos[v0];
-  uint16 v1 = 29;
-  if ((projectile_type[v0] & 0x200) == 0)
-    v1 = 6;
+  eproj_spawn_pt = (Point16U){ projectile_x_pos[v0], projectile_y_pos[v0] };
+  uint16 v1 = ((projectile_type[v0] & 0x200) == 0) ? 6 : 29;
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, v1);
 }
 
@@ -1661,11 +1576,11 @@ void Crocomire_Powerbomb(void) {  // 0xA4B992
         E->crocom_var_B = E->crocom_var_B & 0x3FF0 | 0x8000;
         E->crocom_var_E = 10;
         E->base.flash_timer += 4;
-        E->base.ai_handler_bits |= 2u;
+        E->base.ai_handler_bits |= 2;
         E->crocom_var_C = 24;
         uint16 spritemap_pointer = E->base.spritemap_pointer;
         uint16 v3;
-        R18_ = *(uint16 *)RomPtr_A4(spritemap_pointer);
+        int n = *(uint16 *)RomPtr_A4(spritemap_pointer);
         while (1) {
           v2 = *((uint16 *)RomPtr_A4(spritemap_pointer) + 3);
           v3 = addr_kCrocomire_Ilist_BDAE;
@@ -1675,7 +1590,7 @@ void Crocomire_Powerbomb(void) {  // 0xA4B992
           if (v2 == addr_kCrocomire_BigSprmap_D51C)
             break;
           spritemap_pointer += 8;
-          if (!--R18_) {
+          if (!--n) {
             v3 = addr_kCrocomire_Ilist_BDB6;
             break;
           }
@@ -1719,32 +1634,24 @@ LABEL_10:;
     uint16 v4 = E->crocom_var_B & 0xF;
     if (sign16(v4 - 15))
       ++v4;
-    R18_ = v4;
     if ((E->crocom_var_B & 0x800) == 0) {
       uint16 v5 = g_word_A48692;
       if (E->crocom_var_C == 8)
         v5 = g_word_A48694;
       E->base.instruction_timer += v5;
     }
-    E->crocom_var_B = R18_ | E->crocom_var_B & 0xB7F0 | 0x800;
+    E->crocom_var_B = v4 | E->crocom_var_B & 0xB7F0 | 0x800;
     E->crocom_var_E = 10;
   }
   E->base.flash_timer += 14;
-  E->base.ai_handler_bits |= 2u;
+  E->base.ai_handler_bits |= 2;
 }
 
 void Crocomire_Func_1(void) {  // 0xA4BAB4
   int v0 = collision_detection_index;
-  R18_ = projectile_x_pos[v0];
-  R20_ = projectile_y_pos[v0];
-  uint16 v1 = 29;
-  if ((projectile_type[v0] & 0x200) == 0)
-    v1 = 6;
+  eproj_spawn_pt = (Point16U){ projectile_x_pos[v0], projectile_y_pos[v0] };
+  uint16 v1 = ((projectile_type[v0] & 0x200) == 0) ? 6 : 29;
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, v1);
-}
-
-void GetCurEnemyIndex(void) {  // 0xA4CB01
-  ;
 }
 
 void CrocomireTongue_Init(void) {  // 0xA4F67A
@@ -1753,7 +1660,7 @@ void CrocomireTongue_Init(void) {  // 0xA4F67A
     E->base.properties = E->base.properties & 0xDCFF | 0x300;
   } else {
     E->base.current_instruction = addr_kCrocomire_Ilist_BE56;
-    E->base.extra_properties |= 0x404u;
+    E->base.extra_properties |= 0x404;
     E->base.instruction_timer = 1;
     E->crocom_var_A = 23;
     E->base.palette_index = 3584;

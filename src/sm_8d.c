@@ -8,11 +8,11 @@
 
 
 void EnablePaletteFx(void) {  // 0x8DC4C2
-  flag_for_palette_fx_objects |= 0x8000u;
+  flag_for_palette_fx_objects |= 0x8000;
 }
 
 void DisablePaletteFx(void) {  // 0x8DC4CD
-  flag_for_palette_fx_objects &= ~0x8000u;
+  flag_for_palette_fx_objects &= ~0x8000;
 }
 
 void ClearPaletteFXObjects(void) {  // 0x8DC4D8
@@ -36,7 +36,7 @@ void SpawnPalfxObject(uint16 j) {  // 0x8DC4E9
   uint16 v1 = 14;
   while (palettefx_ids[v1 >> 1]) {
     v1 -= 2;
-    if ((v1 & 0x8000u) != 0)
+    if ((v1 & 0x8000) != 0)
       return;
   }
   int v2 = v1 >> 1;
@@ -54,7 +54,7 @@ void PalPreInstr_nullsub_129(uint16 k) {  // 0x8DC526
 }
 
 void PaletteFxHandler(void) {  // 0x8DC527
-  if ((flag_for_palette_fx_objects & 0x8000u) != 0) {
+  if ((flag_for_palette_fx_objects & 0x8000) != 0) {
     for (int i = 14; i >= 0; i -= 2) {
       palettefx_index = i;
       if (palettefx_ids[i >> 1]) {
@@ -120,9 +120,8 @@ void PalFx_ProcessOne(uint16 k) {  // 0x8DC54A
     while (1) {
       const uint16 *v5 = (const uint16 *)RomPtr_8D(j);
       v6 = *v5;
-      if ((*v5 & 0x8000u) == 0)
+      if ((*v5 & 0x8000) == 0)
         break;
-      R18_ = *v5;
       v7 = CallPalInstr(v6 | 0x8D0000, v1, j + 2);
       v1 = v7.k;
       j = v7.j;
@@ -143,7 +142,6 @@ void PalFx_ProcessOne(uint16 k) {  // 0x8DC54A
         v9 += 2;
         j += 2;
       }
-      R18_ = GET_WORD(v10 + 2);
       v12 = CallPalInstr((uint16)v11 | 0x8D0000, v9, j);
       v9 = v12.k;
       j = v12.j;
@@ -201,7 +199,6 @@ PairU16 PalInstr_Goto(uint16 k, uint16 j) {  // 0x8DC61E
 }
 
 PairU16 PalInstr_GotoRel(uint16 k, uint16 j) {  // 0x8DC623
-  R18_ = j;
   return MakePairU16(k, j + (int8)*RomPtr_8D(j));
 }
 
@@ -281,8 +278,8 @@ void PalPreInstr_SamusInHeat(uint16 k) {  // 0x8DE379
     uint16 v1 = (__PAIR32__(samus_periodic_damage, samus_periodic_subdamage) + 0x4000) >> 16;
     samus_periodic_subdamage += 0x4000;
     samus_periodic_damage = v1;
-    if ((nmi_frame_counter_word & 7) == 0 && samus_health > 0x46u)
-      QueueSfx3_Max6(0x2Du);
+    if ((nmi_frame_counter_word & 7) == 0 && samus_health > 0x46)
+      QueueSfx3_Max6(0x2D);
   }
   if (samus_in_heat_palfx_index != samus_in_heat_palettefx_prev_index) {
     samus_in_heat_palettefx_prev_index = samus_in_heat_palfx_index;
@@ -296,7 +293,6 @@ void PalPreInstr_SamusInHeat(uint16 k) {  // 0x8DE379
     } else {
       v4 = addr_off_8DE420;
     }
-    R18_ = v4;
     palettefx_instr_list_ptrs[v3] = *(uint16 *)&RomPtr_8D(v4)[v2];
   }
 }
@@ -314,7 +310,7 @@ void PalInit_F761_Norfair1(uint16 k, uint16 j) {  // 0x8DE440
 }
 
 PairU16 PalInstr_SetTimerIfBossBit(uint16 k, uint16 j) {  // 0x8DEB2A
-  if (!(CheckBossBitForCurArea(1u) & 1)) {
+  if (!(CheckBossBitForCurArea(1) & 1)) {
     palettefx_instr_timers[k >> 1] = 1;
     return MakePairU16(k, 0);
   }
@@ -322,7 +318,7 @@ PairU16 PalInstr_SetTimerIfBossBit(uint16 k, uint16 j) {  // 0x8DEB2A
 }
 
 void PalPreInstr_SwitchIfYpos(uint16 k) {  // 0x8DEC59
-  if (samus_y_pos < 0x380u) {
+  if (samus_y_pos < 0x380) {
     int v2 = k >> 1;
     palettefx_instr_timers[v2] = 1;
     palettefx_instr_list_ptrs[v2] = addr_word_8DEB43;
@@ -330,7 +326,7 @@ void PalPreInstr_SwitchIfYpos(uint16 k) {  // 0x8DEC59
 }
 
 void PalPreInstr_SwitchIfYpos2(uint16 k) {  // 0x8DED84
-  if (samus_y_pos < 0x380u) {
+  if (samus_y_pos < 0x380) {
     int v2 = k >> 1;
     palettefx_instr_timers[v2] = 1;
     palettefx_instr_list_ptrs[v2] = addr_word_8DEC76;

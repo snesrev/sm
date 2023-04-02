@@ -56,21 +56,21 @@ void LoadRoomPlmGfx(void) {  // 0x848232
 }
 
 void ClearSoundsWhenGoingThroughDoor(void) {  // 0x848250
-  CallSomeSamusCode(0x1Du);
+  CallSomeSamusCode(0x1D);
 }
 
 void UNUSED_sub_848258(void) {  // 0x848258
   if (samus_movement_type << 8 == 768 || samus_movement_type << 8 == 5120)
-    QueueSfx1_Max15(0x32u);
+    QueueSfx1_Max15(0x32);
 }
 
 void PlaySpinJumpSoundIfSpinJumping(void) {  // 0x848270
-  CallSomeSamusCode(0x1Cu);
+  CallSomeSamusCode(0x1C);
 }
 
 void UNUSED_sub_848278(void) {  // 0x848278
   if (samus_movement_type << 8 == 768 || samus_movement_type << 8 == 5120)
-    QueueSfx1_Max15(0x30u);
+    QueueSfx1_Max15(0x30);
 }
 
 void CalculatePlmBlockCoords(uint16 k) {  // 0x848290
@@ -118,21 +118,19 @@ void LoadXrayBlocks(void) {  // 0x84831A
     for (j = RoomDefRoomstate->xray_special_casing_ptr; ; j += 4) {
       const uint8 *v6 = RomPtr_8F(j);
       v7 = GET_WORD(v6);
-      if (!GET_WORD(v6))
+      if (!v7)
         break;
-      R18_ = (uint8)v7;
-      R20_ = v6[1];
-      LoadBlockToXrayTilemap(GET_WORD(v6 + 2), (uint8)v7, R20_);
+      LoadBlockToXrayTilemap(GET_WORD(v6 + 2), (uint8)v7, v6[1]);
     }
   }
 }
 
 void EnablePLMs(void) {  // 0x8483AD
-  plm_flag |= 0x8000u;
+  plm_flag |= 0x8000;
 }
 
 void DisablePLMs(void) {  // 0x8483B8
-  plm_flag &= ~0x8000u;
+  plm_flag &= ~0x8000;
 }
 
 void ClearPLMs(void) {  // 0x8483C3
@@ -262,15 +260,15 @@ uint8 CallPlmHeaderFunc(uint32 ea, uint16 j) {
   }
 }
 
-void SpawnHardcodedPlm(const void *p) {  // 0x8483D7
-  SpawnHardcodedPlmArgs *pp = (SpawnHardcodedPlmArgs *)p;
+void SpawnHardcodedPlm(SpawnHardcodedPlmArgs p) {  // 0x8483D7
+  SpawnHardcodedPlmArgs *pp = &p;
   int16 v2;
   PlmHeader_Size4 *PlmHeader_Size4;
 
   uint16 v1 = 78;
   while (plm_header_ptr[v1 >> 1]) {
     v1 -= 2;
-    if ((v1 & 0x8000u) != 0) {
+    if ((v1 & 0x8000) != 0) {
       return;
     }
   }
@@ -295,15 +293,15 @@ void SpawnHardcodedPlm(const void *p) {  // 0x8483D7
 void SpawnRoomPLM(uint16 k) {  // 0x84846A
   RoomPlmEntry *rpe;
   int16 x_block;
-  PlmHeader_Size4 *PlmHeader_Size4;
+  PlmHeader_Size4 *PH;
 
   uint16 v1 = 78;
   while (plm_header_ptr[v1 >> 1]) {
     v1 -= 2;
-    if ((v1 & 0x8000u) != 0)
+    if ((v1 & 0x8000) != 0)
       return;
   }
-  rpe = (k == 0x12) ? (RoomPlmEntry *)&R18_ : get_RoomPlmEntry(k);
+  rpe = (k == 0x12) ? (RoomPlmEntry *)(g_ram + 0x12) : get_RoomPlmEntry(k);
   uint16 prod = Mult8x8(rpe->y_block, room_width_in_blocks);
   x_block = rpe->x_block;
   int v4 = v1 >> 1;
@@ -313,13 +311,14 @@ void SpawnRoomPLM(uint16 k) {  // 0x84846A
   plm_header_ptr[v4] = rpe->plm_header_ptr_;
   plm_variables[v4] = 0;
   plm_pre_instrs[v4] = FUNC16(PlmPreInstr_Empty2);
-  plm_instr_list_ptrs[v4] = get_PlmHeader_Size4(pp)->instr_list_ptr;
+  PH = get_PlmHeader_Size4(pp);
+  plm_instr_list_ptrs[v4] = PH->instr_list_ptr;
   plm_instruction_timer[v4] = 1;
   plm_instruction_draw_ptr[v4] = addr_kDefaultPlmDrawInstruction;
   plm_timers[v4] = 0;
   plm_id = v1;
-  PlmHeader_Size4 = get_PlmHeader_Size4(pp);
-  CallPlmHeaderFunc(PlmHeader_Size4->func_ptr | 0x840000, v1);
+  
+  CallPlmHeaderFunc(PH->func_ptr | 0x840000, v1);
 }
 
 void PlmPreInstr_Empty2(void) {  // 0x8484E6
@@ -333,7 +332,7 @@ uint8 SpawnPLM(uint16 a) {  // 0x8484E7
   uint16 v1 = 78;
   while (plm_header_ptr[v1 >> 1]) {
     v1 -= 2;
-    if ((v1 & 0x8000u) != 0)
+    if ((v1 & 0x8000) != 0)
       return 0;
   }
   int v3 = v1 >> 1;
@@ -362,8 +361,7 @@ CoroutineRet PlmHandler_Async(void) {  // 0x8485B4
     CallPlmPreInstr(plm_pre_instrs[plm_id >> 1] | 0x840000, plm_id);
     if (--plm_instruction_timer[plm_id >> 1])
       continue;
-    const uint8 *base, *v5;
-    base = RomPtr_84(0x8000) - 0x8000;
+    const uint8 *base = RomBankBase(0x84), *v5;
     v5 = base + plm_instr_list_ptrs[plm_id >> 1];
     while (1) {
       if ((GET_WORD(v5) & 0x8000) == 0)
@@ -378,7 +376,7 @@ CoroutineRet PlmHandler_Async(void) {  // 0x8485B4
         plm_instr_list_ptrs[plm_id >> 1] = v5 - base;
         COROUTINE_AWAIT(1, DisplayMessageBox_Async(queued_message_box_index));
         queued_message_box_index = 0;
-        base = RomPtr_84(0x8000) - 0x8000;
+        base = RomBankBase(0x84);
         v5 = base + plm_instr_list_ptrs[plm_id >> 1];
       }
     }
@@ -605,8 +603,7 @@ void ProcessPlmDrawInstruction(uint16 v0) {  // 0x84861E
 }
 
 const uint8 *PlmInstr_Sleep(const uint8 *plmp, uint16 k) {  // 0x8486B4
-  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
-  plm_instr_list_ptrs[k >> 1] = plmp - base - 2;
+  plm_instr_list_ptrs[k >> 1] = plmp - RomBankBase(0x84) - 2;
   return 0;
 }
 
@@ -661,21 +658,20 @@ const uint8 *PlmInstr_LoadItemPlmGfx(const uint8 *plmp, uint16 k) {  // 0x848764
   plm_variables[k >> 1] = plm_item_gfx_index;
   plm_item_gfx_index = (v2 + 2) & 6;
   int v3 = v2 >> 1;
-  int R18 = kPlmVramAddresses[v3];
-  int R20 = kPlmTileDataOffs[v3];
+  int r18 = kPlmVramAddresses[v3];
+  int r20 = kPlmTileDataOffs[v3];
   int R22 = kPlmStartingTileNumber[v3];
-  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
-  plm_item_gfx_ptrs[v3] = plmp - base;
+  plm_item_gfx_ptrs[v3] = plmp - RomBankBase(0x84);
   int v4 = vram_write_queue_tail;
   VramWriteEntry *v5 = gVramWriteEntry(vram_write_queue_tail);
   v5->size = 256;
   v5->src.addr = GET_WORD(plmp);
   v5->src.bank = 0x89;
-  v5->vram_dst = R18;
+  v5->vram_dst = r18;
   vram_write_queue_tail = v4 + 7;
   plmp += 2;
-  int v7 = R20;
-  int R24 = R20 + 16;
+  int v7 = r20;
+  int R24 = r20 + 16;
   do {
     *(uint16 *)((uint8 *)&tile_table.tables[0].top_left + v7) = R22 + (plmp[0] << 10);
     ++R22;
@@ -758,7 +754,7 @@ const uint8 *PlmInstr_PickupBeamAndShowMessage(const uint8 *plmp, uint16 k) {  /
   equipped_beams &= ~((t << 1) & 8);
   equipped_beams &= ~((t >> 1) & 4);
   UpdateBeamTilesAndPalette();
-  PlayRoomMusicTrackAfterAFrames(0x168u);
+  PlayRoomMusicTrackAfterAFrames(0x168);
   DisplayMessageBox(plmp[2]);
   return plmp + 3;
 }
@@ -767,7 +763,7 @@ const uint8 *PlmInstr_PickupEquipmentAndShowMessage(const uint8 *plmp, uint16 k)
   uint16 t = GET_WORD(plmp);
   equipped_items |= t;
   collected_items |= t;
-  PlayRoomMusicTrackAfterAFrames(0x168u);
+  PlayRoomMusicTrackAfterAFrames(0x168);
   DisplayMessageBox(plmp[2]);
   return plmp + 3;
 }
@@ -777,8 +773,8 @@ const uint8 *PlmInstr_PickupEquipmentAddGrappleShowMessage(const uint8 *plmp, ui
   equipped_items |= t;
   collected_items |= t;
   AddGrappleToHudTilemap();
-  PlayRoomMusicTrackAfterAFrames(0x168u);
-  DisplayMessageBox(5u);
+  PlayRoomMusicTrackAfterAFrames(0x168);
+  DisplayMessageBox(5);
   return plmp + 2;
 }
 
@@ -787,16 +783,16 @@ const uint8 *PlmInstr_PickupEquipmentAddXrayShowMessage(const uint8 *plmp, uint1
   equipped_items |= t;
   collected_items |= t;
   AddXrayToHudTilemap();
-  PlayRoomMusicTrackAfterAFrames(0x168u);
-  DisplayMessageBox(6u);
+  PlayRoomMusicTrackAfterAFrames(0x168);
+  DisplayMessageBox(6);
   return plmp + 2;
 }
 
 const uint8 *PlmInstr_CollectHealthEnergyTank(const uint8 *plmp, uint16 k) {  // 0x848968
   samus_max_health += GET_WORD(plmp);
   samus_health = samus_max_health;
-  PlayRoomMusicTrackAfterAFrames(0x168u);
-  DisplayMessageBox(1u);
+  PlayRoomMusicTrackAfterAFrames(0x168);
+  DisplayMessageBox(1);
   return plmp + 2;
 }
 
@@ -804,8 +800,8 @@ const uint8 *PlmInstr_CollectHealthReserveTank(const uint8 *plmp, uint16 k) {  /
   samus_max_reserve_health += GET_WORD(plmp);
   if (!reserve_health_mode)
     ++reserve_health_mode;
-  PlayRoomMusicTrackAfterAFrames(0x168u);
-  DisplayMessageBox(0x19u);
+  PlayRoomMusicTrackAfterAFrames(0x168);
+  DisplayMessageBox(0x19);
   return plmp + 2;
 }
 
@@ -814,8 +810,8 @@ const uint8 *PlmInstr_CollectAmmoMissileTank(const uint8 *plmp, uint16 k) {  // 
   samus_max_missiles += t;
   samus_missiles += t;
   AddMissilesToHudTilemap();
-  PlayRoomMusicTrackAfterAFrames(0x168u);
-  DisplayMessageBox(2u);
+  PlayRoomMusicTrackAfterAFrames(0x168);
+  DisplayMessageBox(2);
   return plmp + 2;
 }
 
@@ -824,8 +820,8 @@ const uint8 *PlmInstr_CollectAmmoSuperMissileTank(const uint8 *plmp, uint16 k) {
   samus_max_super_missiles += t;
   samus_super_missiles += t;
   AddSuperMissilesToHudTilemap();
-  PlayRoomMusicTrackAfterAFrames(0x168u);
-  DisplayMessageBox(3u);
+  PlayRoomMusicTrackAfterAFrames(0x168);
+  DisplayMessageBox(3);
   return plmp + 2;
 }
 
@@ -834,8 +830,8 @@ const uint8 *PlmInstr_CollectAmmoPowerBombTank(const uint8 *plmp, uint16 k) {  /
   samus_max_power_bombs += t;
   samus_power_bombs += t;
   AddPowerBombsToHudTilemap();
-  PlayRoomMusicTrackAfterAFrames(0x168u);
-  DisplayMessageBox(4u);
+  PlayRoomMusicTrackAfterAFrames(0x168);
+  DisplayMessageBox(4);
   return plmp + 2;
 }
 
@@ -845,13 +841,12 @@ const uint8 *PlmInstr_SetLinkReg(const uint8 *plmp, uint16 k) {  // 0x848A24
 }
 
 const uint8 *PlmInstr_Call(const uint8 *plmp, uint16 k) {  // 0x848A2E
-  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
-  plm_instruction_list_link_reg[k >> 1] = plmp - base + 2;
+  plm_instruction_list_link_reg[k >> 1] = plmp - RomBankBase(0x84) + 2;
   return INSTRB_RETURN_ADDR(GET_WORD(plmp));
 }
 
 const uint8 *PlmInstr_Return(const uint8 *plmp, uint16 k) {  // 0x848A3A
-  return RomPtr_84(plm_instruction_list_link_reg[k >> 1]);
+  return INSTRB_RETURN_ADDR(plm_instruction_list_link_reg[k >> 1]);
 }
 
 const uint8 *PlmInstr_GotoIfDoorBitSet(const uint8 *plmp, uint16 k) {  // 0x848A72
@@ -910,8 +905,7 @@ const uint8 *PlmInstr_DrawPlmBlock_(const uint8 *plmp, uint16 k) {  // 0x848B17
   custom_draw_instr_zero_terminator = 0;
   plm_instruction_timer[v2] = 1;
   plm_instruction_draw_ptr[v2] = ADDR16_OF_RAM(custom_draw_instr_num_blocks);
-  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
-  plm_instr_list_ptrs[v2] = plmp - base;
+  plm_instr_list_ptrs[v2] = plmp - RomBankBase(0x84);
   ProcessPlmDrawInstruction(k);
   uint16 v4 = plm_id;
   CalculatePlmBlockCoords(plm_id);
@@ -920,15 +914,13 @@ const uint8 *PlmInstr_DrawPlmBlock_(const uint8 *plmp, uint16 k) {  // 0x848B17
 }
 
 const uint8 *PlmInstr_ProcessAirScrollUpdate(const uint8 *plmp, uint16 k) {  // 0x848B55
-  int v2 = k >> 1;
-  plm_variable[v2] = 0;
-  uint16 v3 = plm_room_arguments[v2];
+  plm_variable[k >> 1] = 0;
+  const uint8 *v5 = RomPtr_8F(plm_room_arguments[k >> 1]);
   while (1) {
-    const uint8 *v5 = RomPtr_8F(v3);
     if (v5[0] & 0x80)
       break;
     scrolls[v5[0]] = v5[1];
-    v3 += 2;
+    v5 += 2;
   }
   int v7 = plm_block_indices[k >> 1] >> 1;
   level_data[v7] = level_data[v7] & 0xFFF | 0x3000;
@@ -936,15 +928,13 @@ const uint8 *PlmInstr_ProcessAirScrollUpdate(const uint8 *plmp, uint16 k) {  // 
 }
 
 const uint8 *PlmInstr_ProcessSolidScrollUpdate(const uint8 *plmp, uint16 k) {  // 0x848B93
-  int v2 = k >> 1;
-  plm_variable[v2] = 0;
-  uint16 v3 = plm_room_arguments[v2];
+  plm_variable[k >> 1] = 0;
+  const uint8 *v5 = RomPtr_8F(plm_room_arguments[k >> 1]);
   while (1) {
-    const uint8 *v5 = RomPtr_8F(v3);
     if (v5[0] & 0x80)
       break;
     scrolls[v5[0]] = v5[1];
-    v3 += 2;
+    v5 += 2;
   }
   int v7 = plm_block_indices[k >> 1] >> 1;
   level_data[v7] = level_data[v7] & 0xFFF | 0xB000;
@@ -1045,27 +1035,27 @@ const uint8 *PlmInstr_QueueSfx3_Max1(const uint8 *plmp, uint16 k) {  // 0x848C85
 }
 
 const uint8 *PlmInstr_ActivateMapStation(const uint8 *plmp, uint16 k) {  // 0x848C8F
-  *(uint16 *)&map_station_byte_array[area_index] |= 0xFFu;
-  DisplayMessageBox(0x14u);
+  *(uint16 *)&map_station_byte_array[area_index] |= 0xFF;
+  DisplayMessageBox(0x14);
   has_area_map = 1;
   return plmp;
 }
 
 const uint8 *PlmInstr_ActivateEnergyStation(const uint8 *plmp, uint16 k) {  // 0x848CAF
   if (samus_max_health != samus_health) {
-    DisplayMessageBox(0x15u);
+    DisplayMessageBox(0x15);
     samus_health = samus_max_health;
   }
-  CallSomeSamusCode(1u);
+  CallSomeSamusCode(1);
   return plmp;
 }
 
 const uint8 *PlmInstr_ActivateMissileStation(const uint8 *plmp, uint16 k) {  // 0x848CD0
   if (samus_max_missiles != samus_missiles) {
-    DisplayMessageBox(0x16u);
+    DisplayMessageBox(0x16);
     samus_missiles = samus_max_missiles;
   }
-  CallSomeSamusCode(1u);
+  CallSomeSamusCode(1);
   return plmp;
 }
 
@@ -1078,7 +1068,7 @@ const uint8 *PlmInstr_ActivateSaveStationAndGotoIfNo(const uint8 *plmp, uint16 k
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_SaveStationElectricity, 0);
   load_station_index = plm_room_arguments[plm_id >> 1] & 7;
   PrepareBitAccess(load_station_index);
-  used_save_stations_and_elevators[(uint16)(2 * area_index)] |= bitmask;
+  used_save_stations_and_elevators[2 * area_index] |= bitmask;
   SaveToSram(selected_save_slot);
   return plmp + 2;
 }
@@ -1091,6 +1081,34 @@ const uint8 *PlmInstr_GotoIfSamusNear(const uint8 *plmp, uint16 k) {  // 0x848D4
     return INSTRB_RETURN_ADDR(GET_WORD(plmp + 2));
   else
     return plmp + 4;
+}
+
+static void PartiallyQueueVramForSingleScreenPlm(uint16 a, uint16 k, uint16 r20, uint16 r28) {  // 0x849220
+  VramWriteEntry *ent = gVramWriteEntry(k);
+  ent->vram_dst = r28 | a;
+  uint16 size = 4 * r20;
+  VoidP base = plm_draw_tilemap_index + 0xC6C8;
+  ent[0].size = size;
+  ent[1].size = size;
+  ent[0].src = (LongPtr){ base, 126 };
+  ent[1].src = (LongPtr){ base + size, 126 };
+  // R0/R6 assignments move to caller
+}
+
+static void CalculatePlmDrawTilemapVramDst(uint16 k, uint16 r9, uint16 r12, uint16 r20, uint16 r24, uint16 r26, uint16 r28) {  // 0x8491DC
+  uint16 a;
+  uint16 prod = (r26 & 0xF) * 0x40;
+  uint16 v1 = r24 & 0x1F;
+  if (v1 >= 0x10) {
+    a = prod + r12 + 2 * v1;
+    if ((bg1_x_offset & 0x100) != 0)
+      a -= 1024;
+  } else {
+    a = prod + r9 + 2 * v1;
+    if ((bg1_x_offset & 0x100) != 0)
+      a += 1024;
+  }
+  PartiallyQueueVramForSingleScreenPlm(a, k, r20, r28);
 }
 
 void DrawPlm(uint16 k) {  // 0x848DAA
@@ -1107,234 +1125,239 @@ void DrawPlm(uint16 k) {  // 0x848DAA
   VramWriteEntry *v25;
   int16 v28;
   int16 v31;
-  uint16 v35;
-  uint16 a;
-
-  R9_.addr = addr_unk_605000;
-  R12_ = addr_unk_6053E0;
+  uint16 v35, r26, r22;
+  uint16 a, r24;
+  uint16 r20, r18;
+  uint16 r9 = addr_unk_605000;
+  uint16 r12 = addr_unk_6053E0;
   uint16 v1 = plm_instruction_draw_ptr[k >> 1];
-  R30_ = plm_x_block;
-  R32_ = plm_y_block;
+  uint16 x = plm_x_block;
+  uint16 y = plm_y_block;
+  uint16 r3;
+  LongPtr r0, r6;
 LABEL_2:
-  R26_ = layer1_y_pos >> 4;
-  if (!sign16((layer1_y_pos >> 4) + 15 - R32_)) {
-    v2 = *(uint16 *)RomPtr_84orRAM(v1);
-    if (v2 < 0) {
-      R20_ = v2 & 0x7FFF;
-      if (layer1_x_pos >> 4 == R30_ || (int16)((layer1_x_pos >> 4) - R30_) < 0) {
-        v20 = (layer1_x_pos >> 4) + 17;
-        if (v20 != R30_ && (int16)(v20 - R30_) >= 0) {
-          R24_ = R30_;
-          R18_ = 0;
-          R22_ = R26_ + 16;
-          if ((int16)(R26_ - R32_) < 0) {
-            R26_ = R32_;
-          } else {
-            R18_ = R26_ - R32_;
-            if (sign16(R32_ + R20_ - R26_))
-              return;
-            bool v21 = R20_ == R18_;
-            bool v22 = (int16)(R20_ - R18_) < 0;
-            R20_ -= R18_;
-            while (v22)
-              ;
-            if (v21)
-              return;
-          }
-          R22_ = R20_ + R26_ - R22_;
-          if ((R22_ & 0x8000u) != 0 || (v23 = (int16)(R20_ - R22_) < 0, (R20_ -= R22_) != 0) && !v23) {
-            v35 = k;
-            uint16 v24;
-            v24 = vram_write_queue_tail;
-            if ((int16)(vram_write_queue_tail - 240) < 0
-                && !sign16(((uint16)(512 - plm_draw_tilemap_index) >> 3) - R20_)) {
-              R28_ = 0x8000;
-              CalculatePlmDrawTilemapVramDst(vram_write_queue_tail);
-              v25 = gVramWriteEntry(v24);
-              v25[1].vram_dst = v25->vram_dst + 1;
-              vram_write_queue_tail = v24 + 14;
-              R18_ *= 2;
-              R3_.addr = R18_ + v1 + 2;
-              uint16 v26;
-              v26 = 0;
-              while (1) {
-                R30_ = *(uint16 *)RomPtr_84orRAM(R3_.addr);
-                uint16 v27, v29;
-                v27 = R30_ & 0x3FF;
-                v28 = R30_ & 0xC00;
-                if ((R30_ & 0xC00) != 0) {
-                  if (v28 == 1024) {
-                    IndirWriteWord(R0_, v26, tile_table.tables[v27].top_right ^ 0x4000);
-                    IndirWriteWord(R6_, v26, tile_table.tables[v27].top_left ^ 0x4000);
-                    v29 = v26 + 2;
-                    IndirWriteWord(R0_, v29, tile_table.tables[v27].bottom_right ^ 0x4000);
-                    IndirWriteWord(R6_, v29, tile_table.tables[v27].bottom_left ^ 0x4000);
-                  } else if (v28 == 2048) {
-                    IndirWriteWord(R0_, v26, tile_table.tables[v27].bottom_left ^ 0x8000);
-                    IndirWriteWord(R6_, v26, tile_table.tables[v27].bottom_right ^ 0x8000);
-                    v29 = v26 + 2;
-                    IndirWriteWord(R0_, v29, tile_table.tables[v27].top_left ^ 0x8000);
-                    IndirWriteWord(R6_, v29, tile_table.tables[v27].top_right ^ 0x8000);
-                  } else {
-                    IndirWriteWord(R0_, v26, tile_table.tables[v27].bottom_right ^ 0xC000);
-                    IndirWriteWord(R6_, v26, tile_table.tables[v27].bottom_left ^ 0xC000);
-                    v29 = v26 + 2;
-                    IndirWriteWord(R0_, v29, tile_table.tables[v27].top_right ^ 0xC000);
-                    IndirWriteWord(R6_, v29, tile_table.tables[v27].top_left ^ 0xC000);
-                  }
-                } else {
-                  IndirWriteWord(R0_, v26, tile_table.tables[v27].top_left);
-                  IndirWriteWord(R6_, v26, tile_table.tables[v27].top_right);
+  r26 = layer1_y_pos >> 4;
+  if (sign16((layer1_y_pos >> 4) + 15 - y))
+    return;
+  v2 = *(uint16 *)RomPtr_84orRAM(v1);
+  if (v2 < 0) {
+    r20 = v2 & 0x7FFF;
+    if (layer1_x_pos >> 4 == x || (int16)((layer1_x_pos >> 4) - x) < 0) {
+      v20 = (layer1_x_pos >> 4) + 17;
+      if (v20 != x && (int16)(v20 - x) >= 0) {
+        r24 = x;
+        r18 = 0;
+        r22 = r26 + 16;
+        if ((int16)(r26 - y) < 0) {
+          r26 = y;
+        } else {
+          r18 = r26 - y;
+          if (sign16(y + r20 - r26))
+            return;
+          bool v21 = r20 == r18;
+          bool v22 = (int16)(r20 - r18) < 0;
+          r20 -= r18;
+          if (v22)
+            Unreachable();
+          if (v21)
+            return;
+        }
+        r22 = r20 + r26 - r22;
+        if ((r22 & 0x8000) != 0 || (v23 = (int16)(r20 - r22) < 0, (r20 -= r22) != 0) && !v23) {
+          v35 = k;
+          uint16 v24;
+          v24 = vram_write_queue_tail;
+          if ((int16)(vram_write_queue_tail - 240) < 0
+              && !sign16(((uint16)(512 - plm_draw_tilemap_index) >> 3) - r20)) {
+            CalculatePlmDrawTilemapVramDst(vram_write_queue_tail, r9, r12, r20, r24, r26, 0x8000);
+            v25 = gVramWriteEntry(v24);
+            v25[1].vram_dst = v25[0].vram_dst + 1;
+            r0 = v25[0].src;
+            r6 = v25[1].src;
+
+            vram_write_queue_tail = v24 + 14;
+            r18 *= 2;
+            r3 = r18 + v1 + 2;
+            uint16 v26;
+            v26 = 0;
+            while (1) {
+              x = *(uint16 *)RomPtr_84orRAM(r3);
+              uint16 v27, v29;
+              v27 = x & 0x3FF;
+              v28 = x & 0xC00;
+              if ((x & 0xC00) != 0) {
+                if (v28 == 1024) {
+                  IndirWriteWord(r0, v26, tile_table.tables[v27].top_right ^ 0x4000);
+                  IndirWriteWord(r6, v26, tile_table.tables[v27].top_left ^ 0x4000);
                   v29 = v26 + 2;
-                  IndirWriteWord(R0_, v29, tile_table.tables[v27].bottom_left);
-                  IndirWriteWord(R6_, v29, tile_table.tables[v27].bottom_right);
+                  IndirWriteWord(r0, v29, tile_table.tables[v27].bottom_right ^ 0x4000);
+                  IndirWriteWord(r6, v29, tile_table.tables[v27].bottom_left ^ 0x4000);
+                } else if (v28 == 2048) {
+                  IndirWriteWord(r0, v26, tile_table.tables[v27].bottom_left ^ 0x8000);
+                  IndirWriteWord(r6, v26, tile_table.tables[v27].bottom_right ^ 0x8000);
+                  v29 = v26 + 2;
+                  IndirWriteWord(r0, v29, tile_table.tables[v27].top_left ^ 0x8000);
+                  IndirWriteWord(r6, v29, tile_table.tables[v27].top_right ^ 0x8000);
+                } else {
+                  IndirWriteWord(r0, v26, tile_table.tables[v27].bottom_right ^ 0xC000);
+                  IndirWriteWord(r6, v26, tile_table.tables[v27].bottom_left ^ 0xC000);
+                  v29 = v26 + 2;
+                  IndirWriteWord(r0, v29, tile_table.tables[v27].top_right ^ 0xC000);
+                  IndirWriteWord(r6, v29, tile_table.tables[v27].top_left ^ 0xC000);
                 }
-                v26 = v29 + 2;
-                ++R3_.addr;
-                ++R3_.addr;
-                plm_draw_tilemap_index += 8;
-                if (!sign16(plm_draw_tilemap_index - 512))
-                  break;
-                if (!--R20_) {
+              } else {
+                IndirWriteWord(r0, v26, tile_table.tables[v27].top_left);
+                IndirWriteWord(r6, v26, tile_table.tables[v27].top_right);
+                v29 = v26 + 2;
+                IndirWriteWord(r0, v29, tile_table.tables[v27].bottom_left);
+                IndirWriteWord(r6, v29, tile_table.tables[v27].bottom_right);
+              }
+              v26 = v29 + 2;
+              ++r3;
+              ++r3;
+              plm_draw_tilemap_index += 8;
+              if (!sign16(plm_draw_tilemap_index - 512))
+                break;
+              if (!--r20) {
 LABEL_70:
-                  k = v35;
-                  uint16 addr = R3_.addr;
-                  if ((R22_ & 0x8000u) == 0)
-                    addr = R3_.addr + 2 * R22_;
-                  v31 = *(uint16 *)RomPtr_84orRAM(addr);
-                  if (v31) {
-                    R30_ = plm_x_block + (int8)v31;
-                    uint16 v32 = addr + 1;
-                    R32_ = plm_y_block + (int8)*RomPtr_84orRAM(v32);
-                    v1 = v32 + 1;
-                    goto LABEL_2;
-                  }
-                  return;
+                k = v35;
+                uint16 addr = r3;
+                if ((r22 & 0x8000) == 0)
+                  addr = r3 + 2 * r22;
+                v31 = *(uint16 *)RomPtr_84orRAM(addr);
+                if (v31) {
+                  x = plm_x_block + (int8)v31;
+                  uint16 v32 = addr + 1;
+                  y = plm_y_block + (int8)*RomPtr_84orRAM(v32);
+                  v1 = v32 + 1;
+                  goto LABEL_2;
                 }
+                return;
               }
             }
           }
         }
       }
-    } else {
-      R20_ = v2 & 0x7FFF;
-      R28_ = 0;
-      if (sign16(R32_ - R26_))
+    }
+  } else {
+    r20 = v2 & 0x7FFF;
+    if (sign16(y - r26))
+      return;
+    r26 = y;
+    r18 = 0;
+    r24 = x;
+    r22 = ((uint16)(layer1_x_pos + 15) >> 4) - 1;
+    if ((int16)(r22 - x) >= 0 && r22 != x) {
+      r18 = r22 - x;
+      if (x + r20 == r22 || (int16)(x + r20 - r22) < 0)
         return;
-      R26_ = R32_;
-      R18_ = 0;
-      R24_ = R30_;
-      R22_ = ((uint16)(layer1_x_pos + 15) >> 4) - 1;
-      if ((int16)(R22_ - R30_) >= 0 && R22_ != R30_) {
-        R18_ = R22_ - R30_;
-        if (R30_ + R20_ == R22_ || (int16)(R30_ + R20_ - R22_) < 0)
-          return;
-        R20_ -= R18_;
-        R24_ = R22_;
-      }
-      R22_ += 17;
-      if (!sign16(R22_ - R30_)) {
-        R22_ = R20_ + R24_ - 1 - R22_;
-        if ((R22_ & 0x8000u) != 0 || (R20_ -= R22_) != 0) {
-          v35 = k;
-          uint16 v3 = vram_write_queue_tail;
-          if ((int16)(vram_write_queue_tail - 480) < 0
-              && !sign16(((uint16)(512 - plm_draw_tilemap_index) >> 3) - R20_)) {
-            uint16 prod = (R26_ & 0xF) * 0x40;
-            uint16 v4 = R24_ & 0x1F;
-            if (v4 >= 0x10u) {
-              v8 = R12_ + 2 * v4;
-              a = prod + v8;
-              if ((bg1_x_offset & 0x100) != 0)
-                a -= 1024;
-            } else {
-              v5 = R9_.addr + 2 * v4;
-              uint16 RegWord = prod;
-              a = RegWord + v5;
-              if ((bg1_x_offset & 0x100) != 0)
-                a += 1024;
-            }
-            R30_ = 2 * R20_;
-            R34 = a & 0x1F;
-            if (((2 * R20_ + (a & 0x1F) - 1) & 0xFFE0) != 0) {
-              if ((int16)(v3 - 228) >= 0 || (int16)(32 - R34) < 0)
-                return;
-              uint16 v9 = 2 * (32 - R34);
-              v10 = gVramWriteEntry(v3);
-              v10->size = v9;
-              v10[2].size = v9;
-              v10->vram_dst = a;
-              v10[1].vram_dst = a & 0xFFE0 ^ 0x400;
-              v10[3].vram_dst = v10[1].vram_dst + 32;
-              v10[2].vram_dst = v10->vram_dst + 32;
-              R30_ = 4 * R20_;
-              uint16 v11 = 4 * R20_ - v10->size;
-              v10[1].size = v11;
-              v10[3].size = v11;
-              v12 = plm_draw_tilemap_index - 14648;
-              v10->src.addr = plm_draw_tilemap_index - 14648;
-              R0_.addr = v12;
-              v13 = v10->size + v12;
-              v10[1].src.addr = v13;
-              uint16 v14 = v10[1].size + v13;
-              v10[2].src.addr = v14;
-              R6_.addr = v14;
-              v10[3].src.addr = v10[2].size + v14;
-              v10->src.bank = 126;
-              R0_.bank = 126;
-              v10[1].src.bank = 126;
-              R6_.bank = 126;
-              v10[2].src.bank = 126;
-              v10[3].src.bank = 126;
-              vram_write_queue_tail = v3 + 28;
-            } else {
-              PartiallyQueueVramForSingleScreenPlm(a, v3);
-              v15 = gVramWriteEntry(v3);
-              v15[1].vram_dst = v15->vram_dst + 32;
-              vram_write_queue_tail = v3 + 14;
-            }
-            R18_ *= 2;
-            R3_.addr = R18_ + v1 + 2;
-            uint16 v16 = 0;
-            while (1) {
-              R30_ = *(uint16 *)RomPtr_84orRAM(R3_.addr);
-              uint16 v17 = R30_ & 0x3FF, v19;
-              v18 = R30_ & 0xC00;
-              if ((R30_ & 0xC00) != 0) {
-                if (v18 == 1024) {
-                  IndirWriteWord(R0_, v16, tile_table.tables[v17].top_right ^ 0x4000);
-                  IndirWriteWord(R6_, v16, tile_table.tables[v17].bottom_right ^ 0x4000);
-                  v19 = v16 + 2;
-                  IndirWriteWord(R0_, v19, tile_table.tables[v17].top_left ^ 0x4000);
-                  IndirWriteWord(R6_, v19, tile_table.tables[v17].bottom_left ^ 0x4000);
-                } else if (v18 == 2048) {
-                  IndirWriteWord(R0_, v16, tile_table.tables[v17].bottom_left ^ 0x8000);
-                  IndirWriteWord(R6_, v16, tile_table.tables[v17].top_left ^ 0x8000);
-                  v19 = v16 + 2;
-                  IndirWriteWord(R0_, v19, tile_table.tables[v17].bottom_right ^ 0x8000);
-                  IndirWriteWord(R6_, v19, tile_table.tables[v17].top_right ^ 0x8000);
-                } else {
-                  IndirWriteWord(R0_, v16, tile_table.tables[v17].bottom_right ^ 0xC000);
-                  IndirWriteWord(R6_, v16, tile_table.tables[v17].top_right ^ 0xC000);
-                  v19 = v16 + 2;
-                  IndirWriteWord(R0_, v19, tile_table.tables[v17].bottom_left ^ 0xC000);
-                  IndirWriteWord(R6_, v19, tile_table.tables[v17].top_left ^ 0xC000);
-                }
-              } else {
-                IndirWriteWord(R0_, v16, tile_table.tables[v17].top_left);
-                IndirWriteWord(R6_, v16, tile_table.tables[v17].bottom_left);
+      r20 -= r18;
+      r24 = r22;
+    }
+    r22 += 17;
+    if (!sign16(r22 - x)) {
+      r22 = r20 + r24 - 1 - r22;
+      if ((r22 & 0x8000) != 0 || (r20 -= r22) != 0) {
+        v35 = k;
+        uint16 v3 = vram_write_queue_tail;
+        if ((int16)(vram_write_queue_tail - 480) < 0
+            && !sign16(((uint16)(512 - plm_draw_tilemap_index) >> 3) - r20)) {
+          uint16 prod = (r26 & 0xF) * 0x40;
+          uint16 v4 = r24 & 0x1F;
+          if (v4 >= 0x10) {
+            v8 = r12 + 2 * v4;
+            a = prod + v8;
+            if ((bg1_x_offset & 0x100) != 0)
+              a -= 1024;
+          } else {
+            v5 = r9 + 2 * v4;
+            uint16 RegWord = prod;
+            a = RegWord + v5;
+            if ((bg1_x_offset & 0x100) != 0)
+              a += 1024;
+          }
+          x = 2 * r20;
+          uint16 R34 = a & 0x1F;
+          if (((2 * r20 + (a & 0x1F) - 1) & 0xFFE0) != 0) {
+            if ((int16)(v3 - 228) >= 0 || (int16)(32 - R34) < 0)
+              return;
+            uint16 v9 = 2 * (32 - R34);
+            v10 = gVramWriteEntry(v3);
+            v10->size = v9;
+            v10[2].size = v9;
+            v10[0].vram_dst = a;
+            v10[1].vram_dst = a & 0xFFE0 ^ 0x400;
+            v10[3].vram_dst = v10[1].vram_dst + 32;
+            v10[2].vram_dst = v10->vram_dst + 32;
+            x = 4 * r20;
+            uint16 v11 = 4 * r20 - v10->size;
+            v10[1].size = v11;
+            v10[3].size = v11;
+            v12 = plm_draw_tilemap_index - 14648;
+            v10->src.addr = plm_draw_tilemap_index - 14648;
+            r0.addr = v12;
+            v13 = v10->size + v12;
+            v10[1].src.addr = v13;
+            uint16 v14 = v10[1].size + v13;
+            v10[2].src.addr = v14;
+            r0.bank = 126;
+            r6.bank = 126;
+            r6.addr = v14;
+            v10[3].src.addr = v10[2].size + v14;
+            v10->src.bank = 126;
+            v10[1].src.bank = 126;
+            v10[2].src.bank = 126;
+            v10[3].src.bank = 126;
+            vram_write_queue_tail = v3 + 28;
+          } else {
+            PartiallyQueueVramForSingleScreenPlm(a, v3, r20, 0);
+            v15 = gVramWriteEntry(v3);
+            v15[1].vram_dst = v15[0].vram_dst + 32;
+            r0 = v15[0].src;
+            r6 = v15[1].src;
+            vram_write_queue_tail = v3 + 14;
+          }
+          r18 *= 2;
+          r3 = r18 + v1 + 2;
+          uint16 v16 = 0;
+          while (1) {
+            x = *(uint16 *)RomPtr_84orRAM(r3);
+            uint16 v17 = x & 0x3FF, v19;
+            v18 = x & 0xC00;
+            if ((x & 0xC00) != 0) {
+              if (v18 == 1024) {
+                IndirWriteWord(r0, v16, tile_table.tables[v17].top_right ^ 0x4000);
+                IndirWriteWord(r6, v16, tile_table.tables[v17].bottom_right ^ 0x4000);
                 v19 = v16 + 2;
-                IndirWriteWord(R0_, v19, tile_table.tables[v17].top_right);
-                IndirWriteWord(R6_, v19, tile_table.tables[v17].bottom_right);
+                IndirWriteWord(r0, v19, tile_table.tables[v17].top_left ^ 0x4000);
+                IndirWriteWord(r6, v19, tile_table.tables[v17].bottom_left ^ 0x4000);
+              } else if (v18 == 2048) {
+                IndirWriteWord(r0, v16, tile_table.tables[v17].bottom_left ^ 0x8000);
+                IndirWriteWord(r6, v16, tile_table.tables[v17].top_left ^ 0x8000);
+                v19 = v16 + 2;
+                IndirWriteWord(r0, v19, tile_table.tables[v17].bottom_right ^ 0x8000);
+                IndirWriteWord(r6, v19, tile_table.tables[v17].top_right ^ 0x8000);
+              } else {
+                IndirWriteWord(r0, v16, tile_table.tables[v17].bottom_right ^ 0xC000);
+                IndirWriteWord(r6, v16, tile_table.tables[v17].top_right ^ 0xC000);
+                v19 = v16 + 2;
+                IndirWriteWord(r0, v19, tile_table.tables[v17].bottom_left ^ 0xC000);
+                IndirWriteWord(r6, v19, tile_table.tables[v17].top_left ^ 0xC000);
               }
-              v16 = v19 + 2;
-              R3_.addr += 2;
-              plm_draw_tilemap_index += 8;
-              if (!sign16(plm_draw_tilemap_index - 512))
-                break;
-              if (!--R20_)
-                goto LABEL_70;
+            } else {
+              IndirWriteWord(r0, v16, tile_table.tables[v17].top_left);
+              IndirWriteWord(r6, v16, tile_table.tables[v17].bottom_left);
+              v19 = v16 + 2;
+              IndirWriteWord(r0, v19, tile_table.tables[v17].top_right);
+              IndirWriteWord(r6, v19, tile_table.tables[v17].bottom_right);
             }
+            v16 = v19 + 2;
+            r3 += 2;
+            plm_draw_tilemap_index += 8;
+            if (!sign16(plm_draw_tilemap_index - 512))
+              break;
+            if (!--r20)
+              goto LABEL_70;
           }
         }
       }
@@ -1343,49 +1366,6 @@ LABEL_70:
 }
 
 
-void CalculatePlmDrawTilemapVramDst(uint16 k) {  // 0x8491DC
-  int16 v2;
-  int16 v5;
-  uint16 a;
-
-  uint16 prod = (R26_ & 0xF) * 0x40;
-  uint16 v1 = R24_ & 0x1F;
-  if (v1 >= 0x10u) {
-    v5 = R12_ + 2 * v1;
-    uint16 RegWord = prod;
-    a = RegWord + v5;
-    if ((bg1_x_offset & 0x100) != 0)
-      a -= 1024;
-  } else {
-    v2 = R9_.addr + 2 * v1;
-    uint16 v3 = prod;
-    a = v3 + v2;
-    if ((bg1_x_offset & 0x100) != 0)
-      a += 1024;
-  }
-  PartiallyQueueVramForSingleScreenPlm(a, k);
-}
-
-void PartiallyQueueVramForSingleScreenPlm(uint16 a, uint16 k) {  // 0x849220
-  VramWriteEntry *v2;
-  VoidP v4;
-
-  v2 = gVramWriteEntry(k);
-  v2->vram_dst = R28_ | a;
-  uint16 v3 = 4 * R20_;
-  v2->size = 4 * R20_;
-  v2[1].size = v3;
-  v4 = plm_draw_tilemap_index - 14648;
-  v2->src.addr = plm_draw_tilemap_index - 14648;
-  R0_.addr = v4;
-  uint16 v5 = v2->size + v4;
-  v2[1].src.addr = v5;
-  R6_.addr = v5;
-  v2->src.bank = 126;
-  v2[1].src.bank = 126;
-  R0_.bank = 126;
-  R6_.bank = 126;
-}
 
 const uint8 *PlmInstr_MovePlmDownOneBlock(const uint8 *plmp, uint16 k) {  // 0x84AB00
   plm_block_indices[k >> 1] += 2 * room_width_in_blocks;
@@ -1416,7 +1396,7 @@ void PlmPreInstr_PositionSamusAndInvincible(uint16 k) {  // 0x84AC89
   int v1 = k >> 1;
   samus_x_pos = plm_variable[v1];
   samus_y_pos = plm_variables[v1];
-  samus_invincibility_timer |= 0x10u;
+  samus_invincibility_timer |= 0x10;
 }
 
 const uint8 *PlmInstr_DealDamage_2(const uint8 *plmp, uint16 k) {  // 0x84AC9D
@@ -1442,14 +1422,14 @@ const uint8 *PlmInstr_Draw0x38FramesOfLeftTreadmill(const uint8 *plmp, uint16 k)
 const uint8 *PlmInstr_GotoIfSamusHealthFull(const uint8 *plmp, uint16 k) {  // 0x84AE35
   if (samus_max_health != samus_health)
     return plmp + 2;
-  CallSomeSamusCode(1u);
+  CallSomeSamusCode(1);
   return INSTRB_RETURN_ADDR(GET_WORD(plmp));
 }
 
 const uint8 *PlmInstr_GotoIfMissilesFull(const uint8 *plmp, uint16 k) {  // 0x84AEBF
   if (samus_max_missiles != samus_missiles)
     return plmp + 2;
-  CallSomeSamusCode(1u);
+  CallSomeSamusCode(1);
   return INSTRB_RETURN_ADDR(GET_WORD(plmp));
 }
 
@@ -1460,12 +1440,12 @@ const uint8 *PlmInstr_PlaceSamusOnSaveStation(const uint8 *plmp, uint16 k) {  //
 }
 
 const uint8 *PlmInstr_DisplayGameSavedMessageBox(const uint8 *plmp, uint16 k) {  // 0x84B024
-  DisplayMessageBox(0x18u);
+  DisplayMessageBox(0x18);
   return plmp;
 }
 
 const uint8 *PlmInstr_EnableMovementAndSetSaveStationUsed(const uint8 *plmp, uint16 k) {  // 0x84B030
-  CallSomeSamusCode(1u);
+  CallSomeSamusCode(1);
   save_station_lockout_flag = 1;
   return plmp;
 }
@@ -1484,9 +1464,9 @@ uint8 PlmSetup_SetrupWreckedShipEntrance(uint16 j) {  // 0x84B04A
 }
 
 uint8 PlmSetup_BTS_Brinstar_0x80_Floorplant(uint16 j) {  // 0x84B0DC
-  if ((((uint8)samus_y_radius + (uint8)samus_y_pos - 1) & 0xF) == 15) {
+  if (((samus_y_radius + samus_y_pos - 1) & 0xF) == 15) {
     int v1 = plm_block_indices[j >> 1] >> 1;
-    level_data[v1] &= 0x8FFFu;
+    level_data[v1] &= 0x8FFF;
     int v2 = j >> 1;
     plm_variable[v2] = samus_x_pos;
     plm_variables[v2] = samus_y_pos - 1;
@@ -1497,11 +1477,11 @@ uint8 PlmSetup_BTS_Brinstar_0x80_Floorplant(uint16 j) {  // 0x84B0DC
 }
 
 uint8 PlmSetup_BTS_Brinstar_0x81_Ceilingplant(uint16 j) {  // 0x84B113
-  if ((((uint8)samus_y_pos - (uint8)samus_y_radius) & 0xF) != 0) {
+  if (((samus_y_pos - samus_y_radius) & 0xF) != 0) {
     plm_header_ptr[j >> 1] = 0;
   } else {
     int v1 = plm_block_indices[j >> 1] >> 1;
-    level_data[v1] &= 0x8FFFu;
+    level_data[v1] &= 0x8FFF;
     int v2 = j >> 1;
     plm_variable[v2] = samus_x_pos;
     plm_variables[v2] = samus_y_pos + 1;
@@ -1513,7 +1493,7 @@ uint8 ActivateStationIfSamusCannonLinedUp(uint16 a, uint16 j) {  // 0x84B146
   uint16 v2 = 78;
   while (a != plm_block_indices[v2 >> 1]) {
     v2 -= 2;
-    if ((v2 & 0x8000u) != 0)
+    if ((v2 & 0x8000) != 0)
       goto LABEL_7;
   }
   CalculatePlmBlockCoords(plm_id);
@@ -1521,7 +1501,7 @@ uint8 ActivateStationIfSamusCannonLinedUp(uint16 a, uint16 j) {  // 0x84B146
     int v3 = v2 >> 1;
     plm_instr_list_ptrs[v3] = plm_instruction_list_link_reg[v3];
     plm_instruction_timer[v3] = 1;
-    CallSomeSamusCode(6u);
+    CallSomeSamusCode(6);
     return 1;
   }
 LABEL_7:
@@ -1675,13 +1655,13 @@ uint8 PlmSetup_B6FF_ScrollBlockTouch(uint16 j) {  // 0x84B393
   uint16 v3 = 78;
   while (v2 != plm_block_indices[v3 >> 1]) {
     v3 -= 2;
-    if ((v3 & 0x8000u) != 0) {
+    if ((v3 & 0x8000) != 0) {
       while (1)
         ;
     }
   }
   int v4 = v3 >> 1;
-  if ((plm_variable[v4] & 0x8000u) == 0) {
+  if ((plm_variable[v4] & 0x8000) == 0) {
     plm_variable[v4] = 0x8000;
     ++plm_instr_list_ptrs[v4];
     ++plm_instr_list_ptrs[v4];
@@ -1692,7 +1672,7 @@ uint8 PlmSetup_B6FF_ScrollBlockTouch(uint16 j) {  // 0x84B393
 
 uint8 PlmSetup_DeactivatePlm(uint16 j) {  // 0x84B3C1
   int v1 = plm_block_indices[j >> 1] >> 1;
-  level_data[v1] &= 0x8FFFu;
+  level_data[v1] &= 0x8FFF;
   return 0;
 }
 
@@ -1706,7 +1686,7 @@ uint8 PlmSetup_ReturnCarrySet(uint16 j) {  // 0x84B3D2
 
 uint8 PlmSetup_D094_EnemyBreakableBlock(uint16 j) {  // 0x84B3D4
   int v1 = plm_block_indices[j >> 1] >> 1;
-  level_data[v1] &= 0xFFFu;
+  level_data[v1] &= 0xFFF;
   return 0;
 }
 
@@ -1716,8 +1696,7 @@ uint8 UNUSED_sub_84B3E3(uint16 j) {  // 0x84B3E3
 }
 
 uint8 PlmSetup_B70F_IcePhysics(uint16 j) {  // 0x84B3EB
-  if ((((uint8)samus_y_radius + (uint8)samus_y_pos - 1) & 0xF) == 7
-      || (((uint8)samus_y_radius + (uint8)samus_y_pos - 1) & 0xF) == 15) {
+  if (((samus_y_radius + samus_y_pos - 1) & 0xF) == 7 || ((samus_y_radius + samus_y_pos - 1) & 0xF) == 15) {
     *(uint16 *)&samus_x_decel_mult = 16;
   }
   return 0;
@@ -1741,7 +1720,7 @@ uint8 PlmSetup_QuicksandSurface(uint16 j) {
   samus_echoes_sound_flag = 0;
   samus_x_extra_run_subspeed = 0;
   samus_x_extra_run_speed = 0;
-  samus_x_base_subspeed &= ~0x8000u;
+  samus_x_base_subspeed &= ~0x8000;
   samus_x_base_speed = 0;
   uint16 v1 = 0;
   if ((equipped_items & 0x20) != 0)
@@ -1797,65 +1776,41 @@ uint8 PlmSetup_B727_SandFallsFast(uint16 j) {  // 0x84B4B6
   return 0;
 }
 
-static Func_Y_U8 *const kPlmSetup_QuicksandSurfaceB[4] = {  // 0x84B4C4
-  PlmSetup_QuicksandSurfaceB_0,
-  PlmSetup_QuicksandSurfaceB_1,
-  PlmSetup_QuicksandSurfaceB_2,
-  PlmSetup_QuicksandSurfaceB_0,
-};
-
 uint8 PlmSetup_QuicksandSurfaceB(uint16 j) {
-
   if ((samus_collision_direction & 2) == 0)
-    return  0;
+    return 0;
 
-  uint16 v1 = 0;
-  if ((equipped_items & 0x20) != 0)
-    v1 = 2;
-  uint16 v2 = R18_;
-  R18_ = R20_;
-  R20_ = v2;
-  uint8 rv = kPlmSetup_QuicksandSurfaceB[samus_y_dir & 3](v1);
-  uint16 v3 = R18_;
-  R18_ = R20_;
-  R20_ = v3;
-  return rv;
-}
+  if (cur_coll_amt32 == NULL) {
+    printf("ERROR: PlmSetup_QuicksandSurfaceB is broken!!\n");
+    Unreachable();
+    return 0;
+  }
 
-uint8 PlmSetup_QuicksandSurfaceB_0(uint16 j) {  // 0x84B500
-  static const uint16 word_84B53D[2] = {
-    0x30,
-    0x30,
-  };
-  if ((samus_collision_direction & 0xF) == 3) {
+  switch (samus_y_dir & 3) {
+  case 0:
+  case 3:
+    if ((samus_collision_direction & 0xF) == 3) {
+      if (samus_contact_damage_index == 1) {
+        *cur_coll_amt32 = 0;
+        return 1;
+      } else {
+        if ((uint16)(*cur_coll_amt32 >> 8) > 0x30)
+          *cur_coll_amt32 = (*cur_coll_amt32 & 0xff0000ff) | 0x3000;// R19_ = 0x30;
+        flag_samus_in_quicksand++;
+      }
+    }
+    break;
+  case 2:
     if (samus_contact_damage_index == 1) {
-      R18_ = 0;
-      R20_ = 0;
+      *cur_coll_amt32 = 0;
       return 1;
     } else {
-      if (word_84B53D[j >> 1] < R19_)
-        R19_ = word_84B53D[j >> 1];
-      ++flag_samus_in_quicksand;
+      flag_samus_in_quicksand++;
+      return 0;
     }
   }
   return 0;
 }
-
-uint8 PlmSetup_QuicksandSurfaceB_1(uint16 j) {  // 0x84B528
-  return 0;
-}
-
-uint8 PlmSetup_QuicksandSurfaceB_2(uint16 j) {  // 0x84B52A
-  if (samus_contact_damage_index == 1) {
-    R18_ = 0;
-    R20_ = 0;
-    return 1;
-  } else {
-    flag_samus_in_quicksand++;
-    return 0;
-  }
-}
-
 
 uint8 PlmSetup_B737_SubmergingQuicksand(uint16 j) {  // 0x84B541
   samus_y_subspeed = 0;
@@ -1875,7 +1830,7 @@ uint8 PlmSetup_ClearShitroidInvisibleWall(uint16 j) {  // 0x84B551
   uint16 v1 = plm_block_indices[j >> 1];
   v2 = 10;
   do {
-    level_data[v1 >> 1] &= 0xFFFu;
+    level_data[v1 >> 1] &= 0xFFF;
     v1 += room_width_in_blocks * 2;
     --v2;
   } while (v2);
@@ -1909,7 +1864,7 @@ uint8 PlmSetup_B76B_SaveStationTrigger(uint16 j) {  // 0x84B590
       uint16 v3 = 78;
       while (v2 != plm_block_indices[v3 >> 1]) {
         v3 -= 2;
-        if ((v3 & 0x8000u) != 0)
+        if ((v3 & 0x8000) != 0)
           return 1;
       }
       int v4 = v3 >> 1;
@@ -1935,7 +1890,7 @@ uint8 PlmSetup_MotherBrainRoomEscapeDoor(uint16 j) {  // 0x84B5F8
   WriteLevelDataBlockTypeAndBts(v3, 0xD0FF);
   WriteLevelDataBlockTypeAndBts(
     room_width_in_blocks * 2 + v3,
-    0xD0FFu);
+    0xD0FF);
   return 0;
 }
 
@@ -1961,7 +1916,7 @@ void PlmPreInstr_B7EB_DecTimerEnableSoundsDeletePlm(uint16 k) {  // 0x84B7DD
 
 void PlmPreInstr_WakeAndLavaIfBoosterCollected(uint16 k) {  // 0x84B7EF
   if ((collected_items & 0x2000) != 0) {
-    if ((fx_target_y_pos & 0x8000u) != 0) {
+    if ((fx_target_y_pos & 0x8000) != 0) {
       plm_header_ptr[k >> 1] = 0;
     } else {
       fx_y_vel = -128;
@@ -1981,7 +1936,7 @@ void PlmPreInstr_WakeAndLavaIfBoosterCollected(uint16 k) {  // 0x84B7EF
 }
 
 void PlmPreInstr_WakePLMAndStartFxMotionSamusFarLeft(uint16 k) {  // 0x84B82A
-  if (samus_x_pos <= 0xAE0u) {
+  if (samus_x_pos <= 0xAE0) {
     fx_timer = 1;
     int v1 = k >> 1;
     plm_instruction_timer[v1] = 1;
@@ -2005,8 +1960,8 @@ void PlmPreInstr_AdvanceLavaSamusMovesLeft(uint16 k) {  // 0x84B846
   uint16 v2 = plm_timers[v1];
   int v3 = v2 >> 1;
   uint16 v4 = g_word_84B876[v3];
-  if ((v4 & 0x8000u) != 0) {
-    SetEventHappened(0x15u);
+  if ((v4 & 0x8000) != 0) {
+    SetEventHappened(0x15);
   } else if (v4 >= samus_x_pos) {
     if (g_word_84B876[v3 + 1] < fx_base_y_pos)
       fx_base_y_pos = g_word_84B876[v3 + 1];
@@ -2016,7 +1971,7 @@ void PlmPreInstr_AdvanceLavaSamusMovesLeft(uint16 k) {  // 0x84B846
 }
 
 uint8 PlmSetup_SpeedBoosterEscape(uint16 j) {  // 0x84B89C
-  if (CheckEventHappened(0x15u))
+  if (CheckEventHappened(0x15))
     plm_header_ptr[j >> 1] = 0;
   return 0;
 }
@@ -2026,8 +1981,8 @@ void PlmPreInstr_ShaktoolsRoom(uint16 k) {  // 0x84B8B0
     *(uint16 *)scrolls = 257;
     *(uint16 *)&scrolls[2] = 257;
   }
-  if (samus_x_pos > 0x348u) {
-    SetEventHappened(0xDu);
+  if (samus_x_pos > 0x348) {
+    SetEventHappened(0xD);
     plm_header_ptr[k >> 1] = 0;
   }
 }
@@ -2038,40 +1993,30 @@ uint8 PlmSetup_ShaktoolsRoom(uint16 j) {  // 0x84B8DC
   return 0;
 }
 
-uint8  WakePlmIfSamusIsBelowAndRightOfTarget(uint16 k) {  // 0x84B8FD
-  uint8 v1 = R18_ >= samus_x_pos;
-  if (R18_ < samus_x_pos) {
-    v1 = R20_ >= samus_y_pos;
-    if (R20_ < samus_y_pos) {
-      v1 = k & 1;
-      int v2 = k >> 1;
-      ++plm_instr_list_ptrs[v2];
-      ++plm_instr_list_ptrs[v2];
-      plm_instruction_timer[v2] = 1;
-    }
+uint8 WakePlmIfSamusIsBelowAndRightOfTarget(uint16 k, uint16 x_r18, uint16 y_r20) {  // 0x84B8FD
+  if (x_r18 < samus_x_pos && y_r20 < samus_y_pos) {
+    int v2 = k >> 1;
+    plm_instr_list_ptrs[v2] += 2;
+    plm_instruction_timer[v2] = 1;
+    return false;
   }
-  return v1;
+  return true;
 }
 
 void PlmPreInstr_OldTourianEscapeShaftEscape(uint16 k) {  // 0x84B927
-  R18_ = 240;
-  R20_ = 2080;
-  if (!WakePlmIfSamusIsBelowAndRightOfTarget(k))
+  if (!WakePlmIfSamusIsBelowAndRightOfTarget(k, 240, 2080))
     SpawnEnemyProjectileWithRoomGfx(0xB4B1, 0);
 }
 
 void PlmPreInstr_EscapeRoomBeforeOldTourianEscapeShaft(uint16 k) {  // 0x84B948
-  R18_ = 240;
-  R20_ = 1344;
-  if (!WakePlmIfSamusIsBelowAndRightOfTarget(k)) {
+  if (!WakePlmIfSamusIsBelowAndRightOfTarget(k, 240, 1344)) {
     fx_y_vel = -104;
     fx_timer = 16;
   }
 }
 
 uint8 PlmSetup_B974(uint16 j) {  // 0x84B96C
-  R38 = 0;
-  R40 = -1;
+  // Implemented in BlockReact_ShootableAir
   return 0;
 }
 
@@ -2089,18 +2034,16 @@ uint8 PlmSetup_B9C1_CrittersEscapeBlock(uint16 j) {  // 0x84B978
 }
 
 const uint8 *PlmInstr_SetCrittersEscapedEvent(const uint8 *plmp, uint16 k) {  // 0x84B9B9
-  SetEventHappened(0xFu);
+  SetEventHappened(0xF);
   return plmp;
 }
 
 uint8 PlmSetup_B9ED_CrittersEscapeBlock(uint16 j) {  // 0x84B9C5
   uint16 v1 = plm_block_indices[j >> 1];
   WriteLevelDataBlockTypeAndBts(v1, 0xC04F);
-  uint16 v2 = room_width_in_blocks * 2 + v1;
+  uint16 v2 = v1 + room_width_in_blocks * 2;
   WriteLevelDataBlockTypeAndBts(v2, 0xD0FF);
-  WriteLevelDataBlockTypeAndBts(
-    room_width_in_blocks * 2 + v2,
-    0xD0FFu);
+  WriteLevelDataBlockTypeAndBts(v2 + room_width_in_blocks * 2, 0xD0FF);
   return 0;
 }
 
@@ -2109,7 +2052,7 @@ uint8  sub_84B9F1(uint16 j) {  // 0x84B9F1
   level_data[v1 >> 1] = level_data[v1 >> 1] & 0xFFF | 0x8000;
   uint16 v2 = room_width_in_blocks * 2 + v1;
   level_data[v2 >> 1] = level_data[v2 >> 1] & 0xFFF | 0x8000;
-  uint16 v3 = room_width_in_blocks +  room_width_in_blocks + v2;
+  uint16 v3 = room_width_in_blocks + room_width_in_blocks + v2;
   level_data[v3 >> 1] = level_data[v3 >> 1] & 0xFFF | 0x8000;
   int v4 = (uint16)(room_width_in_blocks * 2 + v3) >> 1;
   level_data[v4] = level_data[v4] & 0xFFF | 0x8000;
@@ -2131,7 +2074,7 @@ void UNUSED_sub_84BAD1(uint16 j) {  // 0x84BAD1
 }
 
 uint8 PlmSetup_BB30_CrateriaMainstreetEscape(uint16 j) {  // 0x84BB09
-  if (!CheckEventHappened(0xFu))
+  if (!CheckEventHappened(0xF))
     plm_header_ptr[j >> 1] = 0;
   return 0;
 }
@@ -2153,7 +2096,7 @@ void PlmPreInstr_WakePlmIfTriggered(uint16 k) {  // 0x84BB52
 
 void PlmPreInstr_WakePlmIfTriggeredOrSamusBelowPlm(uint16 k) {  // 0x84BB6B
   CalculatePlmBlockCoords(k);
-  if (samus_x_pos >> 4 == plm_x_block && (uint16)((samus_y_pos >> 4) - plm_y_block) < 5u
+  if (samus_x_pos >> 4 == plm_x_block && (uint16)((samus_y_pos >> 4) - plm_y_block) < 5
       || plm_timers[k >> 1]) {
     int v1 = k >> 1;
     ++plm_instr_list_ptrs[v1];
@@ -2165,7 +2108,7 @@ void PlmPreInstr_WakePlmIfTriggeredOrSamusBelowPlm(uint16 k) {  // 0x84BB6B
 
 void PlmPreInstr_WakePlmIfTriggeredOrSamusAbovePlm(uint16 k) {  // 0x84BBA4
   CalculatePlmBlockCoords(k);
-  if (samus_x_pos >> 4 == plm_x_block && (uint16)((samus_y_pos >> 4) - plm_y_block) >= 0xFFFCu
+  if (samus_x_pos >> 4 == plm_x_block && (uint16)((samus_y_pos >> 4) - plm_y_block) >= 0xFFFC
       || plm_timers[k >> 1]) {
     int v1 = k >> 1;
     ++plm_instr_list_ptrs[v1];
@@ -2218,7 +2161,7 @@ void PlmPreInstr_GoToLinkInstrIfShotWithPowerBomb(uint16 k) {  // 0x84BD26
       plm_instruction_timer[v2] = 1;
       return;
     }
-    QueueSfx2_Max6(0x57u);
+    QueueSfx2_Max6(0x57);
   }
   plm_timers[v2] = 0;
 }
@@ -2241,7 +2184,7 @@ LABEL_4:;
       plm_instruction_timer[v4] = 1;
       return;
     }
-    QueueSfx2_Max6(0x57u);
+    QueueSfx2_Max6(0x57);
   }
   plm_timers[k >> 1] = 0;
 }
@@ -2256,7 +2199,7 @@ void PlmPreInstr_GoToLinkInstrIfShotWithSuperMissile(uint16 k) {  // 0x84BD88
       plm_instruction_timer[v2] = 1;
       return;
     }
-    QueueSfx2_Max6(0x57u);
+    QueueSfx2_Max6(0x57);
   }
   plm_timers[v2] = 0;
 }
@@ -2271,26 +2214,26 @@ void PlmPreInstr_GoToLinkInstruction(uint16 k) {  // 0x84BDB2
 void PlmPreInstr_PlayDudSound(uint16 k) {  // 0x84BE1C
   int v2 = k >> 1;
   if (plm_timers[v2])
-    QueueSfx2_Max6(0x57u);
+    QueueSfx2_Max6(0x57);
   plm_timers[v2] = 0;
 }
 
 void PlmPreInstr_GotoLinkIfBoss1Dead(uint16 k) {  // 0x84BDD4
-  if (CheckBossBitForCurArea(1u) & 1)
+  if (CheckBossBitForCurArea(1) & 1)
     PlmPreInstr_GoToLinkInstruction(k);
   else
     PlmPreInstr_PlayDudSound(k);
 }
 
 void PlmPreInstr_GotoLinkIfMiniBossDead(uint16 k) {  // 0x84BDE3
-  if (CheckBossBitForCurArea(2u) & 1)
+  if (CheckBossBitForCurArea(2) & 1)
     PlmPreInstr_GoToLinkInstruction(k);
   else
     PlmPreInstr_PlayDudSound(k);
 }
 
 void PlmPreInstr_GotoLinkIfTorizoDead(uint16 k) {  // 0x84BDF2
-  if (CheckBossBitForCurArea(4u) & 1)
+  if (CheckBossBitForCurArea(4) & 1)
     PlmPreInstr_GoToLinkInstruction(k);
   else
     PlmPreInstr_PlayDudSound(k);
@@ -2306,14 +2249,14 @@ void PlmPreInstr_GotoLinkIfEnemyDeathQuotaOk(uint16 k) {  // 0x84BE01
 }
 
 void PlmPreInstr_GotoLinkIfTourianStatueFinishedProcessing(uint16 k) {  // 0x84BE1F
-  if ((tourian_entrance_statue_finished & 0x8000u) == 0)
+  if ((tourian_entrance_statue_finished & 0x8000) == 0)
     PlmPreInstr_PlayDudSound(k);
   else
     PlmPreInstr_GoToLinkInstruction(k);
 }
 
 void PlmPreInstr_GotoLinkIfCrittersEscaped(uint16 k) {  // 0x84BE30
-  if (CheckEventHappened(0xFu) & 1)
+  if (CheckEventHappened(0xF) & 1)
     PlmPreInstr_GoToLinkInstruction(k);
   else
     PlmPreInstr_PlayDudSound(k);
@@ -2327,7 +2270,7 @@ const uint8 *PlmInstr_SetGreyDoorPreInstr(const uint8 *plmp, uint16 k) {  // 0x8
 uint8 PlmSetup_C806_LeftGreenGateTrigger(uint16 j) {  // 0x84C54D
   if ((projectile_type[projectile_index >> 1] & 0xFFF) == 512)
     return sub_84C63F(j);
-  QueueSfx2_Max6(0x57u);
+  QueueSfx2_Max6(0x57);
   plm_header_ptr[j >> 1] = 0;
   return 0;
 }
@@ -2335,7 +2278,7 @@ uint8 PlmSetup_C806_LeftGreenGateTrigger(uint16 j) {  // 0x84C54D
 uint8 PlmSetup_C80A_RightGreenGateTrigger(uint16 j) {  // 0x84C56C
   if ((projectile_type[projectile_index >> 1] & 0xFFF) == 512)
     return sub_84C647(j);
-  QueueSfx2_Max6(0x57u);
+  QueueSfx2_Max6(0x57);
   plm_header_ptr[j >> 1] = 0;
   return 0;
 }
@@ -2346,7 +2289,7 @@ uint8 PlmSetup_C80E_LeftRedGateTrigger(uint16 j) {  // 0x84C58B
   v1 = projectile_type[projectile_index >> 1] & 0xFFF;
   if (v1 == 256 || v1 == 512)
     return sub_84C63F(j);
-  QueueSfx2_Max6(0x57u);
+  QueueSfx2_Max6(0x57);
   plm_header_ptr[j >> 1] = 0;
   return 0;
 }
@@ -2357,7 +2300,7 @@ uint8 PlmSetup_C812_RightRedGateTrigger(uint16 j) {  // 0x84C5AF
   v1 = projectile_type[projectile_index >> 1] & 0xFFF;
   if (v1 == 256 || v1 == 512)
     return sub_84C647(j);
-  QueueSfx2_Max6(0x57u);
+  QueueSfx2_Max6(0x57);
   plm_header_ptr[j >> 1] = 0;
   return 0;
 }
@@ -2365,7 +2308,7 @@ uint8 PlmSetup_C812_RightRedGateTrigger(uint16 j) {  // 0x84C5AF
 uint8 PlmSetup_C81E_LeftYellowGateTrigger(uint16 j) {  // 0x84C5D3
   if ((projectile_type[projectile_index >> 1] & 0xFFF) == 768)
     return sub_84C63F(j);
-  QueueSfx2_Max6(0x57u);
+  QueueSfx2_Max6(0x57);
   int v1 = j >> 1;
   plm_header_ptr[v1] = 0;
   PlmSetup_C822_RightYellowGateTrigger(j);
@@ -2375,7 +2318,7 @@ uint8 PlmSetup_C81E_LeftYellowGateTrigger(uint16 j) {  // 0x84C5D3
 uint8 PlmSetup_C822_RightYellowGateTrigger(uint16 j) {  // 0x84C5F1
   if ((projectile_type[projectile_index >> 1] & 0xFFF) != 768)
     return sub_84C647(j);
-  QueueSfx2_Max6(0x57u);
+  QueueSfx2_Max6(0x57);
   plm_header_ptr[j >> 1] = 0;
   return 0;
 }
@@ -2407,7 +2350,7 @@ uint8  sub_84C64C(uint16 j, uint16 a) {  // 0x84C64C
   uint16 v2 = 78;
   while (a != plm_block_indices[v2 >> 1]) {
     v2 -= 2;
-    if ((v2 & 0x8000u) != 0)
+    if ((v2 & 0x8000) != 0)
       goto LABEL_7;
   }
   int v3;
@@ -2523,7 +2466,7 @@ uint8 PlmSetup_Door_Strange(uint16 j) {  // 0x84C7E2
   uint16 v3 = 78;
   while (v2 != plm_block_indices[v3 >> 1]) {
     v3 -= 2;
-    if ((v3 & 0x8000u) != 0)
+    if ((v3 & 0x8000) != 0)
       return 0;
   }
   plm_timers[v3 >> 1] = projectile_type[(int16)projectile_index >> 1] & 0x1FFF | 0x8000;
@@ -2731,19 +2674,17 @@ void PlmPreInstr_DeletePlmAndSpawnTriggerIfBlockDestroyed(uint16 k) {  // 0x84D1
 }
 
 uint8 PlmSetup_D6DA_LowerNorfairChozoHandTrigger(uint16 j) {  // 0x84D18F
-  static const SpawnHardcodedPlmArgs unk_84D1DA = { 0x0c, 0x1d, 0xd113 };
-
   if ((collected_items & 0x200) != 0
       && (samus_collision_direction & 0xF) == 3
       && (samus_pose == kPose_1D_FaceR_Morphball_Ground
           || samus_pose == kPose_79_FaceR_Springball_Ground
           || samus_pose == kPose_7A_FaceL_Springball_Ground)) {
-    SetEventHappened(0xCu);
+    SetEventHappened(0xC);
     enemy_data[0].parameter_1 = 1;
     int v2 = plm_block_indices[j >> 1] >> 1;
-    level_data[v2] &= 0xFFFu;
+    level_data[v2] &= 0xFFF;
     CallSomeSamusCode(0);
-    SpawnHardcodedPlm(&unk_84D1DA);
+    SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x0c, 0x1d, 0xd113 });
   }
   plm_header_ptr[j >> 1] = 0;
   return 1;
@@ -2765,7 +2706,7 @@ const uint8 *PlmInstr_GotoIfRoomArgLess(const uint8 *plmp, uint16 k) {  // 0x84D
 }
 
 const uint8 *PlmInstr_SpawnFourMotherBrainGlass(const uint8 *plmp, uint16 k) {  // 0x84D30B
-  QueueSfx3_Max15(0x2Eu);
+  QueueSfx3_Max15(0x2E);
   SpawnMotherBrainGlassShatteringShard(GET_WORD(plmp + 0));
   SpawnMotherBrainGlassShatteringShard(GET_WORD(plmp + 2));
   SpawnMotherBrainGlassShatteringShard(GET_WORD(plmp + 4));
@@ -2793,7 +2734,7 @@ const uint8 *PlmInstr_SpawnTorizoStatueBreaking(const uint8 *plmp, uint16 k) {  
 }
 
 const uint8 *PlmInstr_QueueSong1MusicTrack(const uint8 *plmp, uint16 k) {  // 0x84D3C7
-  QueueMusic_Delayed8(6u);
+  QueueMusic_Delayed8(6);
   return plmp;
 }
 
@@ -2819,13 +2760,12 @@ void PlmPreInstr_WakeOnKeyPress(uint16 k) {  // 0x84D4BF
 }
 
 const uint8 *PlmInstr_EnableWaterPhysics(const uint8 *plmp, uint16 k) {  // 0x84D525
-  fx_liquid_options &= ~4u;
+  fx_liquid_options &= ~4;
   return plmp;
 }
 
 const uint8 *PlmInstr_SpawnN00bTubeCrackEnemyProjectile(const uint8 *plmp, uint16 k) {  // 0x84D52C
-  uint16 v2 = 0; // undefined
-  SpawnEnemyProjectileWithRoomGfx(0xD904, v2);
+  SpawnEnemyProjectileWithRoomGfx(0xD904, 0);
   return plmp;
 }
 
@@ -2837,20 +2777,20 @@ const uint8 *PlmInstr_DiagonalEarthquake(const uint8 *plmp, uint16 k) {  // 0x84
 
 const uint8 *PlmInstr_Spawn10shardsAnd6n00bs(const uint8 *plmp, uint16 k) {  // 0x84D543
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 2u);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 4u);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 6u);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 8u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 2);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 4);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 6);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 8);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xA);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xC);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xE);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0x10);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0x12);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 0);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 2u);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 4u);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 6u);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 8u);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 2);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 4);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 6);
+  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 8);
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 0xA);
   return plmp;
 }
@@ -2873,7 +2813,7 @@ uint8 PlmSetup_MotherBrainGlass(uint16 j) {  // 0x84D5F6
 }
 
 uint8 PlmSetup_DeletePlmIfAreaTorizoDead(uint16 j) {  // 0x84D606
-  if (CheckBossBitForCurArea(4u) & 1)
+  if (CheckBossBitForCurArea(4) & 1)
     plm_header_ptr[j >> 1] = 0;
   return 0;
 }
@@ -2884,7 +2824,7 @@ uint8 PlmSetup_MakeBllockChozoHandTrigger(uint16 j) {  // 0x84D616
 }
 
 uint8 PlmSetup_D6F2_WreckedShipChozoHandTrigger(uint16 j) {  // 0x84D620
-  if (CheckBossBitForCurArea(1u) & 1
+  if (CheckBossBitForCurArea(1) & 1
       && (samus_collision_direction & 0xF) == 3
       && (samus_pose == kPose_1D_FaceR_Morphball_Ground
           || samus_pose == kPose_79_FaceR_Springball_Ground
@@ -2893,10 +2833,9 @@ uint8 PlmSetup_D6F2_WreckedShipChozoHandTrigger(uint16 j) {  // 0x84D620
     *(uint16 *)&scrolls[7] = 514;
     *(uint16 *)&scrolls[13] = 257;
     int v1 = plm_block_indices[j >> 1] >> 1;
-    level_data[v1] &= 0xFFFu;
+    level_data[v1] &= 0xFFF;
     CallSomeSamusCode(0);
-    static const SpawnHardcodedPlmArgs unk_84D673 = { 0x17, 0x1d, 0xd6f8 };
-    SpawnHardcodedPlm(&unk_84D673);
+    SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x17, 0x1d, 0xd6f8 });
   }
   plm_header_ptr[j >> 1] = 0;
   return 1;
@@ -2920,13 +2859,13 @@ uint8 PlmSetup_D708_LowerNorfairChozoBlockUnused(uint16 j) {  // 0x84D693
     room_width_in_blocks
     + room_width_in_blocks
     + plm_block_indices[v1],
-    0xD0FFu);
+    0xD0FF);
   WriteLevelDataBlockTypeAndBts(
     room_width_in_blocks
     + room_width_in_blocks
     + plm_block_indices[v1]
     + 2,
-    0xD0FFu);
+    0xD0FF);
   return 0;
 }
 
@@ -2948,7 +2887,7 @@ void PlmPreInstr_WakePlmIfRoomArgumentDoorIsSet(uint16 k) {  // 0x84D753
 
 const uint8 *PlmInstr_ShootEyeDoorProjectileWithProjectileArg(const uint8 *plmp, uint16 k) {  // 0x84D77A
   SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorProjectile, GET_WORD(plmp));
-  QueueSfx2_Max6(0x4Cu);
+  QueueSfx2_Max6(0x4C);
   return plmp + 2;
 }
 
@@ -2995,7 +2934,7 @@ void sub_84D7EF(uint16 k) {  // 0x84D7EF
   WriteLevelDataBlockTypeAndBts(v1, 0xD0FF);
   uint16 v2 = room_width_in_blocks * 2 + v1;
   WriteLevelDataBlockTypeAndBts(v2, 0xD0FE);
-  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xD0FDu);
+  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xD0FD);
 }
 
 uint8 PlmSetup_EyeDoorEye(uint16 j) {  // 0x84DA8C
@@ -3003,7 +2942,7 @@ uint8 PlmSetup_EyeDoorEye(uint16 j) {  // 0x84DA8C
   if ((bitmask & opened_door_bit_array[idx]) == 0) {
     int v1 = j >> 1;
     WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC044);
-    WriteLevelDataBlockTypeAndBts(2 * room_width_in_blocks + plm_block_indices[v1], 0xD0FFu);
+    WriteLevelDataBlockTypeAndBts(2 * room_width_in_blocks + plm_block_indices[v1], 0xD0FF);
   }
   return 0;
 }
@@ -3017,22 +2956,22 @@ uint8 PlmSetup_EyeDoor(uint16 j) {  // 0x84DAB9
 
 void PlmPreInstr_SetMetroidsClearState_Ev0x10(uint16 k) {  // 0x84DADE
   if (num_enemies_killed_in_room >= num_enemy_deaths_left_to_clear)
-    SetEventHappened(0x10u);
+    SetEventHappened(0x10);
 }
 
 void PlmPreInstr_SetMetroidsClearState_Ev0x11(uint16 k) {  // 0x84DAEE
   if (num_enemies_killed_in_room >= num_enemy_deaths_left_to_clear)
-    SetEventHappened(0x11u);
+    SetEventHappened(0x11);
 }
 
 void PlmPreInstr_SetMetroidsClearState_Ev0x12(uint16 k) {  // 0x84DAFE
   if (num_enemies_killed_in_room >= num_enemy_deaths_left_to_clear)
-    SetEventHappened(0x12u);
+    SetEventHappened(0x12);
 }
 
 void PlmPreInstr_SetMetroidsClearState_Ev0x13(uint16 k) {  // 0x84DB0E
   if (num_enemies_killed_in_room >= num_enemy_deaths_left_to_clear)
-    SetEventHappened(0x13u);
+    SetEventHappened(0x13);
 }
 
 uint8 PlmSetup_SetMetroidRequiredClearState(uint16 j) {  // 0x84DB1E
@@ -3063,7 +3002,7 @@ const uint8 *PlmInstr_DamageDraygonTurret(const uint8 *plmp, uint16 k) {  // 0x8
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003);
-  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xA003);
   return plmp;
 }
 
@@ -3094,7 +3033,7 @@ const uint8 *PlmInstr_DamageDraygonTurret2(const uint8 *plmp, uint16 k) {  // 0x
   SetPlmVarPtr(k, 1);
   uint16 v2 = plm_block_indices[k >> 1];
   WriteLevelDataBlockTypeAndBts(v2, 0xA003);
-  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xA003u);
+  WriteLevelDataBlockTypeAndBts(room_width_in_blocks * 2 + v2, 0xA003);
   return plmp;
 }
 
@@ -3206,8 +3145,7 @@ const uint8 *PlmInstr_DrawItemFrame1(const uint8 *plmp, uint16 k) {  // 0x84E067
 const uint8 *PlmInstr_DrawItemFrame_Common(const uint8 *plmp, uint16 k) {  // 0x84E07F
   int v2 = k >> 1;
   plm_instruction_timer[v2] = 4;
-  const uint8 *base = RomPtr_84(0x8000) - 0x8000;
-  plm_instr_list_ptrs[v2] = plmp - base;
+  plm_instr_list_ptrs[v2] = plmp - RomBankBase(0x84);
   ProcessPlmDrawInstruction(k);
   uint16 v3 = plm_id;
   CalculatePlmBlockCoords(plm_id);
@@ -3226,7 +3164,7 @@ const uint8 *PlmInstr_E63B(const uint8 *plmp, uint16 k) {  // 0x84E63B
 }
 
 uint8 sub_84EE4D(uint16 j) {  // 0x84EE4D
-  return sub_84EE5F(j, 8u);
+  return sub_84EE5F(j, 8);
 }
 
 uint8 sub_84EE52(uint16 j) {  // 0x84EE52
@@ -3253,7 +3191,7 @@ uint8 sub_84EE64(uint16 j) {  // 0x84EE64
 }
 
 uint8 sub_84EE77(uint16 j) {  // 0x84EE77
-  return sub_84EE89(j, 8u);
+  return sub_84EE89(j, 8);
 }
 
 uint8 sub_84EE7C(uint16 j) {  // 0x84EE7C

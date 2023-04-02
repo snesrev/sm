@@ -110,7 +110,6 @@ void LoadFXHeader(void) {
     v6 = get_FxDef(current_fx_entry_ptr);
     uint16 v7 = v6->type;
     if (v6->type) {
-      R19_ = -30720;
       kFxTypeFuncPtrs[v7 >> 1]();
     }
     v8 = get_FxDef(current_fx_entry_ptr);
@@ -150,7 +149,7 @@ void LoadFXHeader(void) {
 void RoomCode_CeresElevatorShaft(void) {  // 0x89ACC3
   int16 v1;
 
-  if ((ceres_status & 0x8000u) != 0) {
+  if ((ceres_status & 0x8000) != 0) {
     if ((int16)(112 - samus_x_pos) < 0
         && (int16)(144 - samus_x_pos) >= 0
         && sign16(samus_y_pos - 128)
@@ -158,7 +157,7 @@ void RoomCode_CeresElevatorShaft(void) {  // 0x89ACC3
         && !samus_y_speed
         && !samus_y_subspeed
         && game_state == kGameState_8_MainGameplay) {
-      CallSomeSamusCode(2u);
+      CallSomeSamusCode(2);
       screen_fade_delay = 0;
       screen_fade_counter = 0;
       game_state = 32;

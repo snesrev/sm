@@ -4,25 +4,18 @@
 #include "sm_rtl.h"
 #include "funcs.h"
 
-
-
-
-
-static const SpawnHardcodedPlmArgs unk_8F9198 = { 0x3d, 0x0b, 0xbb30 };
-static const SpawnHardcodedPlmArgs unk_8F91AD = { 0x10, 0x87, 0xb964 };
-static const SpawnHardcodedPlmArgs unk_8F91B6 = { 0x0f, 0x0a, 0xb9ed };
 void RoomSetup_AfterSavingAnimals(void) {  // 0x8F9194
-  SpawnHardcodedPlm(&unk_8F9198);
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x3d, 0x0b, 0xbb30 });
   earthquake_type = 24;
   earthquake_timer = -1;
 }
 
 void RoomSetup_AutoDestroyWallAfterEscape(void) {  // 0x8F91A9
-  SpawnHardcodedPlm(&unk_8F91AD);
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x10, 0x87, 0xb964 });
 }
 
 void RoomSetup_TurnWallIntoShotblocks(void) {  // 0x8F91B2
-  SpawnHardcodedPlm(&unk_8F91B6);
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x0f, 0x0a, 0xb9ed });
 }
 
 void RoomSetup_ShakeDuringEscape(void) {  // 0x8F91BD
@@ -48,9 +41,7 @@ void RoomSetup_RunStatueUnlockAnims(void) {  // 0x8F91D7
 
 void DoorCode_StartWreckedShipTreadmillWest(void) {  // 0x8FB971
   SpawnAnimtiles(addr_kAnimtiles_WreckedShipTradmillRight);
-
-  static const SpawnHardcodedPlmArgs unk_8FB97C = { 0x04, 0x09, 0xb64b };
-  SpawnHardcodedPlm(&unk_8FB97C);
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x04, 0x09, 0xb64b });
 }
 
 void DoorCode_Scroll6_Green(void) {  // 0x8FB981
@@ -341,57 +332,49 @@ void RoomCode_ScrollingSkyOcean_(void) {  // 0x8FC11B
 void RoomCode_ScrollingSkyLand_Shakes(void) {  // 0x8FC120
   RoomCode_ScrollingSkyLand();
   RoomCode_GenRandomExplodes_Nonblank();
-  earthquake_timer |= 0x8000u;
+  earthquake_timer |= 0x8000;
 }
 
 void RoomCode_ExplodeShakes(void) {  // 0x8FC124
   RoomCode_GenRandomExplodes_Nonblank();
-  earthquake_timer |= 0x8000u;
+  earthquake_timer |= 0x8000;
 }
 
 void RoomCode_GenRandomExplodes_Nonblank(void) {  // 0x8FC131
-  int16 v1;
-
   if (!time_is_frozen_flag && (nmi_frame_counter_word & 1) == 0) {
     uint16 Random = NextRandom();
-    R18_ = layer1_x_pos + (uint8)Random;
-    R20_ = layer1_y_pos + HIBYTE(Random);
-    uint8 v2 = R20_ >> 4;
-    uint16 prod = Mult8x8(v2, room_width_in_blocks);
-    v1 = R18_ >> 4;
-    if ((level_data[prod + v1] & 0x3FF) != 255)
-      RoomCode_GenRandomExplodes();
+    uint16 x = layer1_x_pos + (uint8)Random;
+    uint16 y = layer1_y_pos + HIBYTE(Random);
+    uint16 prod = Mult8x8(y >> 4, room_width_in_blocks);
+    if ((level_data[prod + (x >> 4)] & 0x3FF) != 255)
+      RoomCode_GenRandomExplodes(x, y);
   }
 }
 
 void RoomCode_GenRandomExplodes_4th(void) {  // 0x8FC183
   if (!time_is_frozen_flag && (nmi_frame_counter_word & 3) == 0) {
     uint16 Random = NextRandom();
-    R18_ = layer1_x_pos + (uint8)Random;
-    R20_ = layer1_y_pos + HIBYTE(Random);
-    RoomCode_GenRandomExplodes();
+    RoomCode_GenRandomExplodes(layer1_x_pos + (uint8)Random, layer1_y_pos + HIBYTE(Random));
   }
 }
 
-void RoomCode_GenRandomExplodes(void) {  // 0x8FC1A9
+void RoomCode_GenRandomExplodes(uint16 x_r18, uint16 y_r20) {  // 0x8FC1A9
   static const uint8 kRoomCode_GenRandomExplodes_Sprite[8] = { 3, 3, 9, 12, 12, 18, 18, 21 };
   static const uint8 kRoomCode_GenRandomExplodes_Sfx[8] = { 0x24, 0, 0, 0x25, 0, 0, 0, 0 };
 
   // Bugfix, X is garbage
   uint16 v1 = NextRandom() & 0xF;
-  if (v1 < 8u) {
+  if (v1 < 8) {
     uint16 v2 = kRoomCode_GenRandomExplodes_Sfx[v1];
     if (v2)
       QueueSfx2_Max6(v2);
   }
-  R22_ = kRoomCode_GenRandomExplodes_Sprite[v1 & 7];
-  R24_ = 0;
-  CreateSpriteAtPos();
+  CreateSpriteAtPos(x_r18, y_r20, kRoomCode_GenRandomExplodes_Sprite[v1 & 7], 0);
 }
 
 void RoomCode_ScrollRightDachora(void) {  // 0x8FC1E6
-  if (scrolls[11] == 2 && layer1_y_pos < 0x500u && layer1_x_pos < 0x380u)
-    layer1_x_pos += (layer1_x_pos >= 0x380u) + 3;
+  if (scrolls[11] == 2 && layer1_y_pos < 0x500 && layer1_x_pos < 0x380)
+    layer1_x_pos += (layer1_x_pos >= 0x380) + 3;
 }
 
 void RoomCode_8FC8C8(void) {  // 0x8FC8C8
@@ -399,8 +382,7 @@ void RoomCode_8FC8C8(void) {  // 0x8FC8C8
 }
 
 void RoomCode_SetupShaktoolRoomPlm(void) {  // 0x8FC8D3
-  static const SpawnHardcodedPlmArgs unk_8FC8D7 = { 0x00, 0x00, 0xb8eb };
-  SpawnHardcodedPlm(&unk_8FC8D7);
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x00, 0x00, 0xb8eb });
 }
 
 void RoomCode_SetPauseCodeForDraygon(void) {  // 0x8FC8DD
@@ -425,7 +407,7 @@ void RoomCode_SetCollectedMap(void) {  // 0x8FC90A
 }
 
 void RoomCode_SetZebesTimebombEvent(void) {  // 0x8FC91F
-  SetEventHappened(0xEu);
+  SetEventHappened(0xE);
   earthquake_type = 18;
   earthquake_timer = -1;
 }
@@ -443,8 +425,7 @@ void RoomCode_SetMediumHorizRoomShake(void) {  // 0x8FC946
 }
 
 void RoomCode_Escape4_SetMediumHorizRoomShake(void) {  // 0x8FC953
-  static const SpawnHardcodedPlmArgs unk_8FC957 = { 0x10, 0x10, 0xb968 };
-  SpawnHardcodedPlm(&unk_8FC957);
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x10, 0x10, 0xb968 });
   earthquake_type = 21;
   *(uint16 *)&room_main_asm_variables[2] = 21;
   *(uint16 *)room_main_asm_variables = 0;
@@ -452,8 +433,7 @@ void RoomCode_Escape4_SetMediumHorizRoomShake(void) {  // 0x8FC953
 }
 
 void RoomCode_SetCeresDoorSolid(void) {  // 0x8FC96E
-  static const SpawnHardcodedPlmArgs unk_8FC972 = { 0x0f, 0x26, 0xba48 };
-  SpawnHardcodedPlm(&unk_8FC972);
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x0f, 0x26, 0xba48 });
   FxTypeFunc_2C_Haze();
 }
 
@@ -469,8 +449,7 @@ void RoomCode_CeresColorMathHdma_BgBase(void) {  // 0x8FC97B
 
 void DoorCode_StartWreckedSkipTreadmill_East(void) {  // 0x8FE1D8
   SpawnAnimtiles(addr_kAnimtiles_WreckedShipTradmillLeft);
-  static const SpawnHardcodedPlmArgs unk_8FE1E3 = { 0x04, 0x09, 0xb64f };
-  SpawnHardcodedPlm(&unk_8FE1E3);
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x04, 0x09, 0xb64f });
 }
 
 void DoorCode_SetScroll_44(void) {  // 0x8FE1E8
@@ -503,14 +482,13 @@ void DoorCode_SetScroll_49(void) {  // 0x8FE229
   scrolls[10] = 0;
   scrolls[11] = 0;
 }
-static const SpawnHardcodedPlmArgs unk_8FE28C = { 0x01, 0x00, 0xb8f9 };
-static const SpawnHardcodedPlmArgs unk_8FE2B1 = { 0x01, 0x00, 0xb8f9 };
+
 void DoorCode_SetupElevatubeFromSouth(void) {  // 0x8FE26C
   *(uint16 *)&room_main_asm_variables[4] = -256;
   *(uint16 *)&room_main_asm_variables[2] = 2496;
   *(uint16 *)&room_main_asm_variables[6] = -32;
   CallSomeSamusCode(0);
-  SpawnHardcodedPlm(&unk_8FE28C);
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x01, 0x00, 0xb8f9 });
 }
 
 void DoorCode_SetupElevatubeFromNorth(void) {  // 0x8FE291
@@ -518,37 +496,30 @@ void DoorCode_SetupElevatubeFromNorth(void) {  // 0x8FE291
   strcpy((uint8 *)&room_main_asm_variables[2], "@");
   strcpy((uint8 *)&room_main_asm_variables[6], " ");
   CallSomeSamusCode(0);
-  SpawnHardcodedPlm(&unk_8FE2B1);
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x01, 0x00, 0xb8f9 });
 }
 
 void RoomCode_Elevatube(void) {  // 0x8FE2B6
-  int16 v0;
+  uint16 v0;
 
   samus_x_pos = 128;
   samus_x_subpos = 0;
-  R18_ = 0;
-  R20_ = 0;
-  if (*(int16 *)&room_main_asm_variables[4] < 0)
-    --R20_;
-  R19_ = *(uint16 *)&room_main_asm_variables[4];
-  v0 = (__PAIR32__(R20_, R18_) + *(uint32 *)room_main_asm_variables) >> 16;
-  *(uint16 *)room_main_asm_variables += R18_;
+  int32 amt = INT16_SHL8(*(uint16 *)&room_main_asm_variables[4]);
+  v0 = (amt + *(uint32 *)room_main_asm_variables) >> 16;
+  *(uint16 *)room_main_asm_variables += amt;
   *(uint16 *)&room_main_asm_variables[2] = v0;
-  uint16 v1 = R18_;
-  R18_ = R20_;
-  R20_ = v1;
-  Samus_MoveDown_NoSolidColl();
-  if ((uint16)(*(uint16 *)&room_main_asm_variables[6] + *(uint16 *)&room_main_asm_variables[4] + 3616) < 0x1C41u)
+  Samus_MoveDown_NoSolidColl(amt);
+  if ((uint16)(*(uint16 *)&room_main_asm_variables[6] + *(uint16 *)&room_main_asm_variables[4] + 3616) < 0x1C41)
     *(uint16 *)&room_main_asm_variables[4] += *(uint16 *)&room_main_asm_variables[6];
 }
 
 void DoorCode_ResetElevatubeNorthExit(void) {  // 0x8FE301
-  CallSomeSamusCode(1u);
+  CallSomeSamusCode(1);
 }
 
 void DoorCode_ResetElevatubeSouthExit(void) {  // 0x8FE309
   *(uint16 *)scrolls = 514;
-  CallSomeSamusCode(1u);
+  CallSomeSamusCode(1);
 }
 
 void DoorCode_SetScroll_50(void) {  // 0x8FE318
@@ -629,7 +600,7 @@ void DoorCode_SetScroll_65(void) {  // 0x8FE4CF
 
 void DoorCode_CeresElevatorShaft(void) {  // 0x8FE4E0
   reg_BGMODE_fake = 7;
-  WriteReg(BGMODE, 7u);
+  WriteReg(BGMODE, 7);
   reg_M7A = 256;
   reg_M7D = 256;
   reg_M7B = 0;
@@ -656,17 +627,13 @@ static const uint16 kRoomCode_SpawnCeresFallingDebris_Tab[16] = {  // 0x8FE525
    0xd0,  0xe0,  0xf0, 0x110,
   0x130, 0x150, 0x170, 0x190,
 };
-void RoomCode_SpawnCeresFallingDebris(void) {
 
+void RoomCode_SpawnCeresFallingDebris(void) {
   if (ceres_status && (-- * (uint16 *)room_main_asm_variables, *(int16 *)room_main_asm_variables < 0)) {
-    strcpy((uint8 *)room_main_asm_variables, "\b");
-    uint16 v0 = addr_stru_869734;
-    if (random_number & 0x8000)
-      v0 = addr_stru_869742;
-    SpawnEnemyProjectileWithRoomGfx(
-      v0,
-      kRoomCode_SpawnCeresFallingDebris_Tab[random_number & 0xF]);
-  } else {
+    room_main_asm_variables[0] = 8;
+    room_main_asm_variables[1] = 0;
+    uint16 v0 = (random_number & 0x8000) ? addr_stru_869742 : addr_stru_869734;
+    SpawnEnemyProjectileWithRoomGfx(v0, kRoomCode_SpawnCeresFallingDebris_Tab[random_number & 0xF]);
   }
 }
 
@@ -678,12 +645,12 @@ void RoomCode_HandleCeresRidleyGetaway(void) {  // 0x8FE571
 void RoomCode_ShakeScreenHorizDiag(void) {  // 0x8FE57C
   uint16 v0;
   if (*(uint16 *)room_main_asm_variables) {
-    if (!-- * (uint16 *)room_main_asm_variables) {
+    if (!--*(uint16 *)room_main_asm_variables) {
       v0 = 18;
 LABEL_6:
       earthquake_type = v0;
     }
-  } else if (NextRandom() < 0x200u) {
+  } else if (NextRandom() < 0x200) {
     strcpy((uint8 *)room_main_asm_variables, "*");
     v0 = 23;
     goto LABEL_6;
@@ -695,12 +662,12 @@ void RoomCode_ShakeScreenHorizDiagStrong(void) {  // 0x8FE5A4
   int16 v0;
 
   if (*(uint16 *)room_main_asm_variables) {
-    if (!-- * (uint16 *)room_main_asm_variables) {
+    if (!--*(uint16 *)room_main_asm_variables) {
       v0 = 21;
 LABEL_6:
       *(uint16 *)&room_main_asm_variables[2] = v0;
     }
-  } else if (NextRandom() < 0x180u) {
+  } else if (NextRandom() < 0x180) {
     strcpy((uint8 *)room_main_asm_variables, "*");
     v0 = 26;
     goto LABEL_6;
@@ -743,7 +710,7 @@ uint16 RoomDefStateSelect_Door(uint16 k) {  // 0x8FE5EB
 }
 
 uint16 RoomDefStateSelect_TourianBoss01(uint16 k) {  // 0x8FE5FF
-  if (!(CheckBossBitForCurArea(1u) & 1))
+  if (!(CheckBossBitForCurArea(1) & 1))
     return k + 2;
   const uint16 *v1 = (const uint16 *)RomPtr_8F(k);
   return RoomDefStateSelect_Finish(*v1);
@@ -915,15 +882,9 @@ void CallDoorDefSetupCode(uint32 ea) {
 }
 
 void RunDoorSetupCode(void) {  // 0x8FE8A3
-  DoorDef *DoorDef;
-  VoidP door_setup_code;
-
-  DoorDef = get_DoorDef(door_def_ptr);
-  door_setup_code = DoorDef->door_setup_code;
-  if (door_setup_code) {
-    R18_ = DoorDef->door_setup_code;
-    CallDoorDefSetupCode(door_setup_code | 0x8F0000);
-  }
+  DoorDef *DD = get_DoorDef(door_def_ptr);
+  if (DD->door_setup_code)
+    CallDoorDefSetupCode(DD->door_setup_code | 0x8F0000);
 }
 
 void CallRoomCode(uint32 ea) {
@@ -960,12 +921,10 @@ void RoomCode_CrocomireShaking(void) {  // 0x8FE8CD
       reg_BG1VOFS = enemy_data[1].ai_var_D + bg1_y_offset + layer1_y_pos;
     } else if ((enemy_data[0].ai_var_B & 0x400) != 0) {
       if (sign16(--enemy_data[1].ai_var_D + 7)) {
-        R18_ = 2 * (enemy_data[1].ai_var_D + 7);
-        ai_var_D = enemy_data[1].ai_var_D - R18_;
+        ai_var_D = enemy_data[1].ai_var_D - 2 * (enemy_data[1].ai_var_D + 7);
       } else {
         ai_var_D = enemy_data[1].ai_var_D;
       }
-      R18_ = ai_var_D;
       reg_BG1VOFS += ai_var_D;
       reg_BG2VOFS = ai_var_D - 48;
     } else if (enemy_data[0].ai_var_C == 34 && enemy_data[0].ai_var_D) {

@@ -16,10 +16,10 @@
 
 
 
-void APU_UploadBank(void) {  // 0x808028
+void APU_UploadBank(uint32 addr) {  // 0x808028
   if (!g_use_my_apu_code)
     return;
-  RtlApuUpload(RomPtr(Load24(&R0_)));
+  RtlApuUpload(RomPtr(addr));
 }
 
 uint16 NextRandom(void) {  // 0x808111
@@ -42,7 +42,7 @@ void ReleaseButtonsFilter(uint16 v0) {  // 0x808146
     timed_held_input = 0;
     goto LABEL_6;
   }
-  if ((--timed_held_input_timer & 0x8000u) == 0) {
+  if ((--timed_held_input_timer & 0x8000) == 0) {
     timed_held_input = 0;
     goto LABEL_6;
   }
@@ -59,18 +59,15 @@ uint16 PrepareBitAccess(uint16 a) {  // 0x80818E
 }
 
 void SetBossBitForCurArea(uint16 a) {  // 0x8081A6
-  LOBYTE(bitmask) = a;
   boss_bits_for_area[area_index] |= a;
 }
 
 void ClearBossBitForCurArea(uint16 a) {  // 0x8081C0
-  LOBYTE(bitmask) = ~a;
   boss_bits_for_area[area_index] &= ~a;
 }
 
 uint8 CheckBossBitForCurArea(uint16 a) {  // 0x8081DC
-  LOBYTE(bitmask) = a;
-  return ((uint8)a & boss_bits_for_area[area_index]) != 0;
+  return (a & boss_bits_for_area[area_index]) != 0;
 }
 
 void SetEventHappened(uint16 a) {  // 0x8081FA
@@ -80,8 +77,7 @@ void SetEventHappened(uint16 a) {  // 0x8081FA
 
 void ClearEventHappened(uint16 v0) {  // 0x808212
   uint16 v1 = PrepareBitAccess(v0);
-  bitmask = ~bitmask;
-  events_that_happened[v1] &= bitmask;
+  events_that_happened[v1] &= ~bitmask;
 }
 
 uint16 CheckEventHappened(uint16 a) {  // 0x808233
@@ -105,10 +101,9 @@ void VerifySRAM(void) {  // 0x808261
   }
 }
 
-void Multiply16x16(uint16 a, uint16 j) {  // 0x8082D6
+uint32 Multiply16x16(uint16 a, uint16 j) {  // 0x8082D6
   uint32 result = (uint32)a * (uint32)j;
-  mult_product_lo = result;
-  mult_product_hi = result >> 16;
+  return result;
 }
 
 CoroutineRet WaitForNMI_Async(void) {  // 0x808338
@@ -160,16 +155,19 @@ void memset7E(uint16 *k, uint16 a, uint16 j) {  // 0x8083F6
 
 CoroutineRet Vector_RESET_Async(void) {  // 0x80841C
   COROUTINE_BEGIN(coroutine_state_0, 1)
-  WriteReg(MEMSEL, 1u);
+  WriteReg(MEMSEL, 1);
   reg_MEMSEL = 1;
   // Removed code to wait 4 frames
+  uint16 bak = bug_fix_counter;
   memset(g_ram, 0, 8192);
+  bug_fix_counter = bak;
   COROUTINE_AWAIT(2, InitializeIoDisplayLogo_Async());
   COROUTINE_MANUAL_POS(3); // Soft reset position
-  mov24(&R0_, 0xCF8000);
-  APU_UploadBank();
+  APU_UploadBank(0xCF8000);
   WriteReg(INIDISP, 0x8F);
+  bak = bug_fix_counter;
   memset(g_ram, 0, 0x10000);
+  bug_fix_counter = bak;
   WriteReg(NMITIMEN, 0);
   reg_NMITIMEN = 0;
   reg_INIDISP = 0x8f;
@@ -249,11 +247,11 @@ void SaveExploredMapTilesToSaved(void) {  // 0x8085C6
     v2 += 2;
   } while ((int16)(v2 - 256) < 0);
   if (has_area_map)
-    *(uint16 *)&map_station_byte_array[area_index] |= 0xFFu;
+    *(uint16 *)&map_station_byte_array[area_index] |= 0xFF;
 }
 
 void InitializeCpuIoRegs(void) {  // 0x80875D
-  WriteReg(NMITIMEN, 1u);
+  WriteReg(NMITIMEN, 1);
   reg_NMITIMEN = 1;
   WriteReg(WRIO, 0);
   WriteReg(WRMPYA, 0);
@@ -268,14 +266,14 @@ void InitializeCpuIoRegs(void) {  // 0x80875D
   WriteReg(MDMAEN, 0);
   WriteReg(HDMAEN, 0);
   reg_HDMAEN = 0;
-  WriteReg(MEMSEL, 1u);
+  WriteReg(MEMSEL, 1);
   reg_MEMSEL = 1;
 }
 
 void InitializePpuIoRegs(void) {  // 0x808792
   WriteReg(INIDISP, 0x8F);
   reg_INIDISP = 0x8f;
-  WriteReg(OBSEL, 3u);
+  WriteReg(OBSEL, 3);
   reg_OBSEL = 3;
   WriteReg(OAMADDL, 0);
   LOBYTE(reg_OAMaddr_UNUSED) = 0;
@@ -283,7 +281,7 @@ void InitializePpuIoRegs(void) {  // 0x808792
   HIBYTE(reg_OAMaddr_UNUSED) = 0x80;
   WriteReg(OAMDATA, 0);
   WriteReg(OAMDATA, 0);
-  WriteReg(BGMODE, 9u);
+  WriteReg(BGMODE, 9);
   reg_BGMODE = 9;
   WriteReg(MOSAIC, 0);
   reg_MOSAIC = 0;
@@ -297,7 +295,7 @@ void InitializePpuIoRegs(void) {  // 0x808792
   reg_BG4SC = 0;
   WriteReg(BG12NBA, 0);
   reg_BG12NBA = 0;
-  WriteReg(BG34NBA, 5u);
+  WriteReg(BG34NBA, 5);
   reg_BG34NBA = 5;
   WriteReg(BG1HOFS, 0);
   WriteReg(BG1HOFS, 0);
@@ -346,11 +344,11 @@ void InitializePpuIoRegs(void) {  // 0x808792
   reg_TM = 17;
   WriteReg(TMW, 0x11);
   reg_TMW = 17;
-  WriteReg(TS, 2u);
+  WriteReg(TS, 2);
   reg_TS = 2;
-  WriteReg(TSW, 2u);
+  WriteReg(TSW, 2);
   reg_TSW = 2;
-  WriteReg(CGWSEL, 2u);
+  WriteReg(CGWSEL, 2);
   next_gameplay_CGWSEL = 2;
   WriteReg(CGADSUB, 0xA1);
   next_gameplay_CGADSUB = -95;
@@ -367,9 +365,9 @@ void InitializePpuIoRegs(void) {  // 0x808792
 }
 
 void WriteLotsOf0x1c2f(void) {  // 0x8088D1
-  sub_8088EB(0x1C2Fu);
-  sub_8088FE(0x1C2Fu);
-  sub_808911(0x1C2Fu);
+  sub_8088EB(0x1C2F);
+  sub_8088FE(0x1C2F);
+  sub_808911(0x1C2F);
 }
 
 void sub_8088EB(uint16 a) {  // 0x8088EB
@@ -420,27 +418,22 @@ void ClearOamExt(void) {  // 0x808B1A
 
 void QueueMode7Transfers(uint8 db, uint16 k) {  // 0x808B4F
   const uint8 *p = RomPtrWithBank(db, k);
-  uint16 v2 = mode7_vram_write_queue_tail;
+  uint8 *dst = (uint8 *)mode7_write_queue + mode7_vram_write_queue_tail;
   for (;;) {
     int f = GET_BYTE(p);
     if (f & 0x80) {
-      *(uint16 *)(&mode7_write_queue[0].field_0 + v2) = GET_WORD(p);
-      *(uint16 *)((uint8 *)&mode7_write_queue[0].field_1 + v2 + 1) = GET_WORD(p + 2);
-      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 1] = GET_WORD(p + 4);
-      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 3] = GET_WORD(p + 6);
-      *(uint16 *)((uint8 *)&mode7_write_queue[1].field_1 + v2) = p[8];
-      p += 9, v2 += 9;
+      dst[9] = 0;
+      memcpy(dst, p, 9);
+      p += 9, dst += 9;
     } else if (f & 0x40) {
-      *(uint16 *)(&mode7_write_queue[0].field_0 + v2) = GET_WORD(p);
-      *(uint16 *)((uint8 *)&mode7_write_queue[0].field_1 + v2 + 1) = GET_WORD(p + 2);
-      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 1] = GET_WORD(p + 4);
-      *(uint16 *)&mode7_write_queue[0].gap3[v2 + 3] = p[6];
-      p += 7, v2 += 7;
+      dst[7] = 0;
+      memcpy(dst, p, 7);
+      p += 7, dst += 7;
     } else {
       break;
     }
   }
-  mode7_vram_write_queue_tail = v2;
+  mode7_vram_write_queue_tail = dst - (uint8 *)mode7_write_queue;
 }
 
 void NMI_ProcessMode7Queue(void) {  // 0x808BBA
@@ -469,7 +462,7 @@ void NMI_ProcessMode7QueueInner(const uint8 *p) {  // 0x808BD3
         WriteReg(BBAD1, 0x18);
       WriteRegWord(VMADDL, v5->vram_addr);
       WriteReg(VMAIN, v5->vmain);
-      WriteReg(MDMAEN, 2u);
+      WriteReg(MDMAEN, 2);
       p += sizeof(Mode7CgvmWriteQueue);
     }
     if (!(v2 & 0x40))
@@ -480,7 +473,7 @@ void NMI_ProcessMode7QueueInner(const uint8 *p) {  // 0x808BD3
     WriteRegWord(DAS1L, *((uint16 *)p + 2));
     WriteReg(BBAD1, 0x22);
     WriteReg(CGADD, p[6]);
-    WriteReg(MDMAEN, 2u);
+    WriteReg(MDMAEN, 2);
     p += 7;
   }
 }
@@ -498,7 +491,7 @@ void NMI_ProcessVramWriteQueue(void) {  // 0x808C83
       WriteReg(A1B1, e->src.bank);
       WriteRegWord(VMAIN, sign16(e->vram_dst) ? 0x81 : 0x80);
       WriteRegWord(VMADDL, e->vram_dst);
-      WriteReg(MDMAEN, 2u);
+      WriteReg(MDMAEN, 2);
     }
   }
   vram_write_queue_tail = 0;
@@ -517,22 +510,22 @@ void Nmi_ProcessHorizScrollingDma(void) {  // 0x808CD8
     WriteReg(A1B1, 0x7E);
     uint16 v1 = bg1_update_col_unwrapped_size;
     WriteRegWord(DAS1L, bg1_update_col_unwrapped_size);
-    WriteReg(MDMAEN, 2u);
+    WriteReg(MDMAEN, 2);
     WriteRegWord(VMADDL, v0 + 1);
     WriteRegWord(DAS1L, v1);
     WriteRegWord(A1T1L, ADDR16_OF_RAM(*bg1_column_update_tilemap_right_halves));
-    WriteReg(MDMAEN, 2u);
+    WriteReg(MDMAEN, 2);
     WriteRegWord(A1T1L, bg1_update_col_wrapped_left_src);
     uint16 v2 = bg1_update_col_wrapped_size;
     if (bg1_update_col_wrapped_size) {
       WriteRegWord(DAS1L, bg1_update_col_wrapped_size);
       uint16 v3 = bg1_update_col_wrapped_dst;
       WriteRegWord(VMADDL, bg1_update_col_wrapped_dst);
-      WriteReg(MDMAEN, 2u);
+      WriteReg(MDMAEN, 2);
       WriteRegWord(VMADDL, v3 + 1);
       WriteRegWord(DAS1L, v2);
       WriteRegWord(A1T1L, bg1_update_col_wrapped_right_src);
-      WriteReg(MDMAEN, 2u);
+      WriteReg(MDMAEN, 2);
     }
   }
   if ((uint8)bg2_update_col_enable) {
@@ -544,22 +537,22 @@ void Nmi_ProcessHorizScrollingDma(void) {  // 0x808CD8
     WriteReg(A1B1, 0x7E);
     uint16 v5 = bg2_update_col_unwrapped_size;
     WriteRegWord(DAS1L, bg2_update_col_unwrapped_size);
-    WriteReg(MDMAEN, 2u);
+    WriteReg(MDMAEN, 2);
     WriteRegWord(VMADDL, v4 + 1);
     WriteRegWord(DAS1L, v5);
     WriteRegWord(A1T1L, ADDR16_OF_RAM(*bg2_column_update_tilemap_right_halves));
-    WriteReg(MDMAEN, 2u);
+    WriteReg(MDMAEN, 2);
     WriteRegWord(A1T1L, bg2_update_col_wrapped_left_src);
     uint16 v6 = bg2_update_col_wrapped_size;
     if (bg2_update_col_wrapped_size) {
       WriteRegWord(DAS1L, bg2_update_col_wrapped_size);
       uint16 v7 = bg2_update_col_wrapped_dst;
       WriteRegWord(VMADDL, bg2_update_col_wrapped_dst);
-      WriteReg(MDMAEN, 2u);
+      WriteReg(MDMAEN, 2);
       WriteRegWord(VMADDL, v7 + 1);
       WriteRegWord(DAS1L, v6);
       WriteRegWord(A1T1L, bg2_update_col_wrapped_right_src);
-      WriteReg(MDMAEN, 2u);
+      WriteReg(MDMAEN, 2);
     }
   }
 }
@@ -575,22 +568,22 @@ void Nmi_ProcessVertScrollingDma(void) {  // 0x808DAC
     WriteReg(A1B1, 0x7E);
     uint16 v1 = bg1_update_row_unwrapped_size;
     WriteRegWord(DAS1L, bg1_update_row_unwrapped_size);
-    WriteReg(MDMAEN, 2u);
+    WriteReg(MDMAEN, 2);
     WriteRegWord(VMADDL, v0 | 0x20);
     WriteRegWord(DAS1L, v1);
     WriteRegWord(A1T1L, ADDR16_OF_RAM(*bg1_column_update_tilemap_bottom_halves));
-    WriteReg(MDMAEN, 2u);
+    WriteReg(MDMAEN, 2);
     WriteRegWord(A1T1L, bg1_update_row_wrapped_top_src);
     uint16 v2 = bg1_update_row_wrapped_size;
     if (bg1_update_row_wrapped_size) {
       WriteRegWord(DAS1L, bg1_update_row_wrapped_size);
       uint16 v3 = bg1_update_row_wrapped_dst;
       WriteRegWord(VMADDL, bg1_update_row_wrapped_dst);
-      WriteReg(MDMAEN, 2u);
+      WriteReg(MDMAEN, 2);
       WriteRegWord(VMADDL, v3 | 0x20);
       WriteRegWord(DAS1L, v2);
       WriteRegWord(A1T1L, bg1_update_row_wrapped_bottom_src);
-      WriteReg(MDMAEN, 2u);
+      WriteReg(MDMAEN, 2);
     }
   }
   if ((uint8)bg2_update_row_enable) {
@@ -602,22 +595,22 @@ void Nmi_ProcessVertScrollingDma(void) {  // 0x808DAC
     WriteReg(A1B1, 0x7E);
     uint16 v5 = bg2_update_row_unwrapped_size;
     WriteRegWord(DAS1L, bg2_update_row_unwrapped_size);
-    WriteReg(MDMAEN, 2u);
+    WriteReg(MDMAEN, 2);
     WriteRegWord(VMADDL, v4 | 0x20);
     WriteRegWord(DAS1L, v5);
     WriteRegWord(A1T1L, ADDR16_OF_RAM(*bg2_column_update_tilemap_bottom_halves));
-    WriteReg(MDMAEN, 2u);
+    WriteReg(MDMAEN, 2);
     WriteRegWord(A1T1L, bg2_update_row_wrapped_top_src);
     uint16 v6 = bg2_update_row_wrapped_size;
     if (bg2_update_row_wrapped_size) {
       WriteRegWord(DAS1L, bg2_update_row_wrapped_size);
       uint16 v7 = bg2_update_row_wrapped_dst;
       WriteRegWord(VMADDL, bg2_update_row_wrapped_dst);
-      WriteReg(MDMAEN, 2u);
+      WriteReg(MDMAEN, 2);
       WriteRegWord(VMADDL, v7 | 0x20);
       WriteRegWord(DAS1L, v6);
       WriteRegWord(A1T1L, bg2_update_row_wrapped_bottom_src);
-      WriteReg(MDMAEN, 2u);
+      WriteReg(MDMAEN, 2);
     }
   }
 }
@@ -636,7 +629,7 @@ void NMI_ProcessVramReadQueue(void) {  // 0x808EA2
       WriteRegWord(DAS1L, vram_read_queue[v0].size);
       WriteRegWord(DAS10, 0);
       WriteRegWord(A2A1H, 0);
-      WriteReg(MDMAEN, 2u);
+      WriteReg(MDMAEN, 2);
       ++v0;
     }
     LOBYTE(vram_read_queue_tail) = 0;
@@ -655,14 +648,13 @@ uint8 HasQueuedMusic(void) {  // 0x808EF4
 
 void HandleMusicQueue(void) {  // 0x808F0C
   bool v0 = music_timer-- == 1;
-  if ((music_timer & 0x8000u) == 0) {
+  if ((music_timer & 0x8000) == 0) {
     if (!v0)
       return;
-    if ((music_entry & 0x8000u) != 0) {
+    if ((music_entry & 0x8000) != 0) {
       music_data_index = (uint8)music_entry;
       cur_music_track = -1;
-      copy24(&R0_, (LongPtr *)((uint8 *)&kMusicPointers + (uint8)music_entry));
-      APU_UploadBank();
+      APU_UploadBank(Load24((LongPtr *)((uint8 *)&kMusicPointers + (uint8)music_entry)));
       cur_music_track = 0;
       int v5 = music_queue_read_pos;
       music_queue_track[v5 >> 1] = 0;
@@ -693,7 +685,7 @@ void HandleMusicQueue(void) {  // 0x808F0C
 void QueueMusic_Delayed8(uint16 a) {  // 0x808FC1
   int8 v1;
 
-  if (game_state < kGameState_40_TransitionToDemo && (((uint8)music_queue_write_pos + 2) & 0xE) != music_queue_read_pos) {
+  if (game_state < kGameState_40_TransitionToDemo && ((music_queue_write_pos + 2) & 0xE) != music_queue_read_pos) {
     v1 = music_queue_write_pos;
     int v2 = music_queue_write_pos >> 1;
     music_queue_track[v2] = a;
@@ -703,11 +695,11 @@ void QueueMusic_Delayed8(uint16 a) {  // 0x808FC1
 }
 
 void QueueMusic_DelayedY(uint16 a, uint16 j) {  // 0x808FF7
-  if (game_state < 0x28u) {
+  if (game_state < 0x28) {
     int v2 = music_queue_write_pos;
     music_queue_track[v2 >> 1] = a;
     int v4 = j;
-    if (j < 8u)
+    if (j < 8)
       v4 = 8;
     music_queue_delay[v2 >> 1] = v4;
     music_queue_write_pos = (v2 + 2) & 0xE;
@@ -736,12 +728,12 @@ void QueueSfx1_Max6(uint16 a) {  // 0x809049
 
 void QueueSfx1_Internal(uint16 a) {  // 0x809051
   sfx_max_queued[0] = a;
-  if ((uint8)((sfx_writepos[0] - sfx_readpos[0]) & 0xF) < (uint8)a) {
+  if (((sfx_writepos[0] - sfx_readpos[0]) & 0xF) < (uint8)a) {
     uint8 v2 = GET_HIBYTE(a);
-    if (!debug_disable_sounds && game_state < 0x28u && (power_bomb_explosion_status & 0x8000u) == 0) {
+    if (!debug_disable_sounds && game_state < 0x28 && (power_bomb_explosion_status & 0x8000) == 0) {
       uint8 v1 = sfx_writepos[0];
       uint8 v3 = sfx_writepos[0] + 1;
-      if (v3 >= 0x10u)
+      if (v3 >= 0x10)
         v3 = 0;
       if (v3 == sfx_readpos[0]) {
         if (v2 < sfx1_queue[v1])
@@ -777,12 +769,12 @@ void QueueSfx2_Max6(uint16 a) {  // 0x8090CB
 
 void QueueSfx2_Internal(uint16 a) {  // 0x8090D3
   sfx_max_queued[1] = a;
-  if ((uint8)((sfx_writepos[1] - sfx_readpos[1]) & 0xF) < (uint8)a) {
+  if (((sfx_writepos[1] - sfx_readpos[1]) & 0xF) < (uint8)a) {
     uint8 v2 = GET_HIBYTE(a);
-    if (!debug_disable_sounds && game_state < 0x28u && (power_bomb_explosion_status & 0x8000u) == 0) {
+    if (!debug_disable_sounds && game_state < 0x28 && (power_bomb_explosion_status & 0x8000) == 0) {
       uint8 v1 = sfx_writepos[1];
       uint8 v3 = sfx_writepos[1] + 1;
-      if (v3 >= 0x10u)
+      if (v3 >= 0x10)
         v3 = 0;
       if (v3 == sfx_readpos[1]) {
         if (v2 < sfx2_queue[v1])
@@ -818,12 +810,12 @@ void QueueSfx3_Max6(uint16 a) {  // 0x80914D
 
 void QueueSfx3_Internal(uint16 a) {  // 0x809155
   sfx_max_queued[2] = a;
-  if ((uint8)((sfx_writepos[2] - sfx_readpos[2]) & 0xF) < (uint8)a) {
+  if (((sfx_writepos[2] - sfx_readpos[2]) & 0xF) < (uint8)a) {
     uint8 v2 = GET_HIBYTE(a);
-    if (!debug_disable_sounds && game_state < 0x28u && (power_bomb_explosion_status & 0x8000u) == 0) {
+    if (!debug_disable_sounds && game_state < 0x28 && (power_bomb_explosion_status & 0x8000) == 0) {
       uint8 v1 = sfx_writepos[2];
       uint8 v3 = sfx_writepos[2] + 1;
-      if (v3 >= 0x10u)
+      if (v3 >= 0x10)
         v3 = 0;
       if (v3 == sfx_readpos[2]) {
         if (v2 < sfx3_queue[v1])
@@ -926,7 +918,7 @@ void NmiUpdatePalettesAndOam(void) {  // 0x80933A
   WriteReg(A1B1, 0x7E);
   WriteRegWord(DAS1L, 0x200);
   WriteReg(CGADD, 0);
-  WriteReg(MDMAEN, 3u);
+  WriteReg(MDMAEN, 3);
 }
 
 void NmiTransferSamusToVram(void) {  // 0x809376
@@ -940,12 +932,12 @@ void NmiTransferSamusToVram(void) {  // 0x809376
     WriteRegWord(A1B1, GET_WORD(rp + 2));
     uint16 v2 = GET_WORD(rp + 3);
     WriteRegWord(DAS1L, v2);
-    WriteReg(MDMAEN, 2u);
+    WriteReg(MDMAEN, 2);
     WriteRegWord(VMADDL, 0x6100);
     WriteRegWord(A1T1L, v0 + v2);
     if (GET_WORD(rp + 5)) {
       WriteRegWord(DAS1L, GET_WORD(rp + 5));
-      WriteReg(MDMAEN, 2u);
+      WriteReg(MDMAEN, 2);
     }
   }
   if (HIBYTE(nmi_copy_samus_halves)) {
@@ -957,18 +949,18 @@ void NmiTransferSamusToVram(void) {  // 0x809376
     WriteRegWord(A1B1, GET_WORD(rp + 2));
     uint16 v6 = GET_WORD(rp + 3);
     WriteRegWord(DAS1L, v6);
-    WriteReg(MDMAEN, 2u);
+    WriteReg(MDMAEN, 2);
     WriteRegWord(VMADDL, 0x6180);
     WriteRegWord(A1T1L, v4 + v6);
     if (GET_WORD(rp + 5)) {
       WriteRegWord(DAS1L, GET_WORD(rp + 5));
-      WriteReg(MDMAEN, 2u);
+      WriteReg(MDMAEN, 2);
     }
   }
 }
 
 void NmiProcessAnimtilesVramTransfers(void) {  // 0x809416
-  if ((animtiles_enable_flag & 0x8000u) != 0) {
+  if ((animtiles_enable_flag & 0x8000) != 0) {
     for (int i = 10; (i & 0x80) == 0; i -= 2) {
       int v1 = i >> 1;
       if (animtiles_ids[v1]) {
@@ -979,7 +971,7 @@ void NmiProcessAnimtilesVramTransfers(void) {  // 0x809416
           WriteRegWord(DAS0L, animtiles_sizes[v1]);
           WriteRegWord(VMADDL, animtiles_vram_ptr[v1]);
           WriteReg(VMAIN, 0x80);
-          WriteReg(MDMAEN, 1u);
+          WriteReg(MDMAEN, 1);
           animtiles_src_ptr[v1] = 0;
         }
       }
@@ -1031,10 +1023,10 @@ void ReadJoypadInputs(void) {  // 0x809459
             joypad1_newkeys = 0;
           }
           if ((joypad_dbg_2 & 0x80) != 0)
-            *(uint16 *)&reg_NMITIMEN ^= 0x30u;
-          if ((joypad_dbg_2 & 0x8000u) != 0) {
-            bool v2 = (~joypad_dbg_flags & 0x8000u) != 0;
-            joypad_dbg_flags ^= 0x8000u;
+            *(uint16 *)&reg_NMITIMEN ^= 0x30;
+          if ((joypad_dbg_2 & 0x8000) != 0) {
+            bool v2 = (~joypad_dbg_flags & 0x8000) != 0;
+            joypad_dbg_flags ^= 0x8000;
             if (v2) {
               joypad_dbg_missiles_swap = samus_missiles;
               joypad_dbg_super_missiles_swap = samus_super_missiles;
@@ -1049,13 +1041,13 @@ void ReadJoypadInputs(void) {  // 0x809459
             }
           }
           if ((joypad_dbg_2 & 0x40) != 0)
-            joypad_dbg_flags ^= 0x2000u;
+            joypad_dbg_flags ^= 0x2000;
         }
       } else {
         joypad_dbg_1 = 0;
         joypad_dbg_2 = 0;
-        joypad2_last &= 0x10u;
-        joypad2_new_keys &= 0x10u;
+        joypad2_last &= 0x10;
+        joypad2_new_keys &= 0x10;
       }
     } else {
       debug_disable_sounds = 0;
@@ -1097,13 +1089,13 @@ void Irq_DoorTransitionVramUpdate(void) {  // 0x809632
   WriteReg(A1B1, door_transition_vram_update_src.bank);
   WriteRegWord(DAS1L, door_transition_vram_update_size);
   WriteReg(VMAIN, 0x80);
-  WriteReg(MDMAEN, 2u);
+  WriteReg(MDMAEN, 2);
   door_transition_vram_update_enabled &= ~0x8000;
   WriteReg(INIDISP, 0xF);
 }
 
 void WaitForIrqDoorTransitionVramUpdate(void) {
-  door_transition_vram_update_enabled |= 0x8000u;
+  door_transition_vram_update_enabled |= 0x8000;
   Irq_DoorTransitionVramUpdate();
 }
 
@@ -1129,7 +1121,7 @@ void IrqHandler_4_Main_BeginHudDraw(void) {  // 0x80968B
   WriteReg(BG3SC, 0x5A);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
-  WriteReg(TM, 4u);
+  WriteReg(TM, 4);
   IrqHandler_SetResult(6, 31, 152);
 }
 
@@ -1146,7 +1138,7 @@ void IrqHandler_6_Main_EndHudDraw(void) {  // 0x8096A9
 
 void IrqHandler_8_StartOfDoor_BeginHud(void) {  // 0x8096D3
   WriteReg(BG3SC, 0x5A);
-  WriteReg(TM, 4u);
+  WriteReg(TM, 4);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
   IrqHandler_SetResult(10, 31, 152);
@@ -1154,7 +1146,7 @@ void IrqHandler_8_StartOfDoor_BeginHud(void) {  // 0x8096D3
 
 void IrqHandler_10_StartOfDoor_EndHud(void) {  // 0x8096F1
   uint8 v0;
-  if ((((uint8)previous_cre_bitset | (uint8)cre_bitset) & 1) != 0)
+  if (((previous_cre_bitset | cre_bitset) & 1) != 0)
     v0 = 16;
   else
     v0 = 17;
@@ -1165,7 +1157,7 @@ void IrqHandler_10_StartOfDoor_EndHud(void) {  // 0x8096F1
 }
 
 void IrqHandler_12_Draygon_BeginHud(void) {  // 0x80971A
-  WriteReg(TM, 4u);
+  WriteReg(TM, 4);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
   IrqHandler_SetResult(14, 31, 152);
@@ -1181,7 +1173,7 @@ void IrqHandler_14_Draygon_EndHud(void) {  // 0x809733
 }
 
 void IrqHandler_16_VerticalDoor_BeginHud(void) {  // 0x809758
-  WriteReg(TM, 4u);
+  WriteReg(TM, 4);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
   IrqHandler_SetResult(18, 31, 152);
@@ -1196,9 +1188,9 @@ void IrqHandler_18_VerticalDoor_EndHud(void) {  // 0x809771
   WriteReg(TM, v0);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
-//  if ((door_transition_vram_update_enabled & 0x8000u) != 0)
+//  if ((door_transition_vram_update_enabled & 0x8000) != 0)
 //    Irq_DoorTransitionVramUpdate();
-  if ((door_transition_flag & 0x8000u) == 0)
+  if ((door_transition_flag & 0x8000) == 0)
     Irq_FollowDoorTransition();
   IrqHandler_SetResult(20, 216, 152);
 }
@@ -1211,7 +1203,7 @@ void IrqHandler_20_VerticalDoor_EndDraw(void) {  // 0x8097A9
 }
 
 void IrqHandler_22_HorizDoor_BeginHud(void) {  // 0x8097C1
-  WriteReg(TM, 4u);
+  WriteReg(TM, 4);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
   IrqHandler_SetResult(24, 31, 152);
@@ -1227,7 +1219,7 @@ void IrqHandler_24_HorizDoor_EndHud(void) {  // 0x8097DA
   WriteReg(TM, v0);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
-  if ((door_transition_flag & 0x8000u) == 0)
+  if ((door_transition_flag & 0x8000) == 0)
     Irq_FollowDoorTransition();
   IrqHandler_SetResult(26, 160, 152);
 }
@@ -1241,13 +1233,13 @@ void IrqHandler_26_HorizDoor_EndDraw(void) {  // 0x80980A
 void EnableIrqInterrupts(void) {  // 0x80982A
   WriteRegWord(VTIMEL, 0);
   WriteRegWord(HTIMEL, 152);
-  *(uint16 *)&reg_NMITIMEN |= 0x30u;
+  *(uint16 *)&reg_NMITIMEN |= 0x30;
 }
 
 void EnableIrqInterruptsNow(void) {  // 0x809841
   WriteRegWord(VTIMEL, 0);
   WriteRegWord(HTIMEL, 152);
-  *(uint16 *)&reg_NMITIMEN |= 0x30u;
+  *(uint16 *)&reg_NMITIMEN |= 0x30;
   WriteReg(NMITIMEN, reg_NMITIMEN);
 }
 
@@ -1336,10 +1328,10 @@ void InitializeHud(void) {  // 0x809A79
   WriteRegWord(VMAIN, 0x80);
   static const StartDmaCopy unk_809A8F = { 1, 1, 0x18, LONGPTR(0x80988b), 0x0040 };
   SetupDmaTransfer(&unk_809A8F);
-  WriteReg(MDMAEN, 2u);
+  WriteReg(MDMAEN, 2);
   for (int i = 0; i != 192; i += 2)
     hud_tilemap[i >> 1] = kHudTilemaps_Row1to3[i >> 1];
-  if ((equipped_items & 0x8000u) != 0)
+  if ((equipped_items & 0x8000) != 0)
     AddXrayToHudTilemap();
   if ((equipped_items & 0x4000) != 0)
     AddGrappleToHudTilemap();
@@ -1355,14 +1347,12 @@ void InitializeHud(void) {  // 0x809A79
   samus_prev_power_bombs = 0;
   samus_prev_hud_item_index = 0;
   InitializeMiniMapBroken();
-  R0_.addr = addr_kDigitTilesetsWeapon;
-  *(uint16 *)&R0_.bank = 128;
   if (samus_max_missiles)
-    DrawThreeHudDigits(R0_, samus_missiles, 0x94);
+    DrawThreeHudDigits(addrl_kDigitTilesetsWeapon, samus_missiles, 0x94);
   if (samus_max_super_missiles)
-    DrawTwoHudDigits(R0_, samus_super_missiles, 0x9C);
+    DrawTwoHudDigits(addrl_kDigitTilesetsWeapon, samus_super_missiles, 0x9C);
   if (samus_max_power_bombs)
-    DrawTwoHudDigits(R0_, samus_power_bombs, 0xA2);
+    DrawTwoHudDigits(addrl_kDigitTilesetsWeapon, samus_power_bombs, 0xA2);
   ToggleHudItemHighlight(hud_item_index, 0x1000);
   ToggleHudItemHighlight(samus_prev_hud_item_index, 0x1400);
   HandleHudTilemap();
@@ -1371,7 +1361,6 @@ void InitializeHud(void) {  // 0x809A79
 static const uint16 kEnergyTankIconTilemapOffsets[14] = { 0x42, 0x44, 0x46, 0x48, 0x4a, 0x4c, 0x4e, 2, 4, 6, 8, 0xa, 0xc, 0xe };
 
 void HandleHudTilemap(void) {  // 0x809B44
-  R0_.bank = 0;
   if (reserve_health_mode == 1) {
     const uint16 *v1 = (const uint16 *)RomPtr_80(addr_kHudTilemaps_AutoReserve);
     if (!samus_reserve_health)
@@ -1386,39 +1375,37 @@ void HandleHudTilemap(void) {  // 0x809B44
   if (samus_health != samus_prev_health) {
     samus_prev_health = samus_health;
 
-    R20_ = SnesDivide(samus_health, 100);
-    R18_ = SnesModulus(samus_health, 100);
+    uint16 r20 = SnesDivide(samus_health, 100);
+    uint16 r18 = SnesModulus(samus_health, 100);
     int v2 = 0;
-    R22_ = SnesDivide(samus_max_health, 100) + 1;
+    int n = SnesDivide(samus_max_health, 100) + 1;
     do {
-      if (!--R22_)
+      if (!--n)
         break;
       uint16 v3 = 13360;
-      if (R20_) {
-        --R20_;
+      if (r20) {
+        --r20;
         v3 = 10289;
       }
       hud_tilemap[kEnergyTankIconTilemapOffsets[v2 >> 1] >> 1] = v3;
       v2 += 2;
     } while ((int16)(v2 - 28) < 0);
-    R0_.addr = addr_kDigitTilesetsHealth;
-    DrawTwoHudDigits(R0_, R18_, 0x8C);
+    DrawTwoHudDigits(addrl_kDigitTilesetsHealth, r18, 0x8C);
   }
-  R0_.addr = addr_kDigitTilesetsWeapon;
   if (samus_max_missiles && samus_missiles != samus_prev_missiles) {
     samus_prev_missiles = samus_missiles;
-    DrawThreeHudDigits(R0_, samus_missiles, 0x94);
+    DrawThreeHudDigits(addrl_kDigitTilesetsWeapon, samus_missiles, 0x94);
   }
   if (samus_max_super_missiles && samus_super_missiles != samus_prev_super_missiles) {
     samus_prev_super_missiles = samus_super_missiles;
     if ((joypad_dbg_flags & 0x1F40) != 0)
-      DrawThreeHudDigits(R0_, samus_prev_super_missiles, 0x9C);
+      DrawThreeHudDigits(addrl_kDigitTilesetsWeapon, samus_prev_super_missiles, 0x9C);
     else
-      DrawTwoHudDigits(R0_, samus_prev_super_missiles, 0x9C);
+      DrawTwoHudDigits(addrl_kDigitTilesetsWeapon, samus_prev_super_missiles, 0x9C);
   }
   if (samus_max_power_bombs && samus_power_bombs != samus_prev_power_bombs) {
     samus_prev_power_bombs = samus_power_bombs;
-    DrawTwoHudDigits(R0_, samus_power_bombs, 0xA2);
+    DrawTwoHudDigits(addrl_kDigitTilesetsWeapon, samus_power_bombs, 0xA2);
   }
   if (hud_item_index != samus_prev_hud_item_index) {
     ToggleHudItemHighlight(hud_item_index, 0x1000);
@@ -1428,7 +1415,7 @@ void HandleHudTilemap(void) {  // 0x809B44
         && samus_movement_type != 20
         && grapple_beam_function == 0xC4F0
         && !time_is_frozen_flag) {
-      QueueSfx1_Max6(0x39u);
+      QueueSfx1_Max6(0x39);
     }
   }
   uint16 v4 = 5120;
@@ -1471,19 +1458,15 @@ void ToggleHudItemHighlight(uint16 a, uint16 k) {  // 0x809CEA
   }
 }
 
-void DrawThreeHudDigits(LongPtr r0, uint16 a, uint16 k) {  // 0x809D78
-  uint16 v2 = 2 * (a / 100);
-  hud_tilemap[k >> 1] = IndirReadWord(r0, v2);
-  uint16 RegWord = (a % 100);
-  DrawTwoHudDigits(r0, RegWord, k + 2);
+void DrawThreeHudDigits(uint32 addr, uint16 a, uint16 k) {  // 0x809D78
+  hud_tilemap[k >> 1] = GET_WORD(RomPtr(addr + 2 * (a / 100)));
+  DrawTwoHudDigits(addr, a % 100, k + 2);
 }
 
-void DrawTwoHudDigits(LongPtr r0, uint16 a, uint16 k) {  // 0x809D98
-  uint16 RegWord = a / 10;
+void DrawTwoHudDigits(uint32 addr, uint16 a, uint16 k) {  // 0x809D98
   int v3 = k >> 1;
-  hud_tilemap[v3] = IndirReadWord(r0, 2 * RegWord);
-  uint16 v4 = 2 * (a % 10);
-  hud_tilemap[v3 + 1] = IndirReadWord(r0, v4);
+  hud_tilemap[v3] = GET_WORD(RomPtr(addr + 2 * (a / 10)));
+  hud_tilemap[v3 + 1] = GET_WORD(RomPtr(addr + 2 * (a % 10)));
 }
 
 static Func_U8 *const kTimerProcessFuncs[7] = {  // 0x809DE7
@@ -1493,7 +1476,7 @@ static Func_U8 *const kTimerProcessFuncs[7] = {  // 0x809DE7
   ProcessTimer_InitialDelay,
   ProcessTimer_MovementDelayed,
   ProcessTimer_MovingIntoPlace,
-  j_ProcessTimer_Decrement,
+  ProcessTimer_Decrement,
 };
 
 uint8 ProcessTimer(void) {
@@ -1520,14 +1503,14 @@ uint8 ProcessTimer_MotherBrainStart(void) {  // 0x809E1C
 
 uint8 ProcessTimer_InitialDelay(void) {  // 0x809E2F
   LOBYTE(timer_x_pos) = timer_x_pos + 1;
-  if ((uint8)timer_x_pos >= 0x10u)
+  if ((uint8)timer_x_pos >= 0x10)
     LOBYTE(timer_status) = timer_status + 1;
   return 0;
 }
 
 uint8 ProcessTimer_MovementDelayed(void) {  // 0x809E41
   LOBYTE(timer_x_pos) = timer_x_pos + 1;
-  if ((uint8)timer_x_pos >= 0x60u) {
+  if ((uint8)timer_x_pos >= 0x60) {
     LOBYTE(timer_x_pos) = 0;
     LOBYTE(timer_status) = timer_status + 1;
   }
@@ -1537,23 +1520,19 @@ uint8 ProcessTimer_MovementDelayed(void) {  // 0x809E41
 uint8 ProcessTimer_MovingIntoPlace(void) {  // 0x809E58
   int v0 = 0;
   uint16 v1 = timer_x_pos + 224;
-  if ((uint16)(timer_x_pos + 224) >= 0xDC00u) {
+  if ((uint16)(timer_x_pos + 224) >= 0xDC00) {
     v0 = 1;
     v1 = -9216;
   }
   timer_x_pos = v1;
   uint16 v2 = timer_y_pos - 193;
-  if ((uint16)(timer_y_pos - 193) < 0x3000u) {
+  if ((uint16)(timer_y_pos - 193) < 0x3000) {
     ++v0;
     v2 = 12288;
   }
   timer_y_pos = v2;
   if (v0 == 2)
     ++timer_status;
-  return j_ProcessTimer_Decrement();
-}
-
-uint8 j_ProcessTimer_Decrement(void) {  // 0x809E89
   return ProcessTimer_Decrement();
 }
 
@@ -1614,18 +1593,12 @@ void DrawTimer(void) {  // 0x809F6C
 
 
 void DrawTwoTimerDigits(uint16 a, uint16 k) {  // 0x809F95
-  int8 v2;
-
-  v2 = a;
-  DrawTimerSpritemap(k, kTimerDigitsSpritemapPtr[(uint16)((uint8)(a & 0xF0) >> 3) >> 1]);
-  DrawTimerSpritemap(k + 8, kTimerDigitsSpritemapPtr[v2 & 0xF]);
+  DrawTimerSpritemap(k, kTimerDigitsSpritemapPtr[(a & 0xF0) >> 4]);
+  DrawTimerSpritemap(k + 8, kTimerDigitsSpritemapPtr[a & 0xF]);
 }
 
 void DrawTimerSpritemap(uint16 a, uint16 j) {  // 0x809FB3
-  R20_ = a + HIBYTE(timer_x_pos);
-  R18_ = HIBYTE(timer_y_pos);
-  R22_ = 2560;
-  DrawSpritemap(0x80, j);
+  DrawSpritemap(0x80, j, a + HIBYTE(timer_x_pos), HIBYTE(timer_y_pos), 2560);
 }
 
 CoroutineRet StartGameplay_Async(void) {  // 0x80A07B
@@ -1668,8 +1641,7 @@ CoroutineRet StartGameplay_Async(void) {  // 0x80A07B
   irqhandler_next_handler = (room_loading_irq_handler == 0) ? 4 : room_loading_irq_handler;
   EnableIrqInterrupts();
   COROUTINE_AWAIT(3, Play20FramesOfMusic_Async());
-  static const SpawnHardcodedPlmArgs unk_80A11E = { 0x08, 0x08, 0xb7eb };
-  SpawnHardcodedPlm(&unk_80A11E);
+  SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x08, 0x08, 0xb7eb });
   door_transition_function = FUNC16(DoorTransition_FadeInScreenAndFinish);
   COROUTINE_END(0);
 }
@@ -1746,14 +1718,14 @@ void ClearBG2Tilemap(void) {  // 0x80A23F
   WriteRegWord(A1B1, 0x80);
   WriteRegWord(DAS1L, 0x800);
   WriteReg(VMAIN, 0);
-  WriteReg(MDMAEN, 2u);
+  WriteReg(MDMAEN, 2);
   WriteRegWord(VMADDL, 0x4800);
   WriteRegWord(DMAP1, 0x1908);
   WriteRegWord(A1T1L, 0xA29A);
   WriteRegWord(A1B1, 0x80);
   WriteRegWord(DAS1L, 0x800);
   WriteReg(VMAIN, 0x80);
-  WriteReg(MDMAEN, 2u);
+  WriteReg(MDMAEN, 2);
 }
 
 void ClearFXTilemap(void) {  // 0x80A29C
@@ -1763,14 +1735,14 @@ void ClearFXTilemap(void) {  // 0x80A29C
   WriteRegWord(A1B1, 0x80);
   WriteRegWord(DAS1L, 0x780);
   WriteReg(VMAIN, 0);
-  WriteReg(MDMAEN, 2u);
+  WriteReg(MDMAEN, 2);
   WriteRegWord(VMADDL, 0x5880);
   WriteRegWord(DMAP1, 0x1908);
   WriteRegWord(A1T1L, 0xA2F8);
   WriteRegWord(A1B1, 0x80);
   WriteRegWord(DAS1L, 0x780);
   WriteReg(VMAIN, 0x80);
-  WriteReg(MDMAEN, 2u);
+  WriteReg(MDMAEN, 2);
 }
 
 uint8 CalculateLayer2Xpos(void) {  // 0x80A2F9
@@ -1780,9 +1752,9 @@ uint8 CalculateLayer2Xpos(void) {  // 0x80A2F9
   }
   if (layer2_scroll_x != 1) {
     int t = layer2_scroll_x & 0xFE;
-    HIBYTE(temp933) = 0;
-    LOBYTE(temp933) = t * LOBYTE(layer1_x_pos) >> 8;
-    layer2_x_pos = t * HIBYTE(layer1_x_pos) + temp933;
+    HIBYTE(var933) = 0;
+    LOBYTE(var933) = t * LOBYTE(layer1_x_pos) >> 8;
+    layer2_x_pos = t * HIBYTE(layer1_x_pos) + var933;
     return 0;
   }
   return 1;
@@ -1795,9 +1767,9 @@ uint8 CalculateLayer2Ypos(void) {  // 0x80A33A
   }
   if (layer2_scroll_y != 1) {
     int t = layer2_scroll_y & 0xFE;
-    HIBYTE(temp933) = 0;
-    LOBYTE(temp933) = t * (uint8)layer1_y_pos >> 8;
-    layer2_y_pos = t * HIBYTE(layer1_y_pos) + temp933;
+    HIBYTE(var933) = 0;
+    LOBYTE(var933) = t * (uint8)layer1_y_pos >> 8;
+    layer2_y_pos = t * HIBYTE(layer1_y_pos) + var933;
     return 0;
   }
   return 1;
@@ -1888,21 +1860,21 @@ void CalculateBgScrollAndLayerPositionBlocks(void) {  // 0x80A4BB
   bg2_x_block = reg_BG2HOFS >> 4;
   uint16 v0 = layer1_x_pos >> 4;
   if (((layer1_x_pos >> 4) & 0x800) != 0)
-    v0 |= 0xF000u;
+    v0 |= 0xF000;
   layer1_x_block = v0;
   uint16 v1 = layer2_x_pos >> 4;
   if (((layer2_x_pos >> 4) & 0x800) != 0)
-    v1 |= 0xF000u;
+    v1 |= 0xF000;
   layer2_x_block = v1;
   bg1_y_block = reg_BG1VOFS >> 4;
   bg2_y_block = reg_BG2VOFS >> 4;
   uint16 v2 = layer1_y_pos >> 4;
   if (((layer1_y_pos >> 4) & 0x800) != 0)
-    v2 |= 0xF000u;
+    v2 |= 0xF000;
   layer1_y_block = v2;
   uint16 v3 = layer2_y_pos >> 4;
   if (((layer2_y_pos >> 4) & 0x800) != 0)
-    v3 |= 0xF000u;
+    v3 |= 0xF000;
   layer2_y_block = v3;
 }
 
@@ -1913,8 +1885,8 @@ void HandleAutoscrolling_X(void) {  // 0x80A528
   uint16 v4;
 
   if (!time_is_frozen_flag) {
-    loopcounter = layer1_x_pos;
-    if ((layer1_x_pos & 0x8000u) != 0)
+    var939 = layer1_x_pos;
+    if ((layer1_x_pos & 0x8000) != 0)
       layer1_x_pos = 0;
     uint16 v0 = swap16(room_width_in_scrolls - 1);
     if (v0 < layer1_x_pos)
@@ -1924,32 +1896,32 @@ void HandleAutoscrolling_X(void) {  // 0x80A528
     if (scrolls[v2]) {
       if (scrolls[(uint16)(v2 + 1)])
         return;
-      temp933 = layer1_x_pos & 0xFF00;
-      uint16 v5 = (__PAIR32__(loopcounter - absolute_moved_last_frame_x, loopcounter) - (absolute_moved_last_frame_x | 0x20000)) >> 16;
+      var933 = layer1_x_pos & 0xFF00;
+      uint16 v5 = (__PAIR32__(var939 - absolute_moved_last_frame_x, var939) - (absolute_moved_last_frame_x | 0x20000)) >> 16;
 
       if ((int16)(v5 - (layer1_x_pos & 0xFF00)) < 0) {
-        v4 = temp933;
+        v4 = var933;
       } else {
-        loopcounter = v5;
-        v6 = HIBYTE(loopcounter);
+        var939 = v5;
+        v6 = HIBYTE(var939);
         if (scrolls[(uint16)(Mult8x8((uint16)(layer1_y_pos + 128) >> 8, room_width_in_scrolls) + v6)])
-          v4 = loopcounter;
+          v4 = var939;
         else
-          v4 = (loopcounter & 0xFF00) + 256;
+          v4 = (var939 & 0xFF00) + 256;
       }
     } else {
-      temp933 = (layer1_x_pos & 0xFF00) + 256;
+      var933 = (layer1_x_pos & 0xFF00) + 256;
       if ((uint16)(absolute_moved_last_frame_x
-                   + loopcounter
-                   + 2) >= temp933) {
-        v4 = temp933;
+                   + var939
+                   + 2) >= var933) {
+        v4 = var933;
       } else {
-        loopcounter += absolute_moved_last_frame_x + 2;
-        v3 = (uint8)(HIBYTE(loopcounter) + 1);
+        var939 += absolute_moved_last_frame_x + 2;
+        v3 = (uint8)(HIBYTE(var939) + 1);
         if (scrolls[(uint16)(Mult8x8((uint16)(layer1_y_pos + 128) >> 8, room_width_in_scrolls) + v3)])
-          v4 = loopcounter;
+          v4 = var939;
         else
-          v4 = loopcounter & 0xFF00;
+          v4 = var939 & 0xFF00;
       }
     }
     layer1_x_pos = v4;
@@ -1959,7 +1931,7 @@ void HandleAutoscrolling_X(void) {  // 0x80A528
 void HandleScrollingWhenTriggeringScrollRight(void) {  // 0x80A641
   int16 v1;
 
-  loopcounter = layer1_x_pos;
+  var939 = layer1_x_pos;
   if ((int16)(ideal_layer1_xpos - layer1_x_pos) < 0) {
     layer1_x_pos = ideal_layer1_xpos;
     layer1_x_subpos = 0;
@@ -1969,10 +1941,10 @@ void HandleScrollingWhenTriggeringScrollRight(void) {  // 0x80A641
     v1 = HIBYTE(layer1_x_pos);
     uint16 RegWord = Mult8x8((uint16)(layer1_y_pos + 128) >> 8, room_width_in_scrolls);
     if (!scrolls[(uint16)(RegWord + 1 + v1)]) {
-      temp933 = layer1_x_pos & 0xFF00;
-      uint16 v4 = (__PAIR32__(loopcounter - absolute_moved_last_frame_x, loopcounter) - (absolute_moved_last_frame_x | 0x20000)) >> 16;
+      var933 = layer1_x_pos & 0xFF00;
+      uint16 v4 = (__PAIR32__(var939 - absolute_moved_last_frame_x, var939) - (absolute_moved_last_frame_x | 0x20000)) >> 16;
       if ((int16)(v4 - (layer1_x_pos & 0xFF00)) < 0)
-        v4 = temp933;
+        v4 = var933;
       layer1_x_pos = v4;
     }
   } else {
@@ -1983,19 +1955,19 @@ void HandleScrollingWhenTriggeringScrollRight(void) {  // 0x80A641
 void HandleScrollingWhenTriggeringScrollLeft(void) {  // 0x80A6BB
   int16 v0;
 
-  loopcounter = layer1_x_pos;
+  var939 = layer1_x_pos;
   if ((int16)(layer1_x_pos - ideal_layer1_xpos) < 0) {
     layer1_x_pos = ideal_layer1_xpos;
     layer1_x_subpos = 0;
   }
-  if ((layer1_x_pos & 0x8000u) == 0) {
+  if ((layer1_x_pos & 0x8000) == 0) {
     v0 = HIBYTE(layer1_x_pos);
     uint16 prod = Mult8x8((uint16)(layer1_y_pos + 128) >> 8, room_width_in_scrolls);
     if (!scrolls[(uint16)(prod + v0)]) {
-      temp933 = (layer1_x_pos & 0xFF00) + 256;
-      uint16 v1 = absolute_moved_last_frame_x + loopcounter + 2;
-      if (v1 >= temp933)
-        v1 = temp933;
+      var933 = (layer1_x_pos & 0xFF00) + 256;
+      uint16 v1 = absolute_moved_last_frame_x + var939 + 2;
+      if (v1 >= var933)
+        v1 = var933;
       layer1_x_pos = v1;
     }
   } else {
@@ -2014,51 +1986,51 @@ void HandleAutoscrolling_Y(void) {  // 0x80A731
   if (!time_is_frozen_flag) {
     uint16 v0 = 0;
     v1 = (uint16)(layer1_x_pos + 128) >> 8;
-    R20_ = Mult8x8(HIBYTE(layer1_y_pos), room_width_in_scrolls) + v1;
-    if (scrolls[R20_] != 1)
+    uint16 r20 = Mult8x8(HIBYTE(layer1_y_pos), room_width_in_scrolls) + v1;
+    if (scrolls[r20] != 1)
       v0 = 31;
-    temp933 = v0;
-    loopcounter = layer1_y_pos;
-    if ((layer1_y_pos & 0x8000u) != 0)
+    var933 = v0;
+    var939 = layer1_y_pos;
+    if ((layer1_y_pos & 0x8000) != 0)
       layer1_y_pos = 0;
     LOBYTE(v2) = (uint16)(room_height_in_scrolls - 1) >> 8;
     HIBYTE(v2) = room_height_in_scrolls - 1;
-    uint16 v3 = temp933 + v2;
+    uint16 v3 = var933 + v2;
     if (v3 < layer1_y_pos)
       layer1_y_pos = v3;
     v4 = (uint16)(layer1_x_pos + 128) >> 8;
     uint16 v5 = Mult8x8(HIBYTE(layer1_y_pos), room_width_in_scrolls) + v4;
     if (!scrolls[v5]) {
-      x_block_of_vram_blocks_to_update = (layer1_y_pos & 0xFF00) + 256;
-      uint16 v6 = absolute_moved_last_frame_y + loopcounter + 2;
-      if (v6 >= x_block_of_vram_blocks_to_update) {
-        v8 = x_block_of_vram_blocks_to_update;
+      var935 = (layer1_y_pos & 0xFF00) + 256;
+      uint16 v6 = absolute_moved_last_frame_y + var939 + 2;
+      if (v6 >= var935) {
+        v8 = var935;
       } else {
-        loopcounter += absolute_moved_last_frame_y + 2;
+        var939 += absolute_moved_last_frame_y + 2;
         v7 = (uint16)(layer1_x_pos + 128) >> 8;
         uint16 prod = Mult8x8(HIBYTE(v6) + 1, room_width_in_scrolls);
         if (scrolls[(uint16)(prod + v7)])
-          v8 = loopcounter;
+          v8 = var939;
         else
-          v8 = loopcounter & 0xFF00;
+          v8 = var939 & 0xFF00;
       }
       layer1_y_pos = v8;
       return;
     }
     if (!scrolls[(uint16)(room_width_in_scrolls + v5)]) {
-      tmp_vram_base_addr = temp933 + (layer1_y_pos & 0xFF00);
-      if (tmp_vram_base_addr < layer1_y_pos) {
-        uint16 v9 = (__PAIR32__(loopcounter - absolute_moved_last_frame_y, loopcounter) - (absolute_moved_last_frame_y | 0x20000)) >> 16;
-        if ((int16)(v9 - tmp_vram_base_addr) < 0) {
-          v8 = tmp_vram_base_addr;
+      var937 = var933 + (layer1_y_pos & 0xFF00);
+      if (var937 < layer1_y_pos) {
+        uint16 v9 = (__PAIR32__(var939 - absolute_moved_last_frame_y, var939) - (absolute_moved_last_frame_y | 0x20000)) >> 16;
+        if ((int16)(v9 - var937) < 0) {
+          v8 = var937;
         } else {
-          loopcounter = v9;
+          var939 = v9;
           uint16 prod = Mult8x8(HIBYTE(v9), room_width_in_scrolls);
           v10 = (uint16)(layer1_x_pos + 128) >> 8;
           if (scrolls[(uint16)(prod + v10)])
-            v8 = loopcounter;
+            v8 = var939;
           else
-            v8 = (loopcounter & 0xFF00) + 256;
+            v8 = (var939 & 0xFF00) + 256;
         }
         layer1_y_pos = v8;
         return;
@@ -2068,26 +2040,26 @@ void HandleAutoscrolling_Y(void) {  // 0x80A731
 }
 
 void HandleScrollingWhenTriggeringScrollDown(void) {  // 0x80A893
-  loopcounter = layer1_y_pos;
+  var939 = layer1_y_pos;
   int v0 = 0;
   uint16 prod = Mult8x8(HIBYTE(layer1_y_pos), room_width_in_scrolls);
   uint16 v1 = (uint16)(layer1_x_pos + 128) >> 8;
-  R20_ = prod + v1;
-  if (scrolls[R20_] != 1)
+  uint16 r20 = prod + v1;
+  if (scrolls[r20] != 1)
     v0 = 31;
-  temp933 = v0;
+  var933 = v0;
   if ((int16)(ideal_layer1_ypos - layer1_y_pos) < 0) {
     layer1_y_pos = ideal_layer1_ypos;
     layer1_y_subpos = 0;
   }
   uint16 v2 = swap16(room_height_in_scrolls - 1);
-  tmp_vram_base_addr = temp933 + v2;
-  if ((uint16)(temp933 + v2) < layer1_y_pos
-      || !scrolls[(uint16)(room_width_in_scrolls + R20_)]
-      && (tmp_vram_base_addr = temp933 + (layer1_y_pos & 0xFF00), tmp_vram_base_addr < layer1_y_pos)) {
-    uint16 v3 = (__PAIR32__(loopcounter - absolute_moved_last_frame_y, loopcounter) - (absolute_moved_last_frame_y | 0x20000)) >> 16;
-    if ((int16)(v3 - tmp_vram_base_addr) < 0)
-      v3 = tmp_vram_base_addr;
+  var937 = var933 + v2;
+  if ((uint16)(var933 + v2) < layer1_y_pos
+      || !scrolls[(uint16)(room_width_in_scrolls + r20)]
+      && (var937 = var933 + (layer1_y_pos & 0xFF00), var937 < layer1_y_pos)) {
+    uint16 v3 = (__PAIR32__(var939 - absolute_moved_last_frame_y, var939) - (absolute_moved_last_frame_y | 0x20000)) >> 16;
+    if ((int16)(v3 - var937) < 0)
+      v3 = var937;
     layer1_y_pos = v3;
   }
 }
@@ -2095,19 +2067,19 @@ void HandleScrollingWhenTriggeringScrollDown(void) {  // 0x80A893
 void HandleScrollingWhenTriggeringScrollUp(void) {  // 0x80A936
   int16 v0;
 
-  loopcounter = layer1_y_pos;
+  var939 = layer1_y_pos;
   if ((int16)(layer1_y_pos - ideal_layer1_ypos) < 0) {
     layer1_y_pos = ideal_layer1_ypos;
     layer1_y_subpos = 0;
   }
-  if ((layer1_y_pos & 0x8000u) == 0) {
+  if ((layer1_y_pos & 0x8000) == 0) {
     uint16 prod = Mult8x8(HIBYTE(layer1_y_pos), room_width_in_scrolls);
     v0 = (uint16)(layer1_x_pos + 128) >> 8;
     if (!scrolls[(uint16)(prod + v0)]) {
-      temp933 = (layer1_y_pos & 0xFF00) + 256;
-      uint16 v1 = absolute_moved_last_frame_y + loopcounter + 2;
-      if (v1 >= temp933)
-        v1 = temp933;
+      var933 = (layer1_y_pos & 0xFF00) + 256;
+      uint16 v1 = absolute_moved_last_frame_y + var939 + 2;
+      if (v1 >= var933)
+        v1 = var933;
       layer1_y_pos = v1;
     }
   } else {
@@ -2144,23 +2116,21 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
       v2 += 0x9600;
     copywithflip_src.addr = v2;
     copywithflip_src.bank = 127;
-    uint16 v3 = (4 * (uint8)vram_blocks_to_update_y_block) & 0x3C;
+    uint16 v3 = (4 * vram_blocks_to_update_y_block) & 0x3C;
     *(uint16 *)((uint8 *)&bg1_update_col_wrapped_size + k) = v3;
     *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_size + k) = (v3 ^ 0x3F) + 1;
     prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40);
-    x_block_of_vram_blocks_to_update = vram_blocks_to_update_x_block & 0x1F;
-    uint16 v4 = 2 * x_block_of_vram_blocks_to_update;
-    temp933 = prod + v4;
+    var935 = vram_blocks_to_update_x_block & 0x1F;
+    uint16 v4 = 2 * var935;
+    var933 = prod + v4;
     uint16 v5 = addr_unk_605000;
-    if (x_block_of_vram_blocks_to_update >= 0x10u)
+    if (var935 >= 0x10)
       v5 = addr_unk_6053E0;
     if (k)
       v5 -= size_of_bg2;
-    tmp_vram_base_addr = v5;
-    *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_dst + k) = temp933 + v5;
-    *(uint16 *)((uint8 *)&bg1_update_col_wrapped_dst + k) = x_block_of_vram_blocks_to_update
-      + x_block_of_vram_blocks_to_update
-      + tmp_vram_base_addr;
+    var937 = v5;
+    *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_dst + k) = var933 + v5;
+    *(uint16 *)((uint8 *)&bg1_update_col_wrapped_dst + k) = var935 + var935 + var937;
     uint16 v6 = ADDR16_OF_RAM(*bg1_column_update_tilemap_left_halves);
     uint16 v7 = 0;
     if (k) {
@@ -2170,25 +2140,25 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
     uint16 v8 = *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_size + k) + v6;
     *(uint16 *)((uint8 *)&bg1_update_col_wrapped_left_src + k) = v8;
     *(uint16 *)((uint8 *)&bg1_update_col_wrapped_right_src + k) = v8 + 64;
-    tmp_vram_base_addr = v7;
+    var937 = v7;
     uint16 t2 = k;
     uint16 v9 = 0;
-    loopcounter = 16;
+    var939 = 16;
     do {
-      tmp_block_to_update = IndirReadWord(copywithflip_src, v9);
-      uint16 v10 = tmp_block_to_update & 0x3FF;
+      var93B = IndirReadWord(copywithflip_src, v9);
+      uint16 v10 = var93B & 0x3FF;
       uint16 v17 = v9;
-      uint16 v11 = tmp_vram_base_addr;
-      uint16 v12 = tmp_block_to_update & 0xC00;
-      if ((tmp_block_to_update & 0xC00) != 0) {
+      uint16 v11 = var937;
+      uint16 v12 = var93B & 0xC00;
+      if ((var93B & 0xC00) != 0) {
         if (v12 == 1024) {
-          uint16 v14 = tmp_vram_base_addr >> 1;
+          uint16 v14 = var937 >> 1;
           bg1_column_update_tilemap_left_halves[v14] = tile_table.tables[v10].top_right ^ 0x4000;
           bg1_column_update_tilemap_right_halves[v14] = tile_table.tables[v10].top_left ^ 0x4000;
           bg1_column_update_tilemap_left_halves[v14 + 1] = tile_table.tables[v10].bottom_right ^ 0x4000;
           bg1_column_update_tilemap_right_halves[v14 + 1] = tile_table.tables[v10].bottom_left ^ 0x4000;
         } else {
-          uint16 v15 = tmp_vram_base_addr >> 1;
+          uint16 v15 = var937 >> 1;
           uint16 v16;
           if (v12 == 2048) {
             bg1_column_update_tilemap_left_halves[v15] = tile_table.tables[v10].bottom_left ^ 0x8000;
@@ -2204,16 +2174,16 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
           bg1_column_update_tilemap_right_halves[v15 + 1] = v16;
         }
       } else {
-        uint16 v13 = tmp_vram_base_addr >> 1;
+        uint16 v13 = var937 >> 1;
         bg1_column_update_tilemap_left_halves[v13] = tile_table.tables[v10].top_left;
         bg1_column_update_tilemap_right_halves[v13] = tile_table.tables[v10].top_right;
         bg1_column_update_tilemap_left_halves[v13 + 1] = tile_table.tables[v10].bottom_left;
         bg1_column_update_tilemap_right_halves[v13 + 1] = tile_table.tables[v10].bottom_right;
       }
-      tmp_vram_base_addr = v11 + 4;
+      var937 = v11 + 4;
       v9 = room_width_in_blocks * 2 + v17;
-      --loopcounter;
-    } while (loopcounter);
+      --var939;
+    } while (var939);
     ++ *(uint16 *)((uint8 *)&bg1_update_col_enable + t2);
   }
 }
@@ -2235,25 +2205,25 @@ void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
       v2 -= 27136;
     copywithflip_src.addr = v2;
     copywithflip_src.bank = 127;
-    temp933 = vram_blocks_to_update_x_block & 0xF;
-    *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_size + v0) = 4 * (16 - temp933);
-    *(uint16 *)((uint8 *)&bg1_update_row_wrapped_size + v0) = 4 * (temp933 + 1);
+    var933 = vram_blocks_to_update_x_block & 0xF;
+    *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_size + v0) = 4 * (16 - var933);
+    *(uint16 *)((uint8 *)&bg1_update_row_wrapped_size + v0) = 4 * (var933 + 1);
     prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40);
-    x_block_of_vram_blocks_to_update = vram_blocks_to_update_x_block & 0x1F;
-    uint16 v3 = 2 * x_block_of_vram_blocks_to_update;
-    temp933 = prod + v3;
-    tmp_vram_base_addr = addr_unk_605400;
+    var935 = vram_blocks_to_update_x_block & 0x1F;
+    uint16 v3 = 2 * var935;
+    var933 = prod + v3;
+    var937 = addr_unk_605400;
     uint16 v4 = addr_unk_605000;
-    if (x_block_of_vram_blocks_to_update >= 0x10u) {
-      tmp_vram_base_addr = addr_unk_605000;
+    if (var935 >= 0x10) {
+      var937 = addr_unk_605000;
       v4 = addr_unk_6053E0;
     }
     if (v0)
       v4 -= size_of_bg2;
-    *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_dst + v0) = temp933 + v4;
-    uint16 v5 = tmp_vram_base_addr;
+    *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_dst + v0) = var933 + v4;
+    uint16 v5 = var937;
     if (v0)
-      v5 = tmp_vram_base_addr - size_of_bg2;
+      v5 = var937 - size_of_bg2;
     *(uint16 *)((uint8 *)&bg1_update_row_wrapped_dst + v0) = prod + v5;
     uint16 v6 = ADDR16_OF_RAM(*bg1_column_update_tilemap_top_halves);
     uint16 v7 = 0;
@@ -2264,25 +2234,25 @@ void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
     uint16 v8 = *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_size + v0) + v6;
     *(uint16 *)((uint8 *)&bg1_update_row_wrapped_top_src + v0) = v8;
     *(uint16 *)((uint8 *)&bg1_update_row_wrapped_bottom_src + v0) = v8 + 68;
-    tmp_vram_base_addr = v7;
+    var937 = v7;
     uint16 t2 = v0;
     uint16 v9 = 0;
-    loopcounter = 17;
+    var939 = 17;
     do {
-      tmp_block_to_update = IndirReadWord(copywithflip_src, v9);
-      uint16 v10 = tmp_block_to_update & 0x3FF;
+      var93B = IndirReadWord(copywithflip_src, v9);
+      uint16 v10 = var93B & 0x3FF;
       uint16 v17 = v9;
-      uint16 v11 = tmp_vram_base_addr;
-      uint16 v12 = tmp_block_to_update & 0xC00;
-      if ((tmp_block_to_update & 0xC00) != 0) {
+      uint16 v11 = var937;
+      uint16 v12 = var93B & 0xC00;
+      if ((var93B & 0xC00) != 0) {
         if (v12 == 1024) {
-          uint16 v14 = tmp_vram_base_addr >> 1;
+          uint16 v14 = var937 >> 1;
           bg1_column_update_tilemap_top_halves[v14] = tile_table.tables[v10].top_right ^ 0x4000;
           bg1_column_update_tilemap_top_halves[v14 + 1] = tile_table.tables[v10].top_left ^ 0x4000;
           bg1_column_update_tilemap_bottom_halves[v14] = tile_table.tables[v10].bottom_right ^ 0x4000;
           bg1_column_update_tilemap_bottom_halves[v14 + 1] = tile_table.tables[v10].bottom_left ^ 0x4000;
         } else {
-          uint16 v15 = tmp_vram_base_addr >> 1;
+          uint16 v15 = var937 >> 1;
           uint16 v16;
           if (v12 == 2048) {
             bg1_column_update_tilemap_top_halves[v15] = tile_table.tables[v10].bottom_left ^ 0x8000;
@@ -2298,16 +2268,16 @@ void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
           bg1_column_update_tilemap_bottom_halves[v15 + 1] = v16;
         }
       } else {
-        uint16 v13 = tmp_vram_base_addr >> 1;
+        uint16 v13 = var937 >> 1;
         bg1_column_update_tilemap_top_halves[v13] = tile_table.tables[v10].top_left;
         bg1_column_update_tilemap_top_halves[v13 + 1] = tile_table.tables[v10].top_right;
         bg1_column_update_tilemap_bottom_halves[v13] = tile_table.tables[v10].bottom_left;
         bg1_column_update_tilemap_bottom_halves[v13 + 1] = tile_table.tables[v10].bottom_right;
       }
-      tmp_vram_base_addr = v11 + 4;
+      var937 = v11 + 4;
       v9 = v17 + 2;
-      --loopcounter;
-    } while (loopcounter);
+      --var939;
+    } while (var939);
     ++ *(uint16 *)((uint8 *)&bg1_update_row_enable + t2);
   }
 }
@@ -2415,7 +2385,7 @@ void Irq_FollowDoorTransition(void) {
   if (kDoorTransitionFuncs[door_direction & 3]()) {
     layer1_x_pos = door_destination_x_pos;
     layer1_y_pos = door_destination_y_pos;
-    door_transition_flag |= 0x8000u;
+    door_transition_flag |= 0x8000;
   }
 }
 
@@ -2454,7 +2424,7 @@ uint8 DoorTransition_Left(void) {  // 0x80AEC2
 uint8 DoorTransition_Down(void) {  // 0x80AF02
   uint16 v6 = door_transition_frame_counter;
   if (door_transition_frame_counter) {
-    if (door_transition_frame_counter < 0x39u) {
+    if (door_transition_frame_counter < 0x39) {
       uint16 v0 = (__PAIR32__(samus_door_transition_speed, samus_door_transition_subspeed)
                    + __PAIR32__(samus_y_pos, samus_y_subpos)) >> 16;
       samus_y_subpos += samus_door_transition_subspeed;
@@ -2482,7 +2452,7 @@ uint8 DoorTransition_Down(void) {  // 0x80AF02
     reg_BG1VOFS = v5;
   }
   door_transition_frame_counter = v6 + 1;
-  if ((uint16)(v6 + 1) < 0x39u)
+  if ((uint16)(v6 + 1) < 0x39)
     return 0;
   UpdateScrollVarsUpdateMap();
   return 1;
@@ -2498,7 +2468,7 @@ uint8 DoorTransition_Up(void) {  // 0x80AF89
     samus_prev_y_pos = v0;
     layer1_y_pos -= 4;
     layer2_y_pos -= 4;
-    if (door_transition_frame_counter >= 5u) {
+    if (door_transition_frame_counter >= 5) {
       UpdateScrollVarsUpdateMap();
     } else {
       reg_BG1HOFS = bg1_x_offset + layer1_x_pos;
@@ -2542,7 +2512,7 @@ void ConfigureMode7RotationMatrix(void) {  // 0x80B0C2
 static uint32 decompress_src;
 
 static uint8 DecompNextByte() {
-  uint8 b = *RomPtrWithBank(decompress_src >> 16, decompress_src);
+  uint8 b = *RomPtr(decompress_src);
   if ((decompress_src++ & 0xffff) == 0xffff)
     decompress_src += 0x8000;
   return b;
@@ -2688,7 +2658,6 @@ void DecompressToVRAM(uint32 src, uint16 dst_addr) {  // 0x80B271
 
 void LoadFromLoadStation(void) {  // 0x80C437
   save_station_lockout_flag = 1;
-  R18_ = 2 * load_station_index;
   const uint16 *v0 = (const uint16 *)RomPtr_80(kLoadStationLists[area_index] + 14 * load_station_index);
   room_ptr = *v0;
   door_def_ptr = v0[1];
@@ -2709,7 +2678,7 @@ void LoadFromLoadStation(void) {  // 0x80C437
 
 
 void SetElevatorsAsUsed(void) {  // 0x80CD07
-  const uint8 *v0 = RomPtr_80(off_80CD46[area_index] + 4 * (((uint8)elevator_door_properties_orientation & 0xF) - 1));
+  const uint8 *v0 = RomPtr_80(off_80CD46[area_index] + 4 * ((elevator_door_properties_orientation & 0xF) - 1));
   used_save_stations_and_elevators[v0[0]] |= v0[1];
   used_save_stations_and_elevators[v0[2]] |= v0[3];
 }

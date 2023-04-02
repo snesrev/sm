@@ -239,6 +239,21 @@ static const  uint32 kPatchedCarrys[] = {
   0xA9D537,
   0xA9DCDB,
 
+
+  0xA0A31B,
+  0x91D064,
+  0x91D07A,
+
+  0x90C719,
+
+  0xA6A80E,
+  0xA6A816,
+
+  0xA4906E,
+  0xA49071,
+
+  0x90BC75,
+  0x90BC93,
 };
 static uint8 kPatchedCarrysOrg[arraysize(kPatchedCarrys)];
 
@@ -297,7 +312,7 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
     // Phantoon_Main forgots to reload x
     g_cpu->x = cur_enemy_index;
   } else if (FixBugHook(0x91CD44)) {
-    // Xray_SetupStage4_Func2 passes a bad value to Xray_HandleXrayedBlock
+    // Xray_SetupStage4_Func2 passes a bad value to Xray_GetXrayedBlock
     if (g_cpu->x == 0)
       g_cpu->pc = 0xCD52;
 
@@ -340,6 +355,16 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
   } else if (FixBugHook(0x8189bd)) {
     if (g_cpu->y == 0)  // DrawSamusSpritemap reads invalid ptr
       return 0x818A35;
+  } else if (FixBugHook(0xA29BC1)) {
+    g_cpu->a = 1;  // ThinHoppingBlobs_Func8 reads from R1 instead of #1
+  } else if (FixBugHook(0x82E910)) {
+    WORD(g_ram[22]) = 0; // SpawnDoorClosingPLM doesn't zero R22
+  } else if (FixBugHook(0x90A4C8)) {
+    WORD(g_ram[18]) = 0;  // Samus_InitJump overwrites R18 in Samus_Movement_03_SpinJumping
+  } else if (FixBugHook(0xA99F60)) {
+    WORD(g_ram[22]) = 1; // MotherBrain_Instr_SpawnLaserEproj doesn't set R22
+  } else if (FixBugHook(0x94A85B)) {
+    memset(g_ram + 0xd82, 0, 8); // grapple_beam_tmpD82 not cleared in BlockCollGrappleBeam
   }
 
   return 0;
@@ -384,33 +409,56 @@ bool HookedFunctionRts(int is_long) {
 }
 
 static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
-  memcpy(&b->ram[0x0], &a->ram[0x0], 0x34);  // R18, R20, R22 etc
+  memcpy(&b->ram[0x0], &a->ram[0x0], 0x34);  // r18, r20, R22 etc
 
   memcpy(&b->ram[0x1f5b], &a->ram[0x1f5b], 0x100 - 0x5b);  // stacck
-  memcpy(&b->ram[0x44], &a->ram[0x44], 13);  // decompress temp
-  memcpy(&b->ram[0x19b3], &a->ram[0x19b3], 1);  // mode7_spawn_param
-  memcpy(&b->ram[0x1993], &a->ram[0x1993], 2);  // enemy_projectile_init_param
-  memcpy(&b->ram[0x1B9D], &a->ram[0x1B9D], 2);  // cinematic_spawn_param
-  memcpy(&b->ram[0x1a93], &a->ram[0x1a93], 2);  // cinematic_spawn_param
-  memcpy(&b->ram[0xA82], &a->ram[0xA82], 2);  // xray_angle
-  memcpy(&b->ram[0xad], &a->ram[0xad], 2);  // ptr_to_retaddr_parameters
-  memcpy(&b->ram[0x641], &a->ram[0x641], 2);  // apu_attempts_countdown
-  memcpy(&b->ram[0x5e9], &a->ram[0x5e9], 4);  // mult_tmp
-  memcpy(&b->ram[0x19b3], &a->ram[0x19b3], 2);  // mode7_spawn_param
-
-  memcpy(&a->ram[0x611], &b->ram[0x611], 6);  // coroutine_state (copy from mine to theirs)
-  memcpy(&a->ram[0x77e], &b->ram[0x77e], 5);  // my counter
-  memcpy(&a->ram[0xe20], &b->ram[0xe20], 2);  // enemy_population_ptr
-
-  memcpy(&a->ram[0x1784], &b->ram[0x1784], 3);  // enemy_ai_pointer
   memcpy(&a->ram[0x3c], &b->ram[0x3c], 2);  // nmicopy1_var_d
-  memcpy(&a->ram[0x17aa], &b->ram[0x17aa], 2);  // interactive_enemy_indexes_index
-  memcpy(&a->ram[0x60B], &b->ram[0x60B], 2);  // remaining_enemy_spritemap_entries
+  memcpy(&b->ram[0x44], &a->ram[0x44], 13);  // decompress temp
+  memcpy(&b->ram[0xad], &a->ram[0xad], 2);  // ptr_to_retaddr_parameters
+  memcpy(&b->ram[0x5e7], &a->ram[0x5e7], 14);  // bitmask, mult_tmp, mult_product_lo etc
 
-  memcpy(&a->ram[0xdd4], &b->ram[0xdd4], 4);  // temp_collision_DD4
+  memcpy(&a->ram[0x60B], &b->ram[0x60B], 6);  // enemy_projectile_init_param_2, remaining_enemy_hitbox_entries, REMOVED_num_projectiles_to_check_enemy_coll
+  memcpy(&a->ram[0x611], &b->ram[0x611], 6);  // coroutine_state (copy from mine to theirs)
+  memcpy(&b->ram[0x641], &a->ram[0x641], 2);  // apu_attempts_countdown
+  memcpy(&a->ram[0x77e], &b->ram[0x77e], 5);  // my counter
+  memcpy(&b->ram[0xA82], &a->ram[0xA82], 2);  // xray_angle
+  memcpy(&a->ram[0xd1e], &b->ram[0xd1e], 2);  // grapple_beam_unkD1E
+  memcpy(&a->ram[0xd82], &b->ram[0xd82], 8);  // grapple_beam_tmpD82
+
+  memcpy(&a->ram[0xd9c], &b->ram[0xd9c], 2);  // grapple_beam_tmpD82
+  memcpy(&a->ram[0xdd2], &b->ram[0xdd2], 6);  // temp_collision_DD2 etc
+  memcpy(&a->ram[0xd8a], &b->ram[0xd8a], 6);  // grapple_beam_tmpD8A
+  memcpy(&a->ram[0xe20], &b->ram[0xe20], 0xe46 - 0xe20);  // temp vars
+  memcpy(&a->ram[0xe54], &b->ram[0xe54], 2);  // cur_enemy_index
+  
+  memcpy(&a->ram[0xe02], &b->ram[0xe02], 2);  // samus_bottom_boundary_position
+  memcpy(&a->ram[0xe4a], &b->ram[0xe4a], 2);  // new_enemy_index
+  memcpy(&a->ram[0xe56], &b->ram[0xe56], 4);  // REMOVED_cur_enemy_index_backup etc
+  
+  
+  memcpy(&a->ram[0x1784], &b->ram[0x1784], 8);  // enemy_ai_pointer etc
+  memcpy(&a->ram[0x1790], &b->ram[0x1790], 4);  // set_to_rtl_when_loading_enemies_unused etc
+  memcpy(&a->ram[0x17a8], &b->ram[0x17a8], 4);  // interactive_enemy_indexes_index
+  
+  memcpy(&a->ram[0x1834], &b->ram[0x1834], 8);  // distance_to_enemy_colliding_dirs
+  memcpy(&a->ram[0x184A], &b->ram[0x184A], 18);  // samus_x_pos_colliding_solid etc
+  memcpy(&a->ram[0x186E], &b->ram[0x186E], 16+8);  // REMOVED_enemy_spritemap_entry_pointer etc
+  memcpy(&a->ram[0x18A6], &b->ram[0x18A6], 2);  // collision_detection_index
+  memcpy(&a->ram[0x189A], &b->ram[0x189A], 12);  // samus_target_x_pos etc
+  
+  memcpy(&b->ram[0x1993], &a->ram[0x1993], 2);  // enemy_projectile_init_param
+  memcpy(&b->ram[0x19b3], &a->ram[0x19b3], 2);  // mode7_spawn_param
+  memcpy(&b->ram[0x1a93], &a->ram[0x1a93], 2);  // cinematic_spawn_param
+  memcpy(&b->ram[0x1B9D], &a->ram[0x1B9D], 2);  // cinematic_spawn_param
+  memcpy(&a->ram[0x1E77], &b->ram[0x1E77], 2);  // current_slope_bts
+
+  memcpy(&a->ram[0x9100], &b->ram[0x9100], 0x1cc + 2);  // XrayHdmaFunc has some bug that i couldn't fix in asm
+  memcpy(&a->ram[0x9800], &b->ram[0x9800], 0x1cc+2);  // XrayHdmaFunc has some bug that i couldn't fix in asm
+  memcpy(&a->ram[0x99cc], &b->ram[0x99cc], 2);  // XrayHdmaFunc_BeamAimedL writes outside
+  memcpy(&a->ram[0xEF74], &b->ram[0xEF74], 4);  // next_enemy_tiles_index
+  memcpy(&a->ram[0xF37A], &b->ram[0xF37A], 6);  // word_7EF37A etc
   
 
-  
   if (memcmp(b->ram, a->ram, 0x20000)) {
     fprintf(stderr, "@%d: Memory compare failed (mine != theirs, prev):\n", snes_frame_counter);
     int j = 0;
@@ -771,6 +819,11 @@ Snes *SnesInit(const char *filename) {
   // LoadStdBG3andSpriteTilesClearTilemaps does DMA from RAM
   { uint8 t[] = { 0x00, 0x2E }; PatchBytes(0x82831E, t, sizeof(t)); }
 
+  { uint8 t[] = { 0xa5, 0x25 }; PatchBytes(0x91C234, t, sizeof(t)); } // Bugfix in XrayHdmaFunc_BeamAimedUUL
+
+    // Remove call to InitializeMiniMapBroken
+  { uint8 t[] = { 0x18, 0x18, 0x18, 0x18 }; PatchBytes(0x809AF3, t, sizeof(t)); } // callf   InitializeMiniMapBroken
+
   RtlUpdateSnesPatchForBugfix();
 
   for (size_t i = 0; i != arraysize(kPatchedCarrys); i++) {
@@ -808,12 +861,15 @@ uint32 RunCpuUntilPC(uint32 pc1, uint32 pc2) {
 }
 
 void RunOneFrameOfGame_Emulated(void) {
+  uint16 bug_fix_bak = bug_fix_counter;
   // Execute until either WaitForNMI or WaitForLagFrame
   RunCpuUntilPC(0x808343, 0x85813C);
 
   // Trigger nmi, then run until WaitForNMI or WaitForLagFrame returns
   g_snes->cpu->nmiWanted = true;
   RunCpuUntilPC(0x80834A, 0x858142);
+
+  bug_fix_counter = bug_fix_bak;
 }
 
 void DrawFrameToPpu(void) {

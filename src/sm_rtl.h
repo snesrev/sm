@@ -50,7 +50,7 @@ bool Unreachable();
 
 #define INSTR_RETURN_ADDR(x) ((const uint16*)(uintptr_t)(x))
 #define INSTR_INCR_BYTES(x, n) ((const uint16*)((uintptr_t)(x) + n))
-#define INSTR_ADDR_TO_PTR(k, jp) ((uint8*)(jp) - (RomPtrWithBank(gEnemyData(k)->bank, 0x8000) - 0x8000))
+#define INSTR_ADDR_TO_PTR(k, jp) ((uint8*)(jp) - (RomBankBase(gEnemyData(k)->bank)))
 
 #define INSTRB_RETURN_ADDR(x) ((const uint8*)(uintptr_t)(x))
 
@@ -59,6 +59,7 @@ bool Unreachable();
 static inline uint16 GET_WORD(const uint8 *p) { return *(uint16 *)(p); }
 #else
 #define GET_WORD(p) (*(uint16*)(p))
+
 #endif
 
 #define GET_BYTE(p) (*(uint8*)(p))
@@ -117,6 +118,9 @@ static inline const uint8 *RomPtr_B3(uint16_t addr) { return RomPtr(0xb30000 | a
 static inline const uint8 *RomPtr_B4(uint16_t addr) { return RomPtr(0xb40000 | addr); }
 static inline const uint8 *RomPtr_B7(uint16_t addr) { return RomPtr(0xb70000 | addr); }
 static inline const uint8 *RomPtrWithBank(uint8 bank, uint16_t addr) { return RomPtr((bank << 16) | addr); }
+static inline const uint8 *RomBankBase(uint8 bank) { return RomPtr((bank << 16) + 0x8000) - 0x8000; }
+
+
 
 void WriteReg(uint16 reg, uint8 value);
 void WriteRegWord(uint16 reg, uint16 value);
@@ -201,9 +205,8 @@ extern const int16 kSinCosTable8bit_Sext[320];
 #define kSamusAnimationDelayData ((uint16*)RomFixedPtr(0x91b010))
 #define kCommonEnemySpeeds_Linear ((uint16*)RomFixedPtr(0xa28187))
 #define kCommonEnemySpeeds_Quadratic ((uint16*)RomFixedPtr(0xa2838f))
+#define kCommonEnemySpeeds_Quadratic32 ((uint32*)RomFixedPtr(0xa0cbc7))
 #define kSine16bit ((uint16*)RomFixedPtr(0xa0b1c3))
-#define kOamExtra_X8Small_And_Large ((uint16*)RomFixedPtr(0x81839f))
-#define kOamExtra_Address_And_X8Large ((uint16*)RomFixedPtr(0x81859f))
 #define kTanTable ((uint16*)RomFixedPtr(0x91c9d4))
 
 void CallEnemyAi(uint32 ea);

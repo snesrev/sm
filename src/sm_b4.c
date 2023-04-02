@@ -10,25 +10,26 @@
 
 
 
-void CreateSpriteAtPos(void) {  // 0xB4BC26
+uint16 CreateSpriteAtPos(uint16 x_r18, uint16 y_r20, uint16 ilist_r22, uint16 pal_r24) {  // 0xB4BC26
   int v0 = 62;
   while (sprite_instr_list_ptrs[v0 >> 1]) {
     v0 -= 2;
-    if ((v0 & 0x8000u) != 0)
-      return;
+    if ((v0 & 0x8000) != 0)
+      return 0xffff;
   }
   int v1 = v0 >> 1;
   sprite_palettes[v1] = 0;
   sprite_x_subpos[v1] = 0;
   sprite_y_subpos[v1] = 0;
   sprite_disable_flag[v1] = 0;
-  sprite_x_pos[v1] = R18_;
-  sprite_y_pos[v1] = R20_;
-  sprite_palettes[v1] = R24_;
-  uint16 v2 = kCreateSprite_Ilists[R22_];
+  sprite_x_pos[v1] = x_r18;
+  sprite_y_pos[v1] = y_r20;
+  sprite_palettes[v1] = pal_r24;
+  uint16 v2 = kCreateSprite_Ilists[ilist_r22];
   sprite_instr_list_ptrs[v1] = v2;
   sprite_instr_timer[v1] = *(uint16 *)RomPtr_B4(v2);
-  R18_ = v0;
+//  R18 = v0;
+  return v0;
 }
 
 void CallSpriteObjectInstr(uint32 ea) {
@@ -90,17 +91,16 @@ void DrawSpriteObjects(void) {  // 0xB4BD32
   for (int i = 62; i >= 0; i -= 2) {
     int v1 = i >> 1;
     if (sprite_instr_list_ptrs[v1]) {
-      R20_ = sprite_x_pos[v1] - layer1_x_pos;
-      if ((int16)(R20_ + 16) >= 0) {
-        if (sign16(R20_ - 272)) {
-          int16 v2 = sprite_y_pos[v1] - layer1_y_pos;
-          R18_ = v2;
-          if (v2 >= 0) {
-            if (sign16(v2 - 272)) {
-              R3_.addr = sprite_palettes[v1] & 0xE00;
-              R0_.addr = sprite_palettes[v1] & 0x1FF;
+      uint16 x = sprite_x_pos[v1] - layer1_x_pos;
+      if ((int16)(x + 16) >= 0) {
+        if (sign16(x - 272)) {
+          int16 y = sprite_y_pos[v1] - layer1_y_pos;
+          if (y >= 0) {
+            if (sign16(y - 272)) {
+              uint16 r3 = sprite_palettes[v1] & 0xE00;
+              uint16 r0 = sprite_palettes[v1] & 0x1FF;
               const uint8 *v3 = RomPtr_B4(sprite_instr_list_ptrs[v1]);
-              DrawSpritemapWithBaseTile(0xB4, GET_WORD(v3 + 2));
+              DrawSpritemapWithBaseTile(0xB4, GET_WORD(v3 + 2), x, y, r3, r0);
             }
           }
         }

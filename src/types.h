@@ -30,6 +30,7 @@ typedef uint16 VoidP;
 #define arraysize(x) sizeof(x)/sizeof(x[0])
 #define sign8(x) ((x) & 0x80)
 #define sign16(x) ((x) & 0x8000)
+#define sign32(x) ((x) & 0x80000000)
 #define load24(x) ((*(uint32*)&(x))&0xffffff)
 
 #ifdef _MSC_VER
@@ -129,6 +130,9 @@ typedef struct Point16U {
   uint16 x, y;
 } Point16U;
 
+typedef struct Rect16U {
+  uint16 x, y, w, h;
+} Rect16U;
 
 // Some convenience macros to make partial accesses nicer
 #define LAST_IND(x,part_type)    (sizeof(x)/sizeof(part_type) - 1)

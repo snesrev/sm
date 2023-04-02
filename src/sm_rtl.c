@@ -443,7 +443,8 @@ void RtlSaveSnapshot(const char *filename, bool saving_with_bug) {
 }
 
 static const char *const kBugSaves[] = {
-  "After Crocomire"
+  "Before Kraid",
+  "Before Golden Torizo", "After Crocomire", "Baby Metroid", "Tourian Statue", "Before Ridley", "Enter Mother Brain",
 };
 
 void RtlSaveLoad(int cmd, int slot) {
@@ -480,6 +481,10 @@ void RtlSaveLoad(int cmd, int slot) {
     // Earlier versions used coroutine_state_0 differently
     if (coroutine_state_0 == 4)
       coroutine_state_0 = 10 + game_state;
+
+    // bug_fix_counter_BAD didn't actually belong to free ram...
+    if (bug_fix_counter == 0)
+      bug_fix_counter = bug_fix_counter_BAD;
 
   } else {
     RtlSaveSnapshot(name, false);
