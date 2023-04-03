@@ -3131,56 +3131,19 @@ Point32 ConvertAngleToXy(uint16 r18, uint16 r20) {  // 0xA0B643
 }
 
 void EnemyFunc_B691(uint16 varE20, Point32 pt) {  // 0xA0B691
-  uint16 varE24 = pt.x >> 16;
-  uint16 varE26 = pt.x;
-  uint16 varE28 = pt.y >> 16;
-  uint16 varE2A = pt.y;
-
   EnemyData *E = gEnemyData(cur_enemy_index);
-  uint16 x_subpos = E->x_subpos;
-  if (((varE20 + 64) & 0x80) != 0) {
-    bool v3 = x_subpos < varE26;
-    E->x_subpos = x_subpos - varE26;
-    E->x_pos -= v3 + varE24;
-  } else {
-    bool v3 = __CFADD__uint16(varE26, x_subpos);
-    E->x_subpos = varE26 + x_subpos;
-    E->x_pos += varE24 + v3;
-  }
-  uint16 y_subpos = E->y_subpos;
-  if (((varE20 + 128) & 0x80) != 0) {
-    bool v3 = y_subpos < varE2A;
-    E->y_subpos = y_subpos - varE2A;
-    E->y_pos -= v3 + varE28;
-  } else {
-    bool v3 = __CFADD__uint16(varE2A, y_subpos);
-    E->y_subpos = varE2A + y_subpos;
-    E->y_pos += varE28 + v3;
-  }
+  if (((varE20 + 64) & 0x80) != 0)
+    AddToHiLo(&E->x_pos, &E->x_subpos, -(int32)pt.x);
+  else
+    AddToHiLo(&E->x_pos, &E->x_subpos, pt.x);
+  if (((varE20 + 128) & 0x80) != 0)
+    AddToHiLo(&E->y_pos, &E->y_subpos, -(int32)pt.y);
+  else
+    AddToHiLo(&E->y_pos, &E->y_subpos, pt.y);
 }
 
 uint32 EnemyFunc_Divide(uint32 a, uint32 b) {  // 0xA0B761
-  if (!a)
-    return 0;
-  uint32 c = 0;
-  int n = 33;
-  uint8 carry = 0, carry2;
-  while (1) {
-    carry2 = b >> 31;
-    b = b * 2 + carry;
-    if (!--n)
-      break;
-    carry = c >> 31;
-    c = c * 2 + carry2;
-    if (c) {
-      carry = 0;
-      if (c >= a) {
-        c -= a;
-        carry = 1;
-      }
-    }
-  }
-  return b;
+  return a ? b / a : 0;
 }
 
 void EnemyFunc_B7A1(void) {  // 0xA0B7A1

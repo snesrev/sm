@@ -2392,22 +2392,14 @@ static const uint16 kSetSomeStuffForSpriteObject_7_Tab1[82] = {  // 0x8BA994
        2, 0xc000,      2, 0xe000,  0x9dad, 0x991b, 0x1b7d,0x97ad, 0x991a, 0x1a7d,
 };
 void SetSomeStuffForSpriteObject_7(uint16 k) {
-
   int v1 = k >> 1;
-  uint16 v2 = cinematicspr_arr6[v1];
-  int v3 = (uint16)(4 * LOBYTE(cinematicspr_goto_timer[v1])) >> 1;
+  int v3 = 2 * LOBYTE(cinematicspr_goto_timer[v1]);
   assert(v3 + 1 < 12);
-  bool v4 = __CFADD__uint16(kSetSomeStuffForSpriteObject_7_Tab0[v3 + 1], v2);
-  cinematicspr_arr6[v1] = kSetSomeStuffForSpriteObject_7_Tab0[v3 + 1] + v2;
-  cinematicbg_arr7[v1] += kSetSomeStuffForSpriteObject_7_Tab0[v3] + v4;
-  uint16 v5 = cinematicspr_arr7[v1];
-  int v6 = (uint16)(4 * HIBYTE(cinematicspr_goto_timer[v1])) >> 1;
+  AddToHiLo(&cinematicbg_arr7[v1], &cinematicspr_arr6[v1], __PAIR32__(kSetSomeStuffForSpriteObject_7_Tab0[v3], kSetSomeStuffForSpriteObject_7_Tab0[v3 + 1]));
+  int v6 = 2 * HIBYTE(cinematicspr_goto_timer[v1]);
   assert(v6 + 1 < 82);
-  v4 = __CFADD__uint16(kSetSomeStuffForSpriteObject_7_Tab1[v6 + 1], v5);
-  cinematicspr_arr7[v1] = kSetSomeStuffForSpriteObject_7_Tab1[v6 + 1] + v5;
-  uint16 v7 = kSetSomeStuffForSpriteObject_7_Tab1[v6] + v4 + cinematicbg_arr8[v1];
-  cinematicbg_arr8[v1] = v7;
-  if (sign16(v7 - 168)) {
+  AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], __PAIR32__(kSetSomeStuffForSpriteObject_7_Tab1[v6], kSetSomeStuffForSpriteObject_7_Tab1[v6 + 1]));
+  if (sign16(cinematicbg_arr8[v1] - 168)) {
     cinematicspr_goto_timer[v1] += 256;
   } else {
     cinematicspr_instr_timer[v1] = 1;
@@ -2453,47 +2445,26 @@ static const int16 kSetSomeStuffForSpriteObject_9_Tab1[138] = {
 };
 
 void SetSomeStuffForSpriteObject_9(uint16 k) {
-
   int v1 = k >> 1;
-  uint16 v2 = cinematicspr_arr6[v1];
-  int v3 = (uint16)(4 * LOBYTE(cinematicspr_goto_timer[v1])) >> 1;
+  int v3 = 2 * LOBYTE(cinematicspr_goto_timer[v1]);
   assert(v3 + 1 < 10);
-  bool v4 = __CFADD__uint16(kSetSomeStuffForSpriteObject_9_Tab0[v3 + 1], v2);
-  cinematicspr_arr6[v1] = kSetSomeStuffForSpriteObject_9_Tab0[v3 + 1] + v2;
-  cinematicbg_arr7[v1] += kSetSomeStuffForSpriteObject_9_Tab0[v3] + v4;
-  uint16 v5 = cinematicspr_goto_timer[v1];
-  if ((v5 & 1) != 0) {
-    uint16 v10, v11;
-    v10 = 4 * HIBYTE(v5);
-    v11 = cinematicspr_arr7[v1];
-    int v12;
-    v12 = v10 >> 1;
+  AddToHiLo(&cinematicbg_arr7[v1], &cinematicspr_arr6[v1], __PAIR32__(kSetSomeStuffForSpriteObject_9_Tab0[v3], kSetSomeStuffForSpriteObject_9_Tab0[v3 + 1]));
+  if ((cinematicspr_goto_timer[v1] & 1) != 0) {
+    int v12 = 2 * HIBYTE(cinematicspr_goto_timer[v1]);
     assert(v12 + 1 < 124);
-    v4 = __CFADD__uint16(kSetSomeStuffForSpriteObject_9_Tab2[v12 + 1], v11);
-    cinematicspr_arr7[v1] = kSetSomeStuffForSpriteObject_9_Tab2[v12 + 1] + v11;
-    uint16 v13;
-    v13 = kSetSomeStuffForSpriteObject_9_Tab2[v12] + v4 + cinematicbg_arr8[v1];
-    cinematicbg_arr8[v1] = v13;
-    if (!sign16(v13 - 168)) {
-LABEL_5:
-      cinematicspr_instr_timer[v1] = 1;
-      cinematicspr_instr_ptr[v1] = addr_word_8BCD71;
-      cinematicspr_preinstr_func[v1] = FUNC16(CinematicFunction_nullsub_116);
-      return;
-    }
+    AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], __PAIR32__(kSetSomeStuffForSpriteObject_9_Tab2[v12], kSetSomeStuffForSpriteObject_9_Tab2[v12 + 1]));
   } else {
-    uint16 v6 = 4 * HIBYTE(v5);
-    uint16 v7 = cinematicspr_arr7[v1];
-    int v8 = v6 >> 1;
-    assert(v8 + 1 < 138);
-    v4 = __CFADD__uint16(kSetSomeStuffForSpriteObject_9_Tab1[v8 + 1], v7);
-    cinematicspr_arr7[v1] = kSetSomeStuffForSpriteObject_9_Tab1[v8 + 1] + v7;
-    uint16 v9 = kSetSomeStuffForSpriteObject_9_Tab1[v8] + v4 + cinematicbg_arr8[v1];
-    cinematicbg_arr8[v1] = v9;
-    if (!sign16(v9 - 168))
-      goto LABEL_5;
+    int v6 = 2 * HIBYTE(cinematicspr_goto_timer[v1]);
+    assert(v6 + 1 < 138);
+    AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], __PAIR32__(kSetSomeStuffForSpriteObject_9_Tab1[v6], kSetSomeStuffForSpriteObject_9_Tab1[v6 + 1]));
   }
-  cinematicspr_goto_timer[v1] += 256;
+  if (!sign16(cinematicbg_arr8[v1] - 168)) {
+    cinematicspr_instr_timer[v1] = 1;
+    cinematicspr_instr_ptr[v1] = addr_word_8BCD71;
+    cinematicspr_preinstr_func[v1] = FUNC16(CinematicFunction_nullsub_116);
+  } else {
+    cinematicspr_goto_timer[v1] += 256;
+  }
 }
 
 void SetSomeStuffForSpriteObject_10(uint16 j) {  // 0x8BAD55
@@ -3340,12 +3311,8 @@ uint16 CinematicSprInstr_Func43(uint16 k, uint16 j) {  // 0x8BB8C5
 
 void CinematicFunction_Intro_Func44(uint16 k) {  // 0x8BB8D8
   int v1 = k >> 1;
-  uint16 v2 = cinematicspr_arr6[v1];
-  cinematicspr_arr6[v1] = v2 + 0x8000;
-  cinematicbg_arr7[v1] += __CFADD__uint16(v2, 0x8000);
-  uint16 v3 = cinematicspr_arr7[v1];
-  cinematicspr_arr7[v1] = v3 + 0x8000;
-  cinematicbg_arr8[v1] += __CFADD__uint16(v3, 0x8000);
+  AddToHiLo(&cinematicbg_arr7[v1], &cinematicspr_arr6[v1], 0x8000);
+  AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], 0x8000);
   if (sign16(cinematicbg_arr7[v1] + 8 - (samus_x_pos - 5))) {
     if (cinematicspr_preinstr_func[0] != FUNC16(CinematicFunction_Intro_Func39))
       return;
@@ -3361,17 +3328,10 @@ void CinematicFunction_Intro_Func44(uint16 k) {  // 0x8BB8D8
 static const uint16 kCinematicFunction_Intro_Func45_Tab0[4] = { 0, 0xffff, 0, 0xffff };
 void CinematicFunction_Intro_Func45(uint16 k) {  // 0x8BB93B
   int v1 = k >> 1;
-  uint16 v2 = 2 * cinematicspr_goto_timer[v1];
-  cinematicbg_arr7[v1] += kCinematicFunction_Intro_Func45_Tab0[v2 >> 1] + __CFADD__uint16(cinematicspr_arr6[v1], 0x8000);
-  cinematicspr_arr6[v1] += 0x8000;
-
-  uint16 v3 = cinematicspr_arr7[v1];
-  cinematicspr_arr7[v1] = v3 + 0x8000;
-  uint16 v4 = __CFADD__uint16(v3, 0x8000) + cinematicbg_arr8[v1];
-  cinematicbg_arr8[v1] = v4;
-  if (sign16(v4 - 16)
-      || !sign16(v4 - 208)
-      || cinematicspr_preinstr_func[0] == FUNC16(CinematicFunction_Intro_Func39)) {
+  int v2 = cinematicspr_goto_timer[v1];
+  AddToHiLo(&cinematicbg_arr7[v1], &cinematicspr_arr6[v1], __PAIR32__(kCinematicFunction_Intro_Func45_Tab0[v2], 0x8000));
+  AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], 0x8000);
+  if (sign16(cinematicbg_arr8[v1] - 16) || !sign16(cinematicbg_arr8[v1] - 208) || cinematicspr_preinstr_func[0] == FUNC16(CinematicFunction_Intro_Func39)) {
     cinematicspr_instr_timer[v1] = 1;
     cinematicspr_instr_ptr[v1] = addr_off_8BCE53;
   }
@@ -3454,12 +3414,7 @@ void CinematicFunction_Intro_Func51(uint16 k) {  // 0x8BBA73
   } else if (sign16(cinematic_var17 - 544)) {
     cinematic_var17 += 32;
   }
-  uint16 r20 = cinematic_var17 << 8;
-  uint16 r18 = (int8)(cinematic_var17 >> 8);
-  uint16 v4 = cinematicspr_arr7[v1];
-  bool v5 = __CFADD__uint16(r20, v4);
-  cinematicspr_arr7[v1] = r20 + v4;
-  cinematicbg_arr8[v1] += r18 + v5;
+  AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], INT16_SHL8(cinematic_var17));
   if ((cinematic_var17 & 0x8000) == 0) {
     cinematic_var14 = 128;
     cinematicspr_preinstr_func[v1] = FUNC16(CinematicFunction_Intro_Func52);
@@ -3478,46 +3433,32 @@ void CinematicFunction_Intro_Func52(uint16 k) {  // 0x8BBB0D
 }
 
 void CinematicFunction_Intro_Func53(uint16 k) {  // 0x8BBB24
+  int kh = k >> 1;
   if (cinematic_var13) {
-    int v2 = k >> 1;
-    if (sign16(cinematicspr_goto_timer[v2] - 128)) {
-      uint16 v3 = cinematicspr_goto_timer[v2] + 1;
-      cinematicspr_goto_timer[v2] = v3;
+    if (sign16(cinematicspr_goto_timer[kh] - 128)) {
+      uint16 v3 = cinematicspr_goto_timer[kh] + 1;
+      cinematicspr_goto_timer[kh] = v3;
       if ((v3 & 0x3F) == 0)
         QueueSfx3_Max6(0x23);
     }
-    if ((int16)(samus_x_pos - cinematicbg_arr7[v2]) < 0) {
+    if ((int16)(samus_x_pos - cinematicbg_arr7[kh]) < 0) {
       if (!sign16(cinematic_var14 + 639))
         cinematic_var14 -= 32;
     } else if (sign16(cinematic_var14 - 640)) {
       cinematic_var14 += 32;
     }
-    uint16 r20 = cinematic_var14 << 8;
-    uint16 r18 = (int8)GET_HIBYTE(cinematic_var14);
-    if (!sign16(r18))
-      cinematic_var15 = -1;
-    else
-      cinematic_var15 = 1;
-    uint16 v6 = cinematicspr_arr6[v2];
-    bool v7 = __CFADD__uint16(r20, v6);
-    cinematicspr_arr6[v2] = r20 + v6;
-    cinematicbg_arr7[v2] += r18 + v7;
-    if ((int16)(samus_y_pos - 8 - cinematicbg_arr8[v2]) < 0) {
+    cinematic_var15 = sign16(cinematic_var14) ? 1 : -1;
+    AddToHiLo(&cinematicbg_arr7[kh], &cinematicspr_arr6[kh], INT16_SHL8(cinematic_var14));
+    if ((int16)(samus_y_pos - 8 - cinematicbg_arr8[kh]) < 0) {
       if (!sign16(cinematic_var17 + 543))
         cinematic_var17 -= 32;
     } else if (sign16(cinematic_var17 - 544)) {
       cinematic_var17 += 32;
     }
-    r20 = cinematic_var17 << 8;
-    r18 = (int8)GET_HIBYTE(cinematic_var17);
-    uint16 v10 = cinematicspr_arr7[v2];
-    v7 = __CFADD__uint16(r20, v10);
-    cinematicspr_arr7[v2] = r20 + v10;
-    cinematicbg_arr8[v2] += r18 + v7;
+    AddToHiLo(&cinematicbg_arr8[kh], &cinematicspr_arr7[kh], INT16_SHL8(cinematic_var17));
   } else {
-    int v1 = k >> 1;
-    cinematicspr_instr_timer[v1] = 1;
-    cinematicspr_instr_ptr[v1] = addr_off_8BCE53;
+    cinematicspr_instr_timer[kh] = 1;
+    cinematicspr_instr_ptr[kh] = addr_off_8BCE53;
     cinematic_var15 = 0;
   }
 }
@@ -3667,29 +3608,14 @@ void CinematicFunction_Intro_Func57(uint16 j) {  // 0x8BBE7E
 }
 
 void CinematicFunction_Intro_Func58(uint16 k) {  // 0x8BBEB5
-  unsigned int v8; // kr08_4
-  unsigned int v9; // kr0C_4
-
   if (cinematic_function == FUNC16(CinematicFunction_Intro_Func56)) {
     int v1 = k >> 1;
-    uint16 v2 = cinematicspr_goto_timer[v1] + 128;
-    cinematicspr_goto_timer[v1] = v2;
-    uint16 r20 = (v2 & 0xff) << 8;
-    uint16 r18 = (int8)(v2 >> 8);
-    uint16 v5 = cinematicspr_arr7[v1];
-    bool v6 = __CFADD__uint16(r20, v5);
-    cinematicspr_arr7[v1] = r20 + v5;
-    cinematicbg_arr8[v1] += r18 + v6;
-    uint16 v7 = cinematicspr_arr6[v1];
-    v6 = __CFADD__uint16(r20, v7);
-    cinematicspr_arr6[v1] = r20 + v7;
-    cinematicbg_arr7[v1] += r18 + v6;
-    v8 = __PAIR32__(r18, r20) + __PAIR32__(cinematic_var8, cinematic_var7);
-    cinematic_var8 = HIWORD(v8);
-    cinematic_var7 = v8;
-    v9 = __PAIR32__(r18, r20) + __PAIR32__(cinematic_var10, cinematic_var9);
-    cinematic_var10 = HIWORD(v9);
-    cinematic_var9 = v9;
+    cinematicspr_goto_timer[v1] += 128;
+    int32 d = INT16_SHL8(cinematicspr_goto_timer[v1]);
+    AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], d);
+    AddToHiLo(&cinematicbg_arr7[v1], &cinematicspr_arr6[v1], d);
+    AddToHiLo(&cinematic_var8, &cinematic_var7, d);
+    AddToHiLo(&cinematic_var10, &cinematic_var9, d);
   }
 }
 
@@ -3702,9 +3628,8 @@ void CinematicFunction_Intro_Func59(uint16 j) {  // 0x8BBF22
 
 void CinematicFunction_Intro_Func60(uint16 k) {  // 0x8BBF35
   int v1 = k >> 1;
-  uint16 v2 = cinematicspr_arr6[v1];
-  cinematicspr_arr6[v1] = v2 + 0x4000;
-  cinematicbg_arr7[v1] = (__CFADD__uint16(v2, 0x4000) + cinematicbg_arr7[v1]) & 0x1FF;
+  AddToHiLo(&cinematicbg_arr7[v1], &cinematicspr_arr6[v1], 0x4000);
+  cinematicbg_arr7[v1] &= 0x1ff;
 }
 
 void CinematicFunction_Intro_Func61(uint16 j) {  // 0x8BBF4C
@@ -3716,9 +3641,8 @@ void CinematicFunction_Intro_Func61(uint16 j) {  // 0x8BBF4C
 
 void CinematicFunction_Intro_Func62(uint16 k) {  // 0x8BBF5F
   int v1 = k >> 1;
-  uint16 v2 = cinematicspr_arr6[v1];
-  cinematicspr_arr6[v1] = v2 + 4096;
-  cinematicbg_arr7[v1] = (__CFADD__uint16(v2, 4096) + cinematicbg_arr7[v1]) & 0x1FF;
+  AddToHiLo(&cinematicbg_arr7[v1], &cinematicspr_arr6[v1], 4096);
+  cinematicbg_arr7[v1] &= 0x1ff;
 }
 
 void CinematicFunction_Intro_Func63(uint16 j) {  // 0x8BBF76
@@ -3730,9 +3654,8 @@ void CinematicFunction_Intro_Func63(uint16 j) {  // 0x8BBF76
 
 void CinematicFunction_Intro_Func64(uint16 k) {  // 0x8BBF89
   int v1 = k >> 1;
-  uint16 v2 = cinematicspr_arr6[v1];
-  cinematicspr_arr6[v1] = v2 + 2048;
-  cinematicbg_arr7[v1] = (__CFADD__uint16(v2, 2048) + cinematicbg_arr7[v1]) & 0x1FF;
+  AddToHiLo(&cinematicbg_arr7[v1], &cinematicspr_arr6[v1], 2048);
+  cinematicbg_arr7[v1] &= 0x1ff;
 }
 
 void CinematicFunction_Intro_Func65(uint16 j) {  // 0x8BBFA0
@@ -3750,23 +3673,17 @@ void CinematicFunction_Intro_Func65(uint16 j) {  // 0x8BBFA0
 
 void CinematicFunction_Intro_Func66(uint16 k) {  // 0x8BBFC6
   int v1 = k >> 1;
-  uint16 v2 = cinematicspr_arr6[v1];
-  cinematicspr_arr6[v1] = v2 - 0x2000;
-  cinematicbg_arr7[v1] = (__PAIR32__(cinematicbg_arr7[v1], v2) - 0x2000) >> 16;
+  AddToHiLo(&cinematicbg_arr7[v1], &cinematicspr_arr6[v1], -0x2000);
 }
 
 void CinematicFunction_Intro_Func67(void) {  // 0x8BBFDA
-  unsigned int v0; // kr00_4
-
   if (sign8(--reg_COLDATA[0] - 32))
     reg_COLDATA[0] = 32;
   if (sign8(--reg_COLDATA[1] - 64))
     reg_COLDATA[1] = 64;
   if (sign8(--reg_COLDATA[2] + 0x80))
     reg_COLDATA[2] = 0x80;
-  v0 = __PAIR32__(cinematic_var8, cinematic_var7) - 0x2000;
-  cinematic_var8 = HIWORD(v0);
-  cinematic_var7 = v0;
+  AddToHiLo(&cinematic_var8, &cinematic_var7, -0x2000);
   if (sign16(cinematic_var6 - 3072)) {
     cinematic_var6 += 16;
   } else if (sign16(cinematic_var6 - 0x2000)) {
@@ -3937,12 +3854,8 @@ void CinematicFunction_Intro_Func74(void) {  // 0x8BC2E4
 }
 
 void CinematicFunction_Intro_Func75(void) {  // 0x8BC2F1
-  uint16 v0 = (__PAIR32__(cinematic_var10, cinematic_var9) + 4096) >> 16;
-  cinematic_var9 += 4096;
-  cinematic_var10 = v0;
-  uint16 v1 = (__PAIR32__(cinematic_var8, cinematic_var7) - 0x4000) >> 16;
-  cinematic_var7 -= 0x4000;
-  cinematic_var8 = v1;
+  AddToHiLo(&cinematic_var10, &cinematic_var9, 4096);
+  AddToHiLo(&cinematic_var8, &cinematic_var7, -0x4000);
   ++cinematic_var6;
   HandleFadeIn();
   if (reg_INIDISP == 15) {
@@ -3955,12 +3868,8 @@ void CinematicFunction_Intro_Func75(void) {  // 0x8BC2F1
 }
 
 void CinematicFunction_Intro_Func76(void) {  // 0x8BC345
-  uint16 v0 = (__PAIR32__(cinematic_var10, cinematic_var9) + 4096) >> 16;
-  cinematic_var9 += 4096;
-  cinematic_var10 = v0;
-  uint16 v1 = (__PAIR32__(cinematic_var8, cinematic_var7) - 0x4000) >> 16;
-  cinematic_var7 -= 0x4000;
-  cinematic_var8 = v1;
+  AddToHiLo(&cinematic_var10, &cinematic_var9, 4096);
+  AddToHiLo(&cinematic_var8, &cinematic_var7, -0x4000);
   if (sign16(cinematic_var6 - 640)) {
     ++cinematic_var6;
   } else {
@@ -3989,9 +3898,11 @@ uint16 CinematicSprInstr_SpawnCeresExplosions1(uint16 k, uint16 j) {  // 0x8BC40
   SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCEBB, 4);
   return j;
 }
+
 static const uint16 kCinematicFunction_Intro_Func78_Tab0[5] = { 1, 16, 32, 48, 64 };
 static const int16 kCinematicFunction_Intro_Func78_Tab1[5] = { 16, -16, 16, -16, 0 };
 static const int16 kCinematicFunction_Intro_Func78_Tab2[5] = { -16, 16, 16, -16, 0 };
+
 void CinematicFunction_Intro_Func78(uint16 j) {  // 0x8BC434
   uint16 v1 = cinematic_spawn_param;
   int v2 = j >> 1;
@@ -4015,16 +3926,20 @@ void CinematicSprPreInstr_C489(uint16 k) {  // 0x8BC489
     }
   }
 }
+
 static const int16 g_word_8BC4EB[16] = {  // 0x8BC4B9
    14, -8,  8,  12, -16, 12, -8, -14, 0, 0, 16, 14,
   -12,  4, -8, -16,
 };
-void CinematicFunction_Intro_Func80(uint16 j) {
+static const int16 kCinematicFunction_Intro_Func81_Tab0[4] = { 1, 4, 8, 16 };
+static const int16 kCinematicFunction_Intro_Func81_Tab1[4] = { 8, 12, -8, -12 };
+static const int16 kCinematicFunction_Intro_Func81_Tab2[4] = { -4, 8, -10, 12 };
 
+void CinematicFunction_Intro_Func80(uint16 j) {
   uint16 v1 = cinematic_spawn_param;
   int v2 = j >> 1;
   cinematicspr_goto_timer[v2] = cinematic_spawn_param;
-  int v3 = (uint16)(4 * v1) >> 1;
+  int v3 = 2 * v1;
   cinematicbg_arr7[v2] = g_word_8BC4EB[v3] + reg_M7X - cinematic_var8;
   cinematicbg_arr8[v2] = g_word_8BC4EB[v3 + 1] + reg_M7Y - cinematic_var10;
   cinematicbg_arr9[v2] = 2560;
@@ -4037,28 +3952,21 @@ uint16 CinematicSprInstr_SpawnCeresExplosions3(uint16 k, uint16 j) {  // 0x8BC50
   SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BCEC7, 3);
   return j;
 }
-static const int16 kCinematicFunction_Intro_Func81_Tab0[4] = { 1, 4, 8, 16 };
-static const int16 kCinematicFunction_Intro_Func81_Tab1[4] = { 8, 12, -8, -12 };
-static const int16 kCinematicFunction_Intro_Func81_Tab2[4] = { -4, 8, -10, 12 };
+
 void CinematicFunction_Intro_Func81(uint16 j) {  // 0x8BC533
   uint16 v1 = cinematic_spawn_param;
   int v2 = j >> 1;
   cinematicspr_goto_timer[v2] = cinematic_spawn_param;
-  int v3 = v1;
-  cinematicspr_instr_timer[v2] = kCinematicFunction_Intro_Func81_Tab0[v3];
-  cinematicbg_arr7[v2] = kCinematicFunction_Intro_Func81_Tab1[v3] + reg_M7X - cinematic_var8;
-  cinematicbg_arr8[v2] = kCinematicFunction_Intro_Func81_Tab2[v3] + reg_M7Y - cinematic_var10;
+  cinematicspr_instr_timer[v2] = kCinematicFunction_Intro_Func81_Tab0[v1];
+  cinematicbg_arr7[v2] = kCinematicFunction_Intro_Func81_Tab1[v1] + reg_M7X - cinematic_var8;
+  cinematicbg_arr8[v2] = kCinematicFunction_Intro_Func81_Tab2[v1] + reg_M7Y - cinematic_var10;
   cinematicbg_arr9[v2] = 2560;
 }
 
 void CinematicFunction_Intro_Func82(uint16 k) {  // 0x8BC582
   int v1 = k >> 1;
-  uint16 v2 = cinematicspr_arr7[v1];
-  cinematicspr_arr7[v1] = v2 - 4096;
-  cinematicbg_arr8[v1] = (__PAIR32__(cinematicbg_arr8[v1], v2) - 4096) >> 16;
-  uint16 v3 = cinematicspr_arr6[v1];
-  cinematicspr_arr6[v1] = v3 + 0x4000;
-  cinematicbg_arr7[v1] += __CFADD__uint16(v3, 0x4000);
+  AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], -4096);
+  AddToHiLo(&cinematicbg_arr7[v1], &cinematicspr_arr6[v1], 0x4000);
 }
 
 void CinematicFunction_Intro_Func83(uint16 j) {  // 0x8BC5A9
@@ -4224,16 +4132,9 @@ void CinematicFunction_Intro_Func90(uint16 k) {  // 0x8BC84E
 
 void CinematicFunction_Intro_Func91(uint16 k) {  // 0x8BC85D
   int v1 = k >> 1;
-  uint16 v2 = cinematicspr_goto_timer[v1] + 64;
-  cinematicspr_goto_timer[v1] = v2;
-  uint16 r20 = v2 << 8;
-  uint16 r18 = (uint8)(v2 >> 8);
-  uint16 v4 = cinematicspr_arr7[v1];
-  bool v5 = v4 < r20;
-  cinematicspr_arr7[v1] = v4 - r20;
-  uint16 v6 = cinematicbg_arr8[v1] - (v5 + r18);
-  cinematicbg_arr8[v1] = v6;
-  if (sign16(v6 + 128)) {
+  cinematicspr_goto_timer[v1] += 64;
+  AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], -INT16_SHL8(cinematicspr_goto_timer[v1]));
+  if (sign16(cinematicbg_arr8[v1] + 128)) {
     cinematicspr_instr_timer[v1] = 1;
     cinematicspr_instr_ptr[v1] = addr_off_8BCE53;
   }
@@ -4253,16 +4154,9 @@ void CinematicFunction_Intro_Func93(uint16 k) {  // 0x8BC8AA
 
 void CinematicFunction_Intro_Func94(uint16 k) {  // 0x8BC8B9
   int v1 = k >> 1;
-  uint16 v2 = cinematicspr_goto_timer[v1] + 32;
-  cinematicspr_goto_timer[v1] = v2;
-  uint16 r20 = v2 << 8;
-  uint16 r18 = (uint8)(v2 >> 8);
-  uint16 v4 = cinematicspr_arr7[v1];
-  bool v5 = v4 < r20;
-  cinematicspr_arr7[v1] = v4 - r20;
-  uint16 v6 = cinematicbg_arr8[v1] - (v5 + r18);
-  cinematicbg_arr8[v1] = v6;
-  if (sign16(v6 + 128)) {
+  cinematicspr_goto_timer[v1] += 32;
+  AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], -INT16_SHL8(cinematicspr_goto_timer[v1]));
+  if (sign16(cinematicbg_arr8[v1] + 128)) {
     cinematicspr_instr_timer[v1] = 1;
     cinematicspr_instr_ptr[v1] = addr_off_8BCE53;
     cinematic_function = FUNC16(CinematicFunction_Intro_Func95);
@@ -4276,16 +4170,9 @@ void CinematicFunction_Intro_Func96(uint16 k) {  // 0x8BC8F9
 
 void CinematicFunction_Intro_Func97(uint16 k) {  // 0x8BC908
   int v1 = k >> 1;
-  uint16 v2 = cinematicspr_goto_timer[v1] + 32;
-  cinematicspr_goto_timer[v1] = v2;
-  uint16 r20 = v2 << 8;
-  uint16 r18 = (uint8)(v2 >> 8);
-  uint16 v4 = cinematicspr_arr7[v1];
-  bool v5 = v4 < r20;
-  cinematicspr_arr7[v1] = v4 - r20;
-  uint16 v6 = cinematicbg_arr8[v1] - (v5 + r18);
-  cinematicbg_arr8[v1] = v6;
-  if (sign16(v6 + 128)) {
+  cinematicspr_goto_timer[v1] += 32;
+  AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], -INT16_SHL8(cinematicspr_goto_timer[v1]));
+  if (sign16(cinematicbg_arr8[v1] + 128)) {
     cinematicspr_instr_timer[v1] = 1;
     cinematicspr_instr_ptr[v1] = addr_off_8BCE53;
   }
@@ -4359,14 +4246,8 @@ void CinematicFunction_Intro_Func104(uint16 j) {  // 0x8BC9E6
 }
 
 void CinematicFunction_Intro_Func105(void) {  // 0x8BC9F9
-  unsigned int v0; // kr00_4
-
-  v0 = __PAIR32__(cinematic_var10, cinematic_var9) + 0x2000;
-  cinematic_var10 = HIWORD(v0);
-  cinematic_var9 = v0;
-  bool v1 = cinematic_var7 >= 0x8000;
-  cinematic_var7 += 0x8000;
-  cinematic_var8 -= !v1;
+  AddToHiLo(&cinematic_var10, &cinematic_var9, 0x2000);
+  AddToHiLo(&cinematic_var8, &cinematic_var7, -0x8000);
   if (sign16(cinematic_var6 - 1152))
     cinematic_var6 += 4;
   else
@@ -4374,14 +4255,8 @@ void CinematicFunction_Intro_Func105(void) {  // 0x8BC9F9
 }
 
 void CinematicFunction_Intro_Func106(void) {  // 0x8BCA36
-  unsigned int v0; // kr00_4
-
-  v0 = __PAIR32__(cinematic_var10, cinematic_var9) + 0x2000;
-  cinematic_var10 = HIWORD(v0);
-  cinematic_var9 = v0;
-  bool v1 = cinematic_var7 >= 0x8000;
-  cinematic_var7 += 0x8000;
-  cinematic_var8 -= !v1;
+  AddToHiLo(&cinematic_var10, &cinematic_var9, 0x2000);
+  AddToHiLo(&cinematic_var8, &cinematic_var7, -0x8000);
   if (sign16(cinematic_var8 + 128)) {
     cinematic_function = FUNC16(CinematicFunction_Intro_Func107);
   } else {
@@ -4392,15 +4267,8 @@ void CinematicFunction_Intro_Func106(void) {  // 0x8BCA36
 }
 
 void CinematicFunction_Intro_Func107(void) {  // 0x8BCA85
-  unsigned int v0; // kr00_4
-  unsigned int v1; // kr04_4
-
-  v0 = __PAIR32__(cinematic_var10, cinematic_var9) + 0x2000;
-  cinematic_var10 = HIWORD(v0);
-  cinematic_var9 = v0;
-  v1 = __PAIR32__(cinematic_var8, cinematic_var7) + 0x2000;
-  cinematic_var8 = HIWORD(v1);
-  cinematic_var7 = v1;
+  AddToHiLo(&cinematic_var10, &cinematic_var9, 0x2000);
+  AddToHiLo(&cinematic_var8, &cinematic_var7, 0x2000);
   if (sign16(cinematic_var6 - 0x2000)) {
     cinematic_var6 += 32;
   } else {
@@ -5568,29 +5436,24 @@ void CinematicFunction_Intro_Func150(uint16 j) {  // 0x8BEF99
 
 void CinematicFunction_Intro_Func151(uint16 k) {  // 0x8BEFB2
   int v1 = k >> 1;
-  uint16 v2 = cinematicspr_arr7[v1];
-  cinematicspr_arr7[v1] = v2 + 128;
-  cinematicbg_arr8[v1] += __CFADD__uint16(v2, 128);
+  AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], 128);
   cinematicspr_arr6[v1] = cinematicspr_arr6[v1];
-  uint16 v3 = cinematicbg_arr7[v1] + 1;
-  cinematicbg_arr7[v1] = v3;
-  if (!sign16(v3 - 272)) {
+  if (!sign16(++cinematicbg_arr7[v1] - 272)) {
     cinematicspr_instr_timer[v1] = 1;
     cinematicspr_instr_ptr[v1] = addr_off_8BEE9B;
   }
 }
 
 void CinematicFunction_Intro_Func152(uint16 j) {  // 0x8BEFEA
-  cinematicbg_arr7[j >> 1] = 128;
   int v1 = j >> 1;
+  cinematicbg_arr7[v1] = 128;
   cinematicbg_arr8[v1] = 128;
   cinematicbg_arr9[v1] = 3584;
 }
 
 void CinematicFunction_Intro_Func153(uint16 j) {  // 0x8BEFFD
-  cinematicbg_arr7[j >> 1] = -128;
-
   int v1 = j >> 1;
+  cinematicbg_arr7[v1] = -128;
   cinematicbg_arr8[v1] = 128;
   cinematicbg_arr9[v1] = 3584;
 }
@@ -5887,13 +5750,8 @@ void CinematicSprPreInstr_F35A(uint16 k) {  // 0x8BF35A
 
 void CinematicFunction_Intro_Func189(uint16 k) {  // 0x8BF375
   int v1 = k >> 1;
-  uint16 v2 = cinematicspr_arr7[v1];
-  cinematicspr_arr7[v1] = v2 - 32;
-  cinematicspr_goto_timer[v1] = __CFADD__uint16(v2, -32) + cinematicspr_goto_timer[v1] - 1;
-  uint16 v3 = cinematicspr_arr6[v1];
-  bool v4 = __CFADD__uint16(cinematicspr_arr7[v1], v3);
-  cinematicspr_arr6[v1] = cinematicspr_arr7[v1] + v3;
-  cinematicbg_arr7[v1] += cinematicspr_goto_timer[v1] + v4;
+  AddToHiLo(&cinematicspr_goto_timer[v1], &cinematicspr_arr7[v1], -32);
+  AddToHiLo(&cinematicbg_arr7[v1], &cinematicspr_arr6[v1], __PAIR32__(cinematicspr_goto_timer[v1], cinematicspr_arr7[v1]));
   CinematicFunction_Intro_Func189b(k);
 }
 
@@ -6117,14 +5975,9 @@ uint16 CinematicSprInstr_Func218(uint16 k, uint16 j) {  // 0x8BF651
 }
 
 void CinematicFunction_Intro_Func210_EndingSamusFall(uint16 k) {  // 0x8BF65B
-  uint16 v1 = (__PAIR32__(samus_y_speed, samus_y_subspeed) + 14336) >> 16;
-  samus_y_subspeed += 14336;
-  samus_y_speed = v1;
-  int v2 = k >> 1;
-  uint16 v3 = cinematicspr_arr7[v2];
-  bool v4 = __CFADD__uint16(samus_y_subspeed, v3);
-  cinematicspr_arr7[v2] = samus_y_subspeed + v3;
-  cinematicbg_arr8[v2] += samus_y_speed + v4;
+  AddToHiLo(&samus_y_speed, &samus_y_subspeed, 0x3800);
+  int v1 = k >> 1;
+  AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], __PAIR32__(samus_y_speed, samus_y_subspeed));
 }
 
 void CinematicFunction_Intro_Func216(void) {  // 0x8BF682

@@ -291,15 +291,8 @@ void NorfairPipeBug_Func_3(uint16 k) {  // 0xB38C52
 void NorfairPipeBug_Func_4(void) {  // 0xB38CA6
   Enemy_PipeBug *E = Get_PipeBug(cur_enemy_index);
   E->base.properties &= ~kEnemyProps_Invisible;
-  uint16 y_subpos = E->base.y_subpos;
-  bool v3 = __CFADD__uint16(kCommonEnemySpeeds_Linear[67], y_subpos);
-  uint16 v4 = kCommonEnemySpeeds_Linear[67] + y_subpos;
-  if (v3)
-    ++E->base.y_pos;
-  E->base.y_subpos = v4;
-  uint16 v5 = kCommonEnemySpeeds_Linear[66] + E->base.y_pos;
-  E->base.y_pos = v5;
-  if ((int16)(v5 - samus_y_pos) < 0) {
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Linear[66], kCommonEnemySpeeds_Linear[67]));
+  if ((int16)(E->base.y_pos - samus_y_pos) < 0) {
     E->pbg_var_A = E->pbg_var_F;
     E->pbg_var_01 = E->base.y_pos;
     E->base.instruction_timer = 1;
@@ -320,15 +313,8 @@ void NorfairPipeBug_Func_5(uint16 k) {  // 0xB38CFF
 void NorfairPipeBug_Func_6(void) {  // 0xB38D0C
   Enemy_PipeBug *E = Get_PipeBug(cur_enemy_index);
   ++E->pbg_var_C;
-  uint16 y_subpos = E->base.y_subpos;
-  bool v2 = __CFADD__uint16(kCommonEnemySpeeds_Linear[67], y_subpos);
-  uint16 v3 = kCommonEnemySpeeds_Linear[67] + y_subpos;
-  if (v2)
-    ++E->base.y_pos;
-  E->base.y_subpos = v3;
-  uint16 v4 = kCommonEnemySpeeds_Linear[66] + E->base.y_pos;
-  E->base.y_pos = v4;
-  if ((int16)(v4 + 16 - E->pbg_var_01) < 0) {
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Linear[66], kCommonEnemySpeeds_Linear[67]));
+  if ((int16)(E->base.y_pos + 16 - E->pbg_var_01) < 0) {
     E->base.y_pos = E->pbg_var_01 - 16;
     E->base.y_subpos = 0;
     E->pbg_var_A = FUNC16(NorfairPipeBug_Func_12);
@@ -336,18 +322,10 @@ void NorfairPipeBug_Func_6(void) {  // 0xB38D0C
 }
 
 void NorfairPipeBug_Func_7(void) {  // 0xB38D4E
-
   Enemy_PipeBug *E = Get_PipeBug(cur_enemy_index);
   ++E->pbg_var_C;
-  uint16 y_subpos = E->base.y_subpos;
-  bool v2 = __CFADD__uint16(kCommonEnemySpeeds_Linear[67], y_subpos);
-  uint16 v3 = kCommonEnemySpeeds_Linear[67] + y_subpos;
-  if (v2)
-    ++E->base.y_pos;
-  E->base.y_subpos = v3;
-  uint16 v4 = kCommonEnemySpeeds_Linear[66] + E->base.y_pos;
-  E->base.y_pos = v4;
-  if ((int16)(v4 + 32 - E->pbg_var_01) < 0) {
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Linear[66], kCommonEnemySpeeds_Linear[67]));
+  if ((int16)(E->base.y_pos + 32 - E->pbg_var_01) < 0) {
     E->base.y_pos = E->pbg_var_01 - 32;
     E->base.y_subpos = 0;
     E->pbg_var_A = FUNC16(NorfairPipeBug_Func_12);
@@ -355,18 +333,10 @@ void NorfairPipeBug_Func_7(void) {  // 0xB38D4E
 }
 
 void NorfairPipeBug_Func_8(void) {  // 0xB38D90
-
   Enemy_PipeBug *E = Get_PipeBug(cur_enemy_index);
   ++E->pbg_var_C;
-  uint16 y_subpos = E->base.y_subpos;
-  bool v2 = __CFADD__uint16(kCommonEnemySpeeds_Linear[65], y_subpos);
-  uint16 v3 = kCommonEnemySpeeds_Linear[65] + y_subpos;
-  if (v2)
-    ++E->base.y_pos;
-  E->base.y_subpos = v3;
-  uint16 v4 = kCommonEnemySpeeds_Linear[64] + E->base.y_pos;
-  E->base.y_pos = v4;
-  if ((int16)(v4 - 16 - E->pbg_var_01) >= 0) {
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Linear[64], kCommonEnemySpeeds_Linear[65]));
+  if ((int16)(E->base.y_pos - 16 - E->pbg_var_01) >= 0) {
     E->base.y_pos = E->pbg_var_01 + 16;
     E->base.y_subpos = 0;
     E->pbg_var_A = FUNC16(NorfairPipeBug_Func_12);
@@ -374,18 +344,10 @@ void NorfairPipeBug_Func_8(void) {  // 0xB38D90
 }
 
 void NorfairPipeBug_Func_9(void) {  // 0xB38DD2
-
   Enemy_PipeBug *E = Get_PipeBug(cur_enemy_index);
   ++E->pbg_var_C;
-  uint16 y_subpos = E->base.y_subpos;
-  bool v2 = __CFADD__uint16(kCommonEnemySpeeds_Linear[65], y_subpos);
-  uint16 v3 = kCommonEnemySpeeds_Linear[65] + y_subpos;
-  if (v2)
-    ++E->base.y_pos;
-  E->base.y_subpos = v3;
-  uint16 v4 = kCommonEnemySpeeds_Linear[64] + E->base.y_pos;
-  E->base.y_pos = v4;
-  if ((int16)(v4 - 32 - E->pbg_var_01) >= 0) {
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Linear[64], kCommonEnemySpeeds_Linear[65]));
+  if ((int16)(E->base.y_pos - 32 - E->pbg_var_01) >= 0) {
     E->base.y_pos = E->pbg_var_01 + 32;
     E->base.y_subpos = 0;
     E->pbg_var_A = FUNC16(NorfairPipeBug_Func_12);
@@ -393,29 +355,15 @@ void NorfairPipeBug_Func_9(void) {  // 0xB38DD2
 }
 
 void NorfairPipeBug_Func_10(void) {  // 0xB38E14
-
   Enemy_PipeBug *E = Get_PipeBug(cur_enemy_index);
-  uint16 x_subpos = E->base.x_subpos;
   int v2 = E->pbg_var_B >> 1;
-  bool v3 = __CFADD__uint16(kCommonEnemySpeeds_Linear[v2 + 3], x_subpos);
-  uint16 v4 = kCommonEnemySpeeds_Linear[v2 + 3] + x_subpos;
-  if (v3)
-    ++E->base.x_pos;
-  E->base.x_subpos = v4;
-  E->base.x_pos += kCommonEnemySpeeds_Linear[v2 + 2];
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(kCommonEnemySpeeds_Linear[v2 + 2], kCommonEnemySpeeds_Linear[v2 + 3]));
 }
 
 void NorfairPipeBug_Func_11(void) {  // 0xB38E35
-
   Enemy_PipeBug *E = Get_PipeBug(cur_enemy_index);
-  uint16 x_subpos = E->base.x_subpos;
   int v2 = E->pbg_var_B >> 1;
-  bool v3 = __CFADD__uint16(kCommonEnemySpeeds_Linear[v2 + 1], x_subpos);
-  uint16 v4 = kCommonEnemySpeeds_Linear[v2 + 1] + x_subpos;
-  if (v3)
-    ++E->base.x_pos;
-  E->base.x_subpos = v4;
-  E->base.x_pos += kCommonEnemySpeeds_Linear[v2];
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(kCommonEnemySpeeds_Linear[v2], kCommonEnemySpeeds_Linear[v2 + 1]));
 }
 
 void sub_B38E56(void) {  // 0xB38E56
@@ -532,15 +480,8 @@ void BrinstarYellowPipeBug_Func_3(void) {  // 0xB39028
 }
 
 void BrinstarYellowPipeBug_Func_4(uint16 k) {  // 0xB390A1
-
   Enemy_PipeBug *E = Get_PipeBug(k);
-  uint16 x_subpos = E->base.x_subpos;
-  bool v3 = __CFADD__uint16(E->pbg_var_02, x_subpos);
-  uint16 v4 = E->pbg_var_02 + x_subpos;
-  if (v3)
-    ++E->base.x_pos;
-  E->base.x_subpos = v4;
-  E->base.x_pos += E->pbg_var_03;
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->pbg_var_03, E->pbg_var_02));
 }
 
 void BrinstarYellowPipeBug_Func_5(void) {  // 0xB390BD
@@ -574,13 +515,7 @@ void BrinstarYellowPipeBug_Func_5(void) {  // 0xB390BD
 
 void BrinstarYellowPipeBug_Func_6(uint16 k) {  // 0xB3913A
   Enemy_PipeBug *E = Get_PipeBug(k);
-  uint16 x_subpos = E->base.x_subpos;
-  bool v3 = __CFADD__uint16(E->pbg_var_00, x_subpos);
-  uint16 v4 = E->pbg_var_00 + x_subpos;
-  if (v3)
-    ++E->base.x_pos;
-  E->base.x_subpos = v4;
-  E->base.x_pos += E->pbg_var_01;
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->pbg_var_01, E->pbg_var_00));
 }
 
 void BrinstarYellowPipeBug_Func_7(void) {  // 0xB3915A
@@ -648,14 +583,8 @@ void BrinstarYellowPipeBug_Func_8(void) {  // 0xB391D8
 void BrinstarYellowPipeBug_Func_9(uint16 k) {  // 0xB39256
   Enemy_PipeBug *E = Get_PipeBug(k);
   ++E->pbg_var_E;
-  uint16 y_subpos = E->base.y_subpos;
   int v3 = (8 * E->pbg_var_E) >> 1;
-  bool v4 = __CFADD__uint16(kCommonEnemySpeeds_Quadratic[v3 + 2], y_subpos);
-  uint16 v5 = kCommonEnemySpeeds_Quadratic[v3 + 2] + y_subpos;
-  if (v4)
-    ++E->base.y_pos;
-  E->base.y_subpos = v5;
-  E->base.y_pos += kCommonEnemySpeeds_Quadratic[v3 + 3];
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Quadratic[v3 + 3], kCommonEnemySpeeds_Quadratic[v3 + 2]));
 }
 
 void BrinstarYellowPipeBug_Func_10(uint16 k) {  // 0xB3927A
@@ -664,14 +593,8 @@ void BrinstarYellowPipeBug_Func_10(uint16 k) {  // 0xB3927A
     E->pbg_var_E = 0;
     E->pbg_var_F = 0;
   } else {
-    uint16 y_subpos = E->base.y_subpos;
     int v4 = (8 * E->pbg_var_E) >> 1;
-    bool v5 = __CFADD__uint16(kCommonEnemySpeeds_Quadratic[v4], y_subpos);
-    uint16 v6 = kCommonEnemySpeeds_Quadratic[v4] + y_subpos;
-    if (v5)
-      ++E->base.y_pos;
-    E->base.y_subpos = v6;
-    E->base.y_pos += kCommonEnemySpeeds_Quadratic[v4 + 1];
+    AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Quadratic[v4 + 1], kCommonEnemySpeeds_Quadratic[v4]));
   }
 }
 
@@ -1025,16 +948,9 @@ void Botwoon_Func_14(void) {  // 0xB39A46
 
 void Botwoon_Func_15(void) {  // 0xB39A5E
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
-  uint16 y_subpos = E->base.y_subpos;
   int v2 = (8 * HIBYTE(E->botwoon_var_28)) >> 1;
-  bool v3 = __CFADD__uint16(kCommonEnemySpeeds_Quadratic[v2], y_subpos);
-  uint16 v4 = kCommonEnemySpeeds_Quadratic[v2] + y_subpos;
-  if (v3)
-    ++E->base.y_pos;
-  E->base.y_subpos = v4;
-  uint16 v5 = kCommonEnemySpeeds_Quadratic[v2 + 1] + E->base.y_pos;
-  E->base.y_pos = v5;
-  if (sign16(v5 - 200)) {
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 1], kCommonEnemySpeeds_Quadratic[v2]));
+  if (sign16(E->base.y_pos - 200)) {
     E->botwoon_var_28 += 192;
   } else {
     E->base.y_pos = 200;
@@ -1404,9 +1320,7 @@ void EscapeEtecoon_Main(void) {  // 0xB3E655
 
 void EscapeEtecoon_E65C(uint16 k) {  // 0xB3E65C
   Enemy_EscapeEtecoon *E = Get_EscapeEtecoon(k);
-  uint16 x_subpos = E->base.x_subpos;
-  E->base.x_subpos = x_subpos + 0x8000;
-  E->base.x_pos += __CFADD__uint16(x_subpos, 0x8000) + 3;
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, 0x38000);
 }
 
 void EscapeEtecoon_E670(uint16 k) {  // 0xB3E670

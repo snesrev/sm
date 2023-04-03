@@ -505,17 +505,9 @@ void MaridiaBeybladeTurtle_Func8(uint16 k) {  // 0xA28FEB
     QueueSfx2_Max6(0x1B);
   } else {
     MaridiaBeybladeTurtle_Func6(k);
-    uint16 mte_var_03 = E->mte_var_03;
-    bool v3 = __CFADD__uint16(E->mte_var_01, mte_var_03);
-    E->mte_var_03 = E->mte_var_01 + mte_var_03;
-    uint16 v5 = E->mte_var_02 + v3 + E->mte_var_E;
-    if ((int16)(abs16(v5) - g_word_A28D5E) >= 0) {
-      uint16 v4 = g_word_A28D5E;
-      if ((E->mte_var_E & 0x8000) != 0)
-        v4 = -g_word_A28D5E;
-      v5 = v4;
-    }
-    E->mte_var_E = v5;
+    AddToHiLo(&E->mte_var_E, &E->mte_var_03, __PAIR32__(E->mte_var_02, E->mte_var_01));
+    if ((int16)(abs16(E->mte_var_E) - g_word_A28D5E) >= 0)
+      E->mte_var_E = (E->mte_var_E & 0x8000) != 0 ? -g_word_A28D5E : g_word_A28D5E;
   }
 }
 
@@ -551,16 +543,11 @@ void MaridiaBeybladeTurtle_Func10(uint16 k) {  // 0xA290CC
 void MaridiaBeybladeTurtle_Func11(uint16 k) {  // 0xA290E1
   MaridiaBeybladeTurtle_Func4();
   Enemy_MaridiaTurtle *E = Get_MaridiaTurtle(k);
-  if ((int16)(Get_MaridiaTurtle(0)->mte_var_04 - g_word_A28D66) < 0) {
-    uint16 mte_var_07 = E->mte_var_07;
-    E->mte_var_07 = mte_var_07 + 0x2000;
-    E->mte_var_04 += __CFADD__uint16(mte_var_07, 0x2000);
-  }
+  if ((int16)(Get_MaridiaTurtle(0)->mte_var_04 - g_word_A28D66) < 0)
+    AddToHiLo(&E->mte_var_04, &E->mte_var_07, 0x2000);
   if (Enemy_MoveDown(k, INT16_SHL16(E->mte_var_04))) {
-    uint16 v4 = addr_kMaridiaBeybladeTurtle_Ilist_8C4A;
-    if ((E->mte_var_E & 0x8000) == 0)
-      v4 = addr_kMaridiaBeybladeTurtle_Ilist_8D28;
-    E->base.current_instruction = v4;
+    E->base.current_instruction = (E->mte_var_E & 0x8000) == 0 ?
+        addr_kMaridiaBeybladeTurtle_Ilist_8D28 : addr_kMaridiaBeybladeTurtle_Ilist_8C4A;
     E->base.instruction_timer = 1;
     E->mte_var_A = addr_locret_A28E09;
   }
@@ -1137,15 +1124,8 @@ void SpikeShootingPlant_Main(void) {  // 0xA29FB3
 
 void SpikeShootingPlant_2(uint16 k) {  // 0xA29FBA
   Enemy_SpikeShootingPlant *E = Get_SpikeShootingPlant(cur_enemy_index);
-  uint16 x_subpos = E->base.x_subpos;
-  bool v2 = __CFADD__uint16(E->sspt_var_C, x_subpos);
-  uint16 v3 = E->sspt_var_C + x_subpos;
-  if (v2)
-    ++E->base.x_pos;
-  E->base.x_subpos = v3;
-  uint16 v4 = E->sspt_var_D + E->base.x_pos;
-  E->base.x_pos = v4;
-  if ((int16)(v4 - E->sspt_var_00) < 0) {
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->sspt_var_D, E->sspt_var_C));
+  if ((int16)(E->base.x_pos - E->sspt_var_00) < 0) {
     E->sspt_var_F = FUNC16(SpikeShootingPlant_3);
     E->sspt_var_E = 1;
   }
@@ -1154,15 +1134,8 @@ void SpikeShootingPlant_2(uint16 k) {  // 0xA29FBA
 
 void SpikeShootingPlant_3(uint16 k) {  // 0xA29FEC
   Enemy_SpikeShootingPlant *E = Get_SpikeShootingPlant(cur_enemy_index);
-  uint16 x_subpos = E->base.x_subpos;
-  bool v2 = __CFADD__uint16(E->sspt_var_A, x_subpos);
-  uint16 v3 = E->sspt_var_A + x_subpos;
-  if (v2)
-    ++E->base.x_pos;
-  E->base.x_subpos = v3;
-  uint16 v4 = E->sspt_var_B + E->base.x_pos;
-  E->base.x_pos = v4;
-  if ((int16)(v4 - E->sspt_var_01) >= 0) {
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->sspt_var_B, E->sspt_var_A));
+  if ((int16)(E->base.x_pos - E->sspt_var_01) >= 0) {
     E->sspt_var_F = FUNC16(SpikeShootingPlant_2);
     E->sspt_var_E = 0;
   }
@@ -1275,30 +1248,16 @@ void MaridiaSpikeyShell_2(void) {  // 0xA2A49D
 
 void MaridiaSpikeyShell_3(void) {  // 0xA2A4B0
   Enemy_MaridiaSpikeyShell *E = Get_MaridiaSpikeyShell(cur_enemy_index);
-  uint16 x_subpos = E->base.x_subpos;
-  bool v3 = __CFADD__uint16(E->mssl_var_C, x_subpos);
-  uint16 v4 = E->mssl_var_C + x_subpos;
-  if (v3)
-    ++E->base.x_pos;
-  E->base.x_subpos = v4;
-  uint16 v5 = E->mssl_var_D + E->base.x_pos;
-  E->base.x_pos = v5;
-  if ((int16)(v5 - E->mssl_var_01) < 0)
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->mssl_var_D, E->mssl_var_C));
+  if ((int16)(E->base.x_pos - E->mssl_var_01) < 0)
     --E->mssl_var_E;
   MaridiaSpikeyShell_8(cur_enemy_index);
 }
 
 void MaridiaSpikeyShell_4(void) {  // 0xA2A4D9
   Enemy_MaridiaSpikeyShell *E = Get_MaridiaSpikeyShell(cur_enemy_index);
-  uint16 x_subpos = E->base.x_subpos;
-  bool v3 = __CFADD__uint16(E->mssl_var_A, x_subpos);
-  uint16 v4 = E->mssl_var_A + x_subpos;
-  if (v3)
-    ++E->base.x_pos;
-  E->base.x_subpos = v4;
-  uint16 v5 = E->mssl_var_B + E->base.x_pos;
-  E->base.x_pos = v5;
-  if ((int16)(v5 - E->mssl_var_02) >= 0)
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->mssl_var_B, E->mssl_var_A));
+  if ((int16)(E->base.x_pos - E->mssl_var_02) >= 0)
     E->mssl_var_E = 0;
   MaridiaSpikeyShell_8(cur_enemy_index);
 }
@@ -1452,57 +1411,30 @@ void GunshipTop_2(uint16 k) {  // 0xA2A7D8
 }
 
 void GunshipTop_3(uint16 k) {  // 0xA2A80C
-  bool v2; // cf
-  uint16 y_subpos;
-  uint16 v6;
-  uint16 v7;
-  uint16 v9;
-  uint16 v11;
-  uint16 v12;
-  uint16 v13;
-
-  Enemy_GunshipTop *GunshipTop = Get_GunshipTop(k);
-  if (sign16(GunshipTop->base.y_pos - 768)) {
-    v2 = __CFADD__uint16(samus_y_subpos, 0x8000);
-    samus_y_subpos += 0x8000;
-    samus_y_pos += v2 + 4;
+  Enemy_GunshipTop *E = Get_GunshipTop(k);
+  if (sign16(E->base.y_pos - 768)) {
+    AddToHiLo(&samus_y_pos, &samus_y_subpos, 0x48000);
     Enemy_GunshipTop *v3 = Get_GunshipTop(k + 128);
-    y_subpos = v3->base.y_subpos;
-    v3->base.y_subpos = y_subpos + 0x8000;
-    v3->base.y_pos += __CFADD__uint16(y_subpos, 0x8000) + 4;
+    AddToHiLo(&v3->base.y_pos, &v3->base.y_subpos, 0x48000);
     Enemy_GunshipTop *v5 = Get_GunshipTop(k + 64);
-    v6 = v5->base.y_subpos;
-    v5->base.y_subpos = v6 + 0x8000;
-    v5->base.y_pos += __CFADD__uint16(v6, 0x8000) + 4;
-    v7 = GunshipTop->base.y_subpos;
-    GunshipTop->base.y_subpos = v7 + 0x8000;
-    GunshipTop->base.y_pos += __CFADD__uint16(v7, 0x8000) + 4;
+    AddToHiLo(&v5->base.y_pos, &v5->base.y_subpos, 0x48000);
+    AddToHiLo(&E->base.y_pos, &E->base.y_subpos, 0x48000);
   } else {
-    v2 = __CFADD__uint16(samus_y_subpos, 0x8000);
-    samus_y_subpos += 0x8000;
-    samus_y_pos += v2 + 2;
+    AddToHiLo(&samus_y_pos, &samus_y_subpos, 0x28000);
     Enemy_GunshipTop *v8 = Get_GunshipTop(k + 128);
-    v9 = v8->base.y_subpos;
-    v8->base.y_subpos = v9 + 0x8000;
-    v8->base.y_pos += __CFADD__uint16(v9, 0x8000) + 2;
+    AddToHiLo(&v8->base.y_pos, &v8->base.y_subpos, 0x28000);
     Enemy_GunshipTop *v10 = Get_GunshipTop(k + 64);
-    v11 = v10->base.y_subpos;
-    v10->base.y_subpos = v11 + 0x8000;
-    v10->base.y_pos += __CFADD__uint16(v11, 0x8000) + 2;
-    v12 = GunshipTop->base.y_subpos;
-    GunshipTop->base.y_subpos = v12 + 0x8000;
-    v13 = __CFADD__uint16(v12, 0x8000) + GunshipTop->base.y_pos + 2;
-    GunshipTop->base.y_pos = v13;
-    if (!sign16(v13 - 1119)) {
-      GunshipTop->base.y_pos = 1119;
+    AddToHiLo(&v10->base.y_pos, &v10->base.y_subpos, 0x28000);
+    AddToHiLo(&E->base.y_pos, &E->base.y_subpos, 0x28000);
+    if (!sign16(E->base.y_pos - 1119)) {
+      E->base.y_pos = 1119;
       v10->base.y_pos = 1159;
-      v8->base.y_pos = GunshipTop->base.y_pos - 1;
-      GunshipTop->gtp_var_F = FUNC16(GunshipTop_4);
-      GunshipTop->gtp_var_E = 0;
+      v8->base.y_pos = E->base.y_pos - 1;
+      E->gtp_var_F = FUNC16(GunshipTop_4);
+      E->gtp_var_E = 0;
     }
   }
 }
-
 
 void GunshipTop_4(uint16 k) {  // 0xA2A8D0
   int v2;
@@ -3127,18 +3059,13 @@ void HirisingSlowfalling_Init(void) {  // 0xA2DF76
 }
 
 void HirisingSlowfalling_Func_2(uint16 k, uint16 r18) {  // 0xA2DFE9
-  uint16 r20 = 0;
-  uint16 r22 = 0;
+  uint32 v = 0;
   uint16 r24 = 0;
   do {
     r24 += 512;
-    int v1 = (8 * ((r24 & 0xFF00) >> 8)) >> 1;
-    uint16 v2 = kCommonEnemySpeeds_Quadratic[v1] + r20;
-    if (__CFADD__uint16(kCommonEnemySpeeds_Quadratic[v1], r20))
-      ++r22;
-    r20 = v2;
-    r22 += kCommonEnemySpeeds_Quadratic[v1 + 1];
-  } while (sign16(r22 - r18));
+    int v1 = 4 * (r24 >> 8);
+    v += __PAIR32__(kCommonEnemySpeeds_Quadratic[v1 + 1], kCommonEnemySpeeds_Quadratic[v1]);
+  } while (sign16((v >> 16) - r18));
   Get_HirisingSlowfalling(k)->hsg_var_06 = r24;
 }
 
@@ -3173,10 +3100,8 @@ void HirisingSlowfalling_Func_4(void) {  // 0xA2E035
 }
 
 void HirisingSlowfalling_Func_5(void) {  // 0xA2E04F
-  int16 v1;
-
   Enemy_HirisingSlowfalling *E = Get_HirisingSlowfalling(cur_enemy_index);
-  v1 = E->hsg_var_07 - 1;
+  int16 v1 = E->hsg_var_07 - 1;
   E->hsg_var_07 = v1;
   if (v1 < 0) {
     HirisingSlowfalling_Func_3(addr_kHirisingSlowfalling_Ilist_D834);
@@ -3185,26 +3110,14 @@ void HirisingSlowfalling_Func_5(void) {  // 0xA2E04F
 }
 
 void HirisingSlowfalling_Func_6(void) {  // 0xA2E06A
-  int16 v5;
-
   Enemy_HirisingSlowfalling *E = Get_HirisingSlowfalling(cur_enemy_index);
-  uint16 y_subpos = E->base.y_subpos;
-  int v2 = (8 * HIBYTE(E->hsg_var_B)) >> 1;
-  bool v3 = __CFADD__uint16(kCommonEnemySpeeds_Quadratic[v2 + 2], y_subpos);
-  uint16 v4 = kCommonEnemySpeeds_Quadratic[v2 + 2] + y_subpos;
-  if (v3)
-    ++E->base.y_pos;
-  E->base.y_subpos = v4;
-  E->base.y_pos += kCommonEnemySpeeds_Quadratic[v2 + 3];
-  v5 = E->hsg_var_B - 512;
+  int v2 = 4 * HIBYTE(E->hsg_var_B);
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 3], kCommonEnemySpeeds_Quadratic[v2 + 2]));
+  int16 v5 = E->hsg_var_B - 512;
   E->hsg_var_B = v5;
   if (v5 < 0) {
-    uint16 hsg_var_02 = E->hsg_var_02;
-    E->base.x_pos = hsg_var_02;
-    E->hsg_var_04 = hsg_var_02;
-    uint16 hsg_var_03 = E->hsg_var_03;
-    E->base.y_pos = hsg_var_03;
-    E->hsg_var_05 = hsg_var_03;
+    E->base.x_pos = E->hsg_var_04 = E->hsg_var_02;
+    E->base.y_pos = E->hsg_var_05 = E->hsg_var_03;
     E->hsg_var_C = 0;
     E->hsg_var_D = LOBYTE(E->hsg_parameter_1) - 1;
     HirisingSlowfalling_Func_3(addr_kHirisingSlowfalling_Ilist_D840);
@@ -3648,10 +3561,7 @@ void TimedShutter_Func_5(uint16 k) {  // 0xA2EB11
 
 void TimedShutter_Func_6(void) {  // 0xA2EB25
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
-  uint16 y_subpos = E->base.y_subpos;
-  bool v2 = __CFADD__uint16(E->tsr_var_01, y_subpos);
-  E->base.y_subpos = E->tsr_var_01 + y_subpos;
-  E->base.y_pos += E->tsr_var_00 + v2;
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->tsr_var_00, E->tsr_var_01));
   if ((int16)(E->tsr_var_B + 16 - E->base.y_pos) < 0) {
     E->base.y_pos = E->tsr_var_B + 9;
     ++E->tsr_var_F;
@@ -3663,10 +3573,7 @@ void TimedShutter_Func_6(void) {  // 0xA2EB25
 
 void TimedShutter_Func_7(void) {  // 0xA2EB66
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
-  uint16 y_subpos = E->base.y_subpos;
-  bool v2 = __CFADD__uint16(E->tsr_var_01, y_subpos);
-  E->base.y_subpos = E->tsr_var_01 + y_subpos;
-  E->base.y_pos += E->tsr_var_00 + v2;
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->tsr_var_00, E->tsr_var_01));
   if ((int16)(E->tsr_var_C + 16 - E->base.y_pos) < 0) {
     E->base.y_pos = E->tsr_var_C + 9;
     ++E->tsr_var_F;
@@ -3678,10 +3585,7 @@ void TimedShutter_Func_7(void) {  // 0xA2EB66
 
 void TimedShutter_Func_8(void) {  // 0xA2EBA7
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
-  uint16 y_subpos = E->base.y_subpos;
-  bool v2 = __CFADD__uint16(E->tsr_var_01, y_subpos);
-  E->base.y_subpos = E->tsr_var_01 + y_subpos;
-  E->base.y_pos += E->tsr_var_00 + v2;
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->tsr_var_00, E->tsr_var_01));
   if ((int16)(E->tsr_var_D + 16 - E->base.y_pos) < 0) {
     E->base.y_pos = E->tsr_var_D + 9;
     ++E->tsr_var_F;
@@ -3693,10 +3597,7 @@ void TimedShutter_Func_8(void) {  // 0xA2EBA7
 
 void TimedShutter_Func_9(void) {  // 0xA2EBE8
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
-  uint16 y_subpos = E->base.y_subpos;
-  bool v2 = __CFADD__uint16(E->tsr_var_01, y_subpos);
-  E->base.y_subpos = E->tsr_var_01 + y_subpos;
-  E->base.y_pos += E->tsr_var_00 + v2;
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->tsr_var_00, E->tsr_var_01));
   uint16 v3 = E->tsr_var_E + 16;
   if ((int16)(v3 - E->base.y_pos) < 0) {
     E->base.y_pos = v3;
@@ -3717,28 +3618,21 @@ static Func_V *const off_A2EC3A[5] = {  // 0xA2EC13
 };
 
 void TimedShutter_Func_10(uint16 k) {
-  int16 v4;
-
   Enemy_TimedShutter *E = Get_TimedShutter(k);
   E->tsr_var_40 = E->base.y_pos;
   uint16 v2 = 2 * E->tsr_var_F;
   off_A2EC3A[v2 >> 1]();
   if (CheckIfEnemyTouchesSamus(k)) {
-    v4 = E->base.y_pos - E->tsr_var_40;
+    int16 v4 = E->base.y_pos - E->tsr_var_40;
     if (v4 < 0)
       extra_samus_y_displacement += v4;
   }
 }
 
 void TimedShutter_Func_11(void) {  // 0xA2EC45
-  int16 v3;
-
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
-  uint16 y_subpos = E->base.y_subpos;
-  bool v2 = y_subpos < E->tsr_var_01;
-  E->base.y_subpos = y_subpos - E->tsr_var_01;
-  E->base.y_pos -= v2 + E->tsr_var_00;
-  v3 = E->tsr_var_B - 16;
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -(int32)__PAIR32__(E->tsr_var_00, E->tsr_var_01));
+  int16 v3 = E->tsr_var_B - 16;
   if ((int16)(v3 - E->base.y_pos) >= 0) {
     E->base.y_pos = v3 + 7;
     ++E->tsr_var_F;
@@ -3749,14 +3643,9 @@ void TimedShutter_Func_11(void) {  // 0xA2EC45
 }
 
 void TimedShutter_Func_12(void) {  // 0xA2EC86
-  int16 v3;
-
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
-  uint16 y_subpos = E->base.y_subpos;
-  bool v2 = y_subpos < E->tsr_var_01;
-  E->base.y_subpos = y_subpos - E->tsr_var_01;
-  E->base.y_pos -= v2 + E->tsr_var_00;
-  v3 = E->tsr_var_C - 16;
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -(int32)__PAIR32__(E->tsr_var_00, E->tsr_var_01));
+  int16 v3 = E->tsr_var_C - 16;
   if ((int16)(v3 - E->base.y_pos) >= 0) {
     E->base.y_pos = v3 + 7;
     ++E->tsr_var_F;
@@ -3767,14 +3656,9 @@ void TimedShutter_Func_12(void) {  // 0xA2EC86
 }
 
 void TimedShutter_Func_13(void) {  // 0xA2ECC7
-  int16 v3;
-
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
-  uint16 y_subpos = E->base.y_subpos;
-  bool v2 = y_subpos < E->tsr_var_01;
-  E->base.y_subpos = y_subpos - E->tsr_var_01;
-  E->base.y_pos -= v2 + E->tsr_var_00;
-  v3 = E->tsr_var_D - 16;
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -(int32)__PAIR32__(E->tsr_var_00, E->tsr_var_01));
+  int16 v3 = E->tsr_var_D - 16;
   if ((int16)(v3 - E->base.y_pos) >= 0) {
     E->base.y_pos = v3 + 7;
     ++E->tsr_var_F;
@@ -3786,10 +3670,7 @@ void TimedShutter_Func_13(void) {  // 0xA2ECC7
 
 void TimedShutter_Func_14(void) {  // 0xA2ED08
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
-  uint16 y_subpos = E->base.y_subpos;
-  bool v2 = y_subpos < E->tsr_var_01;
-  E->base.y_subpos = y_subpos - E->tsr_var_01;
-  E->base.y_pos -= v2 + E->tsr_var_00;
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -(int32)__PAIR32__(E->tsr_var_00, E->tsr_var_01));
   uint16 v3 = E->tsr_var_E - 16;
   if ((int16)(v3 - E->base.y_pos) >= 0) {
     E->base.y_pos = v3;
@@ -3936,13 +3817,7 @@ void RisingFallingPlatform_Func_9(void) {  // 0xA2EF68
   E->rfpm_var_0A = 0;
   if (CheckIfEnemyTouchesSamus(cur_enemy_index))
     E->rfpm_var_0A = 1;
-  uint16 y_subpos = E->base.y_subpos;
-  bool v3 = __CFADD__uint16(E->rfpm_var_E, y_subpos);
-  uint16 v4 = E->rfpm_var_E + y_subpos;
-  if (v3)
-    ++E->base.y_pos;
-  E->base.y_subpos = v4;
-  E->base.y_pos += E->rfpm_var_F;
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->rfpm_var_F, E->rfpm_var_E));
   if (E->rfpm_var_0A)
     extra_samus_y_displacement = E->base.y_pos - E->rfpm_var_0E;
   if ((int16)(E->rfpm_var_0F - E->base.y_pos) >= 0) {
@@ -3961,13 +3836,7 @@ void RisingFallingPlatform_Func_10(void) {  // 0xA2EFD4
   E->rfpm_var_0A = 0;
   if (CheckIfEnemyTouchesSamus(cur_enemy_index))
     E->rfpm_var_0A = 1;
-  uint16 y_subpos = E->base.y_subpos;
-  bool v3 = __CFADD__uint16(E->rfpm_var_C, y_subpos);
-  uint16 v4 = E->rfpm_var_C + y_subpos;
-  if (v3)
-    ++E->base.y_pos;
-  E->base.y_subpos = v4;
-  E->base.y_pos += E->rfpm_var_D;
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->rfpm_var_D, E->rfpm_var_C));
   if (E->rfpm_var_0A)
     extra_samus_y_displacement = E->base.y_pos - E->rfpm_var_0E;
   if ((int16)(E->base.y_pos - E->rfpm_var_10) >= 0) {
@@ -4147,10 +4016,7 @@ void HorizontalShootableShutter_Func_8(void) {  // 0xA2F272
   E->rfpm_var_13 = 0;
   if (EnemyFunc_AC67(cur_enemy_index) && (int16)(samus_x_pos - E->base.x_pos) < 0)
     E->rfpm_var_13 = 1;
-  uint16 x_subpos = E->base.x_subpos;
-  bool v3 = __CFADD__uint16(E->rfpm_var_E, x_subpos);
-  E->base.x_subpos = E->rfpm_var_E + x_subpos;
-  E->base.x_pos += E->rfpm_var_F + v3;
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->rfpm_var_F, E->rfpm_var_E));
   if (E->rfpm_var_13) {
     extra_samus_x_subdisplacement = E->rfpm_var_E;
     extra_samus_x_displacement = E->rfpm_var_F;
@@ -4172,10 +4038,7 @@ void HorizontalShootableShutter_Func_9(void) {  // 0xA2F2E4
   E->rfpm_var_13 = 0;
   if (EnemyFunc_AC67(cur_enemy_index) && (int16)(samus_x_pos - E->base.x_pos) >= 0)
     E->rfpm_var_13 = 1;
-  uint16 x_subpos = E->base.x_subpos;
-  bool v3 = __CFADD__uint16(E->rfpm_var_C, x_subpos);
-  E->base.x_subpos = E->rfpm_var_C + x_subpos;
-  E->base.x_pos += E->rfpm_var_D + v3;
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->rfpm_var_D, E->rfpm_var_C));
   if (E->rfpm_var_13) {
     extra_samus_x_subdisplacement = E->rfpm_var_C;
     extra_samus_x_displacement = E->rfpm_var_D;

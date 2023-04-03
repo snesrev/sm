@@ -1460,10 +1460,8 @@ LABEL_24:
       goto LABEL_26;
     }
   }
-  bool v0;
-  v0 = __CFADD__uint16(kSamus_HandleExtraRunspeedX_Tab1[0], samus_x_extra_run_subspeed);
-  samus_x_extra_run_subspeed += kSamus_HandleExtraRunspeedX_Tab1[0];
-  samus_x_extra_run_speed += kSamus_HandleExtraRunspeedX_Tab0[0] + v0;
+  AddToHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed,
+      __PAIR32__(kSamus_HandleExtraRunspeedX_Tab0[0], kSamus_HandleExtraRunspeedX_Tab1[0]));
 LABEL_26:
   if ((speed_boost_counter & 0xFF00) == 1024)
     samus_contact_damage_index = 1;
@@ -1625,76 +1623,54 @@ LABEL_11:;
   samus_y_dir = 1;
 }
 
+static bool IsGreaterThanQuirked(uint16 vhi, uint16 vlo, uint16 cmphi, uint16 cmplo) {
+  if ((int16)(vhi - cmphi) >= 0) {
+    if (vhi != cmphi || ((int16)(vlo - cmplo) >= 0) && vlo != cmplo)
+      return true;
+  }
+  return false;
+}
+
 int32 Samus_CalcBaseSpeed_X(uint16 k) {  // 0x909A7E
   SamusSpeedTableEntry *sste = get_SamusSpeedTableEntry(k);
-  uint16 r18, r20;
-
   if (samus_x_accel_mode) {
-    if (samus_x_decel_mult) {
-      r20 = Mult8x8(samus_x_decel_mult, HIBYTE(sste->decel_sub));
-      r18 = Mult8x8(samus_x_decel_mult, sste->decel) >> 8;
-    } else {
-      r20 = sste->decel_sub;
-      r18 = sste->decel;
-    }
-    int16 v8 = (__PAIR32__(samus_x_base_speed, samus_x_base_subspeed) - __PAIR32__(r18, r20)) >> 16;
-    samus_x_base_subspeed -= r20;
-    samus_x_base_speed = v8;
-    if (v8 < 0) {
+    int32 delta = samus_x_decel_mult ?
+        __PAIR32__(Mult8x8(samus_x_decel_mult, sste->decel) >> 8, Mult8x8(samus_x_decel_mult, HIBYTE(sste->decel_sub))) :
+        __PAIR32__(sste->decel, sste->decel_sub);
+    AddToHiLo(&samus_x_base_speed, &samus_x_base_subspeed, -delta);
+    if ((int16)samus_x_base_speed < 0) {
       samus_x_base_speed = 0;
       samus_x_base_subspeed = 0;
       samus_x_accel_mode = 0;
     }
   } else {
-    bool v2 = __CFADD__uint16(sste->accel_sub, samus_x_base_subspeed);
-    samus_x_base_subspeed += sste->accel_sub;
-    uint16 v3 = sste->accel + v2 + samus_x_base_speed;
-    samus_x_base_speed = v3;
-    if ((int16)(v3 - sste->max_speed) >= 0) {
-      if (v3 != sste->max_speed
-          || ((int16)(samus_x_base_subspeed - sste->max_speed_sub) >= 0)
-          && samus_x_base_subspeed != sste->max_speed_sub) {
-        samus_x_base_speed = sste->max_speed;
-        samus_x_base_subspeed = sste->max_speed_sub;
-      }
+    AddToHiLo(&samus_x_base_speed, &samus_x_base_subspeed, __PAIR32__(sste->accel, sste->accel_sub));
+    if (IsGreaterThanQuirked(samus_x_base_speed, samus_x_base_subspeed, sste->max_speed, sste->max_speed_sub)) {
+      samus_x_base_speed = sste->max_speed;
+      samus_x_base_subspeed = sste->max_speed_sub;
     }
   }
   return __PAIR32__(samus_x_base_speed, samus_x_base_subspeed);
 }
 
 static Pair_Bool_Amt Samus_CalcBaseSpeed_NoDecel_X(uint16 k) {  // 0x909B1F
-  uint16 r18, r20;
   SamusSpeedTableEntry *sste = get_SamusSpeedTableEntry(k);
-
   if ((samus_x_accel_mode & 1) != 0) {
-    if (samus_x_decel_mult) {
-      r20 = Mult8x8(samus_x_decel_mult, HIBYTE(sste->decel_sub));
-      r18 = Mult8x8(samus_x_decel_mult, sste->decel) >> 8;
-    } else {
-      r20 = sste->decel_sub;
-      r18 = sste->decel;
-    }
-    int16 v8 = (__PAIR32__(samus_x_base_speed, samus_x_base_subspeed) - __PAIR32__(r18, r20)) >> 16;
-    samus_x_base_subspeed -= r20;
-    samus_x_base_speed = v8;
-    if (v8 < 0) {
+    int32 delta = samus_x_decel_mult ?
+      __PAIR32__(Mult8x8(samus_x_decel_mult, sste->decel) >> 8, Mult8x8(samus_x_decel_mult, HIBYTE(sste->decel_sub))) :
+      __PAIR32__(sste->decel, sste->decel_sub);
+    AddToHiLo(&samus_x_base_speed, &samus_x_base_subspeed, -delta);
+    if ((int16)samus_x_base_speed < 0) {
       samus_x_base_speed = 0;
       samus_x_base_subspeed = 0;
       samus_x_accel_mode = 0;
     }
   } else {
-    bool v2 = __CFADD__uint16(sste->accel_sub, samus_x_base_subspeed);
-    samus_x_base_subspeed += sste->accel_sub;
-    uint16 v3 = sste->accel + v2 + samus_x_base_speed;
-    samus_x_base_speed = v3;
-    if ((int16)(v3 - sste->max_speed) >= 0) {
-      if (v3 != sste->max_speed
-          || ((int16)(samus_x_base_subspeed - sste->max_speed_sub) >= 0)
-          && samus_x_base_subspeed != sste->max_speed_sub) {
-        samus_x_base_speed = sste->max_speed;
-        samus_x_base_subspeed = sste->max_speed_sub;
-        return (Pair_Bool_Amt) { true, __PAIR32__(samus_x_base_speed, samus_x_base_subspeed) };
-      }
+    AddToHiLo(&samus_x_base_speed, &samus_x_base_subspeed, __PAIR32__(sste->accel, sste->accel_sub));
+    if (IsGreaterThanQuirked(samus_x_base_speed, samus_x_base_subspeed, sste->max_speed, sste->max_speed_sub)) {
+      samus_x_base_speed = sste->max_speed;
+      samus_x_base_subspeed = sste->max_speed_sub;
+      return (Pair_Bool_Amt) { true, __PAIR32__(samus_x_base_speed, samus_x_base_subspeed) };
     }
   }
   return (Pair_Bool_Amt) { false, __PAIR32__(samus_x_base_speed, samus_x_base_subspeed) };
@@ -5046,66 +5022,32 @@ void ProjPreInstr_SpreadBomb(uint16 k) {  // 0x90D8F7
   }
   Bomb_Func2();
   if (projectile_variables[v1]) {
-    uint16 v2 = projectile_timers[v1];
-    bool v3 = __CFADD__uint16(samus_y_subaccel, v2);
-    projectile_timers[v1] = samus_y_subaccel + v2;
-    projectile_bomb_y_speed[v1] += samus_y_accel + v3;
-    uint16 v4 = projectile_bomb_y_subpos[v1];
-    v3 = __CFADD__uint16(projectile_timers[v1], v4);
-    projectile_bomb_y_subpos[v1] = projectile_timers[v1] + v4;
-    projectile_y_pos[v1] += projectile_bomb_y_speed[v1] + v3;
+    AddToHiLo(&projectile_bomb_y_speed[v1], &projectile_timers[v1], __PAIR32__(samus_y_accel, samus_y_subaccel));
+    AddToHiLo(&projectile_y_pos[v1], &projectile_bomb_y_subpos[v1], __PAIR32__(projectile_bomb_y_speed[v1], projectile_timers[v1]));
     if (BlockCollSpreadBomb(k) & 1) {
-      uint16 v5 = projectile_index - 10;
-      int v6 = projectile_index >> 1;
-      uint16 v7 = projectile_bomb_y_subpos[v6];
-      v3 = v7 < projectile_timers[v6];
-      projectile_bomb_y_subpos[v6] = v7 - projectile_timers[v6];
-      projectile_y_pos[v6] -= v3 + projectile_bomb_y_speed[v6];
-      if ((projectile_bomb_y_speed[v6] & 0x8000) != 0) {
-        projectile_bomb_y_speed[v6] = 0;
-        projectile_y_radius[v6] = 0;
+      AddToHiLo(&projectile_y_pos[v1], &projectile_bomb_y_subpos[v1], -(int32)__PAIR32__(projectile_bomb_y_speed[v1], projectile_timers[v1]));
+      if ((projectile_bomb_y_speed[v1] & 0x8000) != 0) {
+        projectile_bomb_y_speed[v1] = 0;
+        projectile_y_radius[v1] = 0;
       } else {
-        projectile_timers[v6] = kBombSpread_Tab3[v5 >> 1];
-        projectile_bomb_y_speed[v6] = projectile_unk_A[v6];
+        projectile_timers[v1] = kBombSpread_Tab3[v1 - 5];
+        projectile_bomb_y_speed[v1] = projectile_unk_A[v1];
       }
       return;
     }
-    k = projectile_index;
-    int v8 = projectile_index >> 1;
-    uint16 t = projectile_bomb_x_speed[v8];
-    uint16 r20 = t << 8;
-    uint16 r18 = t >> 8;
-    if (t & 0x8000) {
-      r18 = r18 & 0x7F;
-      uint16 v11 = projectile_bomb_x_subpos[v8];
-      v3 = v11 < r20;
-      projectile_bomb_x_subpos[v8] = v11 - r20;
-      projectile_x_pos[v8] -= v3 + r18;
-    } else {
-      uint16 v10 = projectile_bomb_x_subpos[v8];
-      v3 = __CFADD__uint16(r20, v10);
-      projectile_bomb_x_subpos[v8] = r20 + v10;
-      projectile_x_pos[v8] += r18 + v3;
-    }
+    uint16 t = projectile_bomb_x_speed[v1];
+    if (t & 0x8000)
+      AddToHiLo(&projectile_x_pos[v1], &projectile_bomb_x_subpos[v1], -INT16_SHL8(t & 0x7fff));
+    else
+      AddToHiLo(&projectile_x_pos[v1], &projectile_bomb_x_subpos[v1], INT16_SHL8(t));
   }
   if (BlockCollSpreadBomb(k) & 1) {
-    int v12 = projectile_index >> 1;
-    uint16 t = projectile_bomb_x_speed[v12];
-    uint16 r20 = t << 8;
-    uint16 r18 = (t >> 8) & 0x7F;
-    if (t & 0x8000) {
-      projectile_bomb_x_speed[v12] = t | 0x8000;
-      uint16 v16 = projectile_bomb_x_subpos[v12];
-      bool v3 = v16 < r20;
-      projectile_bomb_x_subpos[v12] = v16 - r20;
-      projectile_x_pos[v12] -= v3 + r18;
-    } else {
-      projectile_bomb_x_speed[v12] = t & 0x7FFF;
-      uint16 v14 = projectile_bomb_x_subpos[v12];
-      bool v3 = __CFADD__uint16(r20, v14);
-      projectile_bomb_x_subpos[v12] = r20 + v14;
-      projectile_x_pos[v12] += r18 + v3;
-    }
+    uint16 t = projectile_bomb_x_speed[v1];
+    projectile_bomb_x_speed[v1] ^= 0x8000;
+    if (!(t & 0x8000))
+      AddToHiLo(&projectile_x_pos[v1], &projectile_bomb_x_subpos[v1], -INT16_SHL8(t));
+    else
+      AddToHiLo(&projectile_x_pos[v1], &projectile_bomb_x_subpos[v1], INT16_SHL8(t & 0x7fff));
   }
 }
 
@@ -5130,40 +5072,27 @@ void ProjPreInstr_WaveSba(uint16 k) {  // 0x90DA08
     SpawnProjectileTrail(k);
     k = projectile_index;
   }
-  int v4 = k >> 1;
-  if ((int16)(samus_x_pos - projectile_x_pos[v4]) < 0) {
-    if (!sign16(projectile_bomb_x_speed[v4] + 2047))
-      projectile_bomb_x_speed[v4] -= 64;
-  } else if (sign16(projectile_bomb_x_speed[v4] - 2048)) {
-    projectile_bomb_x_speed[v4] += 64;
+  if ((int16)(samus_x_pos - projectile_x_pos[v1]) < 0) {
+    if (!sign16(projectile_bomb_x_speed[v1] + 2047))
+      projectile_bomb_x_speed[v1] -= 64;
+  } else if (sign16(projectile_bomb_x_speed[v1] - 2048)) {
+    projectile_bomb_x_speed[v1] += 64;
   }
-  uint16 v5 = swap16(projectile_bomb_x_speed[v4]);
-  uint16 r20 = v5 & 0xFF00;
-  uint16 r18 = (int8)v5;
-  uint16 v6 = projectile_bomb_x_subpos[v4];
-  bool v7 = __CFADD__uint16(r20, v6);
-  projectile_bomb_x_subpos[v4] = r20 + v6;
-  projectile_x_pos[v4] += r18 + v7;
-  if ((int16)(samus_y_pos - projectile_y_pos[v4]) < 0) {
-    if (!sign16(projectile_variables[v4] + 2047))
-      projectile_variables[v4] -= 64;
-  } else if (sign16(projectile_variables[v4] - 2048)) {
-    projectile_variables[v4] += 64;
+  AddToHiLo(&projectile_x_pos[v1], &projectile_bomb_x_subpos[v1], INT16_SHL8(projectile_bomb_x_speed[v1]));
+
+  if ((int16)(samus_y_pos - projectile_y_pos[v1]) < 0) {
+    if (!sign16(projectile_variables[v1] + 2047))
+      projectile_variables[v1] -= 64;
+  } else if (sign16(projectile_variables[v1] - 2048)) {
+    projectile_variables[v1] += 64;
   }
-  uint16 v8 = swap16(projectile_variables[v4]);
-  r20 = v8 & 0xFF00;
-  r18 = (int8)v8;
-  uint16 v9 = projectile_bomb_y_subpos[v4];
-  v7 = __CFADD__uint16(r20, v9);
-  projectile_bomb_y_subpos[v4] = r20 + v9;
-  projectile_y_pos[v4] += r18 + v7;
+  AddToHiLo(&projectile_y_pos[v1], &projectile_bomb_y_subpos[v1], INT16_SHL8(projectile_variables[v1]));
   if (k == 6) {
     if ((projectile_bomb_x_speed[3] & 0x8000) != 0) {
       if ((R34 & 0x8000) == 0)
-        LABEL_26:
-      QueueSfx1_Max6(0x28);
+        QueueSfx1_Max6(0x28);
     } else if ((R34 & 0x8000) != 0) {
-      goto LABEL_26;
+      QueueSfx1_Max6(0x28);
     }
   }
   cooldown_timer = 2;
@@ -5989,68 +5918,11 @@ int32 Samus_CalcDisplacementMoveRight(int32 amt) {  // 0x90E4AD
   return Samus_ClampSpeed(amt);
 }
 
-int32 Samus_CalcSpeed_X(int32 amt) {  // 0x90E4E6
-  uint16 r18 = amt >> 16, r20 = amt;
-  uint16 v0 = samus_x_speed_divisor;
-  if (!sign16(samus_x_speed_divisor - 5))
-    v0 = 4;
-  switch (v0) {
-  case 0: {
-    bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, r20);
-    r20 += samus_x_extra_run_subspeed;
-    samus_total_x_subspeed = r20;
-    r18 += samus_x_extra_run_speed + v2;
-    samus_total_x_speed = r18;
-    break;
-  }
-  case 1: {
-    bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, r20);
-    r20 += samus_x_extra_run_subspeed;
-    uint16 t = samus_x_extra_run_speed + v2 + r18;
-    uint16 v3 = swap16(swap16(t) >> 1);
-    r18 = (uint8)v3;
-    samus_total_x_speed = (uint8)v3;
-    r20 = (v3 & 0xFF00) + (r20 >> 1);
-    samus_total_x_subspeed = r20;
-    break;
-  }
-  case 2: {
-    bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, r20);
-    r20 += samus_x_extra_run_subspeed;
-    uint16 t = samus_x_extra_run_speed + v2 + r18;
-    uint16 v5 = swap16(swap16(t) >> 2);
-    r18 = (uint8)v5;
-    samus_total_x_speed = (uint8)v5;
-    r20 = (v5 & 0xFF00) + (r20 >> 2);
-    samus_total_x_subspeed = r20;
-    break;
-  }
-  case 3: {
-    bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, r20);
-    r20 += samus_x_extra_run_subspeed;
-    uint16 t = samus_x_extra_run_speed + v2 + r18;
-    uint16 v7 = swap16(swap16(t) >> 3);
-    r18 = (uint8)v7;
-    samus_total_x_speed = (uint8)v7;
-    r20 = (v7 & 0xFF00) + (r20 >> 3);
-    samus_total_x_subspeed = r20;
-    break;
-  }
-  case 4: {
-    bool v2 = __CFADD__uint16(samus_x_extra_run_subspeed, r20);
-    r20 += samus_x_extra_run_subspeed;
-    uint16 t = samus_x_extra_run_speed + v2 + r18;
-    uint16 v9 = swap16(swap16(t) >> 4);
-    r18 = (uint8)v9;
-    samus_total_x_speed = (uint8)v9;
-    r20 = (v9 & 0xFF00) + (r20 >> 4);
-    samus_total_x_subspeed = r20;
-    break;
-  }
-  default:
-    Unreachable();
-  }
-  return r18 << 16 | r20;
+uint32 Samus_CalcSpeed_X(uint32 amt) {  // 0x90E4E6
+  amt += __PAIR32__(samus_x_extra_run_speed, samus_x_extra_run_subspeed);
+  amt >>= (samus_x_speed_divisor <= 4) ? samus_x_speed_divisor : 4;
+  SetHiLo(&samus_total_x_speed, &samus_total_x_subspeed, amt);
+  return amt;
 }
 
 void Samus_ClearXSpeedIfColl(void) {  // 0x90E5CE

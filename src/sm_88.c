@@ -658,16 +658,9 @@ void HdmaobjPreInstr_XrayFunc0_NoBeam(uint16 k) {  // 0x888732
 }
 
 void HdmaobjPreInstr_XrayFunc1_BeamWidening(uint16 k) {  // 0x888754
-  uint32 v1; // kr00_4
-
   if ((button_config_run_b & joypad1_lastkeys) != 0) {
-    v1 = __PAIR32__(demo_input_instr_timer, demo_input_instr_ptr) + 2048;
-    demo_input_instr_timer = v1 >> 16;
-    demo_input_instr_ptr = v1;
-
-    bool v2 = __CFADD__uint16((uint16)v1, demo_input_new);
-    demo_input_new += v1;
-    demo_input += demo_input_instr_timer + v2;
+    AddToHiLo(&demo_input_instr_timer, &demo_input_instr_ptr, 2048);
+    AddToHiLo(&demo_input, &demo_input_new, __PAIR32__(demo_input_instr_timer, demo_input_instr_ptr));
     if (!sign16(demo_input - 11)) {
       demo_input_new = 0;
       demo_input = 10;
@@ -1194,7 +1187,7 @@ void HdmaobjPreInstr_PowerBombExplode_ExplosionWhite(uint16 k) {  // 0x888EB2
     hdma_object_timers[v3] = 0;
     hdma_object_D[v3] = 32;
   }
-  if (!__CFADD__uint16(power_bomb_pre_explosion_radius_speed, power_bomb_explosion_radius)) {
+  if (power_bomb_pre_explosion_radius_speed + power_bomb_explosion_radius < 0x10000) {
     power_bomb_explosion_radius += power_bomb_pre_explosion_radius_speed;
     power_bomb_pre_explosion_radius_speed += kPowerBombExplosionRadiusAccel;
   }
@@ -1280,7 +1273,7 @@ void HdmaobjPreInstr_PowerBombExplode_PreExplosionYellow(uint16 k) {  // 0x8891A
     hdma_object_instruction_list_pointers[k >> 1] += 2;
     hdma_object_timers[k >> 1] = 0;
   }
-  if (!__CFADD__uint16(power_bomb_pre_explosion_radius_speed, power_bomb_pre_explosion_flash_radius)) {
+  if (power_bomb_pre_explosion_radius_speed + power_bomb_pre_explosion_flash_radius < 0x10000) {
     power_bomb_pre_explosion_flash_radius += power_bomb_pre_explosion_radius_speed;
     power_bomb_pre_explosion_radius_speed -= kPowerBombPreExplosionRadiusAccel;
   }
@@ -1658,11 +1651,9 @@ void HdmaobjPreInstr_SkyLandBG2XscrollInner(uint16 k) {  // 0x88ADC2
   reg_BG2SC = 74;
   uint16 v1 = 0;
   do {
-    uint16 scroll_subspeed = kHdmaScrollEntrys[v1].scroll_subspeed;
-    uint8 *v3 = &g_ram[kHdmaScrollEntrys[v1].hdma_data_table_entry];
-    bool v4 = __CFADD__uint16(GET_WORD(v3), scroll_subspeed);
-    *(uint16 *)v3 += scroll_subspeed;
-    *((uint16 *)v3 + 1) += v4 + kHdmaScrollEntrys[v1++].scroll_speed;
+    uint16 *v3 = (uint16 *)&g_ram[kHdmaScrollEntrys[v1].hdma_data_table_entry];
+    AddToHiLo(&v3[1], &v3[0], __PAIR32__(kHdmaScrollEntrys[v1].scroll_speed, kHdmaScrollEntrys[v1].scroll_subspeed));
+    v1++;
   } while (sign16(v1 * 8 - 184));
   scrolling_sky_bg2_hdma_data[44] = 0;
   scrolling_sky_bg2_hdma_data[45] = 0;
@@ -2406,25 +2397,19 @@ void HdmaobjPreInstr_DC23(uint16 k) {  // 0x88DC23
 }
 
 void HdmaobjPreInstr_DC69(uint16 k) {  // 0x88DC69
-  uint16 v0 = k;
-
   HandleEarthquakeSoundEffect();
   earthquake_type = 13;
   earthquake_timer |= 0x20;
   if (!time_is_frozen_flag) {
-    int v1 = (uint8)v0 >> 1;
-    uint16 v2 = hdma_object_A[v1];
-    hdma_object_A[v1] = v2 - 0x4000;
-    uint16 v3 = __CFADD__uint16(v2, -16384) + hdma_object_B[v1] - 1;
-    hdma_object_B[v1] = v3;
-    if (v3 == 0xFF10) {
+    int v1 = k >> 1;
+    AddToHiLo(&hdma_object_B[v1], &hdma_object_A[v1], -0x4000);
+    if (hdma_object_B[v1] == 0xFF10) {
       SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x06, 0x0c, 0xb773 });
       SetEventHappened(0xA);
-      int v4 = (uint8)v0 >> 1;
-      hdma_object_instruction_timers[v4] = 1;
-      hdma_object_instruction_list_pointers[v4] += 2;
+      hdma_object_instruction_timers[v1] = 1;
+      hdma_object_instruction_list_pointers[v1] += 2;
     }
-    sub_88DBCB(v0);
+    sub_88DBCB(k);
   }
 }
 
@@ -3095,18 +3080,12 @@ void sub_88E987(uint16 v0) {  // 0x88E987
 }
 
 void HdmaobjPreInstr_E9E6(uint16 k) {  // 0x88E9E6
-  unsigned int v1; // kr00_4
+  int v2 = k >> 1;
 
   fx_layer_blending_config_c = 16;
-  v1 = __PAIR32__(g_word_7E9080, g_word_7E9082) + 0x4000;
-  g_word_7E9080 = (__PAIR32__(g_word_7E9080, g_word_7E9082) + 0x4000) >> 16;
-  g_word_7E9082 = v1;
-  int v2 = k >> 1;
-  uint16 v3 = hdma_object_D[v2];
-  hdma_object_D[v2] = v1 + v3;
-  uint16 v4 = g_word_7E9080 + __CFADD__uint16((uint16)v1, v3) + hdma_object_C[v2];
-  hdma_object_C[v2] = v4;
-  if (!sign16(v4 - 4)) {
+  AddToHiLo(&g_word_7E9080, &g_word_7E9082, 0x4000);
+  AddToHiLo(&hdma_object_C[v2], &hdma_object_D[v2], __PAIR32__(g_word_7E9080, g_word_7E9082));
+  if (!sign16(hdma_object_C[v2] - 4)) {
     hdma_object_C[v2] = 4;
     int v5 = hdma_object_index >> 1;
     hdma_object_instruction_list_pointers[v5] += 2;

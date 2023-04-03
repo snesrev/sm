@@ -216,8 +216,7 @@ void Draygon_Func_5(void) {  // 0xA58817
     }
   }
   uint32 t = EnemyFunc_Divide(varE26 >> 2, Abs16(E->draygon_var_00 - samus_x_pos) << 16);
-  E->draygon_var_D = t >> 16;
-  E->draygon_var_E = t;
+  SetHiLo(&E->draygon_var_D, &E->draygon_var_E, t);
   uint16 v6 = varE26;
   *(uint16 *)((uint8 *)&g_word_7E9002 + varE26) = E->base.y_pos;
   E->draygon_var_B = v6;
@@ -237,10 +236,7 @@ void Draygon_Func_6(void) {  // 0xA588B1
   Get_Draygon(cur_enemy_index)->base.y_pos = *(uint16 *)((uint8 *)&g_word_7E9002 + draygon_var_B);
   E->draygon_var_B -= 4;
   if (E->draygon_var_B) {
-    uint16 x_subpos = E->base.x_subpos;
-    bool v6 = __CFADD__uint16(E->draygon_var_E, x_subpos);
-    E->base.x_subpos = E->draygon_var_E + x_subpos;
-    E->base.x_pos += E->draygon_var_D + v6;
+    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->draygon_var_D, E->draygon_var_E));
   } else {
     E->draygon_var_A = FUNC16(Draygon_Func_8);
   }
@@ -260,8 +256,7 @@ void Draygon_Func_8(void) {  // 0xA58922
   Draygon_Func_3();
   Enemy_Draygon *E = Get_Draygon(0);
   uint32 t = EnemyFunc_Divide(E->draygon_var_C >> 2, (672 - E->base.x_pos) << 16);
-  E->draygon_var_D = t >> 16;
-  E->draygon_var_E = t;
+  SetHiLo(&E->draygon_var_D, &E->draygon_var_E, t);
   E->draygon_var_A = FUNC16(Draygon_Func_9);
 }
 
@@ -283,10 +278,7 @@ void Draygon_Func_9(void) {  // 0xA58951
     else
       E->draygon_var_A = FUNC16(Draygon_Func_18);
   } else {
-    uint16 x_subpos = E->base.x_subpos;
-    bool v5 = __CFADD__uint16(E->draygon_var_E, x_subpos);
-    E->base.x_subpos = E->draygon_var_E + x_subpos;
-    E->base.x_pos += E->draygon_var_D + v5;
+    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->draygon_var_D, E->draygon_var_E));
   }
 }
 
@@ -296,8 +288,7 @@ void Draygon_Func_10(void) {  // 0xA589B3
   printf("Wtf is varE26?\n");
   uint16 varE26 = 0; // Wtf is varE26
   uint32 t = EnemyFunc_Divide(varE26 >> 2, Abs16(E->draygon_var_02 - samus_x_pos) << 16);
-  E->draygon_var_D = t >> 16;
-  E->draygon_var_E = t;
+  SetHiLo(&E->draygon_var_D, &E->draygon_var_E, t);
   E->draygon_var_A = FUNC16(Draygon_Func_11);
   E->base.current_instruction = addr_kDraygon_Ilist_97BB;
   E->base.instruction_timer = 1;
@@ -318,10 +309,7 @@ void Draygon_Func_11(void) {  // 0xA58A00
   Get_Draygon(cur_enemy_index)->base.y_pos = *(uint16 *)((uint8 *)&g_word_7E9002 + draygon_var_B);
   E->draygon_var_B -= 4;
   if (E->draygon_var_B) {
-    uint16 x_subpos = E->base.x_subpos;
-    bool v6 = x_subpos < E->draygon_var_E;
-    E->base.x_subpos = x_subpos - E->draygon_var_E;
-    E->base.x_pos -= v6 + E->draygon_var_D;
+    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -(int32)__PAIR32__(E->draygon_var_D, E->draygon_var_E));
   } else {
     E->draygon_var_A = FUNC16(Draygon_Func_12);
   }
@@ -347,10 +335,8 @@ void Draygon_Func_13(void) {  // 0xA58A90
     E3->base.instruction_timer = 1;
   }
   Get_Draygon(cur_enemy_index)->base.y_pos = *(uint16 *)((uint8 *)&g_word_7E9002 + draygon_var_B);
-  ++E->draygon_var_B;
-  ++E->draygon_var_B;
-  ++E->draygon_var_B;
-  if (++E->draygon_var_B == E->draygon_var_C) {
+  E->draygon_var_B += 4;
+  if (E->draygon_var_B == E->draygon_var_C) {
     if ((random_number & 1) != 0) {
       E->draygon_var_A = FUNC16(Draygon_Func_4);
       E->draygon_var_B = 0;
@@ -361,10 +347,7 @@ void Draygon_Func_13(void) {  // 0xA58A90
       E->base.x_pos = E->draygon_var_00;
     }
   } else {
-    uint16 x_subpos = E->base.x_subpos;
-    bool v6 = x_subpos < E->draygon_var_E;
-    E->base.x_subpos = x_subpos - E->draygon_var_E;
-    E->base.x_pos -= v6 + E->draygon_var_D;
+    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -(int32)__PAIR32__(E->draygon_var_D, E->draygon_var_E));
   }
 }
 
@@ -396,16 +379,12 @@ void Draygon_Func_15(void) {  // 0xA58B52
   } else {
     E->base.y_pos = CosineMult8bit(E->draygon_var_0D, 32) + 384;
     E->draygon_var_0D = (uint8)(E->draygon_var_0D + 1);
-    uint16 x_subpos = E->base.x_subpos;
-    bool v4 = __CFADD__uint16(E->draygon_var_E, x_subpos);
-    E->base.x_subpos = E->draygon_var_E + x_subpos;
-    E->base.x_pos += E->draygon_var_D + v4;
+    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->draygon_var_D, E->draygon_var_E));
   }
 }
 
 void Draygon_Func_16(void) {  // 0xA58BAE
   Enemy_Draygon *E = Get_Draygon(0);
-  int16 v5;
 
   Draygon_Func_3();
   if (samus_x_speed_divisor)
@@ -420,14 +399,8 @@ void Draygon_Func_16(void) {  // 0xA58BAE
   }
   E->base.y_pos = CosineMult8bit(E->draygon_var_0D, 32) + 384;
   E->draygon_var_0D = (uint8)(E->draygon_var_0D + 1);
-  uint16 x_subpos;
-  x_subpos = E->base.x_subpos;
-  bool v4;
-  v4 = __CFADD__uint16(E->draygon_var_E, x_subpos);
-  E->base.x_subpos = E->draygon_var_E + x_subpos;
-  v5 = E->draygon_var_D + v4 + E->base.x_pos;
-  E->base.x_pos = v5;
-  if (v5 >= 0 && !sign16(v5 - 672)) {
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->draygon_var_D, E->draygon_var_E));
+  if ((int16)E->base.x_pos >= 0 && !sign16(E->base.x_pos - 672)) {
 LABEL_8:
     if (!samus_x_speed_divisor) {
       Enemy_Draygon *E3 = Get_Draygon(0xC0);
@@ -442,18 +415,12 @@ LABEL_9:
 }
 
 void Draygon_Func_17(uint16 k) {  // 0xA58C33
-  int16 v4;
-
   Draygon_Func_35();
   Enemy_Draygon *E = Get_Draygon(0);
   E->base.y_pos = CosineMult8bit(E->draygon_var_0D, 32) + 384;
   E->draygon_var_0D = (uint8)(E->draygon_var_0D + 1);
-  uint16 x_subpos = E->base.x_subpos;
-  bool v3 = __CFADD__uint16(E->draygon_var_E, x_subpos);
-  E->base.x_subpos = E->draygon_var_E + x_subpos;
-  v4 = E->draygon_var_D + v3 + E->base.x_pos;
-  E->base.x_pos = v4;
-  if (v4 >= 0 && !sign16(v4 - 672)) {
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->draygon_var_D, E->draygon_var_E));
+  if ((int16)E->base.x_pos >= 0 && !sign16(E->base.x_pos - 672)) {
     E->draygon_var_A = FUNC16(Draygon_Func_10);
     E->base.x_pos = 592;
     E->base.y_pos = -80;
@@ -488,17 +455,12 @@ void Draygon_Func_19(void) {  // 0xA58CD4
   } else {
     E->base.y_pos = CosineMult8bit(E->draygon_var_0D, 32) + 384;
     E->draygon_var_0D = (uint8)(E->draygon_var_0D + 1);
-    uint16 x_subpos = E->base.x_subpos;
-    bool v4 = x_subpos < E->draygon_var_E;
-    E->base.x_subpos = x_subpos - E->draygon_var_E;
-    E->base.x_pos -= v4 + E->draygon_var_D;
+    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -(int32)__PAIR32__(E->draygon_var_D, E->draygon_var_E));
   }
 }
 
 void Draygon_Func_20(void) {  // 0xA58D30
   Enemy_Draygon *E = Get_Draygon(0);
-  int16 v5;
-
   if (samus_x_speed_divisor)
     goto LABEL_9;
   if ((random_number & 0xF) == 0) {
@@ -511,14 +473,8 @@ void Draygon_Func_20(void) {  // 0xA58D30
   }
   E->base.y_pos = CosineMult8bit(E->draygon_var_0D, 32) + 384;
   E->draygon_var_0D = (uint8)(E->draygon_var_0D + 1);
-  uint16 x_subpos;
-  x_subpos = E->base.x_subpos;
-  bool v4;
-  v4 = x_subpos < E->draygon_var_E;
-  E->base.x_subpos = x_subpos - E->draygon_var_E;
-  v5 = E->base.x_pos - (v4 + E->draygon_var_D);
-  E->base.x_pos = v5;
-  if (v5 < 0 && sign16(v5 + 80)) {
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -(int32)__PAIR32__(E->draygon_var_D, E->draygon_var_E));
+  if ((int32)E->base.x_pos < 0 && sign16(E->base.x_pos + 80)) {
 LABEL_8:
     if (!samus_x_speed_divisor) {
       Enemy_Draygon *E3 = Get_Draygon(0xC0);
@@ -534,26 +490,18 @@ LABEL_9:
 
 void Draygon_Func_21(uint16 k) {  // 0xA58DB2
   Enemy_Draygon *E = Get_Draygon(0);
-  int16 v4;
-
   Draygon_Func_35();
   if (samus_x_speed_divisor) {
     E->draygon_var_A = FUNC16(Draygon_Func_22);
   } else {
     E->base.y_pos = CosineMult8bit(E->draygon_var_0D, 32) + 384;
     E->draygon_var_0D = (uint8)(E->draygon_var_0D + 1);
-    uint16 x_subpos = E->base.x_subpos;
-    bool v3 = x_subpos < E->draygon_var_E;
-    E->base.x_subpos = x_subpos - E->draygon_var_E;
-    v4 = E->base.x_pos - (v3 + E->draygon_var_D);
-    E->base.x_pos = v4;
-    if (v4 < 0) {
-      if (sign16(v4 + 80)) {
-        E->draygon_var_A = FUNC16(Draygon_Func_4);
-        E->base.x_pos = -80;
-        E->base.y_pos = -80;
-        E->draygon_var_B = E->draygon_var_C;
-      }
+    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -(int32)__PAIR32__(E->draygon_var_D, E->draygon_var_E));
+    if ((int16)E->base.x_pos < 0 && sign16(E->base.x_pos + 80)) {
+      E->draygon_var_A = FUNC16(Draygon_Func_4);
+      E->base.x_pos = -80;
+      E->base.y_pos = -80;
+      E->draygon_var_B = E->draygon_var_C;
     }
   }
 }
@@ -646,12 +594,9 @@ void Draygon_Func_25(uint16 k) {  // 0xA58FD6
       uint16 y = E->base.y_pos - 16;
       CreateSpriteAtPos(x, y, 61, 0);
     }
-    uint16 draygon_var_09 = E->draygon_var_09;
-    E->draygon_var_09 = draygon_var_09 + 0x2000;
-    uint16 v5 = __CFADD__uint16(draygon_var_09, 0x2000) + E->draygon_var_05;
-    E->draygon_var_05 = v5;
+    AddToHiLo(&E->draygon_var_05, &E->draygon_var_09, 0x2000);
     uint16 draygon_var_0A, v8;
-    if (!sign16(v5 - 160)
+    if (!sign16(E->draygon_var_05 - 160)
         || (v6 = E->draygon_var_0B - 1,
             E->draygon_var_0B = v6,
             E->draygon_var_08 = (uint8)(LOBYTE(E->draygon_var_08) + HIBYTE(v6)),
@@ -1148,31 +1093,15 @@ void Draygon_Func_42(uint16 varE24) {  // 0xA59FE0
   for (int i = 20; i >= 0; i -= 4) {
     int v2 = i >> 1;
     int v3 = v0 >> 1;
-    uint16 v4 = sprite_x_subpos[v3], v6;
-    if (((g_word_A5A1DF[v2] + 64) & 0x80) != 0) {
-      bool v5 = __CFADD__uint16(g_word_A5A1AF[v2], v4);
-      sprite_x_subpos[v3] = g_word_A5A1AF[v2] + v4;
-      v6 = v5 + sprite_x_pos[v3];
-      sprite_x_pos[v3] = v6;
-    } else {
-      bool v5 = v4 < g_word_A5A1AF[v2];
-      sprite_x_subpos[v3] = v4 - g_word_A5A1AF[v2];
-      v6 = sprite_x_pos[v3] - (v5 + varE24);
-      sprite_x_pos[v3] = v6;
-    }
-    int v7 = v0 >> 1;
-    uint16 v8 = sprite_y_subpos[v7], v9;
-    if (((g_word_A5A1DF[v2] + 128) & 0x80) != 0) {
-      bool v5 = __CFADD__uint16(g_word_A5A1AF[v2 + 1], v8);
-      sprite_y_subpos[v7] = g_word_A5A1AF[v2 + 1] + v8;
-      v9 = v5 + sprite_y_pos[v7];
-      sprite_y_pos[v7] = v9;
-    } else {
-      bool v5 = v8 < g_word_A5A1AF[v2 + 1];
-      sprite_y_subpos[v7] = v8 - g_word_A5A1AF[v2 + 1];
-      v9 = sprite_y_pos[v7] - v5;
-      sprite_y_pos[v7] = v9;
-    }
+    if (((g_word_A5A1DF[v2] + 64) & 0x80) != 0)
+      AddToHiLo(&sprite_x_pos[v3], &sprite_x_subpos[v3], g_word_A5A1AF[v2]);
+    else
+      AddToHiLo(&sprite_x_pos[v3], &sprite_x_subpos[v3], -g_word_A5A1AF[v2] - (varE24 << 16));
+    uint16 v8 = sprite_y_subpos[v3];
+    if (((g_word_A5A1DF[v2] + 128) & 0x80) != 0)
+      AddToHiLo(&sprite_y_pos[v3], &sprite_y_subpos[v3], g_word_A5A1AF[v2 + 1]);
+    else
+      AddToHiLo(&sprite_y_pos[v3], &sprite_y_subpos[v3], -g_word_A5A1AF[v2 + 1]);
     v0 -= 2;
   }
 }

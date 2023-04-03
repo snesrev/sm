@@ -328,38 +328,20 @@ void Boulder_Func_6(void) {  // 0xA689FC
 
 void Boulder_Func_7(uint16 j) {  // 0xA68A00
   Enemy_Boulder *E = Get_Boulder(cur_enemy_index);
-  uint16 x_subpos = E->base.x_subpos;
   int v3 = j >> 1;
-  bool v4 = __CFADD__uint16(kCommonEnemySpeeds_Quadratic[v3], x_subpos);
-  uint16 v5 = kCommonEnemySpeeds_Quadratic[v3] + x_subpos;
-  if (v4)
-    ++E->base.x_pos;
-  E->base.x_subpos = v5;
-  E->base.x_pos += kCommonEnemySpeeds_Quadratic[v3 + 1];
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(kCommonEnemySpeeds_Quadratic[v3 + 1], kCommonEnemySpeeds_Quadratic[v3]));
 }
 
 void Boulder_Func_8(uint16 j) {  // 0xA68A1D
   Enemy_Boulder *E = Get_Boulder(cur_enemy_index);
-  uint16 x_subpos = E->base.x_subpos;
   int v3 = j >> 1;
-  bool v4 = __CFADD__uint16(kCommonEnemySpeeds_Linear[v3 + 1], x_subpos);
-  uint16 v5 = kCommonEnemySpeeds_Linear[v3 + 1] + x_subpos;
-  if (v4)
-    ++E->base.x_pos;
-  E->base.x_subpos = v5;
-  E->base.x_pos += kCommonEnemySpeeds_Linear[v3];
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(kCommonEnemySpeeds_Linear[v3 + 1], kCommonEnemySpeeds_Linear[v3]));
 }
 
 void Boulder_Func_9(uint16 j) {  // 0xA68A3A
   Enemy_Boulder *E = Get_Boulder(cur_enemy_index);
-  uint16 y_subpos = E->base.y_subpos;
   int v3 = j >> 1;
-  bool v4 = __CFADD__uint16(kCommonEnemySpeeds_Quadratic[v3], y_subpos);
-  uint16 v5 = kCommonEnemySpeeds_Quadratic[v3] + y_subpos;
-  if (v4)
-    ++E->base.y_pos;
-  E->base.y_subpos = v5;
-  E->base.y_pos += kCommonEnemySpeeds_Quadratic[v3 + 1];
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Quadratic[v3 + 1], kCommonEnemySpeeds_Quadratic[v3]));
 }
 
 
@@ -827,10 +809,7 @@ void NuclearWaffle_Func_2(void) {  // 0xA69682
   E->base.y_pos = E->nwe_var_27 + SineMult8bit(v5, E->nwe_var_D);
   NuclearWaffle_Func_3(varE32);
   NuclearWaffle_Func_4(varE32);
-  uint16 nwe_var_20 = E->nwe_var_20;
-  bool v7 = __CFADD__uint16(E->nwe_var_24, nwe_var_20);
-  E->nwe_var_20 = E->nwe_var_24 + nwe_var_20;
-  E->nwe_var_21 += E->nwe_var_25 + v7;
+  AddToHiLo(&E->nwe_var_21, &E->nwe_var_20, __PAIR32__(E->nwe_var_25, E->nwe_var_24));
 }
 
 void NuclearWaffle_Func_3(uint16 varE32) {  // 0xA69721

@@ -335,11 +335,8 @@ void Fireflea_Main(void) {  // 0xA38DEE
     E->base.y_pos = E->ffa_var_F + SineMult8bit(HIBYTE(E->ffa_var_D), E->ffa_var_C);
     E->ffa_var_D += *(uint16 *)((uint8 *)&E->ffa_var_A + 1);
   } else {
-    uint16 y_subpos = E->base.y_subpos;
     int v2 = E->ffa_var_02 >> 1;
-    bool v3 = __CFADD__uint16(kCommonEnemySpeeds_Linear[v2 + 1], y_subpos);
-    E->base.y_subpos = kCommonEnemySpeeds_Linear[v2 + 1] + y_subpos;
-    E->base.y_pos += kCommonEnemySpeeds_Linear[v2] + v3;
+    AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Linear[v2], kCommonEnemySpeeds_Linear[v2 + 1]));
     if ((int16)(E->base.y_pos - E->ffa_var_00) < 0
         || (int16)(E->base.y_pos - E->ffa_var_01) >= 0) {
       E->ffa_var_02 ^= 4;
@@ -531,19 +528,13 @@ void Elevator_Func_1(void) {  // 0xA39548
 
 void Elevator_Func_2(void) {  // 0xA39579
   Enemy_Elevator *E = Get_Elevator(cur_enemy_index);
-  uint16 v2;
   if (E->elevat_parameter_1) {
     elevator_direction = 0x8000;
-    uint16 y_subpos = E->base.y_subpos;
-    E->base.y_subpos = y_subpos + 0x8000;
-    v2 = (__PAIR32__(E->base.y_pos, y_subpos) - 98304) >> 16;
+    AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -0x18000);
   } else {
     elevator_direction = 0;
-    uint16 v1 = E->base.y_subpos;
-    E->base.y_subpos = v1 + 0x8000;
-    v2 = __CFADD__uint16(v1, 0x8000) + E->base.y_pos + 1;
+    AddToHiLo(&E->base.y_pos, &E->base.y_subpos, 0x18000);
   }
-  E->base.y_pos = v2;
   Elevator_Func_4();
 }
 
@@ -555,24 +546,17 @@ void Elevator_Func_3(void) {  // 0xA395B9
 void Elevator_Func3b(void) {  // 0xA395BC
   Enemy_Elevator *E = Get_Elevator(cur_enemy_index);
   if (E->elevat_parameter_1) {
-    uint16 y_subpos;
-    y_subpos = E->base.y_subpos;
-    E->base.y_subpos = y_subpos + 0x8000;
-    uint16 v2;
-    v2 = __CFADD__uint16(y_subpos, 0x8000) + E->base.y_pos + 1;
-    E->base.y_pos = v2;
-    if (v2 < E->elevat_var_A) {
-LABEL_3:
+    AddToHiLo(&E->base.y_pos, &E->base.y_subpos, 0x18000);
+    if (E->base.y_pos < E->elevat_var_A) {
       Elevator_Func_4();
       return;
     }
   } else {
-    uint16 v3 = E->base.y_subpos;
-    E->base.y_subpos = v3 + 0x8000;
-    uint16 v4 = (__PAIR32__(E->base.y_pos, v3) - 98304) >> 16;
-    E->base.y_pos = v4;
-    if (v4 >= E->elevat_var_A)
-      goto LABEL_3;
+    AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -0x18000);
+    if (E->base.y_pos >= E->elevat_var_A) {
+      Elevator_Func_4();
+      return;
+    }
   }
   elevator_status = 0;
   elevator_flags = 0;
@@ -1078,56 +1062,20 @@ void Roach_Func_29(uint16 k) {  // 0xA3A578
 
 void Roach_Func_30(uint16 k) {  // 0xA3A5A3
   Enemy_Roach *E = Get_Roach(k);
-  E->base.x_pos += E->roach_var_05;
-  uint16 x_subpos = E->base.x_subpos;
-  bool v3 = __CFADD__uint16(E->roach_var_04, x_subpos);
-  uint16 v4 = E->roach_var_04 + x_subpos;
-  if (v3)
-    ++E->base.x_pos;
-  E->base.x_subpos = v4;
-  E->base.y_pos += E->roach_var_07;
-  uint16 y_subpos = E->base.y_subpos;
-  v3 = __CFADD__uint16(E->roach_var_06, y_subpos);
-  uint16 v6 = E->roach_var_06 + y_subpos;
-  if (v3)
-    ++E->base.y_pos;
-  E->base.y_subpos = v6;
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->roach_var_05, E->roach_var_04));
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->roach_var_07, E->roach_var_06));
 }
 
 void Roach_Func_31(uint16 k) {  // 0xA3A5DA
   Enemy_Roach *E = Get_Roach(k);
-  E->base.x_pos += E->roach_var_09;
-  uint16 x_subpos = E->base.x_subpos;
-  bool v3 = __CFADD__uint16(E->roach_var_08, x_subpos);
-  uint16 v4 = E->roach_var_08 + x_subpos;
-  if (v3)
-    ++E->base.x_pos;
-  E->base.x_subpos = v4;
-  E->base.y_pos += E->roach_var_0B;
-  uint16 y_subpos = E->base.y_subpos;
-  v3 = __CFADD__uint16(E->roach_var_0A, y_subpos);
-  uint16 v6 = E->roach_var_0A + y_subpos;
-  if (v3)
-    ++E->base.y_pos;
-  E->base.y_subpos = v6;
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->roach_var_09, E->roach_var_08));
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->roach_var_0B, E->roach_var_0A));
 }
 
 void Roach_Func_32(uint16 k) {  // 0xA3A611
   Enemy_Roach *E = Get_Roach(k);
-  E->base.x_pos += E->roach_var_0D;
-  uint16 x_subpos = E->base.x_subpos;
-  bool v3 = __CFADD__uint16(E->roach_var_0C, x_subpos);
-  uint16 v4 = E->roach_var_0C + x_subpos;
-  if (v3)
-    ++E->base.x_pos;
-  E->base.x_subpos = v4;
-  E->base.y_pos += E->roach_var_0F;
-  uint16 y_subpos = E->base.y_subpos;
-  v3 = __CFADD__uint16(E->roach_var_0E, y_subpos);
-  uint16 v6 = E->roach_var_0E + y_subpos;
-  if (v3)
-    ++E->base.y_pos;
-  E->base.y_subpos = v6;
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->roach_var_0D, E->roach_var_0C));
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->roach_var_0F, E->roach_var_0E));
 }
 
 void Roach_Func_33(uint16 k) {  // 0xA3A648
@@ -1154,19 +1102,11 @@ void Mochtroid_Main(void) {  // 0xA3A790
 }
 
 void Mochtroid_Func_1(void) {  // 0xA3A7AA
-  int16 v4;
-  int16 v5;
-  int16 v9;
-  int16 v10;
+  int16 v5, v10;
 
   Enemy_Mochtroid *E = Get_Mochtroid(cur_enemy_index);
-  uint32 t = INT16_SHL8((int16)(E->base.y_pos - samus_y_pos) >> 2);
-  uint16 r18 = t, r20 = t >> 16;
-  uint16 mochtr_var_C = E->mochtr_var_C;
-  bool v3 = mochtr_var_C < r18;
-  E->mochtr_var_C = mochtr_var_C - r18;
-  v4 = E->mochtr_var_D - (v3 + r20);
-  E->mochtr_var_D = v4;
+  int32 t = INT16_SHL8((int16)(E->base.y_pos - samus_y_pos) >> 2);
+  AddToHiLo(&E->mochtr_var_D, &E->mochtr_var_C, -t);
   if ((int16)E->mochtr_var_D < 0) {
     if ((uint16)E->mochtr_var_D < 0xFFFD) {
       v5 = -3;
@@ -1183,12 +1123,7 @@ LABEL_8:
     E->mochtr_var_D = 0;
   }
   t = INT16_SHL8((int16)(E->base.x_pos - samus_x_pos) >> 2);
-  r18 = t, r20 = t >> 16;
-  uint16 mochtr_var_A = E->mochtr_var_A;
-  v3 = mochtr_var_A < r18;
-  E->mochtr_var_A = mochtr_var_A - r18;
-  v9 = E->mochtr_var_B - (v3 + r20);
-  E->mochtr_var_B = v9;
+  AddToHiLo(&E->mochtr_var_B, &E->mochtr_var_A, -t);
   if ((int16)E->mochtr_var_B < 0) {
     if ((uint16)E->mochtr_var_B < 0xFFFD) {
       v10 = -3;
@@ -2318,20 +2253,15 @@ void MaridiaSnail_Func_15(uint16 k) {  // 0xA3D1B3
       E->msl_var_20 = 1;
       QueueSfx2_Max3(0x70);
     } else {
-      uint16 r22, r24;
-      if ((E->msl_var_03 & 0x8000) != 0) {
-        r22 = 4096;
-        r24 = 0;
-      } else {
-        r22 = -4096;
-        r24 = -1;
-      }
-      uint16 msl_var_02 = E->msl_var_02;
-      bool v3 = __CFADD__uint16(r22, msl_var_02);
-      E->msl_var_02 = r22 + msl_var_02;
-      uint16 v4 = r24 + v3 + E->msl_var_03;
-      if (v4)
-        E->msl_var_03 = v4;
+      uint32 delta;
+      if ((E->msl_var_03 & 0x8000) != 0)
+        delta = 4096;
+      else
+        delta = -4096;
+      uint32 t = __PAIR32__(E->msl_var_03, E->msl_var_02) + delta;
+      E->msl_var_02 = t;
+      if (t >> 16)
+        E->msl_var_03 = (t >> 16);
     }
   }
   if (Enemy_MoveDown(k, __PAIR32__(E->msl_var_01, E->msl_var_00))) {
@@ -2364,11 +2294,10 @@ void MaridiaSnail_Func_15(uint16 k) {  // 0xA3D1B3
       E->msl_var_20 = 0;
     }
   } else {
-    uint16 msl_var_00 = E->msl_var_00;
-    E->msl_var_00 = msl_var_00 + 0x2000;
-    uint16 v6 = __CFADD__uint16(msl_var_00, 0x2000) + E->msl_var_01;
-    if (sign16(v6 - 4))
-      E->msl_var_01 = v6;
+    uint32 t = __PAIR32__(E->msl_var_01, E->msl_var_00) + 0x2000;
+    E->msl_var_00 = t;
+    if (sign16((t >> 16) - 4))
+      E->msl_var_01 = (t >> 16);
   }
 }
 
@@ -2782,11 +2711,8 @@ void FireZoomer_Func_2(uint16 k) {  // 0xA3E785
     E->fzr_var_04 = 0;
     E->fzr_var_F = E->fzr_var_03;
   } else {
-    if (sign16(E->fzr_var_02 - 4)) {
-      uint16 fzr_var_01 = E->fzr_var_01;
-      E->fzr_var_01 = fzr_var_01 + 0x8000;
-      E->fzr_var_02 += __CFADD__uint16(fzr_var_01, 0x8000);
-    }
+    if (sign16(E->fzr_var_02 - 4))
+      AddToHiLo(&E->fzr_var_02, &E->fzr_var_01, 0x8000);
     if (!E->fzr_var_01 && !E->fzr_var_02)
       E->fzr_var_F = FUNC16(FireZoomer_Func_1);
   }

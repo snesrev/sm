@@ -254,7 +254,27 @@ static const  uint32 kPatchedCarrys[] = {
 
   0x90BC75,
   0x90BC93,
+
+  0xA8A459,
+  0xA8A45F,
+  0xA8A465,
+  0xA8A46B,
+
+  0xA8A477,
+  0xA8A47D,
+  0xA8A483,
+  0xA8A489,
+
+
+  0xA8a543,
+  0xA8a54f,
+  0xA8a55b,
+  0xA8a567,
+  0xA8a573,
+  0xA8a57f,
+  0xA8a58b,
 };
+
 static uint8 kPatchedCarrysOrg[arraysize(kPatchedCarrys)];
 
 uint32 PatchBugs(uint32 mode, uint32 addr) {

@@ -269,21 +269,9 @@ void MiniDraygon_Func_5(void) {  // 0xA88933
     MiniDraygon_Func_1();
   Enemy_MiniDraygon *E = Get_MiniDraygon(cur_enemy_index);
   if (E->mdn_var_00) {
-    E->base.y_pos += E->mdn_var_04;
-    uint16 y_subpos = E->base.y_subpos;
-    bool v3 = __CFADD__uint16(E->mdn_var_03, y_subpos);
-    uint16 v6 = E->mdn_var_03 + y_subpos;
-    if (v3)
-      ++E->base.y_pos;
-    E->base.y_subpos = v6;
+    AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->mdn_var_04, E->mdn_var_03));
   } else {
-    E->base.y_pos += E->mdn_var_06;
-    uint16 v2 = E->base.y_subpos;
-    bool v3 = __CFADD__uint16(E->mdn_var_05, v2);
-    uint16 v4 = E->mdn_var_05 + v2;
-    if (v3)
-      ++E->base.y_pos;
-    E->base.y_subpos = v4;
+    AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->mdn_var_06, E->mdn_var_05));
   }
   if ((--E->mdn_var_E & 0x8000) != 0) {
     E->mdn_var_E = HIBYTE(E->mdn_parameter_2);
@@ -332,20 +320,8 @@ void MiniDraygon_Func_8(void) {  // 0xA88A34
 void MiniDraygon_Func_9(void) {  // 0xA88A3B
   MiniDraygon_Func_11();
   Enemy_MiniDraygon *E = Get_MiniDraygon(cur_enemy_index);
-  E->base.x_pos += E->mdn_var_07;
-  uint16 x_subpos = E->base.x_subpos;
-  bool v3 = __CFADD__uint16(E->mdn_var_08, x_subpos);
-  uint16 v4 = E->mdn_var_08 + x_subpos;
-  if (v3)
-    ++E->base.x_pos;
-  E->base.x_subpos = v4;
-  E->base.y_pos += E->mdn_var_09;
-  uint16 y_subpos = E->base.y_subpos;
-  v3 = __CFADD__uint16(E->mdn_var_0A, y_subpos);
-  uint16 v6 = E->mdn_var_0A + y_subpos;
-  if (v3)
-    ++E->base.y_pos;
-  E->base.y_subpos = v6;
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->mdn_var_07, E->mdn_var_08));
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->mdn_var_09, E->mdn_var_0A));
 }
 
 void MiniDraygon_Func_10(void) {  // 0xA88A78
@@ -562,10 +538,8 @@ void Fune_Init(void) {  // 0xA896E3
     E->fune_var_A = addr_off_A896DF;
     E->fune_var_B = FUNC16(Fune_Func_2);
   }
-  if ((E->fune_parameter_1 & 0xF0) != 0) {
-    ++E->fune_var_A;
-    ++E->fune_var_A;
-  }
+  if ((E->fune_parameter_1 & 0xF0) != 0)
+    E->fune_var_A += 2;
   Fune_Func_4();
   E->fune_var_C = HIBYTE(E->fune_parameter_2);
   E->fune_var_F = HIBYTE(E->fune_parameter_1);
@@ -735,9 +709,10 @@ void WreckedShipGhost_Func_3(uint16 k) {  // 0xA89C31
     }
     E->wsgt_var_B = v5;
     E->wsgt_var_C = wsgt_var_C + 2;
-    if ((wsgt_var_C & 2) == 0)
-      LABEL_6:
-    E->base.properties &= ~kEnemyProps_Invisible;
+    if ((wsgt_var_C & 2) == 0) {
+LABEL_6:
+      E->base.properties &= ~kEnemyProps_Invisible;
+    }
   }
 }
 
@@ -752,25 +727,9 @@ void WreckedShipGhost_Func_4(uint16 k) {  // 0xA89C69
 
 void WreckedShipGhost_Func_5(uint16 k) {  // 0xA89C8A
   Enemy_WreckedShipGhost *E = Get_WreckedShipGhost(k);
-  uint16 y_subpos = E->base.y_subpos;
-  bool v3 = __CFADD__uint16(E->wsgt_var_01, y_subpos);
-  E->base.y_subpos = E->wsgt_var_01 + y_subpos;
-  E->base.y_pos += E->wsgt_var_02 + v3;
-  uint16 wsgt_var_01 = E->wsgt_var_01;
-  uint16 v5;
-  if ((int16)(E->base.y_pos - E->wsgt_var_00) < 0) {
-    v3 = __CFADD__uint16(g_word_A89AA0, wsgt_var_01);
-    E->wsgt_var_01 = g_word_A89AA0 + wsgt_var_01;
-    v5 = v3 + E->wsgt_var_02;
-  } else {
-    v3 = wsgt_var_01 < g_word_A89AA0;
-    E->wsgt_var_01 = wsgt_var_01 - g_word_A89AA0;
-    v5 = E->wsgt_var_02 - v3;
-  }
-  E->wsgt_var_02 = v5;
-  uint16 v6 = E->wsgt_var_B - 1;
-  E->wsgt_var_B = v6;
-  if (!v6) {
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->wsgt_var_02, E->wsgt_var_01));
+  AddToHiLo(&E->wsgt_var_02, &E->wsgt_var_01, ((int16)(E->base.y_pos - E->wsgt_var_00) < 0) ? g_word_A89AA0 : -g_word_A89AA0);
+  if (--E->wsgt_var_B == 0) {
     E->wsgt_var_A = FUNC16(WreckedShipGhost_Func_4);
     E->base.properties |= kEnemyProps_Tangible;
     // todo: this must be swap16 it seems
@@ -780,8 +739,7 @@ void WreckedShipGhost_Func_5(uint16 k) {  // 0xA89C8A
     do {
       target_palettes[v9 >> 1] = 0x7FFF;
       v9 += 2;
-      n--;
-    } while ((n & 0x8000) == 0);
+    } while ((--n & 0x8000) == 0);
   }
 }
 
@@ -811,19 +769,13 @@ void WreckedShipGhost_Func_7(uint16 k) {  // 0xA89D36
     E->wsgt_var_0D = g_word_A89A9E;
     v4 = 0;
     if ((int16)(samus_x_pos - E->wsgt_var_06) >= 0) {
-      if (samus_x_pos == E->wsgt_var_06)
-        v4 = 4;
-      else
-        v4 = 8;
+      v4 = (samus_x_pos == E->wsgt_var_06) ? 4 : 8;
     }
     if (v4 == E->wsgt_var_05) {
       v7 = 0;
       v9 = samus_y_pos - E->wsgt_var_0A;
       if (v9 >= 0) {
-        if (v9)
-          v7 = 24;
-        else
-          v7 = 12;
+        v7 = v9 ? 24 : 12;
       }
       if (v7 == E->wsgt_var_09) {
         uint16 v10 = E->wsgt_var_0E - 1;
@@ -895,7 +847,6 @@ uint16 WreckedShipGhost_Func_8(void) {  // 0xA89E88
             v8 = v7 - 32;
           else
             v8 = v7 + 32;
-          r18 = v8;
           palette_buffer[v4] = v8 | palette_buffer[v4] & 0xFC1F;
           ++v0;
         }
@@ -1109,57 +1060,19 @@ void YappingMaw_Func_7(void) {  // 0xA8A402
 }
 
 void YappingMaw_Func_8(void) {  // 0xA8A445
-  int16 v9;
-  int16 v11; // tt
-  int16 v13; // tt
-  int16 v16;
-  int16 v17; // tt
-  int16 v19;
-  int16 v20; // tt
-  int16 v22;
-  int16 v23; // tt
-  int16 v25;
-  int16 v26; // tt
-  int16 v28;
-  int16 v29; // tt
-  int16 v31;
-  int16 v32; // tt
-  uint16 v8;
-
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   uint16 r20 = E->ymw_var_B >> 2;
   if (E->ymw_var_2F) {
-    bool v3 = __CFADD__uint16(r20, 128);
-    v9 = r20 + 128;
-    E->ymw_var_21 = r20 + 128;
-    v11 = v3;
-    v3 = __CFADD__uint16(v3, v9);
-    uint16 v10 = v11 + v9;
-    v3 |= __CFADD__uint16(r20, v10);
-    v10 += r20;
-    E->ymw_var_22 = v10;
-    v13 = v3;
-    v3 = __CFADD__uint16(v3, v10);
-    uint16 v12 = v13 + v10;
-    v3 |= __CFADD__uint16(r20, v12);
-    v12 += r20;
-    E->ymw_var_23 = v12;
-    v8 = r20 + v3 + v12;
+    E->ymw_var_21 = 128 + r20;
+    E->ymw_var_22 = 128 + r20 * 2;
+    E->ymw_var_23 = 128 + r20 * 3;
+    E->ymw_var_24 = 128 + r20 * 4;
   } else {
-    uint16 v2 = 128 - r20;
-    bool v3 = r20 <= 0x80;
     E->ymw_var_21 = 128 - r20;
-    uint16 v5 = !v3 + r20;
-    v3 = v2 < v5;
-    uint16 v4 = v2 - v5;
-    E->ymw_var_22 = v4;
-    uint16 v7 = v3 + r20;
-    v3 = v4 < v7;
-    uint16 v6 = v4 - v7;
-    E->ymw_var_23 = v6;
-    v8 = v6 - (v3 + r20);
+    E->ymw_var_22 = 128 - r20 * 2;
+    E->ymw_var_23 = 128 - r20 * 3;
+    E->ymw_var_24 = 128 - r20 * 4;
   }
-  E->ymw_var_24 = v8;
   uint16 varE32 = E->ymw_var_09;
   E->ymw_var_00 = YappingMaw_Func_16(E->ymw_var_21, varE32) - E->ymw_var_0E;
   E->ymw_var_02 = YappingMaw_Func_16(E->ymw_var_22, varE32) - E->ymw_var_0E;
@@ -1174,46 +1087,14 @@ void YappingMaw_Func_8(void) {  // 0xA8A445
   YappingMaw_Func_5();
   YappingMaw_Func_6();
   YappingMaw_Func_7();
-  uint16 ymw_var_00 = E->ymw_var_00;
-  bool v3 = __CFADD__uint16(E->ymw_var_27, ymw_var_00);
-  E->ymw_var_00 = E->ymw_var_27 + ymw_var_00;
-  uint16 ymw_var_01 = E->ymw_var_01;
-  v17 = v3;
-  v3 = __CFADD__uint16(v3, ymw_var_01);
-  v16 = v17 + ymw_var_01;
-  v3 |= __CFADD__uint16(E->ymw_var_28, v16);
-  E->ymw_var_01 = E->ymw_var_28 + v16;
-  uint16 ymw_var_02 = E->ymw_var_02;
-  v20 = v3;
-  v3 = __CFADD__uint16(v3, ymw_var_02);
-  v19 = v20 + ymw_var_02;
-  v3 |= __CFADD__uint16(E->ymw_var_29, v19);
-  E->ymw_var_02 = E->ymw_var_29 + v19;
-  uint16 ymw_var_03 = E->ymw_var_03;
-  v23 = v3;
-  v3 = __CFADD__uint16(v3, ymw_var_03);
-  v22 = v23 + ymw_var_03;
-  v3 |= __CFADD__uint16(E->ymw_var_2A, v22);
-  E->ymw_var_03 = E->ymw_var_2A + v22;
-  uint16 ymw_var_04 = E->ymw_var_04;
-  v26 = v3;
-  v3 = __CFADD__uint16(v3, ymw_var_04);
-  v25 = v26 + ymw_var_04;
-  v3 |= __CFADD__uint16(E->ymw_var_2B, v25);
-  E->ymw_var_04 = E->ymw_var_2B + v25;
-  uint16 ymw_var_05 = E->ymw_var_05;
-  v29 = v3;
-  v3 = __CFADD__uint16(v3, ymw_var_05);
-  v28 = v29 + ymw_var_05;
-  v3 |= __CFADD__uint16(E->ymw_var_2C, v28);
-  E->ymw_var_05 = E->ymw_var_2C + v28;
-  uint16 ymw_var_06 = E->ymw_var_06;
-  v32 = v3;
-  v3 = __CFADD__uint16(v3, ymw_var_06);
-  v31 = v32 + ymw_var_06;
-  v3 |= __CFADD__uint16(E->ymw_var_2D, v31);
-  E->ymw_var_06 = E->ymw_var_2D + v31;
-  E->ymw_var_07 += E->ymw_var_2E + v3;
+  E->ymw_var_00 += E->ymw_var_27;
+  E->ymw_var_01 += E->ymw_var_28;
+  E->ymw_var_02 += E->ymw_var_29;
+  E->ymw_var_03 += E->ymw_var_2A;
+  E->ymw_var_04 += E->ymw_var_2B;
+  E->ymw_var_05 += E->ymw_var_2C;
+  E->ymw_var_06 += E->ymw_var_2D;
+  E->ymw_var_07 += E->ymw_var_2E;
   E->base.x_pos = E->ymw_var_06 + E->ymw_var_0C;
   E->base.y_pos = E->ymw_var_07 + E->ymw_var_0D;
   YappingMaw_Func_9(cur_enemy_index);
@@ -1221,10 +1102,7 @@ void YappingMaw_Func_8(void) {  // 0xA8A445
     if (!sign16(E->ymw_var_B - 128)) {
       E->ymw_var_B = 128;
       E->ymw_var_C = 0;
-      ++E->ymw_var_D;
-      ++E->ymw_var_D;
-      ++E->ymw_var_D;
-      ++E->ymw_var_D;
+      E->ymw_var_D += 4;
     }
 LABEL_19:
     if (E->ymw_var_30)
@@ -1257,13 +1135,7 @@ LABEL_19:
 void YappingMaw_Func_9(uint16 k) {  // 0xA8A63E
   Enemy_YappingMaw *E = Get_YappingMaw(k);
   int v2 = E->ymw_var_D >> 1;
-  E->ymw_var_B += kCommonEnemySpeeds_Quadratic[v2 + 1];
-  uint16 ymw_var_C = E->ymw_var_C;
-  bool v4 = __CFADD__uint16(kCommonEnemySpeeds_Quadratic[v2], ymw_var_C);
-  uint16 v5 = kCommonEnemySpeeds_Quadratic[v2] + ymw_var_C;
-  if (v4)
-    ++E->ymw_var_B;
-  E->ymw_var_C = v5;
+  AddToHiLo(&E->ymw_var_B, &E->ymw_var_C, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 1], kCommonEnemySpeeds_Quadratic[v2]));
   E->ymw_var_D += 8;
 }
 
@@ -1737,17 +1609,13 @@ void NorfairLavaMan_Func_10(uint16 k) {  // 0xA8B1DD
 }
 
 void NorfairLavaMan_Func_11(uint16 k) {  // 0xA8B204
-  EnemySpawnData *v3;
-
   Enemy_NorfairLavaMan *E = Get_NorfairLavaMan(cur_enemy_index);
-  uint16 y_subpos = E->base.y_subpos;
-  v3 = gEnemySpawnData(cur_enemy_index);
-  bool v4 = __CFADD__uint16(v3[31].ypos2, y_subpos);
-  E->base.y_subpos = v3[31].ypos2 + y_subpos;
-  if (v4)
-    ++E->nlmn_var_E;
-  E->base.y_pos += v3[31].field_14 + v4;
-  E->nlmn_var_E += v3[31].field_14;
+  EnemySpawnData *v3 = gEnemySpawnData(cur_enemy_index);
+
+  uint32 v = v3[31].ypos2 + E->base.y_subpos;
+  E->base.y_subpos = v;
+  E->base.y_pos += v3[31].field_14 + (v >> 16);
+  E->nlmn_var_E += v3[31].field_14 + (v >> 16);
   NorfairLavaMan_Func_12(cur_enemy_index);
 }
 
@@ -1787,16 +1655,10 @@ void NorfairLavaMan_Func_13(void) {  // 0xA8B295
 
   Enemy_NorfairLavaMan *E = Get_NorfairLavaMan(cur_enemy_index);
   v2 = gEnemySpawnData(cur_enemy_index);
-  E->base.y_pos += v2[31].xpos2;
-  E->nlmn_var_E += v2[31].xpos2;
-  uint16 y_subpos = E->base.y_subpos;
-  bool v4 = __CFADD__uint16(v2[31].field_E, y_subpos);
-  uint16 v5 = v2[31].field_E + y_subpos;
-  if (v4) {
-    ++E->base.y_pos;
-    ++E->nlmn_var_E;
-  }
-  E->base.y_subpos = v5;
+  bool v4 = __CFADD__uint16(v2[31].field_E, E->base.y_subpos);
+  E->base.y_subpos = v2[31].field_E + E->base.y_subpos;
+  E->base.y_pos += v2[31].xpos2 + v4;
+  E->nlmn_var_E += v2[31].xpos2 + v4;
   NorfairLavaMan_Func_14(cur_enemy_index);
 }
 
@@ -1810,8 +1672,7 @@ void NorfairLavaMan_Func_14(uint16 k) {  // 0xA8B2C5
     gEnemySpawnData(k)[31].field_4 = 0;
     E->nlmn_var_F = FUNC16(NorfairLavaMan_Func_10);
   } else if ((int16)(-nlmn_var_E - g_word_A8AF55[(uint16)(E->nlmn_var_B - 2) >> 1]) < 0) {
-    --E->nlmn_var_B;
-    --E->nlmn_var_B;
+    E->nlmn_var_B -= 2;
     E->base.y_pos -= 8;
     E->nlmn_var_D = g_off_A8AF67[E->nlmn_var_B >> 1];
     NorfairLavaMan_Func_20();
@@ -2507,10 +2368,7 @@ void MaridiaFloater_Func_5(uint16 k) {  // 0xA8C2CF
         v6 = 0;
       E->mfr_var_C = v6;
     }
-    uint16 mfr_var_B = E->mfr_var_B;
-    bool v8 = __CFADD__uint16(g_word_A8C1BB, mfr_var_B);
-    E->mfr_var_B = g_word_A8C1BB + mfr_var_B;
-    E->mfr_var_A += g_word_A8C1B9 + v8;
+    AddToHiLo(&E->mfr_var_A, &E->mfr_var_B, __PAIR32__(g_word_A8C1B9, g_word_A8C1BB));
     if (Enemy_MoveDown(k, __PAIR32__(E->mfr_var_A, E->mfr_var_B))
         || (int16)(enemy_drawing_queue_sizes[(k >> 1) + 1] - g_word_A8C19F - E->base.y_pos) >= 0) {
       uint16 mfr_var_C = E->mfr_var_C;
@@ -2534,10 +2392,7 @@ void MaridiaFloater_Func_6(uint16 k) {  // 0xA8C36B
   bool v3 = (--E->mfr_var_D & 0x8000) != 0;
   if (!v2 && !v3) {
 LABEL_9:;
-    uint16 mfr_var_B = E->mfr_var_B;
-    bool v9 = __CFADD__uint16(g_word_A8C1BB, mfr_var_B);
-    E->mfr_var_B = g_word_A8C1BB + mfr_var_B;
-    E->mfr_var_A += g_word_A8C1B9 + v9;
+    AddToHiLo(&E->mfr_var_A, &E->mfr_var_B, __PAIR32__(g_word_A8C1B9, g_word_A8C1BB));
     Enemy_MoveDown(k, __PAIR32__(E->mfr_var_A, E->mfr_var_B));
     goto LABEL_10;
   }
@@ -2580,16 +2435,10 @@ void MaridiaFloater_Func_7(uint16 k) {  // 0xA8C3E1
         v6 = 0;
       E->mfr_var_C = v6;
     }
-    uint16 mfr_var_B = E->mfr_var_B;
-    bool v8 = __CFADD__uint16(g_word_A8C1BB, mfr_var_B);
-    E->mfr_var_B = g_word_A8C1BB + mfr_var_B;
-    E->mfr_var_A += g_word_A8C1B9 + v8;
+    AddToHiLo(&E->mfr_var_A, &E->mfr_var_B, __PAIR32__(g_word_A8C1B9, g_word_A8C1BB));
     if (Enemy_MoveDown(k, __PAIR32__(E->mfr_var_A, E->mfr_var_B))
-        || (int16)(enemy_drawing_queue_sizes[(k >> 1) + 1]
-                   - enemy_drawing_queue_sizes[(k >> 1) + 3]
-                   - E->base.y_pos) >= 0) {
-      uint16 mfr_var_C = E->mfr_var_C;
-      if (!mfr_var_C || mfr_var_C == 6)
+        || (int16)(enemy_drawing_queue_sizes[(k >> 1) + 1] - enemy_drawing_queue_sizes[(k >> 1) + 3] - E->base.y_pos) >= 0) {
+      if (!E->mfr_var_C || E->mfr_var_C == 6)
         E->mfr_var_F = FUNC16(MaridiaFloater_Func_9);
       else
         E->mfr_var_F = FUNC16(MaridiaFloater_Func_8);
@@ -2625,10 +2474,7 @@ void MaridiaFloater_Func_8(uint16 k) {  // 0xA8C469
       E->mfr_var_C = v7;
     }
 LABEL_11:;
-    uint16 mfr_var_B = E->mfr_var_B;
-    bool v9 = __CFADD__uint16(g_word_A8C1BB, mfr_var_B);
-    E->mfr_var_B = g_word_A8C1BB + mfr_var_B;
-    E->mfr_var_A += g_word_A8C1B9 + v9;
+    AddToHiLo(&E->mfr_var_A, &E->mfr_var_B, __PAIR32__(g_word_A8C1B9, g_word_A8C1BB));
     Enemy_MoveDown(k, __PAIR32__(E->mfr_var_A, E->mfr_var_B));
     goto LABEL_12;
   }
@@ -2663,10 +2509,7 @@ void MaridiaFloater_Func_10(uint16 k) {  // 0xA8C500
 
 void MaridiaFloater_Func_11(uint16 k) {  // 0xA8C51D
   Enemy_MaridiaFloater *E = Get_MaridiaFloater(k);
-  uint16 mfr_var_B = E->mfr_var_B;
-  bool v3 = __CFADD__uint16(g_word_A8C1BF, mfr_var_B);
-  E->mfr_var_B = g_word_A8C1BF + mfr_var_B;
-  E->mfr_var_A += g_word_A8C1BD + v3;
+  AddToHiLo(&E->mfr_var_A, &E->mfr_var_B, __PAIR32__(g_word_A8C1BD, g_word_A8C1BF));
   Enemy_MoveDown(k, __PAIR32__(E->mfr_var_A, E->mfr_var_B));
   int v4 = k >> 1;
   if ((int16)(E->base.y_pos - enemy_drawing_queue_sizes[v4 + 1]) >= 0) {
@@ -2806,9 +2649,7 @@ void WreckedShipRobot_Main(void) {  // 0xA8CC36
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(cur_enemy_index);
   if (!Enemy_MoveDown(cur_enemy_index, __PAIR32__(E->wsrt_var_F, E->wsrt_var_E))) {
     ++E->base.instruction_timer;
-    uint16 wsrt_var_E = E->wsrt_var_E;
-    E->wsrt_var_E = wsrt_var_E + 0x8000;
-    E->wsrt_var_F += __CFADD__uint16(wsrt_var_E, 0x8000);
+    AddToHiLo(&E->wsrt_var_F, &E->wsrt_var_E, 0x8000);
   }
 }
 
@@ -3303,10 +3144,7 @@ void WalkingLavaSeahorse_Init(void) {  // 0xA8DCCD
   E->wlse_var_A = FUNC16(WalkingLavaSeahorse_Func_3);
   WalkingLavaSeahorse_Func_1(cur_enemy_index);
   do {
-    uint16 wlse_var_C = E->wlse_var_C;
-    bool v4 = __CFADD__uint16(E->base.y_subpos, wlse_var_C);
-    E->base.y_subpos += wlse_var_C;
-    E->base.y_pos += v4 + E->wlse_var_B;
+    AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->wlse_var_B, E->wlse_var_C));
   } while ((WalkingLavaSeahorse_Func_2(cur_enemy_index) & 0x8000) != 0);
   while (1) {
     if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(E->wlse_var_B, E->wlse_var_C)))
@@ -3329,12 +3167,8 @@ void WalkingLavaSeahorse_Func_1(uint16 k) {  // 0xA8DD37
 
 uint16 WalkingLavaSeahorse_Func_2(uint16 k) {  // 0xA8DD55
   Enemy_WalkingLavaSeahorse *E = Get_WalkingLavaSeahorse(k);
-  uint16 wlse_var_C = E->wlse_var_C;
-  bool v3 = __CFADD__uint16(E->wlse_var_01, wlse_var_C);
-  E->wlse_var_C = E->wlse_var_01 + wlse_var_C;
-  uint16 result = E->wlse_var_00 + v3 + E->wlse_var_B;
-  E->wlse_var_B = result;
-  return result;
+  AddToHiLo(&E->wlse_var_B, &E->wlse_var_C, __PAIR32__(E->wlse_var_00, E->wlse_var_01));
+  return E->wlse_var_B;
 }
 
 void CallWalkingLavaSeahorseFunc(uint32 ea, uint16 k) {
@@ -3380,10 +3214,7 @@ void WalkingLavaSeahorse_Func_3(uint16 k) {  // 0xA8DD71
 
 void WalkingLavaSeahorse_Func_4(uint16 k) {  // 0xA8DDC6
   Enemy_WalkingLavaSeahorse *E = Get_WalkingLavaSeahorse(k);
-  uint16 wlse_var_C = E->wlse_var_C;
-  bool v3 = __CFADD__uint16(E->base.y_subpos, wlse_var_C);
-  E->base.y_subpos += wlse_var_C;
-  E->base.y_pos += v3 + E->wlse_var_B;
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->wlse_var_B, E->wlse_var_C));
   if ((WalkingLavaSeahorse_Func_2(k) & 0x8000) == 0)
     sub_A8DDDE(k);
 }
@@ -3461,22 +3292,15 @@ void WalkingLavaSeahorse_Func_7(uint16 k) {  // 0xA8DE4B
 
 void WalkingLavaSeahorse_Func_8(uint16 k) {  // 0xA8DECD
   Enemy_WalkingLavaSeahorse *E = Get_WalkingLavaSeahorse(k);
-  uint16 wlse_var_C = E->wlse_var_C;
-  bool v3 = __CFADD__uint16(E->base.y_subpos, wlse_var_C);
-  E->base.y_subpos += wlse_var_C;
-  E->base.y_pos += v3 + E->wlse_var_B;
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->wlse_var_B, E->wlse_var_C));
   if ((WalkingLavaSeahorse_Func_2(k) & 0x8000) == 0)
     E->wlse_var_A = FUNC16(WalkingLavaSeahorse_Func_9);
 }
 
 void WalkingLavaSeahorse_Func_9(uint16 k) {  // 0xA8DEEC
   Enemy_WalkingLavaSeahorse *E = Get_WalkingLavaSeahorse(k);
-  uint16 wlse_var_C = E->wlse_var_C;
-  bool v3 = __CFADD__uint16(E->base.y_subpos, wlse_var_C);
-  E->base.y_subpos += wlse_var_C;
-  uint16 v4 = E->base.y_pos + v3 + E->wlse_var_B;
-  E->base.y_pos = v4;
-  if ((int16)(v4 - E->wlse_var_F) >= 0) {
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->wlse_var_B, E->wlse_var_C));
+  if ((int16)(E->base.y_pos - E->wlse_var_F) >= 0) {
     E->base.y_pos = E->wlse_var_F;
     E->base.x_pos = E->wlse_var_02;
     E->wlse_var_A = FUNC16(WalkingLavaSeahorse_Func_3);
@@ -3924,30 +3748,20 @@ void KiHunter_Func_2(uint16 k) {  // 0xA8F3B8
   }
 LABEL_9:
   if ((E->khr_var_04 & 0x8000) == 0) {
-    uint16 khr_var_03 = E->khr_var_03;
-    bool v4 = __CFADD__uint16(E->khr_var_05, khr_var_03);
-    E->khr_var_03 = E->khr_var_05 + khr_var_03;
-    uint16 khr_var_00 = E->khr_var_04 + v4 + E->khr_var_02;
-    if ((int16)(khr_var_00 - E->khr_var_00) >= 0)
-      khr_var_00 = E->khr_var_00;
-    E->khr_var_02 = khr_var_00;
-    uint16 v9 = E->khr_var_02 + E->khr_var_F;
-    E->khr_var_F = v9;
-    if (!sign16(v9 - 256)) {
+    AddToHiLo(&E->khr_var_02, &E->khr_var_03, __PAIR32__(E->khr_var_04, E->khr_var_05));
+    if ((int16)(E->khr_var_02 - E->khr_var_00) >= 0)
+      E->khr_var_02 = E->khr_var_00;
+    E->khr_var_F += E->khr_var_02;
+    if (!sign16(E->khr_var_F - 256)) {
       E->khr_var_A = FUNC16(KiHunter_Func_1);
       return;
     }
   } else {
-    uint16 v3 = E->khr_var_03;
-    bool v4 = __CFADD__uint16(E->khr_var_05, v3);
-    E->khr_var_03 = E->khr_var_05 + v3;
-    uint16 v5 = E->khr_var_04 + v4 + E->khr_var_02;
-    if ((int16)(v5 - E->khr_var_00) < 0)
-      v5 = E->khr_var_00;
-    E->khr_var_02 = v5;
-    uint16 v6 = E->khr_var_02 + E->khr_var_F;
-    E->khr_var_F = v6;
-    if (sign16(v6 - 128)) {
+    AddToHiLo(&E->khr_var_02, &E->khr_var_03, __PAIR32__(E->khr_var_04, E->khr_var_05));
+    if ((int16)(E->khr_var_02 - E->khr_var_00) < 0)
+      E->khr_var_02 = E->khr_var_00;
+    E->khr_var_F += E->khr_var_02;
+    if (sign16(E->khr_var_F - 128)) {
       E->khr_var_A = FUNC16(KiHunter_Func_1);
       return;
     }
@@ -4005,10 +3819,7 @@ void KiHunter_Func_4(uint16 k) {  // 0xA8F55A
   if (Enemy_MoveDown(k, __PAIR32__(E->khr_var_09, E->khr_var_08))) {
     E->khr_var_A = FUNC16(KiHunter_Func_5);
   } else {
-    uint16 khr_var_08 = E->khr_var_08;
-    bool v3 = __CFADD__uint16(g_word_A8F182, khr_var_08);
-    E->khr_var_08 = g_word_A8F182 + khr_var_08;
-    E->khr_var_09 += g_word_A8F184 + v3;
+    AddToHiLo(&E->khr_var_09, &E->khr_var_08, __PAIR32__(g_word_A8F184, g_word_A8F182));
   }
 }
 
@@ -4055,10 +3866,7 @@ void KiHunter_Func_6(uint16 k) {  // 0xA8F5F0
       E->khr_var_07 = -E->khr_var_07;
     } else {
       EnemyFunc_C8AD(k);
-      uint16 khr_var_08 = E->khr_var_08;
-      bool v3 = __CFADD__uint16(g_word_A8F182, khr_var_08);
-      E->khr_var_08 = g_word_A8F182 + khr_var_08;
-      E->khr_var_09 += g_word_A8F184 + v3;
+      AddToHiLo(&E->khr_var_09, &E->khr_var_08, __PAIR32__(g_word_A8F184, g_word_A8F182));
     }
   }
 }

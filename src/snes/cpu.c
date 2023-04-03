@@ -766,7 +766,8 @@ restart:
       case 0x65:
       case 0x6d: 
       case 0x69:
-      case 0x7d: cpu->c = 0; goto restart;
+      case 0x7d:
+      case 0x7f: cpu->c = 0; goto restart;
       default:
 //        printf("Unk op 0x%x!\n", opcode);
         goto restart;

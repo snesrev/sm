@@ -1165,7 +1165,7 @@ LABEL_4:;
     r18 += g_word_7E0692;
     if (!v8)
       ++v7;
-    ++message_box_animation_y1;
+    message_box_animation_y1++;
     v6 += 2;
   } while ((int16)(v7 - g_word_7E0698) < 0);
   if ((int16)(v6 - 512) < 0) {
@@ -1370,20 +1370,13 @@ void Crocomire_Func_71(void) {  // 0xA4990A
 }
 
 void Crocomire_Func_72(void) {  // 0xA499E5
-  int16 v3;
-
   Enemy_Crocomire *E = Get_Crocomire(0);
   if (sign16(E->base.x_pos - 224)) {
-    uint16 crocom_var_E = E->crocom_var_E;
-    E->crocom_var_E = crocom_var_E + 0x8000;
-    v3 = __CFADD__uint16(crocom_var_E, 0x8000) + E->crocom_var_F;
-    if (!sign16(v3 - 2))
-      v3 = 2;
-    E->crocom_var_F = v3;
-    uint16 x_subpos = E->base.x_subpos;
-    bool v5 = __CFADD__uint16(E->crocom_var_E, x_subpos);
-    E->base.x_subpos = E->crocom_var_E + x_subpos;
-    E->base.x_pos += E->crocom_var_F + v5;
+    uint32 t = __PAIR32__(E->crocom_var_F, E->crocom_var_E) + 0x8000;
+    if (!sign16((t >> 16) - 2))
+      t = (t & 0xffff) | (2 << 16);
+    SetHiLo(&E->crocom_var_F, &E->crocom_var_E, t);
+    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, t);
   }
   Enemy_Crocomire *E2 = Get_Crocomire(0x80);
   if (E2->crocom_var_D) {
@@ -1397,24 +1390,14 @@ void Crocomire_Func_72(void) {  // 0xA499E5
 }
 
 void Crocomire_Func_73(void) {  // 0xA49A38
-  int16 v3;
-
   Enemy_Crocomire *E = Get_Crocomire(0);
-  uint16 crocom_var_E = E->crocom_var_E;
-  E->crocom_var_E = crocom_var_E + 2048;
-  v3 = __CFADD__uint16(crocom_var_E, 2048) + E->crocom_var_F;
-  if (!sign16(v3 - 5))
-    v3 = 5;
-  E->crocom_var_F = v3;
-  bool v4 = __CFADD__uint16(E->base.y_subpos, -8192);
-  E->base.y_subpos -= 0x2000;
-  E->base.y_pos += v4;
-  uint16 x_subpos = E->base.x_subpos;
-  v4 = __CFADD__uint16(E->crocom_var_E, x_subpos);
-  E->base.x_subpos = E->crocom_var_E + x_subpos;
-  uint16 v6 = E->crocom_var_F + v4 + E->base.x_pos;
-  E->base.x_pos = v6;
-  if (!sign16(v6 - 576)) {
+  uint32 t = __PAIR32__(E->crocom_var_F, E->crocom_var_E) + 2048;
+  if (!sign16((t >> 16) - 5))
+    t = (t & 0xffff) | (5 << 16);
+  SetHiLo(&E->crocom_var_F, &E->crocom_var_E, t);
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -0x2000);
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, t);
+  if (!sign16(E->base.x_pos - 576)) {
     QueueSfx2_Max6(0x25);
     Get_Crocomire(0x40)->base.palette_index = E->base.palette_index;
     E->base.current_instruction = addr_kCrocomire_Ilist_E158;
@@ -1483,16 +1466,12 @@ const uint16 *Crocomire_Func_87(const uint16 *jp, uint16 a) {  // 0xA49ADA
 }
 
 void Crocomire_Func_88(void) {  // 0xA49B06
-  int16 v3;
-
   Enemy_Crocomire *E = Get_Crocomire(0);
   if (sign16(E->base.current_instruction + 0x1E3A)) {
-    uint16 crocom_var_E = E->crocom_var_E;
-    E->crocom_var_E = crocom_var_E + 4096;
-    v3 = __CFADD__uint16(crocom_var_E, 4096) + E->crocom_var_F;
-    if (!sign16(v3 - 6))
-      v3 = 6;
-    E->crocom_var_F = v3;
+    uint32 t = __PAIR32__(E->crocom_var_F, E->crocom_var_E) + 4096;
+    if (!sign16((t >> 16) - 6))
+      t = (t & 0xffff) | (6 << 16);
+    SetHiLo(&E->crocom_var_F, &E->crocom_var_E, t);
   } else {
     E->base.current_instruction = addr_kCrocomire_Ilist_E1CC;
     E->base.instruction_timer = 1;

@@ -1090,13 +1090,9 @@ void EprojPreInstr_CrocomireSpikeWallPieces(uint16 k) {
   v4 |= __CFADD__uint8(*((uint8 *)enemy_projectile_x_pos + k), v8);
   *((uint8 *)enemy_projectile_x_pos + k) += v8;
   *((uint8 *)enemy_projectile_x_pos + k + 1) += v4;
-  uint16 v10 = enemy_projectile_F[v1];
-  enemy_projectile_F[v1] = v10 + 12288;
-  enemy_projectile_y_vel[v1] += __CFADD__uint16(v10, 12288);
-  uint16 v11 = enemy_projectile_y_subpos[v1];
-  v4 = __CFADD__uint16(enemy_projectile_F[v1], v11);
-  enemy_projectile_y_subpos[v1] = enemy_projectile_F[v1] + v11;
-  enemy_projectile_y_pos[v1] += enemy_projectile_y_vel[v1] + v4;
+  AddToHiLo(&enemy_projectile_y_vel[v1], &enemy_projectile_F[v1], 0x3000);
+  AddToHiLo(&enemy_projectile_y_pos[v1], &enemy_projectile_y_subpos[v1], __PAIR32__(enemy_projectile_y_vel[v1], enemy_projectile_F[v1]));
+
   if (enemy_projectile_y_pos[v1] >= 0xA8) {
     enemy_projectile_id[v1] = 0;
     if ((k & 2) == 0)

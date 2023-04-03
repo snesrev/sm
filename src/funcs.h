@@ -1252,7 +1252,7 @@ int32 Samus_CalcDisplacementMoveLeft(int32 amt);
 int32 Samus_CalcDisplacementMoveRight(int32 amt);
 void Samus_CalcDistanceMoved_X(void);
 void Samus_CalcDistanceMoved_Y(void);
-int32 Samus_CalcSpeed_X(int32 amt);
+uint32 Samus_CalcSpeed_X(uint32 amt);
 void Samus_CalcSpritemapPos_Default_(void);
 void Samus_CallInputHandler(void);
 void Samus_CheckStartFalling(void);

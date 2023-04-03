@@ -2341,35 +2341,23 @@ void Phantoon_AdjustSpeedLeftSideClockwise(void) {  // 0xA7D114
   uint16 phant_var_D = E->phant_var_D;
   if (phant_var_D) {
     if ((phant_var_D & 1) != 0) {
-      uint16 phant_var_B = E->phant_var_B;
-      bool v3 = __CFADD__uint16(g_word_A7CD77, phant_var_B);
-      E->phant_var_B = g_word_A7CD77 + phant_var_B;
-      uint16 v6 = g_word_A7CD79 + v3 + E->phant_var_C;
-      E->phant_var_C = v6;
-      if ((int16)(v6 - g_word_A7CD7D) >= 0) {
+      AddToHiLo(&E->phant_var_C, &E->phant_var_B, __PAIR32__(g_word_A7CD79, g_word_A7CD77));
+      if ((int16)(E->phant_var_C - g_word_A7CD7D) >= 0) {
         E->phant_var_C = g_word_A7CD7D;
         E->phant_var_B = 0;
         ++E->phant_var_D;
       }
     } else {
-      uint16 v7 = E->phant_var_B;
-      bool v3 = v7 < g_word_A7CD77;
-      E->phant_var_B = v7 - g_word_A7CD77;
-      uint16 v8 = E->phant_var_C - (v3 + g_word_A7CD79);
-      E->phant_var_C = v8;
-      if (v8 == g_word_A7CD7F || (int16)(v8 - g_word_A7CD7F) < 0) {
+      AddToHiLo(&E->phant_var_C, &E->phant_var_B, -(int32)__PAIR32__(g_word_A7CD79, g_word_A7CD77));
+      if (E->phant_var_C == g_word_A7CD7F || (int16)(E->phant_var_C - g_word_A7CD7F) < 0) {
         E->phant_var_C = g_word_A7CD7F + 1;
         E->phant_var_B = 0;
         E->phant_var_D = 0;
       }
     }
   } else {
-    uint16 v2 = E->phant_var_B;
-    bool v3 = __CFADD__uint16(g_word_A7CD73, v2);
-    E->phant_var_B = g_word_A7CD73 + v2;
-    uint16 v4 = g_word_A7CD75 + v3 + E->phant_var_C;
-    E->phant_var_C = v4;
-    if ((int16)(v4 - g_word_A7CD7B) >= 0) {
+    AddToHiLo(&E->phant_var_C, &E->phant_var_B, __PAIR32__(g_word_A7CD75, g_word_A7CD73));
+    if ((int16)(E->phant_var_C - g_word_A7CD7B) >= 0) {
       E->phant_var_C = g_word_A7CD7B - 1;
       E->phant_var_B = 0;
       ++E->phant_var_D;
@@ -2382,35 +2370,23 @@ void Phantoon_AdjustSpeedRightSideClockwise(void) {  // 0xA7D193
   uint16 phant_var_D = E->phant_var_D;
   if (phant_var_D) {
     if ((phant_var_D & 1) != 0) {
-      uint16 phant_var_B = E->phant_var_B;
-      bool v3 = phant_var_B < g_word_A7CD85;
-      E->phant_var_B = phant_var_B - g_word_A7CD85;
-      uint16 v6 = E->phant_var_C - (v3 + g_word_A7CD87);
-      E->phant_var_C = v6;
-      if (v6 == g_word_A7CD8B || (int16)(v6 - g_word_A7CD8B) < 0) {
+      AddToHiLo(&E->phant_var_C, &E->phant_var_B, -(int32)__PAIR32__(g_word_A7CD87, g_word_A7CD85));
+      if (E->phant_var_C == g_word_A7CD8B || (int16)(E->phant_var_C - g_word_A7CD8B) < 0) {
         E->phant_var_C = g_word_A7CD8B + 1;
         E->phant_var_B = 0;
         ++E->phant_var_D;
       }
     } else {
-      uint16 v7 = E->phant_var_B;
-      bool v3 = __CFADD__uint16(g_word_A7CD85, v7);
-      E->phant_var_B = g_word_A7CD85 + v7;
-      uint16 v8 = g_word_A7CD87 + v3 + E->phant_var_C;
-      E->phant_var_C = v8;
-      if ((int16)(v8 - g_word_A7CD8D) >= 0) {
+      AddToHiLo(&E->phant_var_C, &E->phant_var_B, __PAIR32__(g_word_A7CD87, g_word_A7CD85));
+      if ((int16)(E->phant_var_C - g_word_A7CD8D) >= 0) {
         E->phant_var_C = g_word_A7CD8D;
         E->phant_var_B = 0;
         E->phant_var_D = 0;
       }
     }
   } else {
-    uint16 v2 = E->phant_var_B;
-    bool v3 = v2 < g_word_A7CD81;
-    E->phant_var_B = v2 - g_word_A7CD81;
-    uint16 v4 = E->phant_var_C - (v3 + g_word_A7CD83);
-    E->phant_var_C = v4;
-    if (v4 == g_word_A7CD89 || (int16)(v4 - g_word_A7CD89) < 0) {
+    AddToHiLo(&E->phant_var_C, &E->phant_var_B, -(int32)__PAIR32__(g_word_A7CD83, g_word_A7CD81));
+    if (E->phant_var_C == g_word_A7CD89 || (int16)(E->phant_var_C - g_word_A7CD89) < 0) {
       E->phant_var_C = (uint16)(g_word_A7CD89 + 2);
       E->phant_var_B = 0;
       ++E->phant_var_D;
@@ -2441,86 +2417,59 @@ void Phantoon_MoveInFigure8_RightSideClockwise(uint16 j, uint16 r20) {  // 0xA7D
 }
 
 void Phantoon_MoveInSwoopingPattern(uint16 k) {  // 0xA7D2D1
-  Enemy_Phantoon *Phantoon;
-  Enemy_Phantoon *v2;
   int16 phant_var_E;
   uint16 v4;
   uint16 v5;
   uint16 v6;
-  Enemy_Phantoon *v7;
-  Enemy_Phantoon *v8;
-  uint16 v9;
-  uint16 x_subpos;
-  bool v11; // cf
-  uint16 v12;
   int16 v13;
-  uint16 v14;
-  uint16 y_subpos;
-  uint16 v16;
 
-  Phantoon = Get_Phantoon(0x80);
-  v2 = Phantoon;
-  phant_var_E = Phantoon->phant_var_E;
+  Enemy_Phantoon *E2 = Get_Phantoon(0x80);
+  phant_var_E = E2->phant_var_E;
   if (phant_var_E < 0) {
     v6 = phant_var_E - 2;
-    Phantoon->phant_var_E = v6;
+    E2->phant_var_E = v6;
     v4 = v6 & 0x7FFF;
     if (!v4) {
       v4 = 0;
-      Phantoon->phant_var_E = 0;
+      E2->phant_var_E = 0;
     }
   } else {
     v4 = phant_var_E + 2;
-    Phantoon->phant_var_E = v4;
+    E2->phant_var_E = v4;
     if (!sign16(v4 - 256)) {
       v5 = v4 | 0x8000;
-      Phantoon->phant_var_E = v5;
+      E2->phant_var_E = v5;
       v4 = v5 & 0x7FFF;
     }
   }
-  v7 = Get_Phantoon(0);
-  v8 = v7;
-  if ((int16)(v4 - v7->base.x_pos) < 0) {
-    if (!sign16(v2->phant_var_C + 2047))
-      v2->phant_var_C -= 32;
-  } else if (sign16(v2->phant_var_C - 2048)) {
-    v2->phant_var_C += 32;
+  Enemy_Phantoon *E0 = Get_Phantoon(0);
+  if ((int16)(v4 - E0->base.x_pos) < 0) {
+    if (!sign16(E2->phant_var_C + 2047))
+      E2->phant_var_C -= 32;
+  } else if (sign16(E2->phant_var_C - 2048)) {
+    E2->phant_var_C += 32;
   }
-  v9 = swap16(v2->phant_var_C);
-  uint16 r20 = v9 & 0xFF00;
-  uint16 r18 = (int8)v9;
-  x_subpos = v7->base.x_subpos;
-  v11 = __CFADD__uint16(r20, x_subpos);
-  v7->base.x_subpos = r20 + x_subpos;
-  v12 = r18 + v11 + v7->base.x_pos;
-  v7->base.x_pos = v12;
-  if (sign16(v12 + 64)) {
-    v7->base.x_pos = -64;
-  } else if (!sign16(v12 - 448)) {
-    v7->base.x_pos = 448;
+  AddToHiLo(&E0->base.x_pos, &E0->base.x_subpos, INT16_SHL8(E2->phant_var_C));
+  if (sign16(E0->base.x_pos + 64)) {
+    E0->base.x_pos = -64;
+  } else if (!sign16(E0->base.x_pos - 448)) {
+    E0->base.x_pos = 448;
   }
   if (Get_Phantoon(k)->phant_var_F == FUNC16(Phantoon_CompleteSwoopAfterFatalShot))
     v13 = 112;
   else
     v13 = samus_y_pos - 48;
-  if ((int16)(v13 - v8->base.y_pos) < 0) {
-    if (!sign16(v2->phant_var_D + 1535))
-      v2->phant_var_D -= 64;
-  } else if (sign16(v2->phant_var_D - 1536)) {
-    v2->phant_var_D += 64;
+  if ((int16)(v13 - E0->base.y_pos) < 0) {
+    if (!sign16(E2->phant_var_D + 1535))
+      E2->phant_var_D -= 64;
+  } else if (sign16(E2->phant_var_D - 1536)) {
+    E2->phant_var_D += 64;
   }
-  v14 = swap16(v2->phant_var_D);
-  r20 = v14 & 0xFF00;
-  r18 = (int8)v14;
-  y_subpos = v8->base.y_subpos;
-  v11 = __CFADD__uint16(r20, y_subpos);
-  v8->base.y_subpos = r20 + y_subpos;
-  v16 = r18 + v11 + v8->base.y_pos;
-  v8->base.y_pos = v16;
-  if (sign16(v16 - 64)) {
-    v8->base.y_pos = 64;
-  } else if (!sign16(v16 - 216)) {
-    v8->base.y_pos = 216;
+  AddToHiLo(&E0->base.x_pos, &E0->base.x_subpos, INT16_SHL8(E2->phant_var_D));
+  if (sign16(E0->base.y_pos - 64)) {
+    E0->base.y_pos = 64;
+  } else if (!sign16(E0->base.y_pos - 216)) {
+    E0->base.y_pos = 216;
   }
 }
 
@@ -3340,12 +3289,8 @@ uint8 Etecoon_Func_2(uint16 k) {  // 0xA7E974
 uint8 Etecoon_Func_3(uint16 k) {  // 0xA7E983
   Enemy_Etecoon *E = Get_Etecoon(k);
   int32 amt = __PAIR32__(E->etecoon_var_A, E->etecoon_var_B);
-  if (sign16(E->etecoon_var_A - 5)) {
-    uint16 etecoo_var_B = E->etecoon_var_B;
-    bool v3 = __CFADD__uint16(samus_y_subaccel, etecoo_var_B);
-    E->etecoon_var_B = samus_y_subaccel + etecoo_var_B;
-    E->etecoon_var_A += samus_y_accel + v3;
-  }
+  if (sign16(E->etecoon_var_A - 5))
+    AddToHiLo(&E->etecoon_var_A, &E->etecoon_var_B, __PAIR32__(samus_y_accel, samus_y_subaccel));
   return Enemy_MoveDown(k, amt);
 }
 
@@ -3837,12 +3782,8 @@ int32 Dachora_Func_6(uint16 k) {  // 0xA7F6D5
     E->dachor_var_B = g_word_A7F4D7;
     return __PAIR32__(g_word_A7F4D5, g_word_A7F4D7);
   }
-  bool v7 = __CFADD__uint16(g_word_A7F4DB, E->dachor_var_B);
-  uint16 v8 = g_word_A7F4DB + E->dachor_var_B;
-  uint16 v9 = g_word_A7F4D9 + v7 + E->dachor_var_A;
-  E->dachor_var_B = v8;
-  E->dachor_var_A = v9;
-  if ((v9 == 4 || v9 == 8) && !E->dachor_var_B)
+  AddToHiLo(&E->dachor_var_A, &E->dachor_var_B, __PAIR32__(g_word_A7F4D9, g_word_A7F4DB));
+  if ((E->dachor_var_A == 4 || E->dachor_var_A == 8) && !E->dachor_var_B)
     E->base.current_instruction += 28;
   return __PAIR32__(E->dachor_var_A, E->dachor_var_B);
 }
@@ -3886,19 +3827,12 @@ void Dachora_Func_8(uint16 k) {  // 0xA7F806
   Dachora_Func_10(k);
   Dachora_Func_9(k);
   Enemy_Dachora *E = Get_Dachora(k);
-  uint16 dachor_var_D = E->dachor_var_D;
-  bool v3 = __CFADD__uint16(samus_y_subaccel, dachor_var_D);
-  E->dachor_var_D = samus_y_subaccel + dachor_var_D;
-  E->dachor_var_C += samus_y_accel + v3;
-
-  v3 = __CFADD__uint16(E->dachor_var_D, E->dachor_var_B);
-  uint16 v5 = E->dachor_var_D + E->dachor_var_B;
-  uint16 v6 = E->dachor_var_C + v3 + E->dachor_var_A;
-  E->dachor_var_B = v5;
-  E->dachor_var_A = v6;
+  AddToHiLo(&E->dachor_var_C, &E->dachor_var_D, __PAIR32__(samus_y_accel, samus_y_subaccel));
+  AddToHiLo(&E->dachor_var_A, &E->dachor_var_B, __PAIR32__(E->dachor_var_C, E->dachor_var_D));
+  uint16 v6 = E->dachor_var_A;
   if (!sign16(v6 - 15))
     v6 = 15;
-  int32 amt = __PAIR32__(v6, v5);
+  int32 amt = __PAIR32__(v6, E->dachor_var_B);
   if (Enemy_MoveDown(k, -amt)) {
     if (E->dachor_parameter_1) {
       E->base.current_instruction = addr_kDachora_Ilist_F3FF;
@@ -3966,13 +3900,8 @@ void Dachora_Func_10(uint16 k) {  // 0xA7F90A
 
 void Dachora_Func_11(uint16 k) {  // 0xA7F935
   Enemy_Dachora *E = Get_Dachora(k);
-  uint16 dachor_var_B = E->dachor_var_B;
-  bool v3 = __CFADD__uint16(samus_y_subaccel, dachor_var_B);
-  uint16 v4 = samus_y_subaccel + dachor_var_B;
-  E->dachor_var_B = v4;
-  uint16 v5 = samus_y_accel + v3 + E->dachor_var_A;
-  E->dachor_var_A = v5;
-  int32 amt = __PAIR32__(v5, v4);
+  AddToHiLo(&E->dachor_var_A, &E->dachor_var_B, __PAIR32__(samus_y_accel, samus_y_subaccel));
+  int32 amt = __PAIR32__(E->dachor_var_A, E->dachor_var_B);
   if (!sign16((amt >> 16) - 10))
     amt = INT16_SHL16(10);
   if (Enemy_MoveDown(k, amt)) {
