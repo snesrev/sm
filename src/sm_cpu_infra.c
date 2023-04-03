@@ -365,6 +365,10 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
     WORD(g_ram[22]) = 1; // MotherBrain_Instr_SpawnLaserEproj doesn't set R22
   } else if (FixBugHook(0x94A85B)) {
     memset(g_ram + 0xd82, 0, 8); // grapple_beam_tmpD82 not cleared in BlockCollGrappleBeam
+  } else if (FixBugHook(0xA0A35C)) {
+    // ProcessEnemyPowerBombInteraction - R18 may get overwritten by the enemy death routine
+    REMOVED_R18 = HIBYTE(power_bomb_explosion_radius);
+    REMOVED_R20 = (REMOVED_R18 + (REMOVED_R18 >> 1)) >> 1;
   }
 
   return 0;

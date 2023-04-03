@@ -18,6 +18,9 @@ static inline void SetHiLo(uint16 *hi, uint16 *lo, uint32 t) {
 
 extern int32 *cur_coll_amt32;
 
+// Not used anymore
+#define REMOVED_R18 *(uint16*)(g_ram + 18)
+#define REMOVED_R20 *(uint16*)(g_ram + 20)
 
 #define INT16_SHL8(x) ((int16)(x) << 8)
 #define INT16_SHL16(x) ((int16)(x) << 16)
