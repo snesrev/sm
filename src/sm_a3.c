@@ -846,20 +846,20 @@ void Roach_Func_2(uint16 k) {  // 0xA3A183
 
 void Roach_Func_3(uint16 k) {  // 0xA3A1B0
   Enemy_Roach *E = Get_Roach(k);
-  SetHiLo(&E->roach_var_01, &E->roach_var_00, CosineMult8bit(HIBYTE(E->roach_parameter_1), LOBYTE(E->roach_parameter_1)));
-  SetHiLo(&E->roach_var_03, &E->roach_var_02, SineMult8bit(HIBYTE(E->roach_parameter_1), LOBYTE(E->roach_parameter_1)));
+  SetHiLo(&E->roach_var_01, &E->roach_var_00, CosineMult8bitFull(HIBYTE(E->roach_parameter_1), LOBYTE(E->roach_parameter_1)));
+  SetHiLo(&E->roach_var_03, &E->roach_var_02, SineMult8bitFull(HIBYTE(E->roach_parameter_1), LOBYTE(E->roach_parameter_1)));
 }
 
 void Roach_Func_4(uint16 k) {  // 0xA3A1F3
   Enemy_Roach *E = Get_Roach(k);
-  SetHiLo(&E->roach_var_05, &E->roach_var_04, CosineMult8bit((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 32), LOBYTE(E->roach_parameter_1)));
-  SetHiLo(&E->roach_var_07, &E->roach_var_06, SineMult8bit((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 32), LOBYTE(E->roach_parameter_1)));
+  SetHiLo(&E->roach_var_05, &E->roach_var_04, CosineMult8bitFull((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 32), LOBYTE(E->roach_parameter_1)));
+  SetHiLo(&E->roach_var_07, &E->roach_var_06, SineMult8bitFull((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 32), LOBYTE(E->roach_parameter_1)));
 }
 
 void Roach_Func_5(uint16 k) {  // 0xA3A23E
   Enemy_Roach *E = Get_Roach(k);
-  SetHiLo(&E->roach_var_09, &E->roach_var_08, CosineMult8bit((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) + 32), LOBYTE(E->roach_parameter_1)));
-  SetHiLo(&E->roach_var_0B, &E->roach_var_0A, SineMult8bit((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) + 32), LOBYTE(E->roach_parameter_1)));
+  SetHiLo(&E->roach_var_09, &E->roach_var_08, CosineMult8bitFull((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) + 32), LOBYTE(E->roach_parameter_1)));
+  SetHiLo(&E->roach_var_0B, &E->roach_var_0A, SineMult8bitFull((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) + 32), LOBYTE(E->roach_parameter_1)));
 }
 
 void Roach_Func_6(uint16 k) {  // 0xA3A289
@@ -968,8 +968,8 @@ void Roach_Func_17(uint16 k) {  // 0xA3A3B5
 
 void Roach_Func_18(uint16 k) {  // 0xA3A3CA
   Enemy_Roach *E = Get_Roach(k);
-  SetHiLo(&E->roach_var_0D, &E->roach_var_0C, CosineMult8bit(E->roach_var_C, LOBYTE(E->roach_parameter_1)));
-  SetHiLo(&E->roach_var_0F, &E->roach_var_0E, SineMult8bit(E->roach_var_C, LOBYTE(E->roach_parameter_1)));
+  SetHiLo(&E->roach_var_0D, &E->roach_var_0C, CosineMult8bitFull(E->roach_var_C, LOBYTE(E->roach_parameter_1)));
+  SetHiLo(&E->roach_var_0F, &E->roach_var_0E, SineMult8bitFull(E->roach_var_C, LOBYTE(E->roach_parameter_1)));
 }
 
 void Roach_Func_19(void) {  // 0xA3A407
