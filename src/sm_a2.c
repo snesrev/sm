@@ -441,7 +441,7 @@ void MaridiaBeybladeTurtle_Func3(uint16 k) {  // 0xA28EE0
       --E->base.x_pos;
     else
       ++E->base.x_pos;
-    if (!(Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL16(1)) & 1)) {
+    if (!(Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL16(1)))) {
       E->base.current_instruction = addr_kMaridiaBeybladeTurtle_Ilist_8C4A;
       E->base.instruction_timer = 1;
       //*((uint16 *)RomPtr_A2(k) + 3) = g_word_A28D54; // WTF?
@@ -475,7 +475,7 @@ void MaridiaBeybladeTurtle_Func6(uint16 k) {  // 0xA28F5F
 
 void MaridiaBeybladeTurtle_Func7(uint16 k) {  // 0xA28F8D
   MaridiaBeybladeTurtle_Func4();
-  if (!(Enemy_MoveDown(k, INT16_SHL16(-1)) & 1)) {
+  if (!(Enemy_MoveDown(k, INT16_SHL16(-1)))) {
     if (CheckIfEnemyTouchesSamus(k))
       --extra_samus_y_displacement;
     Enemy_MaridiaTurtle *E = Get_MaridiaTurtle(k);
@@ -497,7 +497,7 @@ void MaridiaBeybladeTurtle_Func7(uint16 k) {  // 0xA28F8D
 void MaridiaBeybladeTurtle_Func8(uint16 k) {  // 0xA28FEB
   MaridiaBeybladeTurtle_Func4();
   Enemy_MaridiaTurtle *E = Get_MaridiaTurtle(k);
-  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->mte_var_E, E->mte_var_03)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->mte_var_E, E->mte_var_03))) {
     Negate32(&E->mte_var_E, &E->mte_var_03, &E->mte_var_E, &E->mte_var_03);
     Negate32(&E->mte_var_02, &E->mte_var_01, &E->mte_var_02, &E->mte_var_01);
     earthquake_type = 0;
@@ -556,7 +556,7 @@ void MaridiaBeybladeTurtle_Func11(uint16 k) {  // 0xA290E1
     E->mte_var_07 = mte_var_07 + 0x2000;
     E->mte_var_04 += __CFADD__uint16(mte_var_07, 0x2000);
   }
-  if (Enemy_MoveDown(k, INT16_SHL16(E->mte_var_04)) & 1) {
+  if (Enemy_MoveDown(k, INT16_SHL16(E->mte_var_04))) {
     uint16 v4 = addr_kMaridiaBeybladeTurtle_Ilist_8C4A;
     if ((E->mte_var_E & 0x8000) == 0)
       v4 = addr_kMaridiaBeybladeTurtle_Ilist_8D28;
@@ -626,7 +626,7 @@ void MiniMaridiaBeybladeTurtle_Func3(uint16 k) {  // 0xA29198
 
 void MiniMaridiaBeybladeTurtle_Func4(uint16 k) {  // 0xA291F8
   Enemy_MiniMaridiaTurtle *E = Get_MiniMaridiaTurtle(k);
-  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->mmte_var_E, 0)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->mmte_var_E, 0))) {
     E->mmte_var_E = -E->mmte_var_E;
   } else {
     Enemy_MoveDown(k, INT16_SHL16(E->mmte_var_04));
@@ -951,7 +951,7 @@ void ThinHoppingBlobs_Func8(void) {  // 0xA29B88
   uint16 v6 = 8 * (thbs_var_B >> 8);
   if (!E->thbs_var_03)
     v6 += 4;
-  if (Enemy_MoveDown(cur_enemy_index, kCommonEnemySpeeds_Quadratic32[v6 >> 2]) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, kCommonEnemySpeeds_Quadratic32[v6 >> 2])) {
     if (E->thbs_var_03) {
       E->thbs_var_D = FUNC16(ThinHoppingBlobs_Func6);
     } else {
@@ -977,7 +977,7 @@ void ThinHoppingBlobs_Func8(void) {  // 0xA29B88
     uint16 R20 = (*(uint16 *)((uint8 *)&g_word_A29A09 + E->thbs_var_F) & 0xFF00) >> 8;
     if (E->thbs_var_02)
       R20 = -R20;
-    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(R20)) & 1) {
+    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(R20))) {
       E->thbs_var_04 = 1;
       E->thbs_var_05 = E->thbs_var_02 ^ 1;
       E->thbs_var_01 = 0;
@@ -1086,7 +1086,7 @@ void ThinHoppingBlobs_Func15(void) {  // 0xA29D98
   uint16 thbs_var_F = E->thbs_var_F;
   uint16 R20 = (*(uint16 *)((uint8 *)&g_word_A29A0B + thbs_var_F) & 0xFF00) >> 8;
   uint16 R18 = *((uint8 *)&g_word_A29A0B + thbs_var_F) << 8;
-  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(R20, R18)) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(R20, R18))) {
     uint16 R28 = ThinHoppingBlobs_Func4();
     E->thbs_var_00 = (R28 & 1) + 5;
     E->thbs_var_D = FUNC16(ThinHoppingBlobs_Func6);
@@ -1940,14 +1940,14 @@ void NorfairErraticFireball_Main(void) {  // 0xA2B40F
     E->nefl_var_C = ~E->nefl_var_C;
     E->nefl_var_D = -E->nefl_var_D;
   }
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->nefl_var_C, E->nefl_var_D)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->nefl_var_C, E->nefl_var_D))) {
     E->nefl_parameter_1 ^= 0x40;
   } else {
     if (((E->nefl_parameter_1 + 128) & 0x80) == 0) {
       E->nefl_var_E = ~E->nefl_var_E;
       E->nefl_var_F = -E->nefl_var_F;
     }
-    if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(E->nefl_var_E, E->nefl_var_F)) & 1)
+    if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(E->nefl_var_E, E->nefl_var_F)))
       E->nefl_parameter_1 ^= 0xC0;
   }
 }
@@ -2374,14 +2374,14 @@ void Rio_3(uint16 k) {  // 0xA2BC48
 
   Enemy_Rio *E = Get_Rio(k);
   ;
-  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->rio_var_D)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->rio_var_D))) {
     E->rio_var_D = -E->rio_var_D;
 LABEL_13:
     E->rio_var_C = -E->rio_var_C;
     E->rio_var_B = FUNC16(Rio_4);
     return;
   }
-  if (Enemy_MoveDown(k, INT16_SHL8(E->rio_var_C)) & 1)
+  if (Enemy_MoveDown(k, INT16_SHL8(E->rio_var_C)))
     goto LABEL_13;
   v4 = E->rio_var_C - 24;
   E->rio_var_C = v4;
@@ -2398,9 +2398,9 @@ LABEL_13:
 
 void Rio_4(uint16 k) {  // 0xA2BCB7
   Enemy_Rio *E = Get_Rio(k);
-  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->rio_var_D)) & 1)
+  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->rio_var_D)))
     E->rio_var_D = -E->rio_var_D;
-  if (Enemy_MoveDown(k, INT16_SHL8(E->rio_var_C)) & 1) {
+  if (Enemy_MoveDown(k, INT16_SHL8(E->rio_var_C))) {
     Rio_6(addr_kRio_Ilist_BBA3);
     E->rio_var_B = FUNC16(Rio_2);
   } else {
@@ -2669,9 +2669,9 @@ void NorfairRio_Func_4(uint16 k) {  // 0xA2C361
   int16 v4;
 
   Enemy_NorfairRio *E = Get_NorfairRio(k);
-  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->nro_var_B)) & 1)
+  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->nro_var_B)))
     E->nro_var_B = -E->nro_var_B;
-  if (Enemy_MoveDown(k, INT16_SHL8(E->nro_var_A)) & 1 || (v4 = E->nro_var_A - 32, E->nro_var_A = v4, v4 < 0)) {
+  if (Enemy_MoveDown(k, INT16_SHL8(E->nro_var_A)) || (v4 = E->nro_var_A - 32, E->nro_var_A = v4, v4 < 0)) {
     E->nro_var_A = -1;
     NorfairRio_Func_7(addr_kNorfairRio_Ilist_C145);
     E->nro_var_F = FUNC16(NorfairRio_Func_5);
@@ -2680,9 +2680,9 @@ void NorfairRio_Func_4(uint16 k) {  // 0xA2C361
 
 void NorfairRio_Func_5(uint16 k) {  // 0xA2C3B1
   Enemy_NorfairRio *E = Get_NorfairRio(k);
-  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->nro_var_B)) & 1)
+  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->nro_var_B)))
     E->nro_var_B = -E->nro_var_B;
-  if (Enemy_MoveDown(k, INT16_SHL8(E->nro_var_A)) & 1) {
+  if (Enemy_MoveDown(k, INT16_SHL8(E->nro_var_A))) {
     E->nro_var_F = FUNC16(NorfairRio_Func_6);
   } else {
     E->nro_var_A -= 32;
@@ -2789,9 +2789,9 @@ void LowerNorfairRio_Func_4(uint16 k) {  // 0xA2C7D6
   int16 v4;
 
   Enemy_LowerNorfairRio *E = Get_LowerNorfairRio(k);
-  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->lnro_var_D)) & 1)
+  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->lnro_var_D)))
     E->lnro_var_D = -E->lnro_var_D;
-  if (Enemy_MoveDown(k, INT16_SHL8(E->lnro_var_C)) & 1 || (v4 = E->lnro_var_C - 32, E->lnro_var_C = v4, v4 < 0)) {
+  if (Enemy_MoveDown(k, INT16_SHL8(E->lnro_var_C)) || (v4 = E->lnro_var_C - 32, E->lnro_var_C = v4, v4 < 0)) {
     E->lnro_var_C = -1;
     LowerNorfairRio_Func_7(addr_kLowerNorfairRio_Ilist_C662);
     E->lnro_var_F = FUNC16(LowerNorfairRio_Func_5);
@@ -2801,9 +2801,9 @@ void LowerNorfairRio_Func_4(uint16 k) {  // 0xA2C7D6
 
 void LowerNorfairRio_Func_5(uint16 k) {  // 0xA2C82D
   Enemy_NorfairRio *E = Get_NorfairRio(k);
-  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->nro_var_D)) & 1)
+  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->nro_var_D)))
     E->nro_var_D = -E->nro_var_D;
-  if (Enemy_MoveDown(k, INT16_SHL8(E->nro_var_C)) & 1) {
+  if (Enemy_MoveDown(k, INT16_SHL8(E->nro_var_C))) {
     LowerNorfairRio_Func_7(addr_kLowerNorfairRio_Ilist_C686);
     E->nro_var_F = FUNC16(LowerNorfairRio_Func_6);
   } else {
@@ -2964,7 +2964,7 @@ void MaridiaLargeSnail_Func_5(void) {  // 0xA2CE2B
   if (E->mlsl_var_E) {
     CallEnemyPreInstr(E->mlsl_var_F | 0xA20000);
   } else {
-    if (!(Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1)) & 1)) {
+    if (!(Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1)))) {
       E->mlsl_var_B = 0;
       E->mlsl_var_F = FUNC16(MaridiaLargeSnail_Func_7);
       E->mlsl_var_E = 3;
@@ -2997,7 +2997,7 @@ void MaridiaLargeSnail_Func_5(void) {  // 0xA2CE2B
         else
           r20 += 16;
       }
-      if (Enemy_MoveRight_SlopesAsWalls(cur_enemy_index, __PAIR32__(r20, r18)) & 1)
+      if (Enemy_MoveRight_SlopesAsWalls(cur_enemy_index, __PAIR32__(r20, r18)))
         ++R36;
       if (E->mlsl_var_04 && E->mlsl_var_D == E->mlsl_var_05) {
         uint16 v7;
@@ -3034,7 +3034,7 @@ void MaridiaLargeSnail_Func_7(uint16 k) {  // 0xA2CF66
   E->mlsl_var_B = v2;
   
   int v5 = (8 * (v2 >> 8)) >> 1;
-  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v5 >> 1]) & 1) {
+  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v5 >> 1])) {
     --E->mlsl_var_E;
     int16 v6 = E->mlsl_var_B - 4096;
     if (v6 < 0)
@@ -3258,7 +3258,7 @@ void Gripper_Init(void) {  // 0xA2E1D3
 
 void Gripper_Main(void) {  // 0xA2E221
   Enemy_Gripper *E = Get_Gripper(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->gripper_var_D, E->gripper_var_C)) & 1 ||
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->gripper_var_D, E->gripper_var_C)) ||
       Gripper_Func_1(cur_enemy_index) & 1 || Gripper_Func_2(cur_enemy_index) & 1) {
     int v3 = E->gripper_var_E >> 1;
     uint16 v4;
@@ -3326,7 +3326,7 @@ void JetPowerRipper_Main(void) {  // 0xA2E353
   int16 v3;
 
   Enemy_JetPowerRipper *E = Get_JetPowerRipper(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->jprr_var_D, E->jprr_var_C)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->jprr_var_D, E->jprr_var_C))) {
     int v2 = E->jprr_var_E >> 1;
     if ((E->jprr_var_D & 0x8000) == 0) {
       E->jprr_var_D = kCommonEnemySpeeds_Linear[v2 + 2];
@@ -3384,7 +3384,7 @@ void Ripper_Main(void) {  // 0xA2E4DA
   int16 v3;
 
   Enemy_Ripper *E = Get_Ripper(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->ripper_var_D, E->ripper_var_C)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->ripper_var_D, E->ripper_var_C))) {
     int v2 = E->ripper_var_E >> 1;
     if ((E->ripper_var_D & 0x8000) == 0) {
       E->ripper_var_D = kCommonEnemySpeeds_Linear[v2 + 2];

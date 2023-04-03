@@ -3010,7 +3010,7 @@ LABEL_14:
 }
 
 void HandleLandingGraphics_Maridia(void) {  // 0x91F116
-  uint16 bottom = Samus_GetBottomBoundary();
+  uint16 bottom = Samus_GetBottom_R18();
   if ((fx_y_pos & 0x8000) == 0) {
     if (sign16(fx_y_pos - bottom) && (fx_liquid_options & 4) == 0)
       return;
@@ -3030,7 +3030,7 @@ LABEL_7:
 }
 
 void HandleLandingGraphics_Norfair(void) {  // 0x91F166
-  uint16 bottom = Samus_GetBottomBoundary();
+  uint16 bottom = Samus_GetBottom_R18();
   if ((fx_y_pos & 0x8000) == 0) {
     if (sign16(fx_y_pos - bottom) && (fx_liquid_options & 4) == 0)
       return;
@@ -3679,7 +3679,7 @@ uint8 SamusFunc_F468_Springball(void) {  // 0x91FA56
 }
 
 uint8 SamusFunc_F468_WallJumping(void) {  // 0x91FA76
-  uint16 bottom = Samus_GetBottomBoundary();
+  uint16 bottom = Samus_GetBottom_R18();
   if ((fx_y_pos & 0x8000) != 0) {
     if ((lava_acid_y_pos & 0x8000) == 0 && sign16(lava_acid_y_pos - bottom))
       return 0;

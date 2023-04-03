@@ -915,7 +915,7 @@ const uint16 *Kraid_Instr_MoveHimRight(uint16 k, const uint16 *jp) {  // 0xA7B68
 
   Enemy_Kraid *E = Get_Kraid(0);
   if (sign16(E->base.x_pos - 320) || (v3 = E->kraid_target_x - 1, (E->kraid_target_x = v3) == 0)) {
-    if (Enemy_MoveRight_IgnoreSlopes(0, INT16_SHL16(g_word_A7A922)) & 1) {
+    if (Enemy_MoveRight_IgnoreSlopes(0, INT16_SHL16(g_word_A7A922))) {
       earthquake_type = 0;
       earthquake_timer = 7;
       uint16 x_pos = Get_Kraid(0)->base.x_pos;
@@ -1411,7 +1411,7 @@ LABEL_7:
 
 void KraidsFingernail_Fire(uint16 k) {  // 0xA7BE8E
   EnemyData *v1 = gEnemyData(k);
-  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(v1->ai_var_C, v1->ai_var_B)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(v1->ai_var_C, v1->ai_var_B))) {
     v1->ai_var_B = -v1->ai_var_B;
     v1->ai_var_C = -v1->ai_var_C;
   } else {
@@ -1430,7 +1430,7 @@ void KraidsFingernail_Fire(uint16 k) {  // 0xA7BE8E
     }
   }
   EnemyData *v5 = gEnemyData(k);
-  if (Enemy_MoveDown(k, __PAIR32__(v5->ai_var_E, v5->ai_var_D)) & 1) {
+  if (Enemy_MoveDown(k, __PAIR32__(v5->ai_var_E, v5->ai_var_D))) {
     Negate32(&v5->ai_var_E, &v5->ai_var_D, &v5->ai_var_E, &v5->ai_var_D);
   }
 }
@@ -3331,7 +3331,7 @@ void Etecoon_Func_1(uint16 k) {  // 0xA7E958
 
 uint8 Etecoon_Func_2(uint16 k) {  // 0xA7E974
   Enemy_Etecoon *E = Get_Etecoon(k);
-  return Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->etecoon_var_C, E->etecoon_var_D)) & 1;
+  return Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->etecoon_var_C, E->etecoon_var_D));
 }
 
 uint8 Etecoon_Func_3(uint16 k) {  // 0xA7E983
@@ -3343,7 +3343,7 @@ uint8 Etecoon_Func_3(uint16 k) {  // 0xA7E983
     E->etecoon_var_B = samus_y_subaccel + etecoo_var_B;
     E->etecoon_var_A += samus_y_accel + v3;
   }
-  return Enemy_MoveDown(k, amt) & 1;
+  return Enemy_MoveDown(k, amt);
 }
 
 void Etecoon_Func_4(uint16 k) {  // 0xA7E9AF
@@ -3774,7 +3774,7 @@ void Dachora_Func_3(uint16 k) {  // 0xA7F5BC
 void Dachora_Func_4(uint16 k) {  // 0xA7F5ED
   int32 amt = -Dachora_Func_6(k);
   Enemy_Dachora *E = Get_Dachora(k);
-  if (Enemy_MoveRight_IgnoreSlopes(k, amt) & 1 || (EnemyFunc_C8AD(k), sign16(E->base.x_pos - 96))) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, amt) || (EnemyFunc_C8AD(k), sign16(E->base.x_pos - 96))) {
     E->base.current_instruction = addr_kDachora_Ilist_F407;
     E->dachor_var_F = FUNC16(Dachora_Func_5);
     E->dachor_var_E = 1;
@@ -3789,7 +3789,7 @@ void Dachora_Func_4(uint16 k) {  // 0xA7F5ED
 void Dachora_Func_5(uint16 k) {  // 0xA7F65E
   int32 amt = Dachora_Func_6(k);
   Enemy_Dachora *E = Get_Dachora(k);
-  if (Enemy_MoveRight_IgnoreSlopes(k, amt) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, amt)) {
     QueueSfx2_Max15(0x71);
     E->base.current_instruction = addr_kDachora_Ilist_F345;
     E->dachor_var_F = FUNC16(Dachora_Func_4);
@@ -3896,7 +3896,7 @@ void Dachora_Func_8(uint16 k) {  // 0xA7F806
   if (!sign16(v6 - 15))
     v6 = 15;
   int32 amt = __PAIR32__(v6, v5);
-  if (Enemy_MoveDown(k, -amt) & 1) {
+  if (Enemy_MoveDown(k, -amt)) {
     if (E->dachor_parameter_1) {
       E->base.current_instruction = addr_kDachora_Ilist_F3FF;
       E->dachor_parameter_1 = 0;
@@ -3972,7 +3972,7 @@ void Dachora_Func_11(uint16 k) {  // 0xA7F935
   int32 amt = __PAIR32__(v5, v4);
   if (!sign16((amt >> 16) - 10))
     amt = INT16_SHL16(10);
-  if (Enemy_MoveDown(k, amt) & 1) {
+  if (Enemy_MoveDown(k, amt)) {
     if (E->dachor_parameter_1) {
       E->base.current_instruction = addr_kDachora_Ilist_F407;
       E->dachor_var_F = FUNC16(Dachora_Func_5);

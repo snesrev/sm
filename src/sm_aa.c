@@ -360,7 +360,7 @@ const uint16 *Torizo_Instr_40(uint16 k, const uint16 *jp) {  // 0xAAC41E
 const uint16 *Torizo_Instr_16(uint16 k, const uint16 *jp) {  // 0xAAC470
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_var_A = g_word_AAC4BD[jp[0] >> 1];
-  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL16(E->toriz_var_A)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL16(E->toriz_var_A))) {
     E->toriz_var_03 = 0;
     if ((E->toriz_parameter_1 & 0x8000) != 0)
       return INSTR_RETURN_ADDR(addr_kTorizo_Ilist_B962);
@@ -381,7 +381,7 @@ const uint16 *Torizo_Instr_16(uint16 k, const uint16 *jp) {  // 0xAAC470
 const uint16 *Torizo_Instr_27(uint16 k, const uint16 *jp) {  // 0xAAC4E5
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_var_A = g_word_AAC532[jp[0] >> 1];
-  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL16(E->toriz_var_A)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL16(E->toriz_var_A))) {
     E->toriz_var_03 = 0;
     if ((E->toriz_parameter_1 & 0x8000) != 0)
       return INSTR_RETURN_ADDR(addr_kTorizo_Ilist_BD0E);
@@ -474,7 +474,7 @@ void Torizo_C620(uint16 k) {  // 0xAAC620
 
 void Torizo_C643(uint16 k) {  // 0xAAC643
   Enemy_Torizo *E = Get_Torizo(k);
-  if (Enemy_MoveDown(k, INT16_SHL8(E->toriz_var_B)) & 1) {
+  if (Enemy_MoveDown(k, INT16_SHL8(E->toriz_var_B))) {
     int16 v3 = E->toriz_var_B;
     if (v3 >= 0 && v3 != 256) {
       earthquake_type = 4;
@@ -580,7 +580,7 @@ void Torizo_Func_5(uint16 k) {  // 0xAAC752
       uint16 v10 = abs16(E->toriz_var_A) + 1;
       if (v10 >= 0x10)
         v10 = 15;
-      if (!(Enemy_MoveDown(k, INT16_SHL16(v10)) & 1)) {
+      if (!(Enemy_MoveDown(k, INT16_SHL16(v10)))) {
         uint16 v11;
         if ((E->toriz_parameter_1 & 0x8000) != 0)
           v11 = addr_off_AAC0F2;
@@ -607,7 +607,7 @@ void Torizo_Func_5(uint16 k) {  // 0xAAC752
       uint16 v5 = abs16(E->toriz_var_A) + 1;
       if (v5 >= 0x10)
         v5 = 15;
-      if (!(Enemy_MoveDown(k, INT16_SHL16(v5)) & 1)) {
+      if (!(Enemy_MoveDown(k, INT16_SHL16(v5)))) {
         uint16 v6;
         if ((E->toriz_parameter_1 & 0x8000) != 0)
           v6 = addr_off_AAC0F2;
@@ -639,7 +639,7 @@ void Torizo_Func_7(uint16 k) {  // 0xAAC82C
   Enemy_Torizo *E = Get_Torizo(k);
   Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->toriz_var_A));
   EnemyFunc_C8AD(k);
-  if (Enemy_MoveDown(k, INT16_SHL8(E->toriz_var_B)) & 1) {
+  if (Enemy_MoveDown(k, INT16_SHL8(E->toriz_var_B))) {
     E->base.current_instruction = E->toriz_var_00;
     E->base.instruction_timer = 1;
     E->toriz_var_B = 256;
@@ -935,7 +935,7 @@ const uint16 *Torizo_Instr_45(uint16 k, const uint16 *jp) {  // 0xAAD526
 const uint16 *Torizo_Instr_54(uint16 k, const uint16 *jp) {  // 0xAAD54D
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_var_A = g_word_AAD59A[jp[0] >> 1];
-  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL16(E->toriz_var_A)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL16(E->toriz_var_A))) {
     E->toriz_var_03 = 0;
     if ((E->toriz_parameter_1 & 0x8000) != 0)
       return INSTR_RETURN_ADDR(addr_kTorizo_Ilist_D203);
@@ -986,7 +986,7 @@ void Torizo_D5F1(uint16 k) {  // 0xAAD5F1
     uint16 v5 = abs16(E->toriz_var_A) + 1;
     if (v5 >= 0x10)
       v5 = 15;
-    if (!(Enemy_MoveDown(k, INT16_SHL16(v5)) & 1)) {
+    if (!(Enemy_MoveDown(k, INT16_SHL16(v5)))) {
       uint16 v6;
       if ((E->toriz_parameter_1 & 0x8000) != 0)
         v6 = addr_off_AAC0F2;
@@ -1336,8 +1336,8 @@ void Shaktool_DD25(uint16 k) {  // 0xAADD25
   uint16 v11 = E->base.x_pos;
   E->base.x_pos = x_pos;
   E->base.y_pos = y_pos;
-  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL16(v11 - x_pos)) & 1
-      || (E->base.y_pos = y_pos, Enemy_MoveDown(k, INT16_SHL16(v12 - y_pos)) & 1)) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL16(v11 - x_pos))
+      || (E->base.y_pos = y_pos, Enemy_MoveDown(k, INT16_SHL16(v12 - y_pos)))) {
     if ((E->shakt_parameter_1 & 0x2000) != 0) {
       Shaktool_DB0E(k, (E->shakt_parameter_1 ^ 0x8000) & 0x8FFF);
     } else {

@@ -1419,7 +1419,7 @@ static const uint16 kSamus_HandleExtraRunspeedX_Tab5[3] = { 0, 0, 0 };
 
 void Samus_HandleExtraRunspeedX(void) {  // 0x90973E
   if ((equipped_items & 0x20) == 0) {
-    uint16 r18 = Samus_GetBottomBoundary();
+    uint16 r18 = Samus_GetBottom_R18();
     if ((fx_y_pos & 0x8000) != 0) {
       if ((lava_acid_y_pos & 0x8000) == 0 && sign16(lava_acid_y_pos - r18)) {
 LABEL_24:
@@ -1498,7 +1498,7 @@ void Samus_InitJump(void) {  // 0x9098BC
 
   if ((equipped_items & 0x20) != 0)
     goto LABEL_7;
-  uint16 r18 = Samus_GetBottomBoundary();
+  uint16 r18 = Samus_GetBottom_R18();
   if ((fx_y_pos & 0x8000) == 0) {
     if (sign16(fx_y_pos - r18) && (fx_liquid_options & 4) == 0) {
       v0 = 2;
@@ -1538,7 +1538,7 @@ void Samus_InitWallJump(void) {  // 0x909949
 
   if ((equipped_items & 0x20) != 0)
     goto LABEL_7;
-  uint16 r18 = Samus_GetBottomBoundary();
+  uint16 r18 = Samus_GetBottom_R18();
   if ((fx_y_pos & 0x8000) == 0) {
     if (sign16(fx_y_pos - r18) && (fx_liquid_options & 4) == 0) {
       v0 = 2;
@@ -1577,7 +1577,7 @@ void Samus_SetSpeedForKnockback_Y(void) {  // 0x9099D6
   uint16 v0;
 
   if ((equipped_items & 0x20) == 0) {
-    uint16 r18 = Samus_GetBottomBoundary();
+    uint16 r18 = Samus_GetBottom_R18();
     if ((fx_y_pos & 0x8000) != 0) {
       if ((lava_acid_y_pos & 0x8000) == 0 && sign16(lava_acid_y_pos - r18)) {
         v0 = 4;
@@ -1604,7 +1604,7 @@ void Samus_InitBombJump(void) {  // 0x909A2C
   uint16 v0;
 
   if ((equipped_items & 0x20) == 0) {
-    uint16 r18 = Samus_GetBottomBoundary();
+    uint16 r18 = Samus_GetBottom_R18();
     if ((fx_y_pos & 0x8000) != 0) {
       if ((lava_acid_y_pos & 0x8000) == 0 && sign16(lava_acid_y_pos - r18)) {
         v0 = 4;
@@ -1626,25 +1626,18 @@ LABEL_11:;
 }
 
 int32 Samus_CalcBaseSpeed_X(uint16 k) {  // 0x909A7E
-  SamusSpeedTableEntry *v1;
-  SamusSpeedTableEntry *v4;
-  SamusSpeedTableEntry *v5;
-  SamusSpeedTableEntry *sste;
-  SamusSpeedTableEntry *v7;
-  int16 v8;
+  SamusSpeedTableEntry *sste = get_SamusSpeedTableEntry(k);
   uint16 r18, r20;
 
   if (samus_x_accel_mode) {
     if (samus_x_decel_mult) {
-      sste = get_SamusSpeedTableEntry(k);
       r20 = Mult8x8(samus_x_decel_mult, HIBYTE(sste->decel_sub));
       r18 = Mult8x8(samus_x_decel_mult, sste->decel) >> 8;
     } else {
-      v7 = get_SamusSpeedTableEntry(k);
-      r20 = v7->decel_sub;
-      r18 = v7->decel;
+      r20 = sste->decel_sub;
+      r18 = sste->decel;
     }
-    v8 = (__PAIR32__(samus_x_base_speed, samus_x_base_subspeed) - __PAIR32__(r18, r20)) >> 16;
+    int16 v8 = (__PAIR32__(samus_x_base_speed, samus_x_base_subspeed) - __PAIR32__(r18, r20)) >> 16;
     samus_x_base_subspeed -= r20;
     samus_x_base_speed = v8;
     if (v8 < 0) {
@@ -1653,18 +1646,16 @@ int32 Samus_CalcBaseSpeed_X(uint16 k) {  // 0x909A7E
       samus_x_accel_mode = 0;
     }
   } else {
-    v1 = get_SamusSpeedTableEntry(k);
-    bool v2 = __CFADD__uint16(v1->accel_sub, samus_x_base_subspeed);
-    samus_x_base_subspeed += v1->accel_sub;
-    uint16 v3 = v1->accel + v2 + samus_x_base_speed;
+    bool v2 = __CFADD__uint16(sste->accel_sub, samus_x_base_subspeed);
+    samus_x_base_subspeed += sste->accel_sub;
+    uint16 v3 = sste->accel + v2 + samus_x_base_speed;
     samus_x_base_speed = v3;
-    if ((int16)(v3 - v1->max_speed) >= 0) {
-      if (v3 != v1->max_speed
-          || (v5 = get_SamusSpeedTableEntry(k), (int16)(samus_x_base_subspeed - v5->max_speed_sub) >= 0)
-          && samus_x_base_subspeed != v5->max_speed_sub) {
-        v4 = get_SamusSpeedTableEntry(k);
-        samus_x_base_speed = v4->max_speed;
-        samus_x_base_subspeed = v4->max_speed_sub;
+    if ((int16)(v3 - sste->max_speed) >= 0) {
+      if (v3 != sste->max_speed
+          || ((int16)(samus_x_base_subspeed - sste->max_speed_sub) >= 0)
+          && samus_x_base_subspeed != sste->max_speed_sub) {
+        samus_x_base_speed = sste->max_speed;
+        samus_x_base_subspeed = sste->max_speed_sub;
       }
     }
   }
@@ -1672,25 +1663,18 @@ int32 Samus_CalcBaseSpeed_X(uint16 k) {  // 0x909A7E
 }
 
 static Pair_Bool_Amt Samus_CalcBaseSpeed_NoDecel_X(uint16 k) {  // 0x909B1F
-  SamusSpeedTableEntry *v1;
-  SamusSpeedTableEntry *v4;
-  SamusSpeedTableEntry *v5;
-  SamusSpeedTableEntry *sste;
-  SamusSpeedTableEntry *v7;
-  int16 v8;
   uint16 r18, r20;
+  SamusSpeedTableEntry *sste = get_SamusSpeedTableEntry(k);
 
   if ((samus_x_accel_mode & 1) != 0) {
     if (samus_x_decel_mult) {
-      sste = get_SamusSpeedTableEntry(k);
       r20 = Mult8x8(samus_x_decel_mult, HIBYTE(sste->decel_sub));
       r18 = Mult8x8(samus_x_decel_mult, sste->decel) >> 8;
     } else {
-      v7 = get_SamusSpeedTableEntry(k);
-      r20 = v7->decel_sub;
-      r18 = v7->decel;
+      r20 = sste->decel_sub;
+      r18 = sste->decel;
     }
-    v8 = (__PAIR32__(samus_x_base_speed, samus_x_base_subspeed) - __PAIR32__(r18, r20)) >> 16;
+    int16 v8 = (__PAIR32__(samus_x_base_speed, samus_x_base_subspeed) - __PAIR32__(r18, r20)) >> 16;
     samus_x_base_subspeed -= r20;
     samus_x_base_speed = v8;
     if (v8 < 0) {
@@ -1699,18 +1683,16 @@ static Pair_Bool_Amt Samus_CalcBaseSpeed_NoDecel_X(uint16 k) {  // 0x909B1F
       samus_x_accel_mode = 0;
     }
   } else {
-    v1 = get_SamusSpeedTableEntry(k);
-    bool v2 = __CFADD__uint16(v1->accel_sub, samus_x_base_subspeed);
-    samus_x_base_subspeed += v1->accel_sub;
-    uint16 v3 = v1->accel + v2 + samus_x_base_speed;
+    bool v2 = __CFADD__uint16(sste->accel_sub, samus_x_base_subspeed);
+    samus_x_base_subspeed += sste->accel_sub;
+    uint16 v3 = sste->accel + v2 + samus_x_base_speed;
     samus_x_base_speed = v3;
-    if ((int16)(v3 - v1->max_speed) >= 0) {
-      if (v3 != v1->max_speed
-          || (v5 = get_SamusSpeedTableEntry(k), (int16)(samus_x_base_subspeed - v5->max_speed_sub) >= 0)
-          && samus_x_base_subspeed != v5->max_speed_sub) {
-        v4 = get_SamusSpeedTableEntry(k);
-        samus_x_base_speed = v4->max_speed;
-        samus_x_base_subspeed = v4->max_speed_sub;
+    if ((int16)(v3 - sste->max_speed) >= 0) {
+      if (v3 != sste->max_speed
+          || ((int16)(samus_x_base_subspeed - sste->max_speed_sub) >= 0)
+          && samus_x_base_subspeed != sste->max_speed_sub) {
+        samus_x_base_speed = sste->max_speed;
+        samus_x_base_subspeed = sste->max_speed_sub;
         return (Pair_Bool_Amt) { true, __PAIR32__(samus_x_base_speed, samus_x_base_subspeed) };
       }
     }
@@ -1720,7 +1702,7 @@ static Pair_Bool_Amt Samus_CalcBaseSpeed_NoDecel_X(uint16 k) {  // 0x909B1F
 
 uint16 Samus_DetermineSpeedTableEntryPtr_X(void) {  // 0x909BD1
   if ((equipped_items & 0x20) == 0) {
-    uint16 r18 = Samus_GetBottomBoundary();
+    uint16 r18 = Samus_GetBottom_R18();
     if ((fx_y_pos & 0x8000) != 0) {
       if ((lava_acid_y_pos & 0x8000) == 0 && sign16(lava_acid_y_pos - r18))
         samus_x_speed_table_pointer = addr_kSamusSpeedTable_LavaAcid_X;
@@ -1734,7 +1716,7 @@ uint16 Samus_DetermineSpeedTableEntryPtr_X(void) {  // 0x909BD1
 uint16 Samus_DetermineGrappleSwingSpeed_X(void) {  // 0x909C21
   if ((equipped_items & 0x20) != 0)
     return addr_stru_909F31;
-  uint16 r18 = Samus_GetBottomBoundary();
+  uint16 r18 = Samus_GetBottom_R18();
   if ((fx_y_pos & 0x8000) == 0) {
     if (sign16(fx_y_pos - r18) && (fx_liquid_options & 4) == 0)
       return addr_stru_909F3D;
@@ -1756,7 +1738,7 @@ void Samus_DetermineAccel_Y(void) {  // 0x909C5B
 
   if ((equipped_items & 0x20) != 0)
     goto LABEL_7;
-  uint16 r18 = Samus_GetBottomBoundary();
+  uint16 r18 = Samus_GetBottom_R18();
   if ((fx_y_pos & 0x8000) == 0) {
     if (sign16(fx_y_pos - r18) && (fx_liquid_options & 4) == 0) {
       samus_y_subaccel = g_word_909EA3;
@@ -3548,7 +3530,6 @@ static const uint16 kFireChargedBeam_Funcs[12] = {  // 0x90B986
 };
 
 void FireChargedBeam(void) {
-
   if (Samus_CanFireBeam() & 1) {
     uint16 v0 = 0;
     while (projectile_damage[v0 >> 1]) {
@@ -3713,7 +3694,6 @@ static const int16 kProjectileOriginOffsets_X[13] = { 2, 18, 15, 17, 3, -4, -17,
 static const int16 kProjectileOriginOffsets_Y[13] = { -28, -19, 1, 6, 17, 17, 6, 1, -20, -28, -20, -2, 8 };
 static const int16 kProjectileOriginOffsets2_X[10] = { 2, 19, 20, 18, 3, -4, -18, -20, -19, -2 };
 static const int16 kProjectileOriginOffsets2_Y[10] = { -32, -22, -3, 6, 25, 25, 6, -3, -20, -32 };
-
 
 void DrawFlareAnimationComponent(uint16 k) {  // 0x90BBE1
   static const uint16 word_93A225[3] = { 0, 0x1e, 0x24 };
@@ -4259,18 +4239,13 @@ void AdvanceArmCannonFrame(void) {  // 0x90C627
 
 void Samus_ArmCannon_Draw(void) {  // 0x90C663
   static const uint16 kDrawArmCannon_Char[10] = { 0x281f, 0x281f, 0x281f, 0x681f, 0xa81f, 0xe81f, 0x281f, 0x681f, 0x681f, 0x681f };
-  int16 v2;
-  int16 v8;
-  OamEnt *v9;
-  int16 v10;
-  int16 v12;
   uint16 v3;
   uint16 r22;
 
   if (arm_cannon_frame && (!samus_invincibility_timer || (nmi_frame_counter_word & 1) == 0)) {
     uint16 v0 = kPlayerPoseToPtr[samus_pose];
     const uint8 *v1 = RomPtr_90(v0);
-    v2 = *v1;
+    int16 v2 = *v1;
     if ((v2 & 0x80) != 0) {
       if (samus_anim_frame)
         v3 = 2 * (v1[2] & 0x7F);
@@ -4286,12 +4261,12 @@ void Samus_ArmCannon_Draw(void) {  // 0x90C663
     uint16 r18 = (int8)v4[0], r20 = (int8)v4[1];
     r22 = kPoseParams[samus_pose].y_offset_to_gfx;
     uint16 v7 = oam_next_ptr;
-    v8 = r18 + samus_x_pos - layer1_x_pos;
+    int16 v8 = r18 + samus_x_pos - layer1_x_pos;
     if (v8 >= 0) {
       if (sign16(v8 - 256)) {
-        v9 = gOamEnt(oam_next_ptr);
+        OamEnt *v9 = gOamEnt(oam_next_ptr);
         v9->xcoord = v8;
-        v10 = r20 + samus_y_pos - r22 - layer1_y_pos;
+        int16 v10 = r20 + samus_y_pos - r22 - layer1_y_pos;
         if (v10 >= 0) {
           if (sign16(v10 - 256)) {
             v9->ycoord = v10;
@@ -4302,7 +4277,7 @@ void Samus_ArmCannon_Draw(void) {  // 0x90C663
       }
     }
     const uint8 *v11 = RomPtr_90(kPlayerPoseToPtr[samus_pose]);
-    v12 = *v11;
+    int16 v12 = *v11;
     if ((v12 & 0x80) != 0) {
       if (samus_anim_frame)
         v12 = *RomPtr_90(kPlayerPoseToPtr[samus_pose] + 2) & 0x7F;
@@ -4330,22 +4305,18 @@ static uint16 Projectile_SinLookup_Inner(uint16 k, uint16 r24) {  // 0x90CC8A
 }
 
 Point16U Projectile_SinLookup(uint16 j, uint16 a) {  // 0x90CC39
-  int16 v3;
   uint16 v2, v4;
-
   uint16 r24 = a;
   uint16 r26 = j;
   if (sign16(j - 128))
     v2 = Projectile_SinLookup_Inner(2 * j, r24);
   else
     v2 = -Projectile_SinLookup_Inner(2 * (uint8)(j + 0x80), r24);
-//  r20 = v2;
-  v3 = (uint8)(r26 - 64);
+  int16 v3 = (uint8)(r26 - 64);
   if (sign16(v3 - 128))
     v4 = Projectile_SinLookup_Inner(2 * v3, r24);
   else
     v4 = -Projectile_SinLookup_Inner(2 * (uint8)(v3 + 0x80), r24);
-//  R22_ = v4;
   return (Point16U) { v2, v4 };
 }
 
@@ -5199,7 +5170,6 @@ void ProjPreInstr_WaveSba(uint16 k) {  // 0x90DA08
   flare_counter = 0;
 }
 
-
 void BombSpread(void) {  // 0x90D849
   if (bomb_functions[0] != FUNC16(ProjPreInstr_SpreadBomb)) {
     uint16 v0 = 10;
@@ -5228,12 +5198,15 @@ void BombSpread(void) {  // 0x90D849
     flare_counter = 0;
   }
 }
+
 typedef void Func_SpazerSba_V(uint16 j, uint16 r22);
+
 static Func_SpazerSba_V *const kProjPreInstr_SpazerSba_FuncsB[3] = {  // 0x90DB06
   ProjPreInstr_SpazerSba_FuncB_0,
   ProjPreInstr_SpazerSba_FuncB_1,
   ProjPreInstr_SpazerSba_FuncB_2,
 };
+
 static Func_Y_V *const kProjPreInstr_SpazerSba_FuncsA[4] = {
   ProjPreInstr_SpazerSba_FuncA_0,
   ProjPreInstr_SpazerSba_FuncA_1,
@@ -5242,7 +5215,6 @@ static Func_Y_V *const kProjPreInstr_SpazerSba_FuncsA[4] = {
 };
 
 void ProjPreInstr_SpazerSba(uint16 k) {
-
   int v1 = k >> 1;
   if ((projectile_dir[v1] & 0xF0) != 0) {
     kProjPreInstr_SpazerSba_FuncsA[v1](k);
@@ -6628,10 +6600,6 @@ void Samus_SetRadius(void) {  // 0x90EC22
   samus_x_radius = 5;
 }
 
-uint16 Samus_GetBottomBoundary(void) {  // 0x90EC3E
-  return samus_y_pos + kPoseParams[samus_pose].y_radius - 1;
-}
-
 uint16 Samus_GetBottom_R18(void) {
   return samus_y_pos + kPoseParams[samus_pose].y_radius - 1;
 }
@@ -6984,9 +6952,6 @@ uint8 SamusCode_07_SetupForElevator(void) {  // 0x90F1C8
 }
 
 uint8 SamusCode_08_SetupForCeresStart(void) {  // 0x90F1E9
-  uint16 v1;
-  uint16 v2;
-
   frame_handler_alfa = FUNC16(EmptyFunction);
   frame_handler_beta = FUNC16(SetContactDamageIndexAndUpdateMinimap);
   samus_pose = kPose_00_FaceF_Powersuit;
@@ -7000,7 +6965,6 @@ uint8 SamusCode_08_SetupForCeresStart(void) {  // 0x90F1E9
   *(uint16 *)&samus_prev_pose_x_dir = *(uint16 *)&samus_pose_x_dir;
   *(uint16 *)&samus_last_different_pose_x_dir = *(uint16 *)&samus_pose_x_dir;
   samus_y_pos = 0;
-  uint16 v0 = v1 = v2 = 0;
   SpawnEnemyProjectileWithGfx(0, 0, addr_kEproj_CeresElevatorPad);
   SpawnEnemyProjectileWithGfx(0, 0, addr_kEproj_CeresElevatorPlatform);
   debug_disable_minimap = 0;
@@ -7054,7 +7018,6 @@ uint8 SamusCode_0D_IsGrappleActive_A(void) {
   return grapple_beam_function != FUNC16(GrappleBeamFunc_Inactive);
 }
 
-
 uint8 SamusCode_0E(void) {  // 0x90F2CA
   frame_handler_alfa = FUNC16(Samus_FrameHandlerAlfa_Func11);
   frame_handler_beta = FUNC16(Samus_Func18);
@@ -7080,11 +7043,11 @@ uint8 SamusCode_11_15_Common(void) {  // 0x90F2FC
   samus_draw_handler = FUNC16(SamusDisplayHandler_SamusReceivedFatal);
   return 1;
 }
+
 uint8 SamusCode_11_SetupForDeath(void) {  // 0x90F2F8
   DisablePaletteFx();
   return SamusCode_11_15_Common();
 }
-
 
 uint8 SamusCode_15_CalledBySuitAcquision(void) {  // 0x90F310
   Samus_UpdatePreviousPose();
@@ -7112,21 +7075,16 @@ uint8 SamusCode_14(void) {  // 0x90F331
     if (samus_pose_x_dir == 3) {
       if (samus_pose == kPose_81_FaceR_Screwattack || samus_pose == kPose_82_FaceL_Screwattack) {
         QueueSfx1_Max6(0x33);
-        return 0;
       } else if (samus_pose == kPose_1B_FaceR_SpaceJump || samus_pose == kPose_1C_FaceL_SpaceJump) {
         QueueSfx1_Max6(0x3E);
-        return 0;
       } else {
         QueueSfx1_Max6(0x31);
-        return 0;
       }
-    } else {
-      return 0;
     }
   } else {
     QueueSfx1_Max6(6);
-    return 0;
   }
+  return 0;
 }
 
 uint8 SamusCode_05_SetupDrained(void) {  // 0x90F38E

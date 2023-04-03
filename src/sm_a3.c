@@ -118,14 +118,14 @@ void Waver_Init(void) {  // 0xA386ED
 
 void Waver_Main(void) {  // 0xA3874C
   Enemy_Waver *E = Get_Waver(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->waver_var_B, E->waver_var_A)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->waver_var_B, E->waver_var_A))) {
     uint16 r18 = *(uint16 *)((uint8 *)&E->waver_var_A + 1);
     E->waver_var_B = SignExtend8((-r18 & 0xFF00) >> 8);
     E->waver_var_A = -(int8)r18 << 8;
     E->waver_var_F = (E->waver_var_F ^ 1) & 1;
     Waver_Func_1();
   } else {
-    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(SineMult8bit(LOBYTE(E->waver_var_D), 4))) & 1) {
+    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(SineMult8bit(LOBYTE(E->waver_var_D), 4)))) {
       E->waver_var_D = (uint8)(E->waver_var_D + 0x80);
     } else {
       E->waver_var_D += 2;
@@ -410,7 +410,7 @@ void MaridiaFish_Init(void) {  // 0xA390B5
 
 void MaridiaFish_Func_1(void) {  // 0xA39132
   Enemy_MaridiaFish *E = Get_MaridiaFish(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->mfh_var_E, E->mfh_var_D)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->mfh_var_E, E->mfh_var_D))) {
     E->mfh_var_A = FUNC16(MaridiaFish_Func_3);
     E->base.instruction_timer = 1;
     E->base.timer = 0;
@@ -418,7 +418,7 @@ void MaridiaFish_Func_1(void) {  // 0xA39132
   } else {
     uint16 v2 = SineMult8bit(E->mfh_var_F, E->mfh_var_00);
     E->mfh_var_04 = v2;
-    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(v2 - E->mfh_var_03)) & 1) {
+    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(v2 - E->mfh_var_03))) {
       E->mfh_var_A = FUNC16(MaridiaFish_Func_3);
       E->base.instruction_timer = 1;
       E->base.timer = 0;
@@ -432,7 +432,7 @@ void MaridiaFish_Func_1(void) {  // 0xA39132
 
 void MaridiaFish_Func_2(void) {  // 0xA391AB
   Enemy_MaridiaFish *E = Get_MaridiaFish(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->mfh_var_C, E->mfh_var_B)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->mfh_var_C, E->mfh_var_B))) {
     E->mfh_var_A = FUNC16(MaridiaFish_Func_4);
     E->base.instruction_timer = 1;
     E->base.timer = 0;
@@ -440,7 +440,7 @@ void MaridiaFish_Func_2(void) {  // 0xA391AB
   } else {
     uint16 v2 = SineMult8bit(E->mfh_var_F, E->mfh_var_00);
     E->mfh_var_04 = v2;
-    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(v2 - E->mfh_var_03)) & 1) {
+    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(v2 - E->mfh_var_03))) {
       E->mfh_var_A = FUNC16(MaridiaFish_Func_4);
       E->base.instruction_timer = 1;
       E->base.timer = 0;
@@ -687,7 +687,7 @@ void PlatformThatFallsWithSamus_Main(void) {  // 0xA39D16
 void PlatformThatFallsWithSamus_Func_1(void) {  // 0xA39D5E
   Enemy_PlatformThatFallsWithSamus *E = Get_PlatformThatFallsWithSamus(cur_enemy_index);
   E->ptfwss_var_01 = E->base.x_pos;
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->ptfwss_var_E, E->ptfwss_var_D)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->ptfwss_var_E, E->ptfwss_var_D))) {
     E->ptfwss_var_02 = 1;
     PlatformThatFallsWithSamus_Func_8();
   }
@@ -696,7 +696,7 @@ void PlatformThatFallsWithSamus_Func_1(void) {  // 0xA39D5E
 void PlatformThatFallsWithSamus_Func_2(void) {  // 0xA39D83
   Enemy_PlatformThatFallsWithSamus *E = Get_PlatformThatFallsWithSamus(cur_enemy_index);
   E->ptfwss_var_01 = E->base.x_pos;
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->ptfwss_var_C, E->ptfwss_var_B)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->ptfwss_var_C, E->ptfwss_var_B))) {
     E->ptfwss_var_02 = 0;
     PlatformThatFallsWithSamus_Func_7();
   }
@@ -715,7 +715,7 @@ void PlatformThatFallsWithSamus_Func_3(void) {  // 0xA39DA8
   }
   int v3;
   v3 = (8 * ptfwss_var_05) >> 1;
-  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v3 + 3], kCommonEnemySpeeds_Quadratic[v3 + 2])) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v3 + 3], kCommonEnemySpeeds_Quadratic[v3 + 2]))) {
 LABEL_5:
     E->ptfwss_var_F = 0;
     PlatformThatFallsWithSamus_Func_10();
@@ -729,7 +729,7 @@ void PlatformThatFallsWithSamus_Func_4(void) {  // 0xA39DE4
   extra_samus_x_displacement += E->base.x_pos - E->ptfwss_var_01;
   E->ptfwss_var_01 = E->base.y_pos;
   int v2 = (8 * E->ptfwss_var_F) >> 1;
-  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 1], kCommonEnemySpeeds_Quadratic[v2])) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 1], kCommonEnemySpeeds_Quadratic[v2]))) {
     E->ptfwss_var_F = 0;
     PlatformThatFallsWithSamus_Func_10();
   }
@@ -1132,10 +1132,10 @@ void Roach_Func_32(uint16 k) {  // 0xA3A611
 
 void Roach_Func_33(uint16 k) {  // 0xA3A648
   Enemy_Roach *E = Get_Roach(k);
-  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->roach_var_0D, E->roach_var_0C)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->roach_var_0D, E->roach_var_0C))) {
     E->roach_var_B = FUNC16(Roach_Func_9);
   } else {
-    if (Enemy_MoveDown(k, __PAIR32__(E->roach_var_0F, E->roach_var_0E)) & 1)
+    if (Enemy_MoveDown(k, __PAIR32__(E->roach_var_0F, E->roach_var_0E)))
       E->roach_var_B = FUNC16(Roach_Func_9);
   }
 }
@@ -1178,7 +1178,7 @@ LABEL_8:
     E->mochtr_var_D = v5;
     E->mochtr_var_C = 0;
   }
-  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(E->mochtr_var_D, E->mochtr_var_C)) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(E->mochtr_var_D, E->mochtr_var_C))) {
     E->mochtr_var_C = 0;
     E->mochtr_var_D = 0;
   }
@@ -1200,7 +1200,7 @@ LABEL_21:
     E->mochtr_var_B = v10;
     E->mochtr_var_A = 0;
   }
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->mochtr_var_B, E->mochtr_var_A)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->mochtr_var_B, E->mochtr_var_A))) {
     E->mochtr_var_A = 0;
     E->mochtr_var_B = 0;
   }
@@ -1477,11 +1477,11 @@ static void CallSidehopperFunc(uint32 ea) {
 void Sidehopper_Func_19(void) {  // 0xA3AD6D
   Enemy_Sidehopper *E = Get_Sidehopper(cur_enemy_index);
   int v2 = (8 * E->sideh_var_C) >> 1;
-  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 3], kCommonEnemySpeeds_Quadratic[v2 + 2])) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 3], kCommonEnemySpeeds_Quadratic[v2 + 2]))) {
     E->sideh_var_D = -E->sideh_var_D;
     E->sideh_var_03 = 1;
   } else {
-    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(E->sideh_var_D)) & 1) {
+    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(E->sideh_var_D))) {
       E->sideh_var_D = -E->sideh_var_D;
       E->sideh_var_03 = 1;
     } else {
@@ -1498,11 +1498,11 @@ void Sidehopper_Func_19(void) {  // 0xA3AD6D
 void Sidehopper_Func_20(void) {  // 0xA3ADD4
   Enemy_Sidehopper *E = Get_Sidehopper(cur_enemy_index);
   int v2 = (8 * E->sideh_var_C) >> 1;
-  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 1], kCommonEnemySpeeds_Quadratic[v2])) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 1], kCommonEnemySpeeds_Quadratic[v2]))) {
     E->sideh_var_03 = 0;
     E->sideh_var_B = FUNC16(Sidehopper_Func_13);
   } else {
-    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(E->sideh_var_D)) & 1)
+    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(E->sideh_var_D)))
       E->sideh_var_D = -E->sideh_var_D;
     int16 v3 = E->sideh_var_E + E->sideh_var_C;
     if (!sign16(v3 - 64))
@@ -1514,11 +1514,11 @@ void Sidehopper_Func_20(void) {  // 0xA3ADD4
 void Sidehopper_Func_21(void) {  // 0xA3AE27
   Enemy_Sidehopper *E = Get_Sidehopper(cur_enemy_index);
   int v2 = (8 * E->sideh_var_C) >> 1;
-  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 1], kCommonEnemySpeeds_Quadratic[v2])) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 1], kCommonEnemySpeeds_Quadratic[v2]))) {
     E->sideh_var_D = -E->sideh_var_D;
     E->sideh_var_03 = 1;
   } else {
-    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(E->sideh_var_D)) & 1) {
+    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(E->sideh_var_D))) {
       E->sideh_var_D = -E->sideh_var_D;
       E->sideh_var_03 = 1;
     } else {
@@ -1537,11 +1537,11 @@ void Sidehopper_Func_22(void) {  // 0xA3AE8E
 
   Enemy_Sidehopper *E = Get_Sidehopper(cur_enemy_index);
   int v2 = (8 * E->sideh_var_C) >> 1;
-  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 3], kCommonEnemySpeeds_Quadratic[v2 + 2])) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 3], kCommonEnemySpeeds_Quadratic[v2 + 2]))) {
     E->sideh_var_03 = 0;
     E->sideh_var_B = FUNC16(Sidehopper_Func_13);
   } else {
-    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(E->sideh_var_D)) & 1)
+    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(E->sideh_var_D)))
       E->sideh_var_D = -E->sideh_var_D;
     v3 = E->sideh_var_E + E->sideh_var_C;
     if (!sign16(v3 - 64))
@@ -2217,7 +2217,7 @@ void MaridiaSnail_D002(uint16 k, const uint8 *j) {  // 0xA3D002
     E->msl_var_E = 0;
     uint8 carry = EnemyFunc_C8AD(k);
     MaridiaSnail_Func_12(k, carry);
-    if (Enemy_MoveDown(k, INT16_SHL8(E->msl_var_B)) & 1) {
+    if (Enemy_MoveDown(k, INT16_SHL8(E->msl_var_B))) {
       E->msl_var_A = -E->msl_var_A;
       MaridiaSnail_Func_13(k, GET_WORD(j + 6));
     }
@@ -2240,7 +2240,7 @@ void MaridiaSnail_D07E(uint16 k, const uint8 *j) {  // 0xA3D07E
   MaridiaSnail_Func_11(k, j);
   if (rv) {
     E->msl_var_E = 0;
-    if (Enemy_MoveRight_ProcessSlopes(k, INT16_SHL8(E->msl_var_A)) & 1) {
+    if (Enemy_MoveRight_ProcessSlopes(k, INT16_SHL8(E->msl_var_A))) {
       E->msl_var_B = -E->msl_var_B;
       MaridiaSnail_Func_13(k, GET_WORD(j + 6));
     } else {
@@ -2312,7 +2312,7 @@ void MaridiaSnail_Func_14(uint16 k) {  // 0xA3D164
 void MaridiaSnail_Func_15(uint16 k) {  // 0xA3D1B3
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   if (E->msl_var_08 != 3) {
-    if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->msl_var_03, E->msl_var_02)) & 1) {
+    if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->msl_var_03, E->msl_var_02))) {
       E->msl_var_02 = -E->msl_var_02;
       E->msl_var_03 = -E->msl_var_03;
       E->msl_var_20 = 1;
@@ -2334,7 +2334,7 @@ void MaridiaSnail_Func_15(uint16 k) {  // 0xA3D1B3
         E->msl_var_03 = v4;
     }
   }
-  if (Enemy_MoveDown(k, __PAIR32__(E->msl_var_01, E->msl_var_00)) & 1) {
+  if (Enemy_MoveDown(k, __PAIR32__(E->msl_var_01, E->msl_var_00))) {
     int16 msl_var_01 = E->msl_var_01;
     if (msl_var_01 >= 0 && sign16(msl_var_01 - 3)) {
       E->msl_var_03 = 0;
@@ -2597,10 +2597,10 @@ void WreckedShipOrangeZoomer_Func_2(uint16 k) {  // 0xA3E091
     E->wsozr_var_03 = E->wsozr_var_F;
     E->wsozr_var_F = FUNC16(FireZoomer_Func_2);
   }
-  if (Enemy_MoveRight_ProcessSlopes(k, Shift8AddMagn(E->wsozr_var_A, 1)) & 1) {
+  if (Enemy_MoveRight_ProcessSlopes(k, Shift8AddMagn(E->wsozr_var_A, 1))) {
     E->wsozr_var_04 = 0;
     EnemyFunc_C8AD(k);
-    if (!(Enemy_MoveDown(k, INT16_SHL8(E->wsozr_var_B)) & 1)) {
+    if (!(Enemy_MoveDown(k, INT16_SHL8(E->wsozr_var_B)))) {
       if ((int16)(samus_y_pos - E->base.y_pos) >= 0) {
         v7 = E->wsozr_var_B;
         if (v7 < 0)
@@ -2647,9 +2647,9 @@ void sub_A3E168(uint16 k) {  // 0xA3E168
     E->wsozr_var_03 = E->wsozr_var_F;
     E->wsozr_var_F = FUNC16(FireZoomer_Func_2);
   }
-  if (Enemy_MoveDown(k, Shift8AddMagn(E->wsozr_var_B, 1)) & 1) {
+  if (Enemy_MoveDown(k, Shift8AddMagn(E->wsozr_var_B, 1))) {
     E->wsozr_var_04 = 0;
-    if (!(Enemy_MoveRight_ProcessSlopes(k, INT16_SHL8(E->wsozr_var_A)) & 1)) {
+    if (!(Enemy_MoveRight_ProcessSlopes(k, INT16_SHL8(E->wsozr_var_A)))) {
       EnemyFunc_C8AD(k);
       if ((int16)(samus_x_pos - E->base.x_pos) >= 0) {
         v7 = E->wsozr_var_A;
@@ -2738,10 +2738,10 @@ void FireZoomer_Func_1(uint16 k) {  // 0xA3E6C8
     E->fzr_var_03 = E->fzr_var_F;
     E->fzr_var_F = FUNC16(FireZoomer_Func_2);
   }
-  if (Enemy_MoveRight_IgnoreSlopes(k, Shift8AddMagn(E->fzr_var_A, 1)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, Shift8AddMagn(E->fzr_var_A, 1))) {
     E->fzr_var_04 = 0;
     EnemyFunc_C8AD(k);
-    if (Enemy_MoveDown(k, INT16_SHL8(E->fzr_var_B)) & 1) {
+    if (Enemy_MoveDown(k, INT16_SHL8(E->fzr_var_B))) {
       E->fzr_var_A = -E->fzr_var_A;
       uint16 fzr_parameter_2 = E->fzr_parameter_2, v7;
       if ((E->fzr_var_B & 0x8000) == 0)
@@ -2772,7 +2772,7 @@ void FireZoomer_Func_1(uint16 k) {  // 0xA3E6C8
 
 void FireZoomer_Func_2(uint16 k) {  // 0xA3E785
   Enemy_FireZoomer *E = Get_FireZoomer(k);
-  if (Enemy_MoveDown(k, __PAIR32__(E->fzr_var_02, E->fzr_var_01)) & 1) {
+  if (Enemy_MoveDown(k, __PAIR32__(E->fzr_var_02, E->fzr_var_01))) {
     if (E->fzr_parameter_1 == 255) {
       E->fzr_var_A = 128;
       E->fzr_var_B = 128;
@@ -2799,10 +2799,10 @@ void FireZoomer_Func_3(uint16 k) {  // 0xA3E7F2
     E->fzr_var_03 = E->fzr_var_F;
     E->fzr_var_F = FUNC16(FireZoomer_Func_2);
   }
-  if (Enemy_MoveDown(k, Shift8AddMagn(E->fzr_var_B, 1)) & 1) {
+  if (Enemy_MoveDown(k, Shift8AddMagn(E->fzr_var_B, 1))) {
     E->fzr_var_04 = 0;
     int32 amt = FireZoomer_E8A5(k);
-    if (Enemy_MoveRight_IgnoreSlopes(k, amt) & 1) {
+    if (Enemy_MoveRight_IgnoreSlopes(k, amt)) {
       E->fzr_var_B = -E->fzr_var_B;
       uint16 fzr_parameter_2 = E->fzr_parameter_2, v6;
       if ((E->fzr_var_A & 0x8000) == 0)
@@ -2949,7 +2949,7 @@ void Metroid_Func_1(uint16 varE32) {  // 0xA3EC11
   E->metroid_var_D = v4;
   E->metroid_var_C = 0;
 LABEL_9:
-  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(E->metroid_var_D, E->metroid_var_C)) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(E->metroid_var_D, E->metroid_var_C))) {
     E->metroid_var_C = 0;
     E->metroid_var_D = 0;
   }
@@ -2972,7 +2972,7 @@ LABEL_9:
   E->metroid_var_B = v9;
   E->metroid_var_A = 0;
 LABEL_19:
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->metroid_var_B, E->metroid_var_A)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->metroid_var_B, E->metroid_var_A))) {
     E->metroid_var_A = 0;
     E->metroid_var_B = 0;
   }
@@ -3003,7 +3003,7 @@ void Metroid_Func_2(uint16 varE32) {  // 0xA3ECDC
 LABEL_9:
   E->metroid_var_C = r18;
   E->metroid_var_D = r20;
-  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(r20, r18)) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(r20, r18))) {
     E->metroid_var_C = 0;
     E->metroid_var_D = 0;
   }
@@ -3027,7 +3027,7 @@ LABEL_9:
 LABEL_19:
   E->metroid_var_A = r18;
   E->metroid_var_B = r20;
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(r20, r18)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(r20, r18))) {
     E->metroid_var_A = 0;
     E->metroid_var_B = 0;
   }

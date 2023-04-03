@@ -265,7 +265,7 @@ void Boulder_Func_3(void) {  // 0xA68832
 void Boulder_Func_4(void) {  // 0xA6888B
   Enemy_Boulder *E = Get_Boulder(cur_enemy_index);
   int v1 = (8 * HIBYTE(E->boulder_var_C)) >> 1;
-  if (Enemy_MoveDown(cur_enemy_index, kCommonEnemySpeeds_Quadratic32[v1 >> 1]) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, kCommonEnemySpeeds_Quadratic32[v1 >> 1])) {
     QueueSfx2_Max6(0x42);
     if (E->boulder_var_E == 2) {
       E->base.properties |= kEnemyProps_Deleted;
@@ -303,7 +303,7 @@ void Boulder_Func_5(void) {  // 0xA68942
   if (E->boulder_var_E)
     v2 += 4;
   int v4 = v2 >> 1;
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, kCommonEnemySpeeds_Quadratic32[v4 >> 1]) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, kCommonEnemySpeeds_Quadratic32[v4 >> 1])) {
     E->base.properties |= 0x300;
     E->boulder_var_A = FUNC16(Boulder_Func_6);
     QueueSfx2_Max6(0x42);
@@ -1003,7 +1003,7 @@ const uint16 *FakeKraid_Instr_2(uint16 k, const uint16 *jp) {  // 0xA69B26
   if (E->fkd_var_D-- == 1) {
     E->fkd_var_D = (random_number & 3) + 7;
   } else {
-    if (!(Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(E->fkd_var_B)) & 1))
+    if (!(Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(E->fkd_var_B))))
       goto LABEL_7;
   }
   E->fkd_var_B = -E->fkd_var_B;

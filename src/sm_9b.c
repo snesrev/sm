@@ -43,6 +43,10 @@
 #define kGrappleBeam_Ext_Yvel ((uint16*)RomFixedPtr(0x9bc0ef))
 #define kGrappleBeam_Init_EndAngle ((uint16*)RomFixedPtr(0x9bc104))
 
+void CallGrappleBeamFunc(uint32 ea);
+void GrappleBeamFunc_BE98(void);
+void GrappleBeamFunc_FireGoToCancel(void);
+
 static const uint8 kDeathAnimationFrames[28] = {
   5, 5, 5, 5, 1, 5, 5, 0, 1,
   0, 5, 5, 5, 5, 5, 5, 5, 1,
@@ -663,31 +667,6 @@ void HandleGrappleBeamFlare(void) {  // 0x9BC036
   }
 }
 
-void CallGrappleBeamFunc(uint32 ea) {
-  switch (ea) {
-  case fnGrappleBeamFunc_BB64: GrappleBeamFunc_BB64(); return;
-  case fnGrappleBeamFunc_BC1F: GrappleBeamFunc_BC1F(); return;
-  case fnGrappleBeamFunc_BCFF: GrappleBeamFunc_BCFF(); return;
-  case fnGrappleBeamFunc_BD44: GrappleBeamFunc_BD44(); return;
-  case fnGrappleBeamFunc_BD95: GrappleBeamFunc_BD95(); return;
-  case fnGrappleBeamFunc_BE98: GrappleBeamFunc_BE98(); return;
-  case fnGrappleBeamFunc_BEEB: GrappleBeamFunc_BEEB(); return;
-  case fnGrappleBeamFunc_BF1B: GrappleBeamFunc_BF1B(); return;
-  case fnGrappleBeamFunc_Inactive: GrappleBeamFunc_Inactive(); return;
-  case fnGrappleBeamFunc_FireGoToCancel: GrappleBeamFunc_FireGoToCancel(); return;
-  case fnGrappleBeamFunc_Firing: GrappleBeamFunc_Firing(); return;
-  case fnGrappleBeamFunc_ConnectedLockedInPlace: GrappleBeamFunc_ConnectedLockedInPlace(); return;
-  case fnGrappleBeamFunc_Connected_Swinging: GrappleBeamFunc_Connected_Swinging(); return;
-  case fnGrappleBeamFunc_Wallgrab: GrappleBeamFunc_Wallgrab(); return;
-  case fnGrappleBeamFunc_C832: GrappleBeamFunc_C832(); return;
-  case fnGrappleBeamFunc_Cancel: GrappleBeamFunc_Cancel(); return;
-  case fnGrappleBeamFunc_C9CE: GrappleBeamFunc_C9CE(); return;
-  case fnGrappleBeamFunc_ReleaseFromSwing: GrappleBeamFunc_ReleaseFromSwing(); return;
-  case fnGrappleBeam_Func2: GrappleBeam_Func2(); return;
-  default: Unreachable();
-  }
-}
-
 void GrappleBeamHandler(void) {  // 0x9BC490
   uint16 r18;
   if (grapple_varCF6)
@@ -1111,5 +1090,30 @@ void GrappleBeamFunc_ReleaseFromSwing(void) {  // 0x9BCB8B
   if (samus_auto_cancel_hud_item_index) {
     hud_item_index = 0;
     samus_auto_cancel_hud_item_index = 0;
+  }
+}
+
+void CallGrappleBeamFunc(uint32 ea) {
+  switch (ea) {
+  case fnGrappleBeamFunc_BB64: GrappleBeamFunc_BB64(); return;
+  case fnGrappleBeamFunc_BC1F: GrappleBeamFunc_BC1F(); return;
+  case fnGrappleBeamFunc_BCFF: GrappleBeamFunc_BCFF(); return;
+  case fnGrappleBeamFunc_BD44: GrappleBeamFunc_BD44(); return;
+  case fnGrappleBeamFunc_BD95: GrappleBeamFunc_BD95(); return;
+  case fnGrappleBeamFunc_BE98: GrappleBeamFunc_BE98(); return;
+  case fnGrappleBeamFunc_BEEB: GrappleBeamFunc_BEEB(); return;
+  case fnGrappleBeamFunc_BF1B: GrappleBeamFunc_BF1B(); return;
+  case fnGrappleBeamFunc_Inactive: GrappleBeamFunc_Inactive(); return;
+  case fnGrappleBeamFunc_FireGoToCancel: GrappleBeamFunc_FireGoToCancel(); return;
+  case fnGrappleBeamFunc_Firing: GrappleBeamFunc_Firing(); return;
+  case fnGrappleBeamFunc_ConnectedLockedInPlace: GrappleBeamFunc_ConnectedLockedInPlace(); return;
+  case fnGrappleBeamFunc_Connected_Swinging: GrappleBeamFunc_Connected_Swinging(); return;
+  case fnGrappleBeamFunc_Wallgrab: GrappleBeamFunc_Wallgrab(); return;
+  case fnGrappleBeamFunc_C832: GrappleBeamFunc_C832(); return;
+  case fnGrappleBeamFunc_Cancel: GrappleBeamFunc_Cancel(); return;
+  case fnGrappleBeamFunc_C9CE: GrappleBeamFunc_C9CE(); return;
+  case fnGrappleBeamFunc_ReleaseFromSwing: GrappleBeamFunc_ReleaseFromSwing(); return;
+  case fnGrappleBeam_Func2: GrappleBeam_Func2(); return;
+  default: Unreachable();
   }
 }

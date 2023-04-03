@@ -1958,44 +1958,6 @@ uint16 Beetom_Func_2(uint16 r22, uint16 r24) {  // 0xA8B7EF
   return r18;
 }
 
-void CallBeetomFunc(uint32 ea) {
-  switch (ea) {
-  case fnBeetom_Func_3: Beetom_Func_3(); return;  // 0xa8b814
-  case fnBeetom_Func_4: Beetom_Func_4(); return;  // 0xa8b82f
-  case fnBeetom_Func_5: Beetom_Func_5(); return;  // 0xa8b84f
-  case fnBeetom_Func_6: Beetom_Func_6(); return;  // 0xa8b85f
-  case fnBeetom_Func_7: Beetom_Func_7(); return;  // 0xa8b873
-  case fnBeetom_Func_8: Beetom_Func_8(); return;  // 0xa8b887
-  case fnBeetom_Func_9: Beetom_Func_9(); return;  // 0xa8b8a9
-  case fnBeetom_Func_10: Beetom_Func_10(); return;  // 0xa8b8cb
-  case fnBeetom_Func_11: Beetom_Func_11(); return;  // 0xa8b8ed
-  case fnBeetom_Func_12: Beetom_Func_12(); return;  // 0xa8b90f
-  case fnBeetom_Func_13: Beetom_Func_13(); return;  // 0xa8b952
-  case fnBeetom_Func_14: Beetom_Func_14(); return;  // 0xa8b966
-  case fnBeetom_Func_15: Beetom_Func_15(); return;  // 0xa8b97a
-  case fnBeetom_Func_16: Beetom_Func_16(); return;  // 0xa8b9a2
-  case fnBeetom_Func_17: Beetom_Func_17(); return;  // 0xa8b9b2
-  case fnBeetom_Func_18: Beetom_Func_18(); return;  // 0xa8b9c1
-  case fnBeetom_Func_19: Beetom_Func_19(); return;  // 0xa8ba24
-  case fnBeetom_Func_20: Beetom_Func_20(); return;  // 0xa8ba84
-  case fnBeetom_Func_21: Beetom_Func_21(); return;  // 0xa8bab7
-  case fnBeetom_Func_24: Beetom_Func_24(); return;  // 0xa8bb55
-  case fnBeetom_Func_25: Beetom_Func_25(); return;  // 0xa8bb88
-  case fnBeetom_Func_28: Beetom_Func_28(); return;  // 0xa8bc26
-  case fnBeetom_Func_29: Beetom_Func_29(); return;  // 0xa8bc5a
-  case fnBeetom_Func_32: Beetom_Func_32(); return;  // 0xa8bcf8
-  case fnBeetom_Func_33: Beetom_Func_33(); return;  // 0xa8bd42
-  case fnBeetom_Func_35: Beetom_Func_35(); return;  // 0xa8bd9d
-  case fnBeetom_Func_36: Beetom_Func_36(); return;  // 0xa8bdc5
-  default: Unreachable();
-  }
-}
-
-void Beetom_Main(void) {  // 0xA8B80D
-  Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
-  CallBeetomFunc(E->beetom_var_C | 0xA80000);
-}
-
 void Beetom_Func_3(void) {  // 0xA8B814
   if (IsSamusWithinEnemy_X(cur_enemy_index, 0x60))
     Get_Beetom(cur_enemy_index)->beetom_var_C = FUNC16(Beetom_Func_12);
@@ -2124,9 +2086,9 @@ void Beetom_Func_18(void) {  // 0xA8B9C1
     E->beetom_var_C = FUNC16(Beetom_Func_3);
   } else {
     E->base.x_pos -= 8;
-    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1)) & 1) {
+    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1))) {
       E->base.x_pos += 8;
-      if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-1, -16384)) & 1)
+      if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-1, -16384)))
         E->beetom_var_C = FUNC16(Beetom_Func_7);
     } else {
       E->beetom_var_C = FUNC16(Beetom_Func_7);
@@ -2143,9 +2105,9 @@ void Beetom_Func_19(void) {  // 0xA8BA24
     E->beetom_var_C = FUNC16(Beetom_Func_3);
   } else {
     E->base.x_pos += 8;
-    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1)) & 1) {
+    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1))) {
       E->base.x_pos -= 8;
-      if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(0, 0x4000)) & 1)
+      if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(0, 0x4000)))
         E->beetom_var_C = FUNC16(Beetom_Func_6);
     } else {
       E->beetom_var_C = FUNC16(Beetom_Func_6);
@@ -2155,34 +2117,10 @@ void Beetom_Func_19(void) {  // 0xA8BA24
   }
 }
 
-void Beetom_Func_20(void) {  // 0xA8BA84
-  Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
-  if (E->beetom_var_05)
-    Beetom_Func_23(cur_enemy_index);
-  else
-    Beetom_Func_22(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-1, -16384)) & 1) {
-    E->beetom_var_09 ^= 1;
-    E->beetom_var_C = FUNC16(Beetom_Func_15);
-  }
-}
-
-void Beetom_Func_21(void) {  // 0xA8BAB7
-  Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
-  if (E->beetom_var_05)
-    Beetom_Func_23(cur_enemy_index);
-  else
-    Beetom_Func_22(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(0, 0x4000)) & 1) {
-    E->beetom_var_09 ^= 1;
-    E->beetom_var_C = FUNC16(Beetom_Func_15);
-  }
-}
-
 void Beetom_Func_22(uint16 k) {  // 0xA8BAE7
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
-  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[(v2 + 2) >> 1]) & 1) {
+  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[(v2 + 2) >> 1])) {
     E->beetom_var_C = FUNC16(Beetom_Func_15);
   } else {
     E->beetom_var_B -= 4;
@@ -2196,7 +2134,7 @@ void Beetom_Func_22(uint16 k) {  // 0xA8BAE7
 void Beetom_Func_23(uint16 k) {  // 0xA8BB20
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
-  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v2 >> 1]) & 1) {
+  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v2 >> 1])) {
     E->beetom_var_C = FUNC16(Beetom_Func_3);
   } else {
     E->beetom_var_B += 4;
@@ -2205,25 +2143,25 @@ void Beetom_Func_23(uint16 k) {  // 0xA8BB20
   }
 }
 
-void Beetom_Func_24(void) {  // 0xA8BB55
+void Beetom_Func_20(void) {  // 0xA8BA84
   Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
   if (E->beetom_var_05)
-    Beetom_Func_27(cur_enemy_index);
+    Beetom_Func_23(cur_enemy_index);
   else
-    Beetom_Func_26(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-1, -16384)) & 1) {
+    Beetom_Func_22(cur_enemy_index);
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-1, -16384))) {
     E->beetom_var_09 ^= 1;
     E->beetom_var_C = FUNC16(Beetom_Func_15);
   }
 }
 
-void Beetom_Func_25(void) {  // 0xA8BB88
+void Beetom_Func_21(void) {  // 0xA8BAB7
   Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
   if (E->beetom_var_05)
-    Beetom_Func_27(cur_enemy_index);
+    Beetom_Func_23(cur_enemy_index);
   else
-    Beetom_Func_26(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(0, 0x4000)) & 1) {
+    Beetom_Func_22(cur_enemy_index);
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(0, 0x4000))) {
     E->beetom_var_09 ^= 1;
     E->beetom_var_C = FUNC16(Beetom_Func_15);
   }
@@ -2232,7 +2170,7 @@ void Beetom_Func_25(void) {  // 0xA8BB88
 void Beetom_Func_26(uint16 k) {  // 0xA8BBB8
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
-  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[(v2 + 2) >> 1]) & 1) {
+  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[(v2 + 2) >> 1])) {
     E->beetom_var_C = FUNC16(Beetom_Func_15);
   } else {
     E->beetom_var_B -= 5;
@@ -2246,7 +2184,7 @@ void Beetom_Func_26(uint16 k) {  // 0xA8BBB8
 void Beetom_Func_27(uint16 k) {  // 0xA8BBF1
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
-  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v2 >> 1]) & 1) {
+  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v2 >> 1])) {
     E->beetom_var_C = FUNC16(Beetom_Func_3);
   } else {
     E->beetom_var_B += 5;
@@ -2255,39 +2193,38 @@ void Beetom_Func_27(uint16 k) {  // 0xA8BBF1
   }
 }
 
-void Beetom_Func_28(void) {  // 0xA8BC26
+void Beetom_Func_24(void) {  // 0xA8BB55
   Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
   if (E->beetom_var_05)
-    Beetom_Func_31(cur_enemy_index);
+    Beetom_Func_27(cur_enemy_index);
   else
-    Beetom_Func_30(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-3, 0)) & 1) {
+    Beetom_Func_26(cur_enemy_index);
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-1, -16384))) {
     E->beetom_var_09 ^= 1;
     E->beetom_var_C = FUNC16(Beetom_Func_15);
   }
 }
 
-void Beetom_Func_29(void) {  // 0xA8BC5A
+void Beetom_Func_25(void) {  // 0xA8BB88
   Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
   if (E->beetom_var_05)
-    Beetom_Func_31(cur_enemy_index);
+    Beetom_Func_27(cur_enemy_index);
   else
-    Beetom_Func_30(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(3, 0)) & 1) {
+    Beetom_Func_26(cur_enemy_index);
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(0, 0x4000))) {
     E->beetom_var_09 ^= 1;
     E->beetom_var_C = FUNC16(Beetom_Func_15);
   }
 }
+
 
 void Beetom_Func_30(uint16 k) {  // 0xA8BC8A
-  int16 v3;
-
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
-  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[(v2 + 2) >> 1]) & 1) {
+  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[(v2 + 2) >> 1])) {
     E->beetom_var_C = FUNC16(Beetom_Func_15);
   } else {
-    v3 = E->beetom_var_B - 5;
+    int16 v3 = E->beetom_var_B - 5;
     E->beetom_var_B = v3;
     if (v3 < 0) {
       E->beetom_var_B = 0;
@@ -2299,13 +2236,44 @@ void Beetom_Func_30(uint16 k) {  // 0xA8BC8A
 void Beetom_Func_31(uint16 k) {  // 0xA8BCC3
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
-  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v2 >> 1]) & 1) {
+  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v2 >> 1])) {
     E->beetom_var_C = FUNC16(Beetom_Func_3);
   } else {
     uint16 v3 = E->beetom_var_B + 3;
     E->beetom_var_B = v3;
     if (!sign16(v3 - 64))
       E->beetom_var_B = 64;
+  }
+}
+void Beetom_Func_28(void) {  // 0xA8BC26
+  Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
+  if (E->beetom_var_05)
+    Beetom_Func_31(cur_enemy_index);
+  else
+    Beetom_Func_30(cur_enemy_index);
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-3, 0))) {
+    E->beetom_var_09 ^= 1;
+    E->beetom_var_C = FUNC16(Beetom_Func_15);
+  }
+}
+
+void Beetom_Func_29(void) {  // 0xA8BC5A
+  Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
+  if (E->beetom_var_05)
+    Beetom_Func_31(cur_enemy_index);
+  else
+    Beetom_Func_30(cur_enemy_index);
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(3, 0))) {
+    E->beetom_var_09 ^= 1;
+    E->beetom_var_C = FUNC16(Beetom_Func_15);
+  }
+}
+
+void Beetom_Func_34(void) {  // 0xA8BD8C
+  Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
+  if (joypad1_lastkeys != E->beetom_var_F) {
+    E->beetom_var_F = joypad1_lastkeys;
+    --E->beetom_var_E;
   }
 }
 
@@ -2316,7 +2284,7 @@ void Beetom_Func_32(void) {  // 0xA8BCF8
     E->base.y_pos = samus_y_pos - 4;
     Beetom_Func_34();
   } else {
-    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(16, 0)) & 1) {
+    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(16, 0))) {
       E->beetom_var_09 = 1;
       Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-32, 0));
     }
@@ -2332,7 +2300,7 @@ void Beetom_Func_33(void) {  // 0xA8BD42
     E->base.y_pos = samus_y_pos - 4;
     Beetom_Func_34();
   } else {
-    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-16, 0)) & 1) {
+    if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-16, 0))) {
       E->beetom_var_09 = 0;
       Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(32, 0));
     }
@@ -2341,16 +2309,8 @@ void Beetom_Func_33(void) {  // 0xA8BD42
   }
 }
 
-void Beetom_Func_34(void) {  // 0xA8BD8C
-  Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
-  if (joypad1_lastkeys != E->beetom_var_F) {
-    E->beetom_var_F = joypad1_lastkeys;
-    --E->beetom_var_E;
-  }
-}
-
 void Beetom_Func_35(void) {  // 0xA8BD9D
-  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(3, 0)) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(3, 0))) {
     Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
     if (E->beetom_var_09)
       E->beetom_var_C = FUNC16(Beetom_Func_7);
@@ -2359,14 +2319,10 @@ void Beetom_Func_35(void) {  // 0xA8BD9D
   }
 }
 
-void Beetom_Func_36(void) {  // 0xA8BDC5
-  Beetom_Func_37(cur_enemy_index);
-}
-
 void Beetom_Func_37(uint16 k) {  // 0xA8BDCC
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
-  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v2 >> 1]) & 1) {
+  if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v2 >> 1])) {
     E->beetom_var_C = FUNC16(Beetom_Func_3);
   } else {
     uint16 v3 = E->beetom_var_B + 1;
@@ -2375,10 +2331,52 @@ void Beetom_Func_37(uint16 k) {  // 0xA8BDCC
       E->beetom_var_B = 64;
   }
   uint16 v4 = (E->beetom_var_09) ? -2 : 2;
-  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(v4, 0)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(v4, 0))) {
     E->beetom_var_09 ^= 1;
     E->beetom_var_C = FUNC16(Beetom_Func_15);
   }
+}
+
+void Beetom_Func_36(void) {  // 0xA8BDC5
+  Beetom_Func_37(cur_enemy_index);
+}
+
+void CallBeetomFunc(uint32 ea) {
+  switch (ea) {
+  case fnBeetom_Func_3: Beetom_Func_3(); return;  // 0xa8b814
+  case fnBeetom_Func_4: Beetom_Func_4(); return;  // 0xa8b82f
+  case fnBeetom_Func_5: Beetom_Func_5(); return;  // 0xa8b84f
+  case fnBeetom_Func_6: Beetom_Func_6(); return;  // 0xa8b85f
+  case fnBeetom_Func_7: Beetom_Func_7(); return;  // 0xa8b873
+  case fnBeetom_Func_8: Beetom_Func_8(); return;  // 0xa8b887
+  case fnBeetom_Func_9: Beetom_Func_9(); return;  // 0xa8b8a9
+  case fnBeetom_Func_10: Beetom_Func_10(); return;  // 0xa8b8cb
+  case fnBeetom_Func_11: Beetom_Func_11(); return;  // 0xa8b8ed
+  case fnBeetom_Func_12: Beetom_Func_12(); return;  // 0xa8b90f
+  case fnBeetom_Func_13: Beetom_Func_13(); return;  // 0xa8b952
+  case fnBeetom_Func_14: Beetom_Func_14(); return;  // 0xa8b966
+  case fnBeetom_Func_15: Beetom_Func_15(); return;  // 0xa8b97a
+  case fnBeetom_Func_16: Beetom_Func_16(); return;  // 0xa8b9a2
+  case fnBeetom_Func_17: Beetom_Func_17(); return;  // 0xa8b9b2
+  case fnBeetom_Func_18: Beetom_Func_18(); return;  // 0xa8b9c1
+  case fnBeetom_Func_19: Beetom_Func_19(); return;  // 0xa8ba24
+  case fnBeetom_Func_20: Beetom_Func_20(); return;  // 0xa8ba84
+  case fnBeetom_Func_21: Beetom_Func_21(); return;  // 0xa8bab7
+  case fnBeetom_Func_24: Beetom_Func_24(); return;  // 0xa8bb55
+  case fnBeetom_Func_25: Beetom_Func_25(); return;  // 0xa8bb88
+  case fnBeetom_Func_28: Beetom_Func_28(); return;  // 0xa8bc26
+  case fnBeetom_Func_29: Beetom_Func_29(); return;  // 0xa8bc5a
+  case fnBeetom_Func_32: Beetom_Func_32(); return;  // 0xa8bcf8
+  case fnBeetom_Func_33: Beetom_Func_33(); return;  // 0xa8bd42
+  case fnBeetom_Func_35: Beetom_Func_35(); return;  // 0xa8bd9d
+  case fnBeetom_Func_36: Beetom_Func_36(); return;  // 0xa8bdc5
+  default: Unreachable();
+  }
+}
+
+void Beetom_Main(void) {  // 0xA8B80D
+  Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
+  CallBeetomFunc(E->beetom_var_C | 0xA80000);
 }
 
 void Beetom_Touch(void) {  // 0xA8BE2E
@@ -2513,7 +2511,7 @@ void MaridiaFloater_Func_5(uint16 k) {  // 0xA8C2CF
     bool v8 = __CFADD__uint16(g_word_A8C1BB, mfr_var_B);
     E->mfr_var_B = g_word_A8C1BB + mfr_var_B;
     E->mfr_var_A += g_word_A8C1B9 + v8;
-    if (Enemy_MoveDown(k, __PAIR32__(E->mfr_var_A, E->mfr_var_B)) & 1
+    if (Enemy_MoveDown(k, __PAIR32__(E->mfr_var_A, E->mfr_var_B))
         || (int16)(enemy_drawing_queue_sizes[(k >> 1) + 1] - g_word_A8C19F - E->base.y_pos) >= 0) {
       uint16 mfr_var_C = E->mfr_var_C;
       if (!mfr_var_C || mfr_var_C == 6) {
@@ -2586,7 +2584,7 @@ void MaridiaFloater_Func_7(uint16 k) {  // 0xA8C3E1
     bool v8 = __CFADD__uint16(g_word_A8C1BB, mfr_var_B);
     E->mfr_var_B = g_word_A8C1BB + mfr_var_B;
     E->mfr_var_A += g_word_A8C1B9 + v8;
-    if (Enemy_MoveDown(k, __PAIR32__(E->mfr_var_A, E->mfr_var_B)) & 1
+    if (Enemy_MoveDown(k, __PAIR32__(E->mfr_var_A, E->mfr_var_B))
         || (int16)(enemy_drawing_queue_sizes[(k >> 1) + 1]
                    - enemy_drawing_queue_sizes[(k >> 1) + 3]
                    - E->base.y_pos) >= 0) {
@@ -2851,7 +2849,7 @@ const uint16 *WreckedShipRobot_Instr_4(uint16 k, const uint16 *jp) {  // 0xA8CD0
   WreckedShipRobot_Func_2(cur_enemy_index);
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(cur_enemy_index);
   E->wsrt_var_A = -512;
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(-4)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(-4))) {
     E->wsrt_var_B += 8;
     return INSTR_RETURN_ADDR(addr_kWreckedShipRobot_Ilist_C73F);
   } else {
@@ -2863,7 +2861,7 @@ const uint16 *WreckedShipRobot_Instr_4(uint16 k, const uint16 *jp) {  // 0xA8CD0
     uint16 x_pos = E->base.x_pos;
     E->wsrt_var_C = x_pos;
     E->base.x_pos = x_pos - E->base.x_width - E->base.x_width;
-    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1)) & 1) {
+    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1))) {
       E->base.x_pos = E->wsrt_var_C;
       E->base.y_pos = E->wsrt_var_D;
     } else {
@@ -2881,7 +2879,7 @@ const uint16 *WreckedShipRobot_Instr_9(uint16 k, const uint16 *jp) {  // 0xA8CDA
   WreckedShipRobot_Func_2(cur_enemy_index);
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(cur_enemy_index);
   E->wsrt_var_A = -512;
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(-4)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(-4))) {
     E->wsrt_var_B += 8;
     return INSTR_RETURN_ADDR(addr_kWreckedShipRobot_Ilist_C73F);
   } else if (CheckIfEnemyTouchesSamus(cur_enemy_index)) {
@@ -2895,7 +2893,7 @@ const uint16 *WreckedShipRobot_Instr_6(uint16 k, const uint16 *jp) {  // 0xA8CDE
   WreckedShipRobot_Func_2(cur_enemy_index);
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(cur_enemy_index);
   E->wsrt_var_A = -512;
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(4)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(4))) {
     E->wsrt_var_B += 8;
     return INSTR_RETURN_ADDR(addr_stru_A8C6E9);
   } else {
@@ -2907,7 +2905,7 @@ const uint16 *WreckedShipRobot_Instr_6(uint16 k, const uint16 *jp) {  // 0xA8CDE
     uint16 x_pos = E->base.x_pos;
     E->wsrt_var_C = x_pos;
     E->base.x_pos = E->base.x_width + E->base.x_width + x_pos;
-    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1)) & 1) {
+    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1))) {
       E->base.x_pos = E->wsrt_var_C;
       E->base.y_pos = E->wsrt_var_D;
     } else {
@@ -2925,7 +2923,7 @@ const uint16 *WreckedShipRobot_Instr_8(uint16 k, const uint16 *jp) {  // 0xA8CE8
   WreckedShipRobot_Func_2(cur_enemy_index);
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(cur_enemy_index);
   E->wsrt_var_A = -512;
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(4)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(4))) {
     E->wsrt_var_B += 8;
     return INSTR_RETURN_ADDR(addr_stru_A8C6E9);
   } else if (CheckIfEnemyTouchesSamus(cur_enemy_index)) {
@@ -2943,7 +2941,7 @@ const uint16 *WreckedShipRobot_Instr_15(uint16 k, const uint16 *jp) {  // 0xA8CE
   WreckedShipRobot_Func_2(cur_enemy_index);
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(cur_enemy_index);
   E->wsrt_var_A = 512;
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(4)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(4))) {
     E->wsrt_var_B += 8;
     return INSTR_RETURN_ADDR(addr_kWreckedShipRobot_Ilist_C985);
   } else {
@@ -2955,7 +2953,7 @@ const uint16 *WreckedShipRobot_Instr_15(uint16 k, const uint16 *jp) {  // 0xA8CE
     uint16 x_pos = E->base.x_pos;
     E->wsrt_var_C = x_pos;
     E->base.x_pos = E->base.x_width + E->base.x_width + x_pos;
-    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1)) & 1) {
+    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1))) {
       E->base.x_pos = E->wsrt_var_C;
       E->base.y_pos = E->wsrt_var_D;
     } else {
@@ -2973,7 +2971,7 @@ const uint16 *WreckedShipRobot_Instr_18(uint16 k, const uint16 *jp) {  // 0xA8CF
   WreckedShipRobot_Func_2(cur_enemy_index);
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(cur_enemy_index);
   E->wsrt_var_A = 512;
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(4)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(4))) {
     E->wsrt_var_B += 8;
     return INSTR_RETURN_ADDR(addr_kWreckedShipRobot_Ilist_C985);
   } else if (CheckIfEnemyTouchesSamus(cur_enemy_index)) {
@@ -2987,7 +2985,7 @@ const uint16 *WreckedShipRobot_Instr_16(uint16 k, const uint16 *jp) {  // 0xA8CF
   WreckedShipRobot_Func_2(cur_enemy_index);
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(cur_enemy_index);
   E->wsrt_var_A = 512;
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(-4)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(-4))) {
     E->wsrt_var_B += 8;
     return INSTR_RETURN_ADDR(addr_stru_A8C6E9);
   } else {
@@ -2999,7 +2997,7 @@ const uint16 *WreckedShipRobot_Instr_16(uint16 k, const uint16 *jp) {  // 0xA8CF
     uint16 x_pos = E->base.x_pos;
     E->wsrt_var_C = x_pos;
     E->base.x_pos = x_pos - E->base.x_width - E->base.x_width;
-    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1)) & 1) {
+    if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1))) {
       E->base.y_pos = E->wsrt_var_D;
       E->base.x_pos = E->wsrt_var_C;
     } else {
@@ -3017,7 +3015,7 @@ const uint16 *WreckedShipRobot_Instr_17(uint16 k, const uint16 *jp) {  // 0xA8D0
   WreckedShipRobot_Func_2(cur_enemy_index);
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(cur_enemy_index);
   E->wsrt_var_A = 512;
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(-4)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(-4))) {
     E->wsrt_var_B += 8;
     return INSTR_RETURN_ADDR(addr_stru_A8C6E9);
   } else if (CheckIfEnemyTouchesSamus(cur_enemy_index)) {
@@ -3313,7 +3311,7 @@ void WalkingLavaSeahorse_Init(void) {  // 0xA8DCCD
     E->base.y_pos += v4 + E->wlse_var_B;
   } while ((WalkingLavaSeahorse_Func_2(cur_enemy_index) & 0x8000) != 0);
   while (1) {
-    if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(E->wlse_var_B, E->wlse_var_C)) & 1)
+    if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(E->wlse_var_B, E->wlse_var_C)))
       break;
     WalkingLavaSeahorse_Func_2(cur_enemy_index);
   }
@@ -3413,7 +3411,7 @@ void WalkingLavaSeahorse_Func_6(uint16 k) {  // 0xA8DE05
   int16 v3;
 
   Enemy_WalkingLavaSeahorse *E = Get_WalkingLavaSeahorse(k);
-  if (Enemy_MoveDown(k, __PAIR32__(E->wlse_var_B, E->wlse_var_C)) & 1) {
+  if (Enemy_MoveDown(k, __PAIR32__(E->wlse_var_B, E->wlse_var_C))) {
     int t = samus_x_pos - E->base.x_pos;
     uint16 v2 = addr_kWalkingLavaSeahorse_Ilist_DBE7;
     v3 = -2;
@@ -3535,7 +3533,7 @@ const uint16 *WalkingLavaSeahorse_Instr_1(uint16 k, const uint16 *jp) {  // 0xA8
   int16 wlse_var_D;
 
   Enemy_WalkingLavaSeahorse *E = Get_WalkingLavaSeahorse(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(E->wlse_var_D)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(E->wlse_var_D))) {
     jp = INSTR_RETURN_ADDR(addr_stru_A8DBE9);
     wlse_var_D = E->wlse_var_D;
     if (wlse_var_D < 0)
@@ -3841,7 +3839,7 @@ void KiHunter_Func_1(uint16 k) {  // 0xA8F268
   int16 v4;
 
   Enemy_KiHunter *E = Get_KiHunter(k);
-  if (Enemy_MoveDown(k, __PAIR32__(E->khr_var_09, E->khr_var_08)) & 1) {
+  if (Enemy_MoveDown(k, __PAIR32__(E->khr_var_09, E->khr_var_08))) {
     v4 = -E->khr_var_09;
   } else {
     uint16 y_pos = E->base.y_pos;
@@ -3855,7 +3853,7 @@ void KiHunter_Func_1(uint16 k) {  // 0xA8F268
   }
   E->khr_var_09 = v4;
 LABEL_8:
-  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->khr_var_07, E->khr_var_06)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->khr_var_07, E->khr_var_06))) {
     uint16 v5 = 0;
     bool v6 = (-E->khr_var_07 & 0x8000) != 0;
     E->khr_var_07 = -E->khr_var_07;
@@ -3957,7 +3955,7 @@ LABEL_9:
     }
   }
   uint16 r20 = E->khr_var_B + CosineMult8bit(E->khr_var_F, E->khr_var_11) - E->base.x_pos;
-  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL16(r20)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL16(r20))) {
     if ((E->khr_var_04 & 0x8000) == 0) {
       E->khr_var_06 = 0;
       E->khr_var_07 = -1;
@@ -3969,7 +3967,7 @@ LABEL_9:
   }
   EnemyFunc_C8AD(k);
   r20 = E->khr_var_C + SineMult8bit(E->khr_var_F, E->khr_var_12) - E->base.y_pos;
-  if (Enemy_MoveDown(k, INT16_SHL16(r20)) & 1) {
+  if (Enemy_MoveDown(k, INT16_SHL16(r20))) {
 LABEL_24:
     E->khr_var_A = FUNC16(KiHunter_Func_3);
     E->khr_var_08 = 0;
@@ -3979,8 +3977,8 @@ LABEL_24:
 
 void KiHunter_Func_3(uint16 k) {  // 0xA8F4ED
   Enemy_KiHunter *E = Get_KiHunter(k);
-  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->khr_var_07, E->khr_var_06)) & 1
-      || (EnemyFunc_C8AD(k), Enemy_MoveDown(k, __PAIR32__(E->khr_var_09, E->khr_var_08)) & 1)
+  if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->khr_var_07, E->khr_var_06))
+      || (EnemyFunc_C8AD(k), Enemy_MoveDown(k, __PAIR32__(E->khr_var_09, E->khr_var_08)))
       || (int16)(E->base.y_pos - E->khr_var_0D) < 0) {
     E->khr_var_A = FUNC16(KiHunter_Func_1);
   }
@@ -4006,7 +4004,7 @@ const uint16 *KiHunter_Instr_1(uint16 k, const uint16 *jp) {  // 0xA8F526
 
 void KiHunter_Func_4(uint16 k) {  // 0xA8F55A
   Enemy_KiHunter *E = Get_KiHunter(k);
-  if (Enemy_MoveDown(k, __PAIR32__(E->khr_var_09, E->khr_var_08)) & 1) {
+  if (Enemy_MoveDown(k, __PAIR32__(E->khr_var_09, E->khr_var_08))) {
     E->khr_var_A = FUNC16(KiHunter_Func_5);
   } else {
     uint16 khr_var_08 = E->khr_var_08;
@@ -4040,7 +4038,7 @@ const uint16 *KiHunter_Instr_2(uint16 k, const uint16 *jp) {  // 0xA8F5E4
 
 void KiHunter_Func_6(uint16 k) {  // 0xA8F5F0
   Enemy_KiHunter *E = Get_KiHunter(k);
-  if (Enemy_MoveDown(k, __PAIR32__(E->khr_var_09, E->khr_var_08)) & 1) {
+  if (Enemy_MoveDown(k, __PAIR32__(E->khr_var_09, E->khr_var_08))) {
     if ((E->khr_var_09 & 0x8000) != 0) {
       E->khr_var_09 = 1;
     } else {
@@ -4055,7 +4053,7 @@ void KiHunter_Func_6(uint16 k) {  // 0xA8F5F0
       E->base.instruction_timer = 1;
     }
   } else {
-    if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->khr_var_07, E->khr_var_06)) & 1) {
+    if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->khr_var_07, E->khr_var_06))) {
       E->khr_var_07 = -E->khr_var_07;
     } else {
       EnemyFunc_C8AD(k);
@@ -4212,7 +4210,7 @@ void KiHunter_Func_14(void) {  // 0xA8F8AD
   Enemy_KiHunter *E = Get_KiHunter(cur_enemy_index);
   E->khr_var_F += *(uint16 *)((uint8 *)kCommonEnemySpeeds_Quadratic + (8 * HIBYTE(E->khr_var_B)) + 1);
   uint16 r20 = E->khr_var_06 + SineMult8bit(HIBYTE(E->khr_var_F), g_byte_A8F186) - E->khr_var_02 - E->base.y_pos;
-  if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(r20)) & 1) {
+  if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(r20))) {
     E->base.properties |= kEnemyProps_Deleted;
     E->base.x_pos = E->khr_var_08;
     khr_var_07 = E->khr_var_07;

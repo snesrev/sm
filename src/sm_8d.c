@@ -4,8 +4,9 @@
 #include "funcs.h"
 
 
-
-
+void CallPalfxFunc(uint32 ea, uint16 k, uint16 j);
+PairU16 CallPalInstr(uint32 ea, uint16 k, uint16 j);
+void CallPalFxPreInstr(uint32 ea, uint16 k);
 
 void EnablePaletteFx(void) {  // 0x8DC4C2
   flag_for_palette_fx_objects |= 0x8000;
@@ -18,16 +19,6 @@ void DisablePaletteFx(void) {  // 0x8DC4CD
 void ClearPaletteFXObjects(void) {  // 0x8DC4D8
   for (int i = 14; i >= 0; i -= 2)
     palettefx_ids[i >> 1] = 0;
-}
-
-void CallPalfxFunc(uint32 ea, uint16 k, uint16 j) {
-  switch (ea) {
-  case fnnullsub_131: return;
-  case fnPalInit_E1BC: PalInit_E1BC(k, j); return;
-  case fnPalInit_F761_Norfair1: PalInit_F761_Norfair1(k, j); return;
-  case fnPalInit_F779_Brinstar8: PalInit_F779_Brinstar8(k, j); return;
-  default: Unreachable();
-  }
 }
 
 void SpawnPalfxObject(uint16 j) {  // 0x8DC4E9
@@ -62,48 +53,6 @@ void PaletteFxHandler(void) {  // 0x8DC527
         i = palettefx_index;
       }
     }
-  }
-}
-
-void CallPalFxPreInstr(uint32 ea, uint16 k) {
-  switch (ea) {
-  case fnPalPreInstr_nullsub_129: PalPreInstr_nullsub_129(k); return;
-  case fnPalPreInstr_E1BC: PalPreInstr_E1BC(k); return;
-  case fnPalPreInstr_CheckEnemy0Health: PalPreInstr_CheckEnemy0Health(k); return;
-  case fnPalPreInstr_SamusInHeat: PalPreInstr_SamusInHeat(k); return;
-  case fnPalPreInstr_DeletePalfxIfMinibossDead: PalPreInstr_DeletePalfxIfMinibossDead(k); return;
-  case fnPalPreInstr_SwitchIfYpos: PalPreInstr_SwitchIfYpos(k); return;
-  case fnPalPreInstr_SwitchIfYpos2: PalPreInstr_SwitchIfYpos2(k); return;
-  case fnPalPreInstr_F621: PalPreInstr_F621(k); return;
-  default: Unreachable();
-  }
-}
-
-PairU16 CallPalInstr(uint32 ea, uint16 k, uint16 j) {
-  switch (ea) {
-  case fnPalInstr_Finish: return PalInstr_Finish(k, j);
-  case fnPalInstr_ColorPlus2: return PalInstr_ColorPlus2(k, j);
-  case fnPalInstr_ColorPlus3: return PalInstr_ColorPlus3(k, j);
-  case fnPalInstr_ColorPlus4: return PalInstr_ColorPlus4(k, j);
-  case fnPalInstr_ColorPlus8: return PalInstr_ColorPlus8(k, j);
-  case fnPalInstr_ColorPlus9: return PalInstr_ColorPlus9(k, j);
-  case fnPalInstr_ColorPlus15: return PalInstr_ColorPlus15(k, j);
-  case fnPalInstr_Delete: return PalInstr_Delete(k, j);
-  case fnPalInstr_SetPreInstr: return PalInstr_SetPreInstr(k, j);
-  case fnPalInstr_ClearPreInstr: return PalInstr_ClearPreInstr(k, j);
-  case fnPalInstr_Goto: return PalInstr_Goto(k, j);
-  case fnPalInstr_GotoRel: return PalInstr_GotoRel(k, j);
-  case fnPalInstr_DecTimerGoto: return PalInstr_DecTimerGoto(k, j);
-  case fnPalInstr_DecTimerGotoRel: return PalInstr_DecTimerGotoRel(k, j);
-  case fnPalInstr_SetTimer: return PalInstr_SetTimer(k, j);
-  case fnPalInstr_SetColorIndex: return PalInstr_SetColorIndex(k, j);
-  case fnPalInstr_QueueMusic: return PalInstr_QueueMusic(k, j);
-  case fnPalInstr_QueueSfx1: return PalInstr_QueueSfx1(k, j);
-  case fnPalInstr_QueueSfx2: return PalInstr_QueueSfx2(k, j);
-  case fnPalInstr_QueueSfx3: return PalInstr_QueueSfx3(k, j);
-  case fnPalInstr_SetTimerIfBossBit: return PalInstr_SetTimerIfBossBit(k, j);
-  case fnPalInstr_SetPalfxIndex: return PalInstr_SetPalfxIndex(k, j);
-  default: Unreachable(); return (PairU16){0, 0};
   }
 }
 
@@ -351,4 +300,56 @@ void PalPreInstr_F621(uint16 k) {  // 0x8DF621
 void PalInit_F779_Brinstar8(uint16 k, uint16 j) {  // 0x8DF730
   if ((*(uint16 *)&boss_bits_for_area[area_index] & 2) != 0)
     palettefx_ids[j >> 1] = 0;
+}
+
+void CallPalFxPreInstr(uint32 ea, uint16 k) {
+  switch (ea) {
+  case fnPalPreInstr_nullsub_129: PalPreInstr_nullsub_129(k); return;
+  case fnPalPreInstr_E1BC: PalPreInstr_E1BC(k); return;
+  case fnPalPreInstr_CheckEnemy0Health: PalPreInstr_CheckEnemy0Health(k); return;
+  case fnPalPreInstr_SamusInHeat: PalPreInstr_SamusInHeat(k); return;
+  case fnPalPreInstr_DeletePalfxIfMinibossDead: PalPreInstr_DeletePalfxIfMinibossDead(k); return;
+  case fnPalPreInstr_SwitchIfYpos: PalPreInstr_SwitchIfYpos(k); return;
+  case fnPalPreInstr_SwitchIfYpos2: PalPreInstr_SwitchIfYpos2(k); return;
+  case fnPalPreInstr_F621: PalPreInstr_F621(k); return;
+  default: Unreachable();
+  }
+}
+
+PairU16 CallPalInstr(uint32 ea, uint16 k, uint16 j) {
+  switch (ea) {
+  case fnPalInstr_Finish: return PalInstr_Finish(k, j);
+  case fnPalInstr_ColorPlus2: return PalInstr_ColorPlus2(k, j);
+  case fnPalInstr_ColorPlus3: return PalInstr_ColorPlus3(k, j);
+  case fnPalInstr_ColorPlus4: return PalInstr_ColorPlus4(k, j);
+  case fnPalInstr_ColorPlus8: return PalInstr_ColorPlus8(k, j);
+  case fnPalInstr_ColorPlus9: return PalInstr_ColorPlus9(k, j);
+  case fnPalInstr_ColorPlus15: return PalInstr_ColorPlus15(k, j);
+  case fnPalInstr_Delete: return PalInstr_Delete(k, j);
+  case fnPalInstr_SetPreInstr: return PalInstr_SetPreInstr(k, j);
+  case fnPalInstr_ClearPreInstr: return PalInstr_ClearPreInstr(k, j);
+  case fnPalInstr_Goto: return PalInstr_Goto(k, j);
+  case fnPalInstr_GotoRel: return PalInstr_GotoRel(k, j);
+  case fnPalInstr_DecTimerGoto: return PalInstr_DecTimerGoto(k, j);
+  case fnPalInstr_DecTimerGotoRel: return PalInstr_DecTimerGotoRel(k, j);
+  case fnPalInstr_SetTimer: return PalInstr_SetTimer(k, j);
+  case fnPalInstr_SetColorIndex: return PalInstr_SetColorIndex(k, j);
+  case fnPalInstr_QueueMusic: return PalInstr_QueueMusic(k, j);
+  case fnPalInstr_QueueSfx1: return PalInstr_QueueSfx1(k, j);
+  case fnPalInstr_QueueSfx2: return PalInstr_QueueSfx2(k, j);
+  case fnPalInstr_QueueSfx3: return PalInstr_QueueSfx3(k, j);
+  case fnPalInstr_SetTimerIfBossBit: return PalInstr_SetTimerIfBossBit(k, j);
+  case fnPalInstr_SetPalfxIndex: return PalInstr_SetPalfxIndex(k, j);
+  default: Unreachable(); return (PairU16) { 0, 0 };
+  }
+}
+
+void CallPalfxFunc(uint32 ea, uint16 k, uint16 j) {
+  switch (ea) {
+  case fnnullsub_131: return;
+  case fnPalInit_E1BC: PalInit_E1BC(k, j); return;
+  case fnPalInit_F761_Norfair1: PalInit_F761_Norfair1(k, j); return;
+  case fnPalInit_F779_Brinstar8: PalInit_F779_Brinstar8(k, j); return;
+  default: Unreachable();
+  }
 }

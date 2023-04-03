@@ -1416,7 +1416,7 @@ void EscapeEtecoon_E670(uint16 k) {  // 0xB3E670
 
 void EscapeEtecoon_E680(uint16 k) {  // 0xB3E680
   Enemy_EscapeEtecoon *E = Get_EscapeEtecoon(k);
-  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->een_var_A)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(k, INT16_SHL8(E->een_var_A))) {
     E->base.instruction_timer = 1;
     bool v3 = (-E->een_var_A & 0x8000) != 0;
     E->een_var_A = -E->een_var_A;

@@ -709,7 +709,7 @@ void Crocomire_Func_43(void) {  // 0xA49004
 }
 
 const uint16 *Crocomire_Instr_16(uint16 k, const uint16 *jp) {  // 0xA4901D
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(-4)) & 1) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, INT16_SHL16(-4))) {
     Get_Crocomire(0)->crocom_var_C = 14;
     return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BF3C);
   } else {

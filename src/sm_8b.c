@@ -33,8 +33,35 @@
 #define g_word_8CE1E9 ((uint16*)RomFixedPtr(0x8ce1e9))
 #define g_off_8CBC5D ((uint16*)RomFixedPtr(0x8cbc5d))
 
+void CallCinematicFunction(uint32 ea);
+void CallCinematicSprPreInstr(uint32 ea, uint16 j);
+uint16 CallCinematicSprInstr(uint32 ea, uint16 k, uint16 j);
+void CallCinematicBgPreInstr(uint32 ea, uint16 j);
+uint16 CallCinematicBgInstr(uint32 ea, uint16 k, uint16 j);
+void CallCinematicSpriteObjectSetup(uint32 ea, uint16 j);
+uint16 CallIntroObjectInstr(uint32 ea, uint16 k, uint16 j);
+void CallMode7PreInstr(uint32 ea, uint16 k);
+uint16 CallMode7Instr(uint32 ea, uint16 k, uint16 j);
+void CallCinematicSpriteInit(uint32 ea, uint16 j);
+void CallCreditsObjectFunc(uint32 ea, uint16 k);
 
-
+// Misc forwards
+void SetSomeStuffForSpriteObject_16(void);
+void CinematicFunction_Intro_SetupTransitionToGameplay(void);
+void CinematicFunction_Intro_Func13(void);
+void CinematicFunction_Intro_Func40(void);
+void CinematicFunction_Intro_Func135(void);
+void CinematicFunction_Intro_Func145(void);
+void CinematicFunction_Intro_Func37(uint16 k);
+void CinematicFunction_Intro_Func111(void);
+void CinematicFunction_Intro_Func117(void);
+void CinematicFunction_Intro_Func127(void);
+void CinematicFunction_Intro_Func149(void);
+void CinematicFunction_Intro_Func160(uint16 j, uint16 a);
+void CinematicFunction_F0B8(uint16 j);
+void CinematicFunction_Intro_Func189b(uint16 k);
+void CinematicFunction_Intro_Func210_EndingSamusFall(uint16 k);
+void CinematicFunction_Intro_Func216(void);
 
 void SetupPpuForTitleSequence(void) {  // 0x8B8000
   WriteReg(INIDISP, 0x80);
@@ -1061,80 +1088,6 @@ uint8 SpawnCinematicSpriteObjectToR18(uint16 j, uint16 r18) {  // 0x8B93A2
   return SpawnCimenaticSpriteObjectInner(j, r18);
 }
 
-void CallCinematicSpriteObjectSetup(uint32 ea, uint16 j) {
-  switch (ea) {
-  case fnCinematicFunction_nullsub_116: return;
-  case fnCinematicSpriteInit_7: CinematicSpriteInit_7(j); return;
-  case fnCinematicSpriteInit_8: CinematicSpriteInit_8(j); return;
-  case fnCinematicSpriteInit_9: CinematicSpriteInit_9(j); return;
-  case fnCinematicSpriteInit_0: CinematicSpriteInit_0(j); return;
-  case fnCinematicSpriteInit_1: CinematicSpriteInit_1(j); return;
-  case fnCinematicSpriteInit_2: CinematicSpriteInit_2(j); return;
-  case fnCinematicSpriteInit_3: CinematicSpriteInit_3(j); return;
-  case fnCinematicSpriteInit_4: CinematicSpriteInit_4(j); return;
-  case fnCinematicSpriteInit_5: CinematicSpriteInit_5(j); return;
-  case fnCinematicSpriteInit_6: CinematicSpriteInit_6(j); return;
-  case fnSetSomeStuffForSpriteObject_2: SetSomeStuffForSpriteObject_2(j); return;
-  case fnSetSomeStuffForSpriteObject_3: SetSomeStuffForSpriteObject_3(j); return;
-  case fnSetSomeStuffForSpriteObject_6: SetSomeStuffForSpriteObject_6(j); return;
-  case fnSetSomeStuffForSpriteObject_8: SetSomeStuffForSpriteObject_8(j); return;
-  case fnSetSomeStuffForSpriteObject_10: SetSomeStuffForSpriteObject_10(j); return;
-  case fnSetSomeStuffForSpriteObject_12: SetSomeStuffForSpriteObject_12(j); return;
-  case fnSetSomeStuffForSpriteObject_17: SetSomeStuffForSpriteObject_17(j); return;
-  case fnCinematicFunction_Intro_Func35: CinematicFunction_Intro_Func35(j); return;
-  case fnCinematicFunction_Intro_Func42: CinematicFunction_Intro_Func42(j); return;
-  case fnCinematicFunction_Intro_Func46: CinematicFunction_Intro_Func46(j); return;
-  case fnCinematicFunction_Intro_Func47: CinematicFunction_Intro_Func47(j); return;
-  case fnCinematicFunction_Intro_Func49: CinematicFunction_Intro_Func49(j); return;
-  case fnCinematicFunction_Intro_Func57: CinematicFunction_Intro_Func57(j); return;
-  case fnCinematicFunction_Intro_Func59: CinematicFunction_Intro_Func59(j); return;
-  case fnCinematicFunction_Intro_Func61: CinematicFunction_Intro_Func61(j); return;
-  case fnCinematicFunction_Intro_Func63: CinematicFunction_Intro_Func63(j); return;
-  case fnCinematicFunction_Intro_Func65: CinematicFunction_Intro_Func65(j); return;
-  case fnCinematicFunction_Intro_Func68: CinematicFunction_Intro_Func68(j); return;
-  case fnCinematicFunction_Intro_Func71: CinematicFunction_Intro_Func71(j); return;
-  case fnCinematicFunction_Intro_Func78: CinematicFunction_Intro_Func78(j); return;
-  case fnCinematicFunction_Intro_Func80: CinematicFunction_Intro_Func80(j); return;
-  case fnCinematicFunction_Intro_Func81: CinematicFunction_Intro_Func81(j); return;
-  case fnCinematicFunction_Intro_Func83: CinematicFunction_Intro_Func83(j); return;
-  case fnCinematicFunction_Intro_Func89: CinematicFunction_Intro_Func89(j); return;
-  case fnCinematicFunction_Intro_Func92: CinematicFunction_Intro_Func92(j); return;
-  case fnCinematicFunction_Intro_Func98: CinematicFunction_Intro_Func98(j); return;
-  case fnCinematicFunction_Intro_Func99: CinematicFunction_Intro_Func99(j); return;
-  case fnCinematicFunction_Intro_Func100: CinematicFunction_Intro_Func100(j); return;
-  case fnCinematicFunction_Intro_Func101: CinematicFunction_Intro_Func101(j); return;
-  case fnCinematicFunction_Intro_Func102: CinematicFunction_Intro_Func102(j); return;
-  case fnCinematicFunction_Intro_Func104: CinematicFunction_Intro_Func104(j); return;
-  case fnCinematicFunction_Intro_Func150: CinematicFunction_Intro_Func150(j); return;
-  case fnCinematicFunction_Intro_Func152: CinematicFunction_Intro_Func152(j); return;
-  case fnCinematicFunction_Intro_Func153: CinematicFunction_Intro_Func153(j); return;
-  case fnCinematicFunction_Intro_Func154: CinematicFunction_Intro_Func154(j); return;
-  case fnCinematicFunction_Intro_Func155: CinematicFunction_Intro_Func155(j); return;
-  case fnCinematicFunction_Intro_Func156: CinematicFunction_Intro_Func156(j); return;
-  case fnCinematicFunction_Intro_Func157: CinematicFunction_Intro_Func157(j); return;
-  case fnCinematicFunction_Intro_Func159: CinematicFunction_Intro_Func159(j); return;
-  case fnCinematicFunction_Intro_Func161: CinematicFunction_Intro_Func161(j); return;
-  case fnCinematicFunction_Intro_Func162: CinematicFunction_Intro_Func162(j); return;
-  case fnCinematicFunction_Intro_Func163: CinematicFunction_Intro_Func163(j); return;
-  case fnCinematicFunction_Intro_Func164: CinematicFunction_Intro_Func164(j); return;
-  case fnCinematicFunction_Intro_Func165: CinematicFunction_Intro_Func165(j); return;
-  case fnCinematicFunction_Intro_Func166: CinematicFunction_Intro_Func166(j); return;
-  case fnCinematicFunction_Intro_Func167: CinematicFunction_Intro_Func167(j); return;
-  case fnCinematicFunction_Intro_Func168: CinematicFunction_Intro_Func168(j); return;
-  case fnCinematicFunction_Intro_Func169: CinematicFunction_Intro_Func169(j); return;
-  case fnCinematicFunction_Intro_Func170: CinematicFunction_Intro_Func170(j); return;
-  case fnCinematicFunction_Intro_Func171: CinematicFunction_Intro_Func171(j); return;
-  case fnCinematicFunction_Intro_Func172: CinematicFunction_Intro_Func172(j); return;
-  case fnCinematicFunction_Intro_Func173: CinematicFunction_Intro_Func173(j); return;
-  case fnCinematicFunction_Intro_Func174: CinematicFunction_Intro_Func174(j); return;
-  case fnCinematicFunction_Intro_Func175: CinematicFunction_Intro_Func175(j); return;
-  case fnCinematicFunction_Intro_Func176: CinematicFunction_Intro_Func176(j); return;
-  case fnCinematicFunction_Intro_Func177: CinematicFunction_Intro_Func177(j); return;
-  case fnCinematicFunction_Intro_Func178: CinematicFunction_Intro_Func178(j); return;
-  default: Unreachable();
-  }
-}
-
 uint8 SpawnCimenaticSpriteObjectInner(uint16 k, uint16 j) {  // 0x8B93AC
   const uint8 *v2 = RomPtr_8B(k);
   int v3 = j >> 1;
@@ -1167,124 +1120,6 @@ void HandleCinematicSprites(void) {  // 0x8B93EF
   }
 }
 
-uint16 CallCinematicSprInstr(uint32 ea, uint16 k, uint16 j) {
-  switch (ea) {
-  case fnCinematicSprInstr_Delete: return CinematicSprInstr_Delete(k, j);
-  case fnCinematicSprInstr_Sleep: return CinematicSprInstr_Sleep(k, j);
-  case fnCinematicSprInstr_SetPreInstr: return CinematicSprInstr_SetPreInstr(k, j);
-  case fnCinematicSprInstr_ClearPreInstr: return CinematicSprInstr_ClearPreInstr(k, j);
-  case fnCinematicSprInstr_GotoRel: return CinematicSprInstr_GotoRel(k, j);
-  case fnCinematicSprInstr_Goto: return CinematicSprInstr_Goto(k, j);
-  case fnCinematicSprInstr_DecTimerGoto: return CinematicSprInstr_DecTimerGoto(k, j);
-  case fnCinematicSprInstr_DecTimerGotoRel: return CinematicSprInstr_DecTimerGotoRel(k, j);
-  case fnCinematicSprInstr_SetTimer: return CinematicSprInstr_SetTimer(k, j);
-  case fnCinematicSprInstr_9CE1: return CinematicSprInstr_9CE1(k, j);
-  case fnCinematicSprInstr_9D5D: return CinematicSprInstr_9D5D(k, j);
-  case fnCinematicSprInstr_9DD6: return CinematicSprInstr_9DD6(k, j);
-  case fnCinematicSprInstr_Func8: return CinematicSprInstr_Func8(k, j);
-  case fnCinematicSprInstr_Func9: return CinematicSprInstr_Func9(k, j);
-  case fnCinematicSprInstr_sub_8B9EF0: return CinematicSprInstr_sub_8B9EF0(k, j);
-  case fnCinematicSprInstr_9F19: return CinematicSprInstr_9F19(k, j);
-  case fnCinematicSprInstr_SpawnMetroidEggParticles: return CinematicSprInstr_SpawnMetroidEggParticles(k, j);
-  case fnCinematicSprInstr_StartIntroPage2: return CinematicSprInstr_StartIntroPage2(k, j);
-  case fnCinematicSprInstr_StartIntroPage3: return CinematicSprInstr_StartIntroPage3(k, j);
-  case fnCinematicSprInstr_StartIntroPage4: return CinematicSprInstr_StartIntroPage4(k, j);
-  case fnCinematicSprInstr_StartIntroPage5: return CinematicSprInstr_StartIntroPage5(k, j);
-  case fnCinematicSprInstr_Func43: return CinematicSprInstr_Func43(k, j);
-  case fnCinematicSprInstr_SpawnIntroRinkas01: return CinematicSprInstr_SpawnIntroRinkas01(k, j);
-  case fnCinematicSprInstr_SpawnIntroRinkas23: return CinematicSprInstr_SpawnIntroRinkas23(k, j);
-  case fnCinematicCommonInstr_Func69: return CinematicCommonInstr_Func69(k, j);
-  case fnCinematicCommonInstr_Func70: return CinematicCommonInstr_Func70(k, j);
-  case fnCinematicSprInstr_SpawnCeresExplosions1: return CinematicSprInstr_SpawnCeresExplosions1(k, j);
-  case fnCinematicSprInstr_SpawnCeresExplosions3: return CinematicSprInstr_SpawnCeresExplosions3(k, j);
-  case fnCinematicSprInstr_C9A5: return CinematicSprInstr_C9A5(k, j);
-  case fnCinematicSprInstr_C9AF: return CinematicSprInstr_C9AF(k, j);
-  case fnCinematicSprInstr_C9BD: return CinematicSprInstr_C9BD(k, j);
-  case fnCinematicSprInstr_C9C7: return CinematicSprInstr_C9C7(k, j);
-  case fnCinematicSprInstr_Func181: return CinematicSprInstr_Func181(k, j);
-  case fnCinematicSprInstr_Func182: return CinematicSprInstr_Func182(k, j);
-  case fnCinematicSprInstr_Func183: return CinematicSprInstr_Func183(k, j);
-  case fnCinematicSprInstr_Func185: return CinematicSprInstr_Func185(k, j);
-  case fnCinematicSprInstr_Func186: return CinematicSprInstr_Func186(k, j);
-  case fnCinematicSprInstr_Func187: return CinematicSprInstr_Func187(k, j);
-  case fnCinematicSprInstr_Func190: return CinematicSprInstr_Func190(k, j);
-  case fnCinematicSprInstr_Func192: return CinematicSprInstr_Func192(k, j);
-  case fnCinematicSprInstr_Func193: return CinematicSprInstr_Func193(k, j);
-  case fnCinematicSprInstr_Func194: return CinematicSprInstr_Func194(k, j);
-  case fnCinematicSprInstr_Func195: return CinematicSprInstr_Func195(k, j);
-  case fnCinematicSprInstr_Func196: return CinematicSprInstr_Func196(k, j);
-  case fnCinematicSprInstr_Func197: return CinematicSprInstr_Func197(k, j);
-  case fnCinematicSprInstr_Func198: return CinematicSprInstr_Func198(k, j);
-  case fnCinematicSprInstr_Func208: return CinematicSprInstr_Func208(k, j);
-  case fnCinematicSprInstr_Func211: return CinematicSprInstr_Func211(k, j);
-  case fnCinematicSprInstr_Func213: return CinematicSprInstr_Func213(k, j);
-  case fnCinematicSprInstr_Func214: return CinematicSprInstr_Func214(k, j);
-  case fnCinematicSprInstr_Func217: return CinematicSprInstr_Func217(k, j);
-  case fnCinematicSprInstr_Func218: return CinematicSprInstr_Func218(k, j);
-  default: return Unreachable();
-  }
-}
-void CallCinematicSprPreInstr(uint32 ea, uint16 j) {
-  switch (ea) {
-  case fnCinematicSprPreInstr_nullsub_300: return;
-  case fnCinematicFunction_nullsub_116: return;
-  case fnCinematicFunction_nullsub_298: return;
-  case fnsub_8B9CCF: sub_8B9CCF(j); return;
-  case fnnullsub_122:  return;
-  case fnSetSomeStuffForSpriteObject_4_MetroidEgg: SetSomeStuffForSpriteObject_4_MetroidEgg(j); return;
-  case fnCinematicSprPreInstr_A903: CinematicSprPreInstr_A903(j); return;
-  case fnSetSomeStuffForSpriteObject_7: SetSomeStuffForSpriteObject_7(j); return;
-  case fnSetSomeStuffForSpriteObject_9: SetSomeStuffForSpriteObject_9(j); return;
-  case fnSetSomeStuffForSpriteObject_11: SetSomeStuffForSpriteObject_11(j); return;
-  case fnSetSomeStuffForSpriteObject_13: SetSomeStuffForSpriteObject_13(j); return;
-  case fnSetSomeStuffForSpriteObject_18: SetSomeStuffForSpriteObject_18(j); return;
-  case fnCinematicFunction_Intro_Func36: CinematicFunction_Intro_Func36(j); return;
-  case fnCinematicFunction_Intro_Func39: CinematicFunction_Intro_Func39(j); return;
-  case fnCinematicSprPreInstr_B82E: CinematicSprPreInstr_B82E(j); return;
-  case fnCinematicFunction_Intro_Func44: CinematicFunction_Intro_Func44(j); return;
-  case fnCinematicFunction_Intro_Func45: CinematicFunction_Intro_Func45(j); return;
-  case fnCinematicFunction_Intro_Func48: CinematicFunction_Intro_Func48(j); return;
-  case fnCinematicFunction_Intro_Func50: CinematicFunction_Intro_Func50(j); return;
-  case fnCinematicFunction_Intro_Func51: CinematicFunction_Intro_Func51(j); return;
-  case fnCinematicFunction_Intro_Func52: CinematicFunction_Intro_Func52(j); return;
-  case fnCinematicFunction_Intro_Func53: CinematicFunction_Intro_Func53(j); return;
-  case fnCinematicFunction_Intro_Func58: CinematicFunction_Intro_Func58(j); return;
-  case fnCinematicFunction_Intro_Func60: CinematicFunction_Intro_Func60(j); return;
-  case fnCinematicFunction_Intro_Func62: CinematicFunction_Intro_Func62(j); return;
-  case fnCinematicFunction_Intro_Func64: CinematicFunction_Intro_Func64(j); return;
-  case fnCinematicFunction_Intro_Func66: CinematicFunction_Intro_Func66(j); return;
-  case fnCinematicSprPreInstr_C489: CinematicSprPreInstr_C489(j); return;
-  case fnCinematicFunction_Intro_Func82: CinematicFunction_Intro_Func82(j); return;
-  case fnCinematicFunction_Intro_Func90: CinematicFunction_Intro_Func90(j); return;
-  case fnCinematicFunction_Intro_Func91: CinematicFunction_Intro_Func91(j); return;
-  case fnCinematicFunction_Intro_Func93: CinematicFunction_Intro_Func93(j); return;
-  case fnCinematicFunction_Intro_Func94: CinematicFunction_Intro_Func94(j); return;
-  case fnCinematicFunction_Intro_Func96: CinematicFunction_Intro_Func96(j); return;
-  case fnCinematicFunction_Intro_Func97: CinematicFunction_Intro_Func97(j); return;
-  case fnCinematicFunction_Intro_Func151: CinematicFunction_Intro_Func151(j); return;
-  case fnCinematicFunction_Intro_Func179: CinematicFunction_Intro_Func179(j); return;
-  case fnCinematicFunction_Intro_Func180: CinematicFunction_Intro_Func180(j); return;
-  case fnCinematicFunction_Intro_Func184: CinematicFunction_Intro_Func184(j); return;
-  case fnCinematicSprPreInstr_F35A: CinematicSprPreInstr_F35A(j); return;
-  case fnCinematicFunction_Intro_Func189: CinematicFunction_Intro_Func189(j); return;
-  case fnCinematicFunction_Intro_Func189b: CinematicFunction_Intro_Func189b(j); return;
-  case fnCinematicFunction_Intro_Func191: CinematicFunction_Intro_Func191(j); return;
-  case fnCinematicFunction_Intro_Func199: CinematicFunction_Intro_Func199(j); return;
-  case fnCinematicFunction_Intro_Func200: CinematicFunction_Intro_Func200(j); return;
-  case fnCinematicFunction_Intro_Func201: CinematicFunction_Intro_Func201(j); return;
-  case fnCinematicFunction_Intro_Func202: CinematicFunction_Intro_Func202(j); return;
-  case fnCinematicFunction_Intro_Func203: CinematicFunction_Intro_Func203(j); return;
-  case fnCinematicFunction_Intro_Func204: CinematicFunction_Intro_Func204(j); return;
-  case fnCinematicFunction_Intro_Func205: CinematicFunction_Intro_Func205(j); return;
-  case fnCinematicFunction_Intro_Func206: CinematicFunction_Intro_Func206(j); return;
-  case fnCinematicFunction_Intro_Func207: CinematicFunction_Intro_Func207(j); return;
-  case fnnullsub_128: return;
-  case fnCinematicSprPreInstr_F528: CinematicSprPreInstr_F528(j); return;
-  case fnCinematicSprPreInstr_F57F: CinematicSprPreInstr_F57F(j); return;
-  case fnCinematicFunction_Intro_Func215: CinematicFunction_Intro_Func215(j); return;
-  default: Unreachable();
-  }
-}
 void ProcessCinematicSpriteInstructionList(uint16 k) {  // 0x8B9409
   CallCinematicSprPreInstr(cinematicspr_preinstr_func[k >> 1] | 0x8B0000, k);
   uint16 v1 = cinematic_obj_index;
@@ -1363,23 +1198,6 @@ void sub_8B94E1(void) {  // 0x8B94E1
   ;
 }
 
-void CallCinematicSpriteInit(uint32 ea, uint16 j) {
-  switch (ea) {
-  case fnCinematicSpriteInit_7: CinematicSpriteInit_7(j); return;
-  case fnCinematicSpriteInit_8: CinematicSpriteInit_8(j); return;
-  case fnCinematicSpriteInit_9: CinematicSpriteInit_9(j); return;
-  case fnCinematicSpriteInit_0: CinematicSpriteInit_0(j); return;
-  case fnCinematicSpriteInit_1: CinematicSpriteInit_1(j); return;
-  case fnCinematicSpriteInit_2: CinematicSpriteInit_2(j); return;
-  case fnCinematicSpriteInit_3: CinematicSpriteInit_3(j); return;
-  case fnCinematicSpriteInit_4: CinematicSpriteInit_4(j); return;
-  case fnCinematicSpriteInit_5: CinematicSpriteInit_5(j); return;
-  case fnCinematicSpriteInit_6: CinematicSpriteInit_6(j); return;
-  case fnCinematicFunction_nullsub_116: return;
-  default: Unreachable();
-  }
-}
-
 uint8 SpawnMode7Object(uint16 j, uint16 a) {  // 0x8B94E4
   Mode7ObjectDef *Mode7ObjectDef;
 
@@ -1407,48 +1225,6 @@ void HandleMode7Objects(void) {  // 0x8B951D
       ProcessMode7ObjectInstructions(i);
       i = mode7_cur_index;
     }
-  }
-}
-uint16 CallMode7Instr(uint32 ea, uint16 k, uint16 j) {
-  switch (ea) {
-  case fnMode7Instr_Delete: return Mode7Instr_Delete(k, j);
-  case fnMode7Instr_SetPreInstr: return Mode7Instr_SetPreInstr(k, j);
-  case fnMode7Instr_ClearPreInstr: return Mode7Instr_ClearPreInstr(k, j);
-  case fnMode7Instr_Goto: return Mode7Instr_Goto(k, j);
-  case fnMode7Instr_DecTimerAndGoto: return Mode7Instr_DecTimerAndGoto(k, j);
-  case fnMode7Instr_SetTimer: return Mode7Instr_SetTimer(k, j);
-  case fnPlayBabyMetroidCry1: return PlayBabyMetroidCry1(k, j);
-  case fnPlayBabyMetroidCry2: return PlayBabyMetroidCry2(k, j);
-  case fnPlayBabyMetroidCry3: return PlayBabyMetroidCry3(k, j);
-  case fnCinematicSetPal1: return CinematicSetPal1(k, j);
-  case fnCinematicSetPal2: return CinematicSetPal2(k, j);
-  case fnCinematicSetPal3: return CinematicSetPal3(k, j);
-  case fnCinematicSetPal4: return CinematicSetPal4(k, j);
-  case fnsub_8BB51E: return sub_8BB51E(k, j);
-  case fnEnableCinematicBgTilemapUpdates__0: return EnableCinematicBgTilemapUpdates__0(k, j);
-  case fnCinematicFunction_Intro_Func21: return CinematicFunction_Intro_Func21(k, j);
-  case fnCinematicFunction_Intro_ThenWaitInputSetupBabyMetroid: return CinematicFunction_Intro_ThenWaitInputSetupBabyMetroid(k, j);
-  case fnCinematicFunction_Intro_Func23: return CinematicFunction_Intro_Func23(k, j);
-  case fnCinematicFunction_Intro_Func25: return CinematicFunction_Intro_Func25(k, j);
-  case fnCinematicFunction_Intro_Func26: return CinematicFunction_Intro_Func26(k, j);
-  case fnCinematicFunction_Intro_Func28: return CinematicFunction_Intro_Func28(k, j);
-  case fnCinematicFunction_Intro_Func29: return CinematicFunction_Intro_Func29(k, j);
-  case fnCinematicFunction_Intro_Func31: return CinematicFunction_Intro_Func31(k, j);
-  case fnCinematicFunction_Intro_Func32: return CinematicFunction_Intro_Func32(k, j);
-  case fnEnableCinematicBgTilemapUpdates__: return EnableCinematicBgTilemapUpdates__(k, j);
-  default: return Unreachable();
-  }
-}
-
-
-void CallMode7PreInstr(uint32 ea, uint16 k) {
-  switch (ea) {
-  case fnCinematicFunction_nullsub_116: return;
-  case fnCinematicFunction_Intro_Func22: CinematicFunction_Intro_Func22(k); return;
-  case fnCinematicFunction_Intro_Func24: CinematicFunction_Intro_Func24(k); return;
-  case fnCinematicFunction_Intro_Func27: CinematicFunction_Intro_Func27(k); return;
-  case fnCinematicFunction_Intro_Func30: CinematicFunction_Intro_Func30(k); return;
-  default: Unreachable();
   }
 }
 
@@ -1573,41 +1349,6 @@ void HandleCinematicBgObjects(void) {  // 0x8B962F
     if ((cinematic_enable_bg_tilemap & 0x8000) != 0)
       UpdateCinematicBgTilemap();
     UpdateSamusEyesTilemap();
-  }
-}
-
-void CallCinematicBgPreInstr(uint32 ea, uint16 j) {
-  switch (ea) {
-  case fnCinematicFunction_nullsub_116: return;
-  case fnCinematicBgPreInstr_SamusBlink: CinematicBgPreInstr_SamusBlink(j); return;
-  default: Unreachable();
-  }
-}
-
-uint16 CallCinematicBgInstr(uint32 ea, uint16 k, uint16 j) {
-  switch (ea) {
-  case fnCinematicBgInstr_Delete: return CinematicBgInstr_Delete(k, j);
-  case fnCinematicBgInstr_Goto: return CinematicBgInstr_Goto(k, j);
-  case fnCinematicBgInstr_SetSomeStuffForSpriteObject_14: return CinematicBgInstr_SetSomeStuffForSpriteObject_14(k, j);
-  case fnCinematicBgInstr_HandleCreateJpnText_Page1: return CinematicBgInstr_HandleCreateJpnText_Page1(k, j);
-  case fnCinematicBgInstr_SpawnMarkerWaitInput_Page1: return CinematicBgInstr_SpawnMarkerWaitInput_Page1(k, j);
-  case fnCinematicBgInstr_HandleCreateJpnText_Page2: return CinematicBgInstr_HandleCreateJpnText_Page2(k, j);
-  case fnCinematicBgInstr_SpawnMarkerWaitInput_Page2: return CinematicBgInstr_SpawnMarkerWaitInput_Page2(k, j);
-  case fnCinematicBgInstr_HandleCreateJpnText_Page3: return CinematicBgInstr_HandleCreateJpnText_Page3(k, j);
-  case fnCinematicBgInstr_SpawnMarkerWaitInput_Page3: return CinematicBgInstr_SpawnMarkerWaitInput_Page3(k, j);
-  case fnCinematicBgInstr_HandleCreateJpnText_Page4: return CinematicBgInstr_HandleCreateJpnText_Page4(k, j);
-  case fnCinematicBgInstr_SpawnMarkerWaitInput_Page4: return CinematicBgInstr_SpawnMarkerWaitInput_Page4(k, j);
-  case fnCinematicBgInstr_HandleCreateJpnText_Page5: return CinematicBgInstr_HandleCreateJpnText_Page5(k, j);
-  case fnCinematicBgInstr_SpawnMarkerWaitInput_Page5: return CinematicBgInstr_SpawnMarkerWaitInput_Page5(k, j);
-  case fnCinematicBgInstr_Func16: return CinematicBgInstr_Func16(k, j);
-  case fnCinematicBgInstr_Func17: return CinematicBgInstr_Func17(k, j);
-  case fnCinematicCommonInstr_Func69: return CinematicCommonInstr_Func69(k, j);
-  case fnCinematicCommonInstr_Func70: return CinematicCommonInstr_Func70(k, j);
-  case fnCalcItemPercentageCount: return CalcItemPercentageCount(k, j);
-  case fnCinematicFunction_Intro_Func146: return CinematicFunction_Intro_Func146(k, j);
-  case fnCinematicFunction_Intro_Func147: return CinematicFunction_Intro_Func147(k, j);
-
-  default: return Unreachable();
   }
 }
 
@@ -1772,14 +1513,6 @@ void CinematicFunction_Intro_Func128(uint16 a) {  // 0x8B98F9
   cinematic_var10 = 0;
 }
 
-void CallCreditsObjectFunc(uint32 ea, uint16 k) {
-  switch (ea) {
-  case fnCinematicFunction_nullsub_116: return;
-  case fnCinematicBgPreInstr_SamusBlink: CinematicBgPreInstr_SamusBlink(k); return;
-  default: Unreachable();
-  }
-}
-
 void CreditsObject_Init(uint16 j) {  // 0x8B9932
   const uint8 *v1 = RomPtr_8B(j);
   cinematic_var24 = GET_WORD(v1 + 2);
@@ -1794,17 +1527,6 @@ void CreditsObject_Process(void) {  // 0x8B9955
     if (cinematic_var21)
       CreditsObject_ProcessOne();
     CinematicUpdateSomeBg();
-  }
-}
-
-uint16 CallIntroObjectInstr(uint32 ea, uint16 k, uint16 j) {
-  switch (ea) {
-  case fnIntroObject_Delete: return IntroObject_Delete(k, j);
-  case fnIntroObject_Goto: return IntroObject_Goto(k, j);
-  case fnIntroObject_DecTimerGoto: return IntroObject_DecTimerGoto(k, j);
-  case fnIntroObject_SetTimer: return IntroObject_SetTimer(k, j);
-  case fnCinematicFunction_Intro_Func219: return CinematicFunction_Intro_Func219(k, j);
-  default: return Unreachable();
   }
 }
 
@@ -1863,109 +1585,6 @@ uint16 IntroObject_SetTimer(uint16 k, uint16 j) {  // 0x8B9A17
   return j + 2;
 }
 
-void CallCinematicFunction(uint32 ea) {
-  switch (ea) {
-  case fnCinematicFunctionNone: CinematicFunctionNone(); return;
-  case fnCinematicFunctionOpening: CinematicFunctionOpening(); return;
-  case fnCinematicFunc_Func2: CinematicFunc_Func2(); return;
-  case fnCinematicFunc_Func4: CinematicFunc_Func4(); return;
-  case fnCinematicFunc_Func5: CinematicFunc_Func5(); return;
-  case fnCinematicFunc_Func7: CinematicFunc_Func7(); return;
-  case fnnullsub_117: return;
-  case fnCinematicFunc_Func1: CinematicFunc_Func1(); return;
-  case fnCinematicFunc_Func10: CinematicFunc_Func10(); return;
-  case fnCinematicFunc_Func9: CinematicFunc_Func9(); return;
-  case fnnullsub_120: return;
-  case fnnullsub_121: return;
-  case fnCinematicFunc_Nothing: CinematicFunc_Nothing(); return;
-  case fnCinematicFunction_Intro_Initial: CinematicFunction_Intro_Initial(); return;
-  case fnCinematicFunction_Intro_FadeIn: CinematicFunction_Intro_FadeIn(); return;
-  case fnCinematicFunction_Intro_DrawInitJpn: CinematicFunction_Intro_DrawInitJpn(); return;
-  case fnCinematicFunction_Intro_LastMetroidCaptivity: CinematicFunction_Intro_LastMetroidCaptivity(); return;
-  case fnCinematicFunc_Intro_QueueGalaxyIsAtPeace: CinematicFunc_Intro_QueueGalaxyIsAtPeace(); return;
-  case fnCinematicFunc_Intro_WaitForQueueWait4secs: CinematicFunc_Intro_WaitForQueueWait4secs(); return;
-  case fnCinematicFunc_Intro_FadeOut: CinematicFunc_Intro_FadeOut(); return;
-  case fnCinematicFunc_Intro_WaitForFadeOut: CinematicFunc_Intro_WaitForFadeOut(); return;
-  case fnCinematicFunc_Intro_SetupTextPage2: CinematicFunc_Intro_SetupTextPage2(); return;
-  case fnCinematicFunc_Intro_WaitFadeinShowText: CinematicFunc_Intro_WaitFadeinShowText(); return;
-  case fnCinematicFunc_Intro_WaitForFadeinSleep: CinematicFunc_Intro_WaitForFadeinSleep(); return;
-  case fnCinematicFunction_Intro_WaitInputSetupMotherBrainFight: CinematicFunction_Intro_WaitInputSetupMotherBrainFight(); return;
-  case fnCinematicFunction_Intro_WaitInputSetupBabyMetroid: CinematicFunction_Intro_WaitInputSetupBabyMetroid(); return;
-  case fnCinematicFunction_Intro_Func11: CinematicFunction_Intro_Func11(); return;
-  case fnCinematicFunction_Intro_Func12: CinematicFunction_Intro_Func12(); return;
-  case fnCinematicFunction_Intro_Func15: CinematicFunction_Intro_Func15(); return;
-  case fnCinematicFunction_Intro_Func15b: CinematicFunction_Intro_Func15b(); return;
-  case fnCinematicFunction_Intro_XfadeGameplayFade: CinematicFunction_Intro_XfadeGameplayFade(); return;
-  case fnCinematicFunction_Intro_XfadeScientistFade: CinematicFunction_Intro_XfadeScientistFade(); return;
-  case fnCinematicFunction_Intro_Page2: CinematicFunction_Intro_Page2(); return;
-  case fnCinematicFunction_Intro_Page3: CinematicFunction_Intro_Page3(); return;
-  case fnCinematicFunction_Intro_Page4: CinematicFunction_Intro_Page4(); return;
-  case fnCinematicFunction_Intro_Page5: CinematicFunction_Intro_Page5(); return;
-  case fnCinematicFunction_Intro_Fadestuff: CinematicFunction_Intro_Fadestuff(); return;
-  case fnCinematicFunction_Intro_Fadestuff2: CinematicFunction_Intro_Fadestuff2(); return;
-  case fnCinematicFunction_Intro_Func34: CinematicFunction_Intro_Func34(); return;
-  case fnCinematicFunction_Intro_Func54: CinematicFunction_Intro_Func54(); return;
-  case fnCinematicFunction_Intro_Func55: CinematicFunction_Intro_Func55(); return;
-  case fnCinematicFunction_Intro_Func56: CinematicFunction_Intro_Func56(); return;
-  case fnCinematicFunction_Intro_Func67: CinematicFunction_Intro_Func67(); return;
-  case fnCinematicFunction_Intro_Func72: CinematicFunction_Intro_Func72(); return;
-  case fnCinematicFunction_Intro_Func73: CinematicFunction_Intro_Func73(); return;
-  case fnCinematicFunctionBlackoutFromCeres: CinematicFunctionBlackoutFromCeres(); return;
-  case fnCinematicFunction_Intro_Func74: CinematicFunction_Intro_Func74(); return;
-  case fnCinematicFunction_Intro_Func75: CinematicFunction_Intro_Func75(); return;
-  case fnCinematicFunction_Intro_Func76: CinematicFunction_Intro_Func76(); return;
-  case fnCinematicFunction_Intro_Func77: CinematicFunction_Intro_Func77(); return;
-  case fnCinematicFunction_Intro_Func84: CinematicFunction_Intro_Func84(); return;
-  case fnCinematicFunction_Intro_Func85: CinematicFunction_Intro_Func85(); return;
-  case fnCinematicFunction_Intro_Func86: CinematicFunction_Intro_Func86(); return;
-  case fnCinematicFunction_Intro_Func87: CinematicFunction_Intro_Func87(); return;
-  case fnCinematicFunction_Intro_Func88: CinematicFunction_Intro_Func88(); return;
-  case fnCinematicFunction_Intro_Func105: CinematicFunction_Intro_Func105(); return;
-  case fnCinematicFunction_Intro_Func106: CinematicFunction_Intro_Func106(); return;
-  case fnCinematicFunction_Intro_Func107: CinematicFunction_Intro_Func107(); return;
-  case fnCinematicFunction_Intro_Func108: CinematicFunction_Intro_Func108(); return;
-  case fnnullsub_124: return;
-  case fnCinematicFunction_Intro_Func95: CinematicFunction_Intro_Func95(); return;
-  case fnCinematicFunctionEscapeFromCebes: CinematicFunctionEscapeFromCebes(); return;
-  case fnCinematicFunction_Intro_Func109: CinematicFunction_Intro_Func109(); return;
-  case fnCinematicFunction_Intro_Func110: CinematicFunction_Intro_Func110(); return;
-  case fnCinematicFunction_Intro_Func111: CinematicFunction_Intro_Func111(); return;
-  case fnCinematicFunction_Intro_Func112: CinematicFunction_Intro_Func112(); return;
-  case fnCinematicFunction_Intro_Func113: CinematicFunction_Intro_Func113(); return;
-  case fnCinematicFunction_Intro_Func114: CinematicFunction_Intro_Func114(); return;
-  case fnCinematicFunction_Intro_Func115: CinematicFunction_Intro_Func115(); return;
-  case fnCinematicFunction_Intro_Func116: CinematicFunction_Intro_Func116(); return;
-  case fnCinematicFunction_Intro_Func117: CinematicFunction_Intro_Func117(); return;
-  case fnCinematicFunction_Intro_Func118: CinematicFunction_Intro_Func118(); return;
-  case fnnullsub_125: return;
-  case fnCinematicFunction_Intro_Func119: CinematicFunction_Intro_Func119(); return;
-  case fnCinematicFunction_Intro_Func120: CinematicFunction_Intro_Func120(); return;
-  case fnCinematicFunction_Intro_Func121: CinematicFunction_Intro_Func121(); return;
-  case fnCinematicFunction_Intro_Func123: CinematicFunction_Intro_Func123(); return;
-  case fnCinematicFunction_Intro_Func124: CinematicFunction_Intro_Func124(); return;
-  case fnnullsub_126: return;
-  case fnCinematicFunction_Intro_Func125: CinematicFunction_Intro_Func125(); return;
-  case fnCinematicFunction_Intro_Func126: CinematicFunction_Intro_Func126(); return;
-  case fnCinematicFunction_Intro_Func129: CinematicFunction_Intro_Func129(); return;
-  case fnCinematicFunction_Intro_Func130: CinematicFunction_Intro_Func130(); return;
-  case fnCinematicFunction_Intro_Func131: CinematicFunction_Intro_Func131(); return;
-  case fnCinematicFunction_Intro_Func132: CinematicFunction_Intro_Func132(); return;
-  case fnCinematicFunction_Intro_Func134: CinematicFunction_Intro_Func134(); return;
-  case fnCinematicFunction_Intro_Func136: CinematicFunction_Intro_Func136(); return;
-  case fnCinematicFunction_Intro_Func135: CinematicFunction_Intro_Func135(); return;
-  case fnCinematicFunction_Intro_Func137: CinematicFunction_Intro_Func137(); return;
-  case fnCinematicFunction_Intro_Func138: CinematicFunction_Intro_Func138(); return;
-  case fnCinematicFunction_Intro_Func145: CinematicFunction_Intro_Func145(); return;
-  case fnCinematicFunction_Intro_Func139: CinematicFunction_Intro_Func139(); return;
-  case fnCinematicFunction_Intro_Func141: CinematicFunction_Intro_Func141(); return;
-  case fnCinematicFunction_Intro_Func143: CinematicFunction_Intro_Func143(); return;
-  case fnCinematicFunction_Intro_Func144: CinematicFunction_Intro_Func144(); return;
-  case fnCinematicFunction_Intro_Func148: CinematicFunction_Intro_Func148(); return;
-  case fnnullsub_127: return;
-  default: Unreachable();
-  }
-}
-
 CoroutineRet GameState_1_OpeningCinematic_(void) {  // 0x8B9A22
   CallCinematicFunction(cinematic_function | 0x8b0000);
   HandleCinematicSprites();
@@ -1990,18 +1609,6 @@ void MaybeSkipCinematics(void) {  // 0x8B9A48
     screen_fade_delay = 0;
     screen_fade_counter = 2;
   }
-}
-
-static Func_V *const off_8B9A7B[4] = {  // 0x8B9A6C
-  0,
-  HandleCinematicsTransitions_1,
-  HandleCinematicsTransitions_2,
-  HandleCinematicsTransitions_3,
-};
-
-void HandleCinematicsTransitions(void) {
-  if (cinematic_var18)
-    off_8B9A7B[cinematic_var18]();
 }
 
 void HandleCinematicsTransitions_1(void) {  // 0x8B9A83
@@ -2070,6 +1677,18 @@ void HandleCinematicsTransitions_3(void) {  // 0x8B9B53
     demo_timer = 900;
     cinematic_function = FUNC16(CinematicFunc_Func1);
   }
+}
+
+static Func_V *const off_8B9A7B[4] = {  // 0x8B9A6C
+  0,
+  HandleCinematicsTransitions_1,
+  HandleCinematicsTransitions_2,
+  HandleCinematicsTransitions_3,
+};
+
+void HandleCinematicsTransitions(void) {
+  if (cinematic_var18)
+    off_8B9A7B[cinematic_var18]();
 }
 
 void CinematicFunctionOpening(void) {  // 0x8B9B68
@@ -2430,6 +2049,7 @@ static const uint16 kCinematicPal1[16] = { 0x1000, 0x6bf5, 0x2e41, 0x2da1, 0x2d0
 static const uint16 kCinematicPal2[16] = { 0x3800, 0x6bf5, 0x6e1, 0x641, 0x5a1, 0x5e5f, 0x183f, 0x1014, 0x80a, 0x404, 0x4f9f, 0x3ed8, 0x2e12, 0x6f70, 0x7fff, 0x5ee0 };
 static const uint16 kCinematicPal3[16] = { 0x3800, 0x77f8, 0x1344, 0x12a4, 0x1204, 0x6abf, 0x249f, 0x1c77, 0x146d, 0x1067, 0x5bff, 0x4b38, 0x3a72, 0x7bd3, 0x7fff, 0x6b43 };
 static const uint16 kCinematicPal4[16] = { 0x3800, 0x7ffb, 0x1fa7, 0x1f07, 0x1e67, 0x771f, 0x30ff, 0x28da, 0x20d0, 0x1cca, 0x67ff, 0x579b, 0x46d5, 0x7bd6, 0x7fff, 0x77a6 };
+
 uint16 CinematicSetPal1(uint16 k, uint16 j) {  // 0x8BA273
   for (int i = 30; i >= 0; i -= 2)
     palette_buffer[(i >> 1) + 48] = kCinematicPal1[i >> 1];
@@ -3191,6 +2811,15 @@ uint16 CinematicBgInstr_SpawnMarkerWaitInput_Page5(uint16 k, uint16 j) {  // 0x8
   return j;
 }
 
+void CinematicFunction_Intro_Func15b(void) {  // 0x8BB207
+  EnableCinematicBgTilemapUpdates();
+  ClearEnglishTextTilemap();
+  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF5D, 0x4C00);
+  cinematic_function = FUNC16(nullsub_121);
+  SetSomeStuffForSpriteObject_16();
+  QueueMusic_Delayed8(0);
+}
+
 void CinematicFunction_Intro_Func15(void) {  // 0x8BB1DA
   if (cinematic_var16) {
     --cinematic_var16;
@@ -3205,15 +2834,6 @@ void CinematicFunction_Intro_Func15(void) {  // 0x8BB1DA
       CinematicFunction_Intro_Func15b();
     }
   }
-}
-
-void CinematicFunction_Intro_Func15b(void) {  // 0x8BB207
-  EnableCinematicBgTilemapUpdates();
-  ClearEnglishTextTilemap();
-  SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF5D, 0x4C00);
-  cinematic_function = FUNC16(nullsub_121);
-  SetSomeStuffForSpriteObject_16();
-  QueueMusic_Delayed8(0);
 }
 
 uint16 CinematicBgInstr_Func16(uint16 k, uint16 j) {  // 0x8BB228
@@ -3308,6 +2928,26 @@ void Instr_StartIntroPage_Common(void) {  // 0x8BB354
   TransferJapaneseTextTilesToVram();
 }
 
+void CinematicFunction_Intro_SetupStuff(void) {  // 0x8BB3A1
+  reg_TM = 6;
+  reg_TS = 17;
+  reg_CGWSEL = 2;
+  reg_CGADSUB = 0;
+  uint16 v0 = 0;
+  do {
+    tilemap_stuff[(v0 >> 1) + 256] = kPalettes_Intro[v0 >> 1];
+    v0 += 2;
+  } while ((int16)(v0 - 512) < 0);
+  DecomposePaletteDataForFading();
+  ClearYColorsFromIndexX(0, 0x10);
+  ClearYColorsFromIndexX(0x60, 0x10);
+  ClearYColorsFromIndexX(0x1D2, 6);
+  ComposeFadingPalettes();
+  cinematic_var4 = 127;
+  EnableCinematicBgTilemapUpdates();
+  SetSomeStuffForSpriteObject_16();
+}
+
 void CinematicFunction_Intro_Page2(void) {  // 0x8BB35F
   SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF45, 0x4C00);
   cinematic_function = FUNC16(CinematicFunction_Intro_Fadestuff);
@@ -3330,26 +2970,6 @@ void CinematicFunction_Intro_Page5(void) {  // 0x8BB392
   SpawnCinematicBgObject(addr_kCinematicBgObjectDef_8BCF57, 0x4C00);
   cinematic_function = FUNC16(CinematicFunction_Intro_Fadestuff2);
   CinematicFunction_Intro_SetupStuff();
-}
-
-void CinematicFunction_Intro_SetupStuff(void) {  // 0x8BB3A1
-  reg_TM = 6;
-  reg_TS = 17;
-  reg_CGWSEL = 2;
-  reg_CGADSUB = 0;
-  uint16 v0 = 0;
-  do {
-    tilemap_stuff[(v0 >> 1) + 256] = kPalettes_Intro[v0 >> 1];
-    v0 += 2;
-  } while ((int16)(v0 - 512) < 0);
-  DecomposePaletteDataForFading();
-  ClearYColorsFromIndexX(0, 0x10);
-  ClearYColorsFromIndexX(0x60, 0x10);
-  ClearYColorsFromIndexX(0x1D2, 6);
-  ComposeFadingPalettes();
-  cinematic_var4 = 127;
-  EnableCinematicBgTilemapUpdates();
-  SetSomeStuffForSpriteObject_16();
 }
 
 void CinematicFunction_Intro_Fadestuff(void) {  // 0x8BB3F4
@@ -3405,6 +3025,15 @@ void CinematicBgPreInstr_SamusBlink(uint16 k) {  // 0x8BB4BC
   }
 }
 
+void CallCreditsObjectFunc(uint32 ea, uint16 k) {
+  switch (ea) {
+  case fnCinematicFunction_nullsub_116: return;
+  case fnCinematicBgPreInstr_SamusBlink: CinematicBgPreInstr_SamusBlink(k); return;
+  default: Unreachable();
+  }
+}
+
+
 void CinematicFunction_Intro_Func19(uint16 k) {  // 0x8BB4DC
   if (!sign16(cinematicspr_instr_ptr[15] + 0x33FD))
     cinematicbg_instr_timer[k >> 1] = 1;
@@ -3418,10 +3047,6 @@ void CinematicFunction_Intro_Func18(void) {  // 0x8BB4EB
   CinematicFunction_Intro_Func20(addr_word_8BD389);
   CinematicFunction_Intro_Func20(addr_word_8BD389);
   TransferJapaneseTextTilesToVram();
-}
-
-void EnableCinematicBgTilemapUpdates_(void) {  // 0x8BB519
-  EnableCinematicBgTilemapUpdates();
 }
 
 uint16 sub_8BB51E(uint16 k, uint16 j) {  // 0x8BB51E
@@ -3690,8 +3315,10 @@ void CinematicFunction_Intro_Func40(void) {  // 0x8BB877
   else
     cinematic_var10 += 4;
 }
+
 static const uint16 kCinematicFunction_Intro_Func42_Tab0[4] = { 0x70, 0xc0, 0x80, 0xe8 };
 static const uint16 kCinematicFunction_Intro_Func42_Tab1[4] = { 0x50, 0x40, 0x38, 0x58 };
+
 void CinematicFunction_Intro_Func42(uint16 j) {  // 0x8BB896
   uint16 v1 = cinematic_spawn_param;
   int v2 = j >> 1;
@@ -4969,12 +4596,6 @@ void CinematicFunction_Intro_Func112(void) {  // 0x8BD731
   cinematic_function = FUNC16(CinematicFunction_Intro_Func113);
 }
 
-void CinematicFunction_Intro_Func113(void) {  // 0x8BD7F8
-  CinematicFunction_Intro_Func114();
-  if (AdvanceFastScreenFadeIn() & 1)
-    cinematic_function = FUNC16(CinematicFunction_Intro_Func114);
-}
-
 void CinematicFunction_Intro_Func114(void) {  // 0x8BD807
   if ((cinematic_var12 & 1) == 0)
     cinematic_var5 = (uint8)(cinematic_var5 - 1);
@@ -4983,6 +4604,12 @@ void CinematicFunction_Intro_Func114(void) {  // 0x8BD807
     if (AdvanceFastScreenFadeOut() & 1)
       cinematic_function = FUNC16(CinematicFunction_Intro_Func115);
   }
+}
+
+void CinematicFunction_Intro_Func113(void) {  // 0x8BD7F8
+  CinematicFunction_Intro_Func114();
+  if (AdvanceFastScreenFadeIn() & 1)
+    cinematic_function = FUNC16(CinematicFunction_Intro_Func114);
 }
 
 void CinematicFunction_Intro_Func115(void) {  // 0x8BD837
@@ -5262,7 +4889,9 @@ void CinematicFunction_Intro_Func121(void) {
     cinematic_function = FUNC16(CinematicFunction_Intro_Func123);
   }
 }
+
 static const uint16 kCinematicFunction_Intro_Func123_Tab0[16] = { 1, 0, 1, 0, 1, 0, 0xffff, 0, 0xffff, 0, 1, 0, 1, 0, 0xffff, 0 };
+
 void CinematicFunction_Intro_Func123(void) {  // 0x8BDD42
   int16 v1;
 
@@ -5284,7 +4913,9 @@ void CinematicFunction_Intro_Func123(void) {  // 0x8BDD42
     }
   }
 }
+
 static const uint16 g_word_8BDE43[16] = { 0, 0x6f7b, 0x4a52, 0x1ce7, 0, 0x5ad6, 0x4a52, 0x35ad, 0x2529, 0x7fff, 0x56b5, 0x294a, 0x4210, 0x2d6b, 0x18c6, 0x7fff };
+
 void CinematicFunction_Intro_Func124(void) {  // 0x8BDDCD
   unsigned int v2; // kr04_4
 
@@ -5606,6 +5237,14 @@ void CinematicFunction_Intro_Func145(void) {  // 0x8BE342
   }
 }
 
+void CinematicFunction_Intro_Func140(void) {  // 0x8BE409
+  if (cinematic_var17) {
+    --cinematic_var17;
+    FadeOutYColorsFromIndexX(0x1E0, 0x10);
+    ComposeFadingPalettes();
+  }
+}
+
 void CinematicFunction_Intro_Func139(void) {  // 0x8BE3AE
   if (cinematic_var14) {
     --cinematic_var14;
@@ -5624,14 +5263,6 @@ void CinematicFunction_Intro_Func139(void) {  // 0x8BE3AE
     cinematic_function = FUNC16(CinematicFunction_Intro_Func141);
     cinematic_var4 = 180;
     cinematic_var14 = 0;
-  }
-}
-
-void CinematicFunction_Intro_Func140(void) {  // 0x8BE409
-  if (cinematic_var17) {
-    --cinematic_var17;
-    FadeOutYColorsFromIndexX(0x1E0, 0x10);
-    ComposeFadingPalettes();
   }
 }
 
@@ -6529,4 +6160,406 @@ uint16 CinematicFunction_Intro_Func219(uint16 k, uint16 j) {  // 0x8BF6FE
   cinematic_function = FUNC16(CinematicFunction_Intro_Func129);
   cinematic_var4 = 60;
   return j;
+}
+
+void CallCinematicFunction(uint32 ea) {
+  switch (ea) {
+  case fnCinematicFunctionNone: CinematicFunctionNone(); return;
+  case fnCinematicFunctionOpening: CinematicFunctionOpening(); return;
+  case fnCinematicFunc_Func2: CinematicFunc_Func2(); return;
+  case fnCinematicFunc_Func4: CinematicFunc_Func4(); return;
+  case fnCinematicFunc_Func5: CinematicFunc_Func5(); return;
+  case fnCinematicFunc_Func7: CinematicFunc_Func7(); return;
+  case fnnullsub_117: return;
+  case fnCinematicFunc_Func1: CinematicFunc_Func1(); return;
+  case fnCinematicFunc_Func10: CinematicFunc_Func10(); return;
+  case fnCinematicFunc_Func9: CinematicFunc_Func9(); return;
+  case fnnullsub_120: return;
+  case fnnullsub_121: return;
+  case fnCinematicFunc_Nothing: CinematicFunc_Nothing(); return;
+  case fnCinematicFunction_Intro_Initial: CinematicFunction_Intro_Initial(); return;
+  case fnCinematicFunction_Intro_FadeIn: CinematicFunction_Intro_FadeIn(); return;
+  case fnCinematicFunction_Intro_DrawInitJpn: CinematicFunction_Intro_DrawInitJpn(); return;
+  case fnCinematicFunction_Intro_LastMetroidCaptivity: CinematicFunction_Intro_LastMetroidCaptivity(); return;
+  case fnCinematicFunc_Intro_QueueGalaxyIsAtPeace: CinematicFunc_Intro_QueueGalaxyIsAtPeace(); return;
+  case fnCinematicFunc_Intro_WaitForQueueWait4secs: CinematicFunc_Intro_WaitForQueueWait4secs(); return;
+  case fnCinematicFunc_Intro_FadeOut: CinematicFunc_Intro_FadeOut(); return;
+  case fnCinematicFunc_Intro_WaitForFadeOut: CinematicFunc_Intro_WaitForFadeOut(); return;
+  case fnCinematicFunc_Intro_SetupTextPage2: CinematicFunc_Intro_SetupTextPage2(); return;
+  case fnCinematicFunc_Intro_WaitFadeinShowText: CinematicFunc_Intro_WaitFadeinShowText(); return;
+  case fnCinematicFunc_Intro_WaitForFadeinSleep: CinematicFunc_Intro_WaitForFadeinSleep(); return;
+  case fnCinematicFunction_Intro_WaitInputSetupMotherBrainFight: CinematicFunction_Intro_WaitInputSetupMotherBrainFight(); return;
+  case fnCinematicFunction_Intro_WaitInputSetupBabyMetroid: CinematicFunction_Intro_WaitInputSetupBabyMetroid(); return;
+  case fnCinematicFunction_Intro_Func11: CinematicFunction_Intro_Func11(); return;
+  case fnCinematicFunction_Intro_Func12: CinematicFunction_Intro_Func12(); return;
+  case fnCinematicFunction_Intro_Func15: CinematicFunction_Intro_Func15(); return;
+  case fnCinematicFunction_Intro_Func15b: CinematicFunction_Intro_Func15b(); return;
+  case fnCinematicFunction_Intro_XfadeGameplayFade: CinematicFunction_Intro_XfadeGameplayFade(); return;
+  case fnCinematicFunction_Intro_XfadeScientistFade: CinematicFunction_Intro_XfadeScientistFade(); return;
+  case fnCinematicFunction_Intro_Page2: CinematicFunction_Intro_Page2(); return;
+  case fnCinematicFunction_Intro_Page3: CinematicFunction_Intro_Page3(); return;
+  case fnCinematicFunction_Intro_Page4: CinematicFunction_Intro_Page4(); return;
+  case fnCinematicFunction_Intro_Page5: CinematicFunction_Intro_Page5(); return;
+  case fnCinematicFunction_Intro_Fadestuff: CinematicFunction_Intro_Fadestuff(); return;
+  case fnCinematicFunction_Intro_Fadestuff2: CinematicFunction_Intro_Fadestuff2(); return;
+  case fnCinematicFunction_Intro_Func34: CinematicFunction_Intro_Func34(); return;
+  case fnCinematicFunction_Intro_Func54: CinematicFunction_Intro_Func54(); return;
+  case fnCinematicFunction_Intro_Func55: CinematicFunction_Intro_Func55(); return;
+  case fnCinematicFunction_Intro_Func56: CinematicFunction_Intro_Func56(); return;
+  case fnCinematicFunction_Intro_Func67: CinematicFunction_Intro_Func67(); return;
+  case fnCinematicFunction_Intro_Func72: CinematicFunction_Intro_Func72(); return;
+  case fnCinematicFunction_Intro_Func73: CinematicFunction_Intro_Func73(); return;
+  case fnCinematicFunctionBlackoutFromCeres: CinematicFunctionBlackoutFromCeres(); return;
+  case fnCinematicFunction_Intro_Func74: CinematicFunction_Intro_Func74(); return;
+  case fnCinematicFunction_Intro_Func75: CinematicFunction_Intro_Func75(); return;
+  case fnCinematicFunction_Intro_Func76: CinematicFunction_Intro_Func76(); return;
+  case fnCinematicFunction_Intro_Func77: CinematicFunction_Intro_Func77(); return;
+  case fnCinematicFunction_Intro_Func84: CinematicFunction_Intro_Func84(); return;
+  case fnCinematicFunction_Intro_Func85: CinematicFunction_Intro_Func85(); return;
+  case fnCinematicFunction_Intro_Func86: CinematicFunction_Intro_Func86(); return;
+  case fnCinematicFunction_Intro_Func87: CinematicFunction_Intro_Func87(); return;
+  case fnCinematicFunction_Intro_Func88: CinematicFunction_Intro_Func88(); return;
+  case fnCinematicFunction_Intro_Func105: CinematicFunction_Intro_Func105(); return;
+  case fnCinematicFunction_Intro_Func106: CinematicFunction_Intro_Func106(); return;
+  case fnCinematicFunction_Intro_Func107: CinematicFunction_Intro_Func107(); return;
+  case fnCinematicFunction_Intro_Func108: CinematicFunction_Intro_Func108(); return;
+  case fnnullsub_124: return;
+  case fnCinematicFunction_Intro_Func95: CinematicFunction_Intro_Func95(); return;
+  case fnCinematicFunctionEscapeFromCebes: CinematicFunctionEscapeFromCebes(); return;
+  case fnCinematicFunction_Intro_Func109: CinematicFunction_Intro_Func109(); return;
+  case fnCinematicFunction_Intro_Func110: CinematicFunction_Intro_Func110(); return;
+  case fnCinematicFunction_Intro_Func111: CinematicFunction_Intro_Func111(); return;
+  case fnCinematicFunction_Intro_Func112: CinematicFunction_Intro_Func112(); return;
+  case fnCinematicFunction_Intro_Func113: CinematicFunction_Intro_Func113(); return;
+  case fnCinematicFunction_Intro_Func114: CinematicFunction_Intro_Func114(); return;
+  case fnCinematicFunction_Intro_Func115: CinematicFunction_Intro_Func115(); return;
+  case fnCinematicFunction_Intro_Func116: CinematicFunction_Intro_Func116(); return;
+  case fnCinematicFunction_Intro_Func117: CinematicFunction_Intro_Func117(); return;
+  case fnCinematicFunction_Intro_Func118: CinematicFunction_Intro_Func118(); return;
+  case fnnullsub_125: return;
+  case fnCinematicFunction_Intro_Func119: CinematicFunction_Intro_Func119(); return;
+  case fnCinematicFunction_Intro_Func120: CinematicFunction_Intro_Func120(); return;
+  case fnCinematicFunction_Intro_Func121: CinematicFunction_Intro_Func121(); return;
+  case fnCinematicFunction_Intro_Func123: CinematicFunction_Intro_Func123(); return;
+  case fnCinematicFunction_Intro_Func124: CinematicFunction_Intro_Func124(); return;
+  case fnnullsub_126: return;
+  case fnCinematicFunction_Intro_Func125: CinematicFunction_Intro_Func125(); return;
+  case fnCinematicFunction_Intro_Func126: CinematicFunction_Intro_Func126(); return;
+  case fnCinematicFunction_Intro_Func129: CinematicFunction_Intro_Func129(); return;
+  case fnCinematicFunction_Intro_Func130: CinematicFunction_Intro_Func130(); return;
+  case fnCinematicFunction_Intro_Func131: CinematicFunction_Intro_Func131(); return;
+  case fnCinematicFunction_Intro_Func132: CinematicFunction_Intro_Func132(); return;
+  case fnCinematicFunction_Intro_Func134: CinematicFunction_Intro_Func134(); return;
+  case fnCinematicFunction_Intro_Func136: CinematicFunction_Intro_Func136(); return;
+  case fnCinematicFunction_Intro_Func135: CinematicFunction_Intro_Func135(); return;
+  case fnCinematicFunction_Intro_Func137: CinematicFunction_Intro_Func137(); return;
+  case fnCinematicFunction_Intro_Func138: CinematicFunction_Intro_Func138(); return;
+  case fnCinematicFunction_Intro_Func145: CinematicFunction_Intro_Func145(); return;
+  case fnCinematicFunction_Intro_Func139: CinematicFunction_Intro_Func139(); return;
+  case fnCinematicFunction_Intro_Func141: CinematicFunction_Intro_Func141(); return;
+  case fnCinematicFunction_Intro_Func143: CinematicFunction_Intro_Func143(); return;
+  case fnCinematicFunction_Intro_Func144: CinematicFunction_Intro_Func144(); return;
+  case fnCinematicFunction_Intro_Func148: CinematicFunction_Intro_Func148(); return;
+  case fnnullsub_127: return;
+  default: Unreachable();
+  }
+}
+
+uint16 CallCinematicSprInstr(uint32 ea, uint16 k, uint16 j) {
+  switch (ea) {
+  case fnCinematicSprInstr_Delete: return CinematicSprInstr_Delete(k, j);
+  case fnCinematicSprInstr_Sleep: return CinematicSprInstr_Sleep(k, j);
+  case fnCinematicSprInstr_SetPreInstr: return CinematicSprInstr_SetPreInstr(k, j);
+  case fnCinematicSprInstr_ClearPreInstr: return CinematicSprInstr_ClearPreInstr(k, j);
+  case fnCinematicSprInstr_GotoRel: return CinematicSprInstr_GotoRel(k, j);
+  case fnCinematicSprInstr_Goto: return CinematicSprInstr_Goto(k, j);
+  case fnCinematicSprInstr_DecTimerGoto: return CinematicSprInstr_DecTimerGoto(k, j);
+  case fnCinematicSprInstr_DecTimerGotoRel: return CinematicSprInstr_DecTimerGotoRel(k, j);
+  case fnCinematicSprInstr_SetTimer: return CinematicSprInstr_SetTimer(k, j);
+  case fnCinematicSprInstr_9CE1: return CinematicSprInstr_9CE1(k, j);
+  case fnCinematicSprInstr_9D5D: return CinematicSprInstr_9D5D(k, j);
+  case fnCinematicSprInstr_9DD6: return CinematicSprInstr_9DD6(k, j);
+  case fnCinematicSprInstr_Func8: return CinematicSprInstr_Func8(k, j);
+  case fnCinematicSprInstr_Func9: return CinematicSprInstr_Func9(k, j);
+  case fnCinematicSprInstr_sub_8B9EF0: return CinematicSprInstr_sub_8B9EF0(k, j);
+  case fnCinematicSprInstr_9F19: return CinematicSprInstr_9F19(k, j);
+  case fnCinematicSprInstr_SpawnMetroidEggParticles: return CinematicSprInstr_SpawnMetroidEggParticles(k, j);
+  case fnCinematicSprInstr_StartIntroPage2: return CinematicSprInstr_StartIntroPage2(k, j);
+  case fnCinematicSprInstr_StartIntroPage3: return CinematicSprInstr_StartIntroPage3(k, j);
+  case fnCinematicSprInstr_StartIntroPage4: return CinematicSprInstr_StartIntroPage4(k, j);
+  case fnCinematicSprInstr_StartIntroPage5: return CinematicSprInstr_StartIntroPage5(k, j);
+  case fnCinematicSprInstr_Func43: return CinematicSprInstr_Func43(k, j);
+  case fnCinematicSprInstr_SpawnIntroRinkas01: return CinematicSprInstr_SpawnIntroRinkas01(k, j);
+  case fnCinematicSprInstr_SpawnIntroRinkas23: return CinematicSprInstr_SpawnIntroRinkas23(k, j);
+  case fnCinematicCommonInstr_Func69: return CinematicCommonInstr_Func69(k, j);
+  case fnCinematicCommonInstr_Func70: return CinematicCommonInstr_Func70(k, j);
+  case fnCinematicSprInstr_SpawnCeresExplosions1: return CinematicSprInstr_SpawnCeresExplosions1(k, j);
+  case fnCinematicSprInstr_SpawnCeresExplosions3: return CinematicSprInstr_SpawnCeresExplosions3(k, j);
+  case fnCinematicSprInstr_C9A5: return CinematicSprInstr_C9A5(k, j);
+  case fnCinematicSprInstr_C9AF: return CinematicSprInstr_C9AF(k, j);
+  case fnCinematicSprInstr_C9BD: return CinematicSprInstr_C9BD(k, j);
+  case fnCinematicSprInstr_C9C7: return CinematicSprInstr_C9C7(k, j);
+  case fnCinematicSprInstr_Func181: return CinematicSprInstr_Func181(k, j);
+  case fnCinematicSprInstr_Func182: return CinematicSprInstr_Func182(k, j);
+  case fnCinematicSprInstr_Func183: return CinematicSprInstr_Func183(k, j);
+  case fnCinematicSprInstr_Func185: return CinematicSprInstr_Func185(k, j);
+  case fnCinematicSprInstr_Func186: return CinematicSprInstr_Func186(k, j);
+  case fnCinematicSprInstr_Func187: return CinematicSprInstr_Func187(k, j);
+  case fnCinematicSprInstr_Func190: return CinematicSprInstr_Func190(k, j);
+  case fnCinematicSprInstr_Func192: return CinematicSprInstr_Func192(k, j);
+  case fnCinematicSprInstr_Func193: return CinematicSprInstr_Func193(k, j);
+  case fnCinematicSprInstr_Func194: return CinematicSprInstr_Func194(k, j);
+  case fnCinematicSprInstr_Func195: return CinematicSprInstr_Func195(k, j);
+  case fnCinematicSprInstr_Func196: return CinematicSprInstr_Func196(k, j);
+  case fnCinematicSprInstr_Func197: return CinematicSprInstr_Func197(k, j);
+  case fnCinematicSprInstr_Func198: return CinematicSprInstr_Func198(k, j);
+  case fnCinematicSprInstr_Func208: return CinematicSprInstr_Func208(k, j);
+  case fnCinematicSprInstr_Func211: return CinematicSprInstr_Func211(k, j);
+  case fnCinematicSprInstr_Func213: return CinematicSprInstr_Func213(k, j);
+  case fnCinematicSprInstr_Func214: return CinematicSprInstr_Func214(k, j);
+  case fnCinematicSprInstr_Func217: return CinematicSprInstr_Func217(k, j);
+  case fnCinematicSprInstr_Func218: return CinematicSprInstr_Func218(k, j);
+  default: return Unreachable();
+  }
+}
+
+void CallCinematicSprPreInstr(uint32 ea, uint16 j) {
+  switch (ea) {
+  case fnCinematicSprPreInstr_nullsub_300: return;
+  case fnCinematicFunction_nullsub_116: return;
+  case fnCinematicFunction_nullsub_298: return;
+  case fnsub_8B9CCF: sub_8B9CCF(j); return;
+  case fnnullsub_122:  return;
+  case fnSetSomeStuffForSpriteObject_4_MetroidEgg: SetSomeStuffForSpriteObject_4_MetroidEgg(j); return;
+  case fnCinematicSprPreInstr_A903: CinematicSprPreInstr_A903(j); return;
+  case fnSetSomeStuffForSpriteObject_7: SetSomeStuffForSpriteObject_7(j); return;
+  case fnSetSomeStuffForSpriteObject_9: SetSomeStuffForSpriteObject_9(j); return;
+  case fnSetSomeStuffForSpriteObject_11: SetSomeStuffForSpriteObject_11(j); return;
+  case fnSetSomeStuffForSpriteObject_13: SetSomeStuffForSpriteObject_13(j); return;
+  case fnSetSomeStuffForSpriteObject_18: SetSomeStuffForSpriteObject_18(j); return;
+  case fnCinematicFunction_Intro_Func36: CinematicFunction_Intro_Func36(j); return;
+  case fnCinematicFunction_Intro_Func39: CinematicFunction_Intro_Func39(j); return;
+  case fnCinematicSprPreInstr_B82E: CinematicSprPreInstr_B82E(j); return;
+  case fnCinematicFunction_Intro_Func44: CinematicFunction_Intro_Func44(j); return;
+  case fnCinematicFunction_Intro_Func45: CinematicFunction_Intro_Func45(j); return;
+  case fnCinematicFunction_Intro_Func48: CinematicFunction_Intro_Func48(j); return;
+  case fnCinematicFunction_Intro_Func50: CinematicFunction_Intro_Func50(j); return;
+  case fnCinematicFunction_Intro_Func51: CinematicFunction_Intro_Func51(j); return;
+  case fnCinematicFunction_Intro_Func52: CinematicFunction_Intro_Func52(j); return;
+  case fnCinematicFunction_Intro_Func53: CinematicFunction_Intro_Func53(j); return;
+  case fnCinematicFunction_Intro_Func58: CinematicFunction_Intro_Func58(j); return;
+  case fnCinematicFunction_Intro_Func60: CinematicFunction_Intro_Func60(j); return;
+  case fnCinematicFunction_Intro_Func62: CinematicFunction_Intro_Func62(j); return;
+  case fnCinematicFunction_Intro_Func64: CinematicFunction_Intro_Func64(j); return;
+  case fnCinematicFunction_Intro_Func66: CinematicFunction_Intro_Func66(j); return;
+  case fnCinematicSprPreInstr_C489: CinematicSprPreInstr_C489(j); return;
+  case fnCinematicFunction_Intro_Func82: CinematicFunction_Intro_Func82(j); return;
+  case fnCinematicFunction_Intro_Func90: CinematicFunction_Intro_Func90(j); return;
+  case fnCinematicFunction_Intro_Func91: CinematicFunction_Intro_Func91(j); return;
+  case fnCinematicFunction_Intro_Func93: CinematicFunction_Intro_Func93(j); return;
+  case fnCinematicFunction_Intro_Func94: CinematicFunction_Intro_Func94(j); return;
+  case fnCinematicFunction_Intro_Func96: CinematicFunction_Intro_Func96(j); return;
+  case fnCinematicFunction_Intro_Func97: CinematicFunction_Intro_Func97(j); return;
+  case fnCinematicFunction_Intro_Func151: CinematicFunction_Intro_Func151(j); return;
+  case fnCinematicFunction_Intro_Func179: CinematicFunction_Intro_Func179(j); return;
+  case fnCinematicFunction_Intro_Func180: CinematicFunction_Intro_Func180(j); return;
+  case fnCinematicFunction_Intro_Func184: CinematicFunction_Intro_Func184(j); return;
+  case fnCinematicSprPreInstr_F35A: CinematicSprPreInstr_F35A(j); return;
+  case fnCinematicFunction_Intro_Func189: CinematicFunction_Intro_Func189(j); return;
+  case fnCinematicFunction_Intro_Func189b: CinematicFunction_Intro_Func189b(j); return;
+  case fnCinematicFunction_Intro_Func191: CinematicFunction_Intro_Func191(j); return;
+  case fnCinematicFunction_Intro_Func199: CinematicFunction_Intro_Func199(j); return;
+  case fnCinematicFunction_Intro_Func200: CinematicFunction_Intro_Func200(j); return;
+  case fnCinematicFunction_Intro_Func201: CinematicFunction_Intro_Func201(j); return;
+  case fnCinematicFunction_Intro_Func202: CinematicFunction_Intro_Func202(j); return;
+  case fnCinematicFunction_Intro_Func203: CinematicFunction_Intro_Func203(j); return;
+  case fnCinematicFunction_Intro_Func204: CinematicFunction_Intro_Func204(j); return;
+  case fnCinematicFunction_Intro_Func205: CinematicFunction_Intro_Func205(j); return;
+  case fnCinematicFunction_Intro_Func206: CinematicFunction_Intro_Func206(j); return;
+  case fnCinematicFunction_Intro_Func207: CinematicFunction_Intro_Func207(j); return;
+  case fnnullsub_128: return;
+  case fnCinematicSprPreInstr_F528: CinematicSprPreInstr_F528(j); return;
+  case fnCinematicSprPreInstr_F57F: CinematicSprPreInstr_F57F(j); return;
+  case fnCinematicFunction_Intro_Func215: CinematicFunction_Intro_Func215(j); return;
+  default: Unreachable();
+  }
+}
+
+void CallCinematicBgPreInstr(uint32 ea, uint16 j) {
+  switch (ea) {
+  case fnCinematicFunction_nullsub_116: return;
+  case fnCinematicBgPreInstr_SamusBlink: CinematicBgPreInstr_SamusBlink(j); return;
+  default: Unreachable();
+  }
+}
+
+uint16 CallCinematicBgInstr(uint32 ea, uint16 k, uint16 j) {
+  switch (ea) {
+  case fnCinematicBgInstr_Delete: return CinematicBgInstr_Delete(k, j);
+  case fnCinematicBgInstr_Goto: return CinematicBgInstr_Goto(k, j);
+  case fnCinematicBgInstr_SetSomeStuffForSpriteObject_14: return CinematicBgInstr_SetSomeStuffForSpriteObject_14(k, j);
+  case fnCinematicBgInstr_HandleCreateJpnText_Page1: return CinematicBgInstr_HandleCreateJpnText_Page1(k, j);
+  case fnCinematicBgInstr_SpawnMarkerWaitInput_Page1: return CinematicBgInstr_SpawnMarkerWaitInput_Page1(k, j);
+  case fnCinematicBgInstr_HandleCreateJpnText_Page2: return CinematicBgInstr_HandleCreateJpnText_Page2(k, j);
+  case fnCinematicBgInstr_SpawnMarkerWaitInput_Page2: return CinematicBgInstr_SpawnMarkerWaitInput_Page2(k, j);
+  case fnCinematicBgInstr_HandleCreateJpnText_Page3: return CinematicBgInstr_HandleCreateJpnText_Page3(k, j);
+  case fnCinematicBgInstr_SpawnMarkerWaitInput_Page3: return CinematicBgInstr_SpawnMarkerWaitInput_Page3(k, j);
+  case fnCinematicBgInstr_HandleCreateJpnText_Page4: return CinematicBgInstr_HandleCreateJpnText_Page4(k, j);
+  case fnCinematicBgInstr_SpawnMarkerWaitInput_Page4: return CinematicBgInstr_SpawnMarkerWaitInput_Page4(k, j);
+  case fnCinematicBgInstr_HandleCreateJpnText_Page5: return CinematicBgInstr_HandleCreateJpnText_Page5(k, j);
+  case fnCinematicBgInstr_SpawnMarkerWaitInput_Page5: return CinematicBgInstr_SpawnMarkerWaitInput_Page5(k, j);
+  case fnCinematicBgInstr_Func16: return CinematicBgInstr_Func16(k, j);
+  case fnCinematicBgInstr_Func17: return CinematicBgInstr_Func17(k, j);
+  case fnCinematicCommonInstr_Func69: return CinematicCommonInstr_Func69(k, j);
+  case fnCinematicCommonInstr_Func70: return CinematicCommonInstr_Func70(k, j);
+  case fnCalcItemPercentageCount: return CalcItemPercentageCount(k, j);
+  case fnCinematicFunction_Intro_Func146: return CinematicFunction_Intro_Func146(k, j);
+  case fnCinematicFunction_Intro_Func147: return CinematicFunction_Intro_Func147(k, j);
+
+  default: return Unreachable();
+  }
+}
+
+void CallCinematicSpriteObjectSetup(uint32 ea, uint16 j) {
+  switch (ea) {
+  case fnCinematicFunction_nullsub_116: return;
+  case fnCinematicSpriteInit_7: CinematicSpriteInit_7(j); return;
+  case fnCinematicSpriteInit_8: CinematicSpriteInit_8(j); return;
+  case fnCinematicSpriteInit_9: CinematicSpriteInit_9(j); return;
+  case fnCinematicSpriteInit_0: CinematicSpriteInit_0(j); return;
+  case fnCinematicSpriteInit_1: CinematicSpriteInit_1(j); return;
+  case fnCinematicSpriteInit_2: CinematicSpriteInit_2(j); return;
+  case fnCinematicSpriteInit_3: CinematicSpriteInit_3(j); return;
+  case fnCinematicSpriteInit_4: CinematicSpriteInit_4(j); return;
+  case fnCinematicSpriteInit_5: CinematicSpriteInit_5(j); return;
+  case fnCinematicSpriteInit_6: CinematicSpriteInit_6(j); return;
+  case fnSetSomeStuffForSpriteObject_2: SetSomeStuffForSpriteObject_2(j); return;
+  case fnSetSomeStuffForSpriteObject_3: SetSomeStuffForSpriteObject_3(j); return;
+  case fnSetSomeStuffForSpriteObject_6: SetSomeStuffForSpriteObject_6(j); return;
+  case fnSetSomeStuffForSpriteObject_8: SetSomeStuffForSpriteObject_8(j); return;
+  case fnSetSomeStuffForSpriteObject_10: SetSomeStuffForSpriteObject_10(j); return;
+  case fnSetSomeStuffForSpriteObject_12: SetSomeStuffForSpriteObject_12(j); return;
+  case fnSetSomeStuffForSpriteObject_17: SetSomeStuffForSpriteObject_17(j); return;
+  case fnCinematicFunction_Intro_Func35: CinematicFunction_Intro_Func35(j); return;
+  case fnCinematicFunction_Intro_Func42: CinematicFunction_Intro_Func42(j); return;
+  case fnCinematicFunction_Intro_Func46: CinematicFunction_Intro_Func46(j); return;
+  case fnCinematicFunction_Intro_Func47: CinematicFunction_Intro_Func47(j); return;
+  case fnCinematicFunction_Intro_Func49: CinematicFunction_Intro_Func49(j); return;
+  case fnCinematicFunction_Intro_Func57: CinematicFunction_Intro_Func57(j); return;
+  case fnCinematicFunction_Intro_Func59: CinematicFunction_Intro_Func59(j); return;
+  case fnCinematicFunction_Intro_Func61: CinematicFunction_Intro_Func61(j); return;
+  case fnCinematicFunction_Intro_Func63: CinematicFunction_Intro_Func63(j); return;
+  case fnCinematicFunction_Intro_Func65: CinematicFunction_Intro_Func65(j); return;
+  case fnCinematicFunction_Intro_Func68: CinematicFunction_Intro_Func68(j); return;
+  case fnCinematicFunction_Intro_Func71: CinematicFunction_Intro_Func71(j); return;
+  case fnCinematicFunction_Intro_Func78: CinematicFunction_Intro_Func78(j); return;
+  case fnCinematicFunction_Intro_Func80: CinematicFunction_Intro_Func80(j); return;
+  case fnCinematicFunction_Intro_Func81: CinematicFunction_Intro_Func81(j); return;
+  case fnCinematicFunction_Intro_Func83: CinematicFunction_Intro_Func83(j); return;
+  case fnCinematicFunction_Intro_Func89: CinematicFunction_Intro_Func89(j); return;
+  case fnCinematicFunction_Intro_Func92: CinematicFunction_Intro_Func92(j); return;
+  case fnCinematicFunction_Intro_Func98: CinematicFunction_Intro_Func98(j); return;
+  case fnCinematicFunction_Intro_Func99: CinematicFunction_Intro_Func99(j); return;
+  case fnCinematicFunction_Intro_Func100: CinematicFunction_Intro_Func100(j); return;
+  case fnCinematicFunction_Intro_Func101: CinematicFunction_Intro_Func101(j); return;
+  case fnCinematicFunction_Intro_Func102: CinematicFunction_Intro_Func102(j); return;
+  case fnCinematicFunction_Intro_Func104: CinematicFunction_Intro_Func104(j); return;
+  case fnCinematicFunction_Intro_Func150: CinematicFunction_Intro_Func150(j); return;
+  case fnCinematicFunction_Intro_Func152: CinematicFunction_Intro_Func152(j); return;
+  case fnCinematicFunction_Intro_Func153: CinematicFunction_Intro_Func153(j); return;
+  case fnCinematicFunction_Intro_Func154: CinematicFunction_Intro_Func154(j); return;
+  case fnCinematicFunction_Intro_Func155: CinematicFunction_Intro_Func155(j); return;
+  case fnCinematicFunction_Intro_Func156: CinematicFunction_Intro_Func156(j); return;
+  case fnCinematicFunction_Intro_Func157: CinematicFunction_Intro_Func157(j); return;
+  case fnCinematicFunction_Intro_Func159: CinematicFunction_Intro_Func159(j); return;
+  case fnCinematicFunction_Intro_Func161: CinematicFunction_Intro_Func161(j); return;
+  case fnCinematicFunction_Intro_Func162: CinematicFunction_Intro_Func162(j); return;
+  case fnCinematicFunction_Intro_Func163: CinematicFunction_Intro_Func163(j); return;
+  case fnCinematicFunction_Intro_Func164: CinematicFunction_Intro_Func164(j); return;
+  case fnCinematicFunction_Intro_Func165: CinematicFunction_Intro_Func165(j); return;
+  case fnCinematicFunction_Intro_Func166: CinematicFunction_Intro_Func166(j); return;
+  case fnCinematicFunction_Intro_Func167: CinematicFunction_Intro_Func167(j); return;
+  case fnCinematicFunction_Intro_Func168: CinematicFunction_Intro_Func168(j); return;
+  case fnCinematicFunction_Intro_Func169: CinematicFunction_Intro_Func169(j); return;
+  case fnCinematicFunction_Intro_Func170: CinematicFunction_Intro_Func170(j); return;
+  case fnCinematicFunction_Intro_Func171: CinematicFunction_Intro_Func171(j); return;
+  case fnCinematicFunction_Intro_Func172: CinematicFunction_Intro_Func172(j); return;
+  case fnCinematicFunction_Intro_Func173: CinematicFunction_Intro_Func173(j); return;
+  case fnCinematicFunction_Intro_Func174: CinematicFunction_Intro_Func174(j); return;
+  case fnCinematicFunction_Intro_Func175: CinematicFunction_Intro_Func175(j); return;
+  case fnCinematicFunction_Intro_Func176: CinematicFunction_Intro_Func176(j); return;
+  case fnCinematicFunction_Intro_Func177: CinematicFunction_Intro_Func177(j); return;
+  case fnCinematicFunction_Intro_Func178: CinematicFunction_Intro_Func178(j); return;
+  default: Unreachable();
+  }
+}
+
+uint16 CallIntroObjectInstr(uint32 ea, uint16 k, uint16 j) {
+  switch (ea) {
+  case fnIntroObject_Delete: return IntroObject_Delete(k, j);
+  case fnIntroObject_Goto: return IntroObject_Goto(k, j);
+  case fnIntroObject_DecTimerGoto: return IntroObject_DecTimerGoto(k, j);
+  case fnIntroObject_SetTimer: return IntroObject_SetTimer(k, j);
+  case fnCinematicFunction_Intro_Func219: return CinematicFunction_Intro_Func219(k, j);
+  default: return Unreachable();
+  }
+}
+
+void CallCinematicSpriteInit(uint32 ea, uint16 j) {
+  switch (ea) {
+  case fnCinematicSpriteInit_7: CinematicSpriteInit_7(j); return;
+  case fnCinematicSpriteInit_8: CinematicSpriteInit_8(j); return;
+  case fnCinematicSpriteInit_9: CinematicSpriteInit_9(j); return;
+  case fnCinematicSpriteInit_0: CinematicSpriteInit_0(j); return;
+  case fnCinematicSpriteInit_1: CinematicSpriteInit_1(j); return;
+  case fnCinematicSpriteInit_2: CinematicSpriteInit_2(j); return;
+  case fnCinematicSpriteInit_3: CinematicSpriteInit_3(j); return;
+  case fnCinematicSpriteInit_4: CinematicSpriteInit_4(j); return;
+  case fnCinematicSpriteInit_5: CinematicSpriteInit_5(j); return;
+  case fnCinematicSpriteInit_6: CinematicSpriteInit_6(j); return;
+  case fnCinematicFunction_nullsub_116: return;
+  default: Unreachable();
+  }
+}
+
+uint16 CallMode7Instr(uint32 ea, uint16 k, uint16 j) {
+  switch (ea) {
+  case fnMode7Instr_Delete: return Mode7Instr_Delete(k, j);
+  case fnMode7Instr_SetPreInstr: return Mode7Instr_SetPreInstr(k, j);
+  case fnMode7Instr_ClearPreInstr: return Mode7Instr_ClearPreInstr(k, j);
+  case fnMode7Instr_Goto: return Mode7Instr_Goto(k, j);
+  case fnMode7Instr_DecTimerAndGoto: return Mode7Instr_DecTimerAndGoto(k, j);
+  case fnMode7Instr_SetTimer: return Mode7Instr_SetTimer(k, j);
+  case fnPlayBabyMetroidCry1: return PlayBabyMetroidCry1(k, j);
+  case fnPlayBabyMetroidCry2: return PlayBabyMetroidCry2(k, j);
+  case fnPlayBabyMetroidCry3: return PlayBabyMetroidCry3(k, j);
+  case fnCinematicSetPal1: return CinematicSetPal1(k, j);
+  case fnCinematicSetPal2: return CinematicSetPal2(k, j);
+  case fnCinematicSetPal3: return CinematicSetPal3(k, j);
+  case fnCinematicSetPal4: return CinematicSetPal4(k, j);
+  case fnsub_8BB51E: return sub_8BB51E(k, j);
+  case fnEnableCinematicBgTilemapUpdates__0: return EnableCinematicBgTilemapUpdates__0(k, j);
+  case fnCinematicFunction_Intro_Func21: return CinematicFunction_Intro_Func21(k, j);
+  case fnCinematicFunction_Intro_ThenWaitInputSetupBabyMetroid: return CinematicFunction_Intro_ThenWaitInputSetupBabyMetroid(k, j);
+  case fnCinematicFunction_Intro_Func23: return CinematicFunction_Intro_Func23(k, j);
+  case fnCinematicFunction_Intro_Func25: return CinematicFunction_Intro_Func25(k, j);
+  case fnCinematicFunction_Intro_Func26: return CinematicFunction_Intro_Func26(k, j);
+  case fnCinematicFunction_Intro_Func28: return CinematicFunction_Intro_Func28(k, j);
+  case fnCinematicFunction_Intro_Func29: return CinematicFunction_Intro_Func29(k, j);
+  case fnCinematicFunction_Intro_Func31: return CinematicFunction_Intro_Func31(k, j);
+  case fnCinematicFunction_Intro_Func32: return CinematicFunction_Intro_Func32(k, j);
+  case fnEnableCinematicBgTilemapUpdates__: return EnableCinematicBgTilemapUpdates__(k, j);
+  default: return Unreachable();
+  }
+}
+
+void CallMode7PreInstr(uint32 ea, uint16 k) {
+  switch (ea) {
+  case fnCinematicFunction_nullsub_116: return;
+  case fnCinematicFunction_Intro_Func22: CinematicFunction_Intro_Func22(k); return;
+  case fnCinematicFunction_Intro_Func24: CinematicFunction_Intro_Func24(k); return;
+  case fnCinematicFunction_Intro_Func27: CinematicFunction_Intro_Func27(k); return;
+  case fnCinematicFunction_Intro_Func30: CinematicFunction_Intro_Func30(k); return;
+  default: Unreachable();
+  }
 }

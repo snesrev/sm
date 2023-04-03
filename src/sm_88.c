@@ -18,55 +18,12 @@
 #define g_word_88E833 ((uint16*)RomFixedPtr(0x88e833))
 #define g_byte_88EA8B ((uint8*)RomFixedPtr(0x88ea8b))
 
-static Func_Y_Y *const kLayerBlendFuncTable[27] = {
-  nullsub_9,
-  nullsub_9,
-  LayerBlendFunc_4_PhantoonIntro,
-  LayerBlendFunc_6,
-  LayerBlendFunc_8,
-  LayerBlendFunc_A,
-  LayerBlendFunc_C,
-  nullsub_10,
-  LayerBlendFunc_10,
-  LayerBlendFunc_10,
-  LayerBlendFunc_14,
-  LayerBlendFunc_16,
-  LayerBlendFunc_18,
-  LayerBlendFunc_1A,
-  LayerBlendFunc_1C,
-  LayerBlendFunc_18,
-  nullsub_11,
-  LayerBlendFunc_14,
-  LayerBlendFunc_24,
-  LayerBlendFunc_26,
-  LayerBlendFunc_28,
-  LayerBlendFunc_2A,
-  LayerBlendFunc_2C,
-  LayerBlendFunc_2E,
-  LayerBlendFunc_18,
-  LayerBlendFunc_32,
-  LayerBlendFunc_34,
-};
-
-void LayerBlendingHandler(void) {  // 0x888000
-  uint16 v0 = 0;
-  uint8 v1 = fx_layer_blending_config_c;
-  if ((uint8)fx_layer_blending_config_c) {
-    InitializeLayerBlending();
-    v0 = kLayerBlendFuncTable[v1 >> 1](v0);
-  }
-  if ((fx_layer_blending_config_c & 0x8000) == 0) {
-    if ((fx_layer_blending_config_c & 0x4000) != 0) {
-      HandleLayerBlendingXrayCanShowBlocks();
-    } else if ((fx_layer_blending_config_c & 0x2000) != 0) {
-      HandleLayerBlendingXrayCantShowBlocks();
-    } else if ((fx_layer_blending_config_c & 0x1000) != 0) {
-      HandleLayerBlendingXrayFirefleaRoom();
-    }
-  } else {
-    HandleLayerBlendingPowerBomb(v0);
-  }
-}
+void CallHdmaobjPreInstr(uint32 ea, uint16 k);
+const uint8 *CallHdmaobjInstr(uint32 ea, uint16 k, const uint8 *j);
+void HdmaobjPreInstr_FxType22_BG3Yscroll(uint16 k);
+void HdmaobjPreInstr_WaterBG2XScroll_Func2(uint16 k);
+void HdmaobjPreInstr_WaterBG2XScroll_Func1(uint16 k);
+void HdmaobjPreInstr_HazeColorMathSubscreen_FadingIn(uint16 k);
 
 uint16 nullsub_9(uint16 j) {  // 0x888074
   return j;
@@ -264,17 +221,6 @@ void HandleLayerBlendingXrayFirefleaRoom(void) {  // 0x8881DB
   next_gameplay_CGWSEL = 32;
   next_gameplay_CGADSUB = -77;
 }
-static Func_V *const kLayerBlendPowerBombFuncs[4] = {  // 0x8881FE
-  LayerBlendPowerBombFunc_0,
-  LayerBlendPowerBombFunc_0,
-  LayerBlendPowerBombFunc_4,
-  LayerBlendPowerBombFunc_6,
-};
-void HandleLayerBlendingPowerBomb(uint16 j) {
-  if (room_ptr == addr_kRoom_a66a)
-    j = 6;
-  kLayerBlendPowerBombFuncs[j >> 1]();
-}
 
 void LayerBlendPowerBombFunc_0(void) {  // 0x888219
   reg_W12SEL = 0;
@@ -310,6 +256,69 @@ void LayerBlendPowerBombFunc_6(void) {  // 0x888263
   reg_TSW = 4;
   reg_TM = 19;
   reg_TS = 4;
+}
+
+static Func_Y_Y *const kLayerBlendFuncTable[27] = {
+  nullsub_9,
+  nullsub_9,
+  LayerBlendFunc_4_PhantoonIntro,
+  LayerBlendFunc_6,
+  LayerBlendFunc_8,
+  LayerBlendFunc_A,
+  LayerBlendFunc_C,
+  nullsub_10,
+  LayerBlendFunc_10,
+  LayerBlendFunc_10,
+  LayerBlendFunc_14,
+  LayerBlendFunc_16,
+  LayerBlendFunc_18,
+  LayerBlendFunc_1A,
+  LayerBlendFunc_1C,
+  LayerBlendFunc_18,
+  nullsub_11,
+  LayerBlendFunc_14,
+  LayerBlendFunc_24,
+  LayerBlendFunc_26,
+  LayerBlendFunc_28,
+  LayerBlendFunc_2A,
+  LayerBlendFunc_2C,
+  LayerBlendFunc_2E,
+  LayerBlendFunc_18,
+  LayerBlendFunc_32,
+  LayerBlendFunc_34,
+};
+
+void LayerBlendingHandler(void) {  // 0x888000
+  uint16 v0 = 0;
+  uint8 v1 = fx_layer_blending_config_c;
+  if ((uint8)fx_layer_blending_config_c) {
+    InitializeLayerBlending();
+    v0 = kLayerBlendFuncTable[v1 >> 1](v0);
+  }
+  if ((fx_layer_blending_config_c & 0x8000) == 0) {
+    if ((fx_layer_blending_config_c & 0x4000) != 0) {
+      HandleLayerBlendingXrayCanShowBlocks();
+    } else if ((fx_layer_blending_config_c & 0x2000) != 0) {
+      HandleLayerBlendingXrayCantShowBlocks();
+    } else if ((fx_layer_blending_config_c & 0x1000) != 0) {
+      HandleLayerBlendingXrayFirefleaRoom();
+    }
+  } else {
+    HandleLayerBlendingPowerBomb(v0);
+  }
+}
+
+static Func_V *const kLayerBlendPowerBombFuncs[4] = {  // 0x8881FE
+  LayerBlendPowerBombFunc_0,
+  LayerBlendPowerBombFunc_0,
+  LayerBlendPowerBombFunc_4,
+  LayerBlendPowerBombFunc_6,
+};
+
+void HandleLayerBlendingPowerBomb(uint16 j) {
+  if (room_ptr == addr_kRoom_a66a)
+    j = 6;
+  kLayerBlendPowerBombFuncs[j >> 1]();
 }
 
 void EnableHdmaObjects(void) {  // 0x888288
@@ -480,106 +489,6 @@ void HdmaObjectHandler(void) {  // 0x8884B9
   }
 }
 
-void CallHdmaobjPreInstr(uint32 ea, uint16 k) {
-  switch (ea) {
-  case fnnullsub_56: return;
-  case fnnullsub_293: return;
-  case fnnullsub_309: return;
-  case fnHdmaobjPreInstr_XraySetup: HdmaobjPreInstr_XraySetup(k); return;
-  case fnHdmaobjPreInstr_Xray: HdmaobjPreInstr_Xray(k); return;
-  case fnHdmaobjPreInstr_XrayFunc0_NoBeam: HdmaobjPreInstr_XrayFunc0_NoBeam(k); return;
-  case fnHdmaobjPreInstr_XrayFunc1_BeamWidening: HdmaobjPreInstr_XrayFunc1_BeamWidening(k); return;
-  case fnHdmaobjPreInstr_XrayFunc2_FullBeam: HdmaobjPreInstr_XrayFunc2_FullBeam(k); return;
-  case fnHdmaobjPreInstr_XrayFunc3_DeactivateBeam: HdmaobjPreInstr_XrayFunc3_DeactivateBeam(k); return;
-  case fnHdmaobjPreInstr_XrayFunc4_DeactivateBeam: HdmaobjPreInstr_XrayFunc4_DeactivateBeam(k); return;
-  case fnHdmaobjPreInstr_XrayFunc5_DeactivateBeam: HdmaobjPreInstr_XrayFunc5_DeactivateBeam(k); return;
-  case fnHdmaobjPreInstr_PowerBombExplode_SetWindowConf: HdmaobjPreInstr_PowerBombExplode_SetWindowConf(k); return;
-  case fnHdmaobjPreInstr_PowerBombExplode_Stage5_Afterglow: HdmaobjPreInstr_PowerBombExplode_Stage5_Afterglow(k); return;
-  case fnHdmaobjPreInstr_PowerBombExplode_ExplosionYellow: HdmaobjPreInstr_PowerBombExplode_ExplosionYellow(k); return;
-  case fnHdmaobjPreInstr_PowerBombExplode_ExplosionWhite: HdmaobjPreInstr_PowerBombExplode_ExplosionWhite(k); return;
-  case fnHdmaobjPreInstr_PowerBombExplode_PreExplosionWhite: HdmaobjPreInstr_PowerBombExplode_PreExplosionWhite(k); return;
-  case fnHdmaobjPreInstr_PowerBombExplode_PreExplosionYellow: HdmaobjPreInstr_PowerBombExplode_PreExplosionYellow(k); return;
-  case fnHdmaobjPreInstr_CrystalFlash_CustomLayerBlend: HdmaobjPreInstr_CrystalFlash_CustomLayerBlend(k); return;
-  case fnHdmaobjPreInstr_CrystalFlash_Stage2_AfterGlow: HdmaobjPreInstr_CrystalFlash_Stage2_AfterGlow(k); return;
-  case fnHdmaobjPreInstr_CrystalFlash_Stage1_Explosion: HdmaobjPreInstr_CrystalFlash_Stage1_Explosion(k); return;
-  case fnHdmaobjPreInstr_FxType22_BG3Yscroll: HdmaobjPreInstr_FxType22_BG3Yscroll(k); return;
-  case fnHdmaobjPreInstr_BG3Xscroll: HdmaobjPreInstr_BG3Xscroll(k); return;
-  case fnHdmaobjPreInstr_SkyLandBG2Xscroll: HdmaobjPreInstr_SkyLandBG2Xscroll(k); return;
-  case fnHdmaobjPreInstr_SkyLandBG2Xscroll2: HdmaobjPreInstr_SkyLandBG2Xscroll2(k); return;
-  case fnHdmaobjPreInstr_SkyLandBG2XscrollInner: HdmaobjPreInstr_SkyLandBG2XscrollInner(k); return;
-  case fnHdmaobjPreInstr_FirefleaBG3XScroll: HdmaobjPreInstr_FirefleaBG3XScroll(k); return;
-  case fnHdmaobjPreInstr_LavaAcidBG3YScroll: HdmaobjPreInstr_LavaAcidBG3YScroll(k); return;
-  case fnHdmaobjPreInstr_LavaAcidBG2YScroll: HdmaobjPreInstr_LavaAcidBG2YScroll(k); return;
-  case fnHdmaobjPreInstr_WaterBG3XScroll: HdmaobjPreInstr_WaterBG3XScroll(k); return;
-  case fnHdmaobjPreInstr_WaterBG2XScroll: HdmaobjPreInstr_WaterBG2XScroll(k); return;
-  case fnHdmaobjPreInstr_WaterBG2XScroll_Func2: HdmaobjPreInstr_WaterBG2XScroll_Func2(k); return;
-  case fnHdmaobjPreInstr_WaterBG2XScroll_Func1: HdmaobjPreInstr_WaterBG2XScroll_Func1(k); return;
-  case fnHdmaobjPreInstr_RainBg3Scroll: HdmaobjPreInstr_RainBg3Scroll(k); return;
-  case fnHdmaobjPreInstr_SporesBG3Xscroll: HdmaobjPreInstr_SporesBG3Xscroll(k); return;
-  case fnHdmaobjPreInstr_FogBG3Scroll: HdmaobjPreInstr_FogBG3Scroll(k); return;
-  case fnHdmaobjPreInstr_CheckLotsOfEventsHappened: HdmaobjPreInstr_CheckLotsOfEventsHappened(k); return;
-  case fnHdmaobjPreInstr_DC23: HdmaobjPreInstr_DC23(k); return;
-  case fnHdmaobjPreInstr_DC69: HdmaobjPreInstr_DC69(k); return;
-  case fnHdmaobjPreInstr_DCBA: HdmaobjPreInstr_DCBA(k); return;
-  case fnHdmaobjPreInstr_BombTorizoHazeColorMathBgColor: HdmaobjPreInstr_BombTorizoHazeColorMathBgColor(k); return;
-  case fnHdmaobjPreInstr_HazeColorMathSubscreen_CeresRidleyAlive: HdmaobjPreInstr_HazeColorMathSubscreen_CeresRidleyAlive(k); return;
-  case fnHdmaobjPreInstr_HazeColorMathSubscreen_CeresRidleyDead: HdmaobjPreInstr_HazeColorMathSubscreen_CeresRidleyDead(k); return;
-  case fnHdmaobjPreInstr_HazeColorMathSubscreen_FadingIn: HdmaobjPreInstr_HazeColorMathSubscreen_FadingIn(k); return;
-  case fnHdmaobjPreInstr_HazeColorMathSubscreen_FadedIn: HdmaobjPreInstr_HazeColorMathSubscreen_FadedIn(k); return;
-  case fnHdmaobjPreInstr_HazeColorMathSubscreen_FadingOut: HdmaobjPreInstr_HazeColorMathSubscreen_FadingOut(k); return;
-  case fnHdmaobjPreInstr_DF94: HdmaobjPreInstr_DF94(k); return;
-  case fnHdmaobjPreInstr_VariaSuitPickup: HdmaobjPreInstr_VariaSuitPickup(k); return;
-  case fnHdmaobjPreInstr_GravitySuitPickup: HdmaobjPreInstr_GravitySuitPickup(k); return;
-  case fnHdmaobjPreInstr_E449: HdmaobjPreInstr_E449(k); return;
-  case fnHdmaobjPreInstr_E567: HdmaobjPreInstr_E567(k); return;
-  case fnHdmaobjPreInstr_E7BC: HdmaobjPreInstr_E7BC(k); return;
-  case fnHdmaobjPreInstr_E9E6: HdmaobjPreInstr_E9E6(k); return;
-  case fnHdmaobjPreInstr_EA3C: HdmaobjPreInstr_EA3C(k); return;
-  case fnHdmaobjPreInstr_EACB: HdmaobjPreInstr_EACB(k); return;
-  case fnHdmaobjPreInstr_Backdrop_TitleSequenceGradient: HdmaobjPreInstr_Backdrop_TitleSequenceGradient(k); return;
-  case fnHdmaobjPreInstr_ColorMathControlB_TitleGradient: HdmaobjPreInstr_ColorMathControlB_TitleGradient(k); return;
-  case fnHdmaobjPreInstr_IntroCutsceneCrossfade: HdmaobjPreInstr_IntroCutsceneCrossfade(k); return;
-  case fnnullsub_357: return;
-  case fnHdmaobjPreInstr_ECB6: HdmaobjPreInstr_ECB6(k); return;
-  default: Unreachable();
-  }
-}
-
-const uint8 *CallHdmaobjInstr(uint32 ea, uint16 k, const uint8 *j) {
-  switch (ea) {
-  case fnnullsub_112: return j;
-  case fnHdmaobjInstr_Delete: return HdmaobjInstr_Delete(k, j);
-  case fnHdmaobjInstr_SetPreInstr: return HdmaobjInstr_SetPreInstr(k, j);
-  case fnHdmaobjInstr_ClearPreInstr: return HdmaobjInstr_ClearPreInstr(k, j);
-  case fnHdmaobjInstr_CallFarFunc: return HdmaobjInstr_CallFarFunc(k, j);
-  case fnHdmaobjInstr_Goto: return HdmaobjInstr_Goto(k, j);
-  case fnHdmaobjInstr_GotoRel: return HdmaobjInstr_GotoRel(k, j);
-  case fnHdmaobjInstr_DecrementAndGoto: return HdmaobjInstr_DecrementAndGoto(k, j);
-  case fnHdmaobjInstr_DecrementAndGotoRel: return HdmaobjInstr_DecrementAndGotoRel(k, j);
-  case fnHdmaobjInstr_SetTimer: return HdmaobjInstr_SetTimer(k, j);
-  case fnHdmaobjInstr_SetHdmaControl: return HdmaobjInstr_SetHdmaControl(k, j);
-  case fnHdmaobjInstr_SetHdmaTarget: return HdmaobjInstr_SetHdmaTarget(k, j);
-  case fnHdmaobjInstr_SetHdmaTablePtr: return HdmaobjInstr_SetHdmaTablePtr(k, j);
-  case fnHdmaobjInstr_SetHdmaTableBank: return HdmaobjInstr_SetHdmaTableBank(k, j);
-  case fnHdmaobjInstr_SetIndirectHdmaDataBank: return HdmaobjInstr_SetIndirectHdmaDataBank(k, j);
-  case fnHdmaobjInstr_Sleep: return HdmaobjInstr_Sleep(k, j);
-  case fnHdmaobjInstr_SetFlagB: return HdmaobjInstr_SetFlagB(k, j);
-  case fnHdmaobjInstr_SetFlagB_Copy: return HdmaobjInstr_SetFlagB_Copy(k, j);
-  case fnHdmaobjInstr_SetFlagB_Copy2: return HdmaobjInstr_SetFlagB_Copy2(k, j);
-  case fnHdmaobjInstr_SetFlagB_Copy3: return HdmaobjInstr_SetFlagB_Copy3(k, j);
-  case fnHdmaobjInstr_SetVideoMode1: return HdmaobjInstr_SetVideoMode1(k, j);
-  case fnHdmaobjInstr_1938_RandomNumber: return HdmaobjInstr_1938_RandomNumber(k, j);
-  case fnHdmaobjInstr_GotoIfEventHappened: return HdmaobjInstr_GotoIfEventHappened(k, j);
-  case fnHdmaobjInstr_E4BD: return HdmaobjInstr_E4BD(k, j);
-  case fnHdmaobjInstr_InitMorphBallEyeBeamHdma: return HdmaobjInstr_InitMorphBallEyeBeamHdma(k, j);
-  case fnHdmaobjInstr_EC9F_ClearVars: return HdmaobjInstr_EC9F_ClearVars(k, j);
-  case fnHdmaobjInstr_B3A9: return HdmaobjInstr_B3A9(k, j);
-  case fnHdmaobjInsr_ConfigTitleSequenceGradientHDMA: return HdmaobjInsr_ConfigTitleSequenceGradientHDMA(k, j);
-  case fnsub_88D916: sub_88D916(); return j;
-  default: Unreachable(); return NULL;
-  }
-}
-
 void HdmaobjInstructionHandler(uint8 k) {  // 0x88851C
   int kh = k >> 1;
   CallHdmaobjPreInstr(hdma_object_pre_instruction_bank[kh] << 16 | hdma_object_pre_instructions[kh], k);
@@ -737,32 +646,6 @@ uint8 RaiseOrLowerFx(void) {  // 0x88868C
     }
     return fx_target_y_pos >= v0;
   }
-}
-
-static Func_X_V *const kHdmaobjPreInstr_XrayFuncs[6] = {  // 0x8886EF
-  HdmaobjPreInstr_XrayFunc0_NoBeam,
-  HdmaobjPreInstr_XrayFunc1_BeamWidening,
-  HdmaobjPreInstr_XrayFunc2_FullBeam,
-  HdmaobjPreInstr_XrayFunc3_DeactivateBeam,
-  HdmaobjPreInstr_XrayFunc4_DeactivateBeam,
-  HdmaobjPreInstr_XrayFunc5_DeactivateBeam,
-};
-
-void HdmaobjPreInstr_Xray(uint16 k) {
-  int16 v1;
-
-  v1 = 4096;
-  if (fx_type != 36) {
-    v1 = 0x2000;
-    if (CanXrayShowBlocks()) {
-      v1 = 0x4000;
-      *(uint16 *)&reg_COLDATA[0] = 0x27;
-      *(uint16 *)&reg_COLDATA[1] = 0x47;
-      *(uint16 *)&reg_COLDATA[2] = 0x87;
-    }
-  }
-  fx_layer_blending_config_c |= v1;
-  kHdmaobjPreInstr_XrayFuncs[demo_input_pre_instr](2 * demo_input_pre_instr);
 }
 
 void HdmaobjPreInstr_XrayFunc0_NoBeam(uint16 k) {  // 0x888732
@@ -978,6 +861,32 @@ void HdmaobjPreInstr_XrayFunc5_DeactivateBeam(uint16 k) {  // 0x888A08
       samus_auto_cancel_hud_item_index = 0;
     }
   }
+}
+
+static Func_X_V *const kHdmaobjPreInstr_XrayFuncs[6] = {  // 0x8886EF
+  HdmaobjPreInstr_XrayFunc0_NoBeam,
+  HdmaobjPreInstr_XrayFunc1_BeamWidening,
+  HdmaobjPreInstr_XrayFunc2_FullBeam,
+  HdmaobjPreInstr_XrayFunc3_DeactivateBeam,
+  HdmaobjPreInstr_XrayFunc4_DeactivateBeam,
+  HdmaobjPreInstr_XrayFunc5_DeactivateBeam,
+};
+
+void HdmaobjPreInstr_Xray(uint16 k) {
+  int16 v1;
+
+  v1 = 4096;
+  if (fx_type != 36) {
+    v1 = 0x2000;
+    if (CanXrayShowBlocks()) {
+      v1 = 0x4000;
+      *(uint16 *)&reg_COLDATA[0] = 0x27;
+      *(uint16 *)&reg_COLDATA[1] = 0x47;
+      *(uint16 *)&reg_COLDATA[2] = 0x87;
+    }
+  }
+  fx_layer_blending_config_c |= v1;
+  kHdmaobjPreInstr_XrayFuncs[demo_input_pre_instr](2 * demo_input_pre_instr);
 }
 
 void SpawnPowerBombExplosion(void) {  // 0x888AA4
@@ -1743,15 +1652,6 @@ void DamageSamusInTopRow(void) {  // 0x88A8C4
     samus_periodic_damage = 8;
 }
 
-void HdmaobjPreInstr_SkyLandBG2Xscroll(uint16 k) {  // 0x88ADB2
-  if (!time_is_frozen_flag)
-    HdmaobjPreInstr_SkyLandBG2XscrollInner(k);
-}
-
-void HdmaobjPreInstr_SkyLandBG2Xscroll2(uint16 k) {  // 0x88ADBA
-  if (!time_is_frozen_flag)
-    HdmaobjPreInstr_SkyLandBG2XscrollInner(k);
-}
 void HdmaobjPreInstr_SkyLandBG2XscrollInner(uint16 k) {  // 0x88ADC2
   uint16 i;
   uint16 r24 = 0;
@@ -1806,12 +1706,15 @@ void HdmaobjPreInstr_SkyLandBG2XscrollInner(uint16 k) {  // 0x88ADC2
   *(uint16 *)&scrolling_sky_bg2_indirect_hdma[v6 + 3] = 0;
 }
 
-void RoomCode_ScrollingSkyLand(void) {  // 0x88AF8D
-  RoomMainAsm_ScrollingSky((LongPtr) { addr_off_88AD9C, 0x88 });
+
+void HdmaobjPreInstr_SkyLandBG2Xscroll(uint16 k) {  // 0x88ADB2
+  if (!time_is_frozen_flag)
+    HdmaobjPreInstr_SkyLandBG2XscrollInner(k);
 }
 
-void RoomMainAsm_ScrollingSkyOcean(void) {  // 0x88AF99
-  RoomMainAsm_ScrollingSky((LongPtr) { addr_off_88ADA6, 0x88 });
+void HdmaobjPreInstr_SkyLandBG2Xscroll2(uint16 k) {  // 0x88ADBA
+  if (!time_is_frozen_flag)
+    HdmaobjPreInstr_SkyLandBG2XscrollInner(k);
 }
 
 void RoomMainAsm_ScrollingSky(LongPtr r0) {  // 0x88AFA3
@@ -1851,6 +1754,14 @@ void RoomMainAsm_ScrollingSky(LongPtr r0) {  // 0x88AFA3
     v1[3].vram_dst = v7 + 32;
     vram_write_queue_tail = v0 + 28;
   }
+}
+
+void RoomCode_ScrollingSkyLand(void) {  // 0x88AF8D
+  RoomMainAsm_ScrollingSky((LongPtr) { addr_off_88AD9C, 0x88 });
+}
+
+void RoomMainAsm_ScrollingSkyOcean(void) {  // 0x88AF99
+  RoomMainAsm_ScrollingSky((LongPtr) { addr_off_88ADA6, 0x88 });
 }
 
 static const SpawnHdmaObject_Args unk_88B08C = { 0x42, 0x11, 0xb0ac };
@@ -3373,5 +3284,105 @@ void HdmaobjPreInstr_ECB6(uint16 k) {  // 0x88ECB6
     int v2 = hdma_object_index >> 1;
     hdma_object_instruction_list_pointers[v2] += 2;
     hdma_object_instruction_timers[v2] = 1;
+  }
+}
+
+void CallHdmaobjPreInstr(uint32 ea, uint16 k) {
+  switch (ea) {
+  case fnnullsub_56: return;
+  case fnnullsub_293: return;
+  case fnnullsub_309: return;
+  case fnHdmaobjPreInstr_XraySetup: HdmaobjPreInstr_XraySetup(k); return;
+  case fnHdmaobjPreInstr_Xray: HdmaobjPreInstr_Xray(k); return;
+  case fnHdmaobjPreInstr_XrayFunc0_NoBeam: HdmaobjPreInstr_XrayFunc0_NoBeam(k); return;
+  case fnHdmaobjPreInstr_XrayFunc1_BeamWidening: HdmaobjPreInstr_XrayFunc1_BeamWidening(k); return;
+  case fnHdmaobjPreInstr_XrayFunc2_FullBeam: HdmaobjPreInstr_XrayFunc2_FullBeam(k); return;
+  case fnHdmaobjPreInstr_XrayFunc3_DeactivateBeam: HdmaobjPreInstr_XrayFunc3_DeactivateBeam(k); return;
+  case fnHdmaobjPreInstr_XrayFunc4_DeactivateBeam: HdmaobjPreInstr_XrayFunc4_DeactivateBeam(k); return;
+  case fnHdmaobjPreInstr_XrayFunc5_DeactivateBeam: HdmaobjPreInstr_XrayFunc5_DeactivateBeam(k); return;
+  case fnHdmaobjPreInstr_PowerBombExplode_SetWindowConf: HdmaobjPreInstr_PowerBombExplode_SetWindowConf(k); return;
+  case fnHdmaobjPreInstr_PowerBombExplode_Stage5_Afterglow: HdmaobjPreInstr_PowerBombExplode_Stage5_Afterglow(k); return;
+  case fnHdmaobjPreInstr_PowerBombExplode_ExplosionYellow: HdmaobjPreInstr_PowerBombExplode_ExplosionYellow(k); return;
+  case fnHdmaobjPreInstr_PowerBombExplode_ExplosionWhite: HdmaobjPreInstr_PowerBombExplode_ExplosionWhite(k); return;
+  case fnHdmaobjPreInstr_PowerBombExplode_PreExplosionWhite: HdmaobjPreInstr_PowerBombExplode_PreExplosionWhite(k); return;
+  case fnHdmaobjPreInstr_PowerBombExplode_PreExplosionYellow: HdmaobjPreInstr_PowerBombExplode_PreExplosionYellow(k); return;
+  case fnHdmaobjPreInstr_CrystalFlash_CustomLayerBlend: HdmaobjPreInstr_CrystalFlash_CustomLayerBlend(k); return;
+  case fnHdmaobjPreInstr_CrystalFlash_Stage2_AfterGlow: HdmaobjPreInstr_CrystalFlash_Stage2_AfterGlow(k); return;
+  case fnHdmaobjPreInstr_CrystalFlash_Stage1_Explosion: HdmaobjPreInstr_CrystalFlash_Stage1_Explosion(k); return;
+  case fnHdmaobjPreInstr_FxType22_BG3Yscroll: HdmaobjPreInstr_FxType22_BG3Yscroll(k); return;
+  case fnHdmaobjPreInstr_BG3Xscroll: HdmaobjPreInstr_BG3Xscroll(k); return;
+  case fnHdmaobjPreInstr_SkyLandBG2Xscroll: HdmaobjPreInstr_SkyLandBG2Xscroll(k); return;
+  case fnHdmaobjPreInstr_SkyLandBG2Xscroll2: HdmaobjPreInstr_SkyLandBG2Xscroll2(k); return;
+  case fnHdmaobjPreInstr_SkyLandBG2XscrollInner: HdmaobjPreInstr_SkyLandBG2XscrollInner(k); return;
+  case fnHdmaobjPreInstr_FirefleaBG3XScroll: HdmaobjPreInstr_FirefleaBG3XScroll(k); return;
+  case fnHdmaobjPreInstr_LavaAcidBG3YScroll: HdmaobjPreInstr_LavaAcidBG3YScroll(k); return;
+  case fnHdmaobjPreInstr_LavaAcidBG2YScroll: HdmaobjPreInstr_LavaAcidBG2YScroll(k); return;
+  case fnHdmaobjPreInstr_WaterBG3XScroll: HdmaobjPreInstr_WaterBG3XScroll(k); return;
+  case fnHdmaobjPreInstr_WaterBG2XScroll: HdmaobjPreInstr_WaterBG2XScroll(k); return;
+  case fnHdmaobjPreInstr_WaterBG2XScroll_Func2: HdmaobjPreInstr_WaterBG2XScroll_Func2(k); return;
+  case fnHdmaobjPreInstr_WaterBG2XScroll_Func1: HdmaobjPreInstr_WaterBG2XScroll_Func1(k); return;
+  case fnHdmaobjPreInstr_RainBg3Scroll: HdmaobjPreInstr_RainBg3Scroll(k); return;
+  case fnHdmaobjPreInstr_SporesBG3Xscroll: HdmaobjPreInstr_SporesBG3Xscroll(k); return;
+  case fnHdmaobjPreInstr_FogBG3Scroll: HdmaobjPreInstr_FogBG3Scroll(k); return;
+  case fnHdmaobjPreInstr_CheckLotsOfEventsHappened: HdmaobjPreInstr_CheckLotsOfEventsHappened(k); return;
+  case fnHdmaobjPreInstr_DC23: HdmaobjPreInstr_DC23(k); return;
+  case fnHdmaobjPreInstr_DC69: HdmaobjPreInstr_DC69(k); return;
+  case fnHdmaobjPreInstr_DCBA: HdmaobjPreInstr_DCBA(k); return;
+  case fnHdmaobjPreInstr_BombTorizoHazeColorMathBgColor: HdmaobjPreInstr_BombTorizoHazeColorMathBgColor(k); return;
+  case fnHdmaobjPreInstr_HazeColorMathSubscreen_CeresRidleyAlive: HdmaobjPreInstr_HazeColorMathSubscreen_CeresRidleyAlive(k); return;
+  case fnHdmaobjPreInstr_HazeColorMathSubscreen_CeresRidleyDead: HdmaobjPreInstr_HazeColorMathSubscreen_CeresRidleyDead(k); return;
+  case fnHdmaobjPreInstr_HazeColorMathSubscreen_FadingIn: HdmaobjPreInstr_HazeColorMathSubscreen_FadingIn(k); return;
+  case fnHdmaobjPreInstr_HazeColorMathSubscreen_FadedIn: HdmaobjPreInstr_HazeColorMathSubscreen_FadedIn(k); return;
+  case fnHdmaobjPreInstr_HazeColorMathSubscreen_FadingOut: HdmaobjPreInstr_HazeColorMathSubscreen_FadingOut(k); return;
+  case fnHdmaobjPreInstr_DF94: HdmaobjPreInstr_DF94(k); return;
+  case fnHdmaobjPreInstr_VariaSuitPickup: HdmaobjPreInstr_VariaSuitPickup(k); return;
+  case fnHdmaobjPreInstr_GravitySuitPickup: HdmaobjPreInstr_GravitySuitPickup(k); return;
+  case fnHdmaobjPreInstr_E449: HdmaobjPreInstr_E449(k); return;
+  case fnHdmaobjPreInstr_E567: HdmaobjPreInstr_E567(k); return;
+  case fnHdmaobjPreInstr_E7BC: HdmaobjPreInstr_E7BC(k); return;
+  case fnHdmaobjPreInstr_E9E6: HdmaobjPreInstr_E9E6(k); return;
+  case fnHdmaobjPreInstr_EA3C: HdmaobjPreInstr_EA3C(k); return;
+  case fnHdmaobjPreInstr_EACB: HdmaobjPreInstr_EACB(k); return;
+  case fnHdmaobjPreInstr_Backdrop_TitleSequenceGradient: HdmaobjPreInstr_Backdrop_TitleSequenceGradient(k); return;
+  case fnHdmaobjPreInstr_ColorMathControlB_TitleGradient: HdmaobjPreInstr_ColorMathControlB_TitleGradient(k); return;
+  case fnHdmaobjPreInstr_IntroCutsceneCrossfade: HdmaobjPreInstr_IntroCutsceneCrossfade(k); return;
+  case fnnullsub_357: return;
+  case fnHdmaobjPreInstr_ECB6: HdmaobjPreInstr_ECB6(k); return;
+  default: Unreachable();
+  }
+}
+
+const uint8 *CallHdmaobjInstr(uint32 ea, uint16 k, const uint8 *j) {
+  switch (ea) {
+  case fnnullsub_112: return j;
+  case fnHdmaobjInstr_Delete: return HdmaobjInstr_Delete(k, j);
+  case fnHdmaobjInstr_SetPreInstr: return HdmaobjInstr_SetPreInstr(k, j);
+  case fnHdmaobjInstr_ClearPreInstr: return HdmaobjInstr_ClearPreInstr(k, j);
+  case fnHdmaobjInstr_CallFarFunc: return HdmaobjInstr_CallFarFunc(k, j);
+  case fnHdmaobjInstr_Goto: return HdmaobjInstr_Goto(k, j);
+  case fnHdmaobjInstr_GotoRel: return HdmaobjInstr_GotoRel(k, j);
+  case fnHdmaobjInstr_DecrementAndGoto: return HdmaobjInstr_DecrementAndGoto(k, j);
+  case fnHdmaobjInstr_DecrementAndGotoRel: return HdmaobjInstr_DecrementAndGotoRel(k, j);
+  case fnHdmaobjInstr_SetTimer: return HdmaobjInstr_SetTimer(k, j);
+  case fnHdmaobjInstr_SetHdmaControl: return HdmaobjInstr_SetHdmaControl(k, j);
+  case fnHdmaobjInstr_SetHdmaTarget: return HdmaobjInstr_SetHdmaTarget(k, j);
+  case fnHdmaobjInstr_SetHdmaTablePtr: return HdmaobjInstr_SetHdmaTablePtr(k, j);
+  case fnHdmaobjInstr_SetHdmaTableBank: return HdmaobjInstr_SetHdmaTableBank(k, j);
+  case fnHdmaobjInstr_SetIndirectHdmaDataBank: return HdmaobjInstr_SetIndirectHdmaDataBank(k, j);
+  case fnHdmaobjInstr_Sleep: return HdmaobjInstr_Sleep(k, j);
+  case fnHdmaobjInstr_SetFlagB: return HdmaobjInstr_SetFlagB(k, j);
+  case fnHdmaobjInstr_SetFlagB_Copy: return HdmaobjInstr_SetFlagB_Copy(k, j);
+  case fnHdmaobjInstr_SetFlagB_Copy2: return HdmaobjInstr_SetFlagB_Copy2(k, j);
+  case fnHdmaobjInstr_SetFlagB_Copy3: return HdmaobjInstr_SetFlagB_Copy3(k, j);
+  case fnHdmaobjInstr_SetVideoMode1: return HdmaobjInstr_SetVideoMode1(k, j);
+  case fnHdmaobjInstr_1938_RandomNumber: return HdmaobjInstr_1938_RandomNumber(k, j);
+  case fnHdmaobjInstr_GotoIfEventHappened: return HdmaobjInstr_GotoIfEventHappened(k, j);
+  case fnHdmaobjInstr_E4BD: return HdmaobjInstr_E4BD(k, j);
+  case fnHdmaobjInstr_InitMorphBallEyeBeamHdma: return HdmaobjInstr_InitMorphBallEyeBeamHdma(k, j);
+  case fnHdmaobjInstr_EC9F_ClearVars: return HdmaobjInstr_EC9F_ClearVars(k, j);
+  case fnHdmaobjInstr_B3A9: return HdmaobjInstr_B3A9(k, j);
+  case fnHdmaobjInsr_ConfigTitleSequenceGradientHDMA: return HdmaobjInsr_ConfigTitleSequenceGradientHDMA(k, j);
+  case fnsub_88D916: sub_88D916(); return j;
+  default: Unreachable(); return NULL;
   }
 }

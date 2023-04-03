@@ -117,7 +117,7 @@ void WalkingSpacePirates_883E(void) {  // 0xB2883E
 }
 
 const uint16 *SpacePirates_Instr_MovePixelsDownAndChangeDirFaceRight(uint16 k, const uint16 *jp) {  // 0xB2EE40
-  if (!(Enemy_MoveDown(cur_enemy_index, INT16_SHL16(jp[0])) & 1))
+  if (!(Enemy_MoveDown(cur_enemy_index, INT16_SHL16(jp[0]))))
     return jp + 1;
   Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
   E->sps_var_C ^= 1;
@@ -127,7 +127,7 @@ const uint16 *SpacePirates_Instr_MovePixelsDownAndChangeDirFaceRight(uint16 k, c
 }
 
 const uint16 *SpacePirates_Instr_MovePixelsDownAndChangeDirFaceLeft(uint16 k, const uint16 *jp) {  // 0xB2EE72
-  if (!(Enemy_MoveDown(cur_enemy_index, INT16_SHL16(jp[0])) & 1))
+  if (!(Enemy_MoveDown(cur_enemy_index, INT16_SHL16(jp[0]))))
     return jp + 1;
   Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
   E->sps_var_C ^= 1;
@@ -571,7 +571,7 @@ void SpacePirates_F9C1(uint16 k) {  // 0xB2F9C1
 
   Enemy_SpacePirates *E = Get_SpacePirates(k);
   E->base.x_pos -= 5;
-  if (Enemy_MoveDown(k, __PAIR32__(HIBYTE(E->sps_var_00), LOBYTE(E->sps_var_00))) & 1
+  if (Enemy_MoveDown(k, __PAIR32__(HIBYTE(E->sps_var_00), LOBYTE(E->sps_var_00)))
       || (v2 = E->sps_var_00 - 64, E->sps_var_00 = v2, v2 < 0)
       || (v2 & 0xFF00) == 0) {
     E->sps_var_A = FUNC16(SpacePirates_FA15);
@@ -622,7 +622,7 @@ void SpacePirates_FA95(uint16 k) {  // 0xB2FA95
 
   Enemy_SpacePirates *E = Get_SpacePirates(k);
   E->base.x_pos += 5;
-  if (Enemy_MoveDown(k, __PAIR32__(HIBYTE(E->sps_var_00), LOBYTE(E->sps_var_00))) & 1
+  if (Enemy_MoveDown(k, __PAIR32__(HIBYTE(E->sps_var_00), LOBYTE(E->sps_var_00)))
       || (v2 = E->sps_var_00 - 64, E->sps_var_00 = v2, v2 < 0)
       || (v2 & 0xFF00) == 0) {
     E->sps_var_A = FUNC16(SpacePirates_FAE9);

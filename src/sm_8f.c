@@ -4,6 +4,10 @@
 #include "sm_rtl.h"
 #include "funcs.h"
 
+void CallDoorDefSetupCode(uint32 ea);
+void CallRoomSetupCode(uint32 ea);
+void RoomCode_GenRandomExplodes(uint16 x_r18, uint16 y_r20);
+
 void RoomSetup_AfterSavingAnimals(void) {  // 0x8F9194
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x3d, 0x0b, 0xbb30 });
   earthquake_type = 24;
@@ -21,7 +25,7 @@ void RoomSetup_TurnWallIntoShotblocks(void) {  // 0x8F91B2
 void RoomSetup_ShakeDuringEscape(void) {  // 0x8F91BD
   earthquake_type = 6;
   earthquake_timer = -1;
-  RoomSetup_ScrollingSkyLand();
+  FxTypeFunc_20();
 }
 
 void RoomSetup_ScrollingSkyLand(void) {  // 0x8F91C9
@@ -329,17 +333,6 @@ void RoomCode_ScrollingSkyOcean_(void) {  // 0x8FC11B
   RoomMainAsm_ScrollingSkyOcean();
 }
 
-void RoomCode_ScrollingSkyLand_Shakes(void) {  // 0x8FC120
-  RoomCode_ScrollingSkyLand();
-  RoomCode_GenRandomExplodes_Nonblank();
-  earthquake_timer |= 0x8000;
-}
-
-void RoomCode_ExplodeShakes(void) {  // 0x8FC124
-  RoomCode_GenRandomExplodes_Nonblank();
-  earthquake_timer |= 0x8000;
-}
-
 void RoomCode_GenRandomExplodes_Nonblank(void) {  // 0x8FC131
   if (!time_is_frozen_flag && (nmi_frame_counter_word & 1) == 0) {
     uint16 Random = NextRandom();
@@ -349,6 +342,17 @@ void RoomCode_GenRandomExplodes_Nonblank(void) {  // 0x8FC131
     if ((level_data[prod + (x >> 4)] & 0x3FF) != 255)
       RoomCode_GenRandomExplodes(x, y);
   }
+}
+
+void RoomCode_ScrollingSkyLand_Shakes(void) {  // 0x8FC120
+  RoomCode_ScrollingSkyLand();
+  RoomCode_GenRandomExplodes_Nonblank();
+  earthquake_timer |= 0x8000;
+}
+
+void RoomCode_ExplodeShakes(void) {  // 0x8FC124
+  RoomCode_GenRandomExplodes_Nonblank();
+  earthquake_timer |= 0x8000;
 }
 
 void RoomCode_GenRandomExplodes_4th(void) {  // 0x8FC183
@@ -785,6 +789,7 @@ void CallRoomSetupCode(uint32 ea) {
   default: Unreachable();
   }
 }
+
 void RunRoomSetupCode(void) {  // 0x8FE88F
   RoomDefRoomstate *RoomDefRoomstate;
 
@@ -887,32 +892,6 @@ void RunDoorSetupCode(void) {  // 0x8FE8A3
     CallDoorDefSetupCode(DD->door_setup_code | 0x8F0000);
 }
 
-void CallRoomCode(uint32 ea) {
-  switch (ea) {
-  case fnRoomCode_ScrollingSkyLand_: RoomCode_ScrollingSkyLand_(); return;
-  case fnRoomCode_ScrollingSkyOcean_: RoomCode_ScrollingSkyOcean_(); return;
-  case fnRoomCode_ScrollingSkyLand_Shakes: RoomCode_ScrollingSkyLand_Shakes(); return;
-  case fnRoomCode_ExplodeShakes: RoomCode_ExplodeShakes(); return;
-  case fnRoomCode_ScrollRightDachora: RoomCode_ScrollRightDachora(); return;
-  case fnRoomCode_Elevatube: RoomCode_Elevatube(); return;
-  case fnRoomCode_CeresElevatorShaft_: RoomCode_CeresElevatorShaft_(); return;
-  case fnnullsub_148: return;
-  case fnRoomCode_SpawnCeresFallingDebris: RoomCode_SpawnCeresFallingDebris(); return;
-  case fnRoomCode_HandleCeresRidleyGetaway: RoomCode_HandleCeresRidleyGetaway(); return;
-  case fnRoomCode_ShakeScreenHorizDiag: RoomCode_ShakeScreenHorizDiag(); return;
-  case fnRoomCode_GenRandomExplodes_4th_: RoomCode_GenRandomExplodes_4th(); return;
-  case fnRoomCode_ShakeScreenHorizDiagStrong: RoomCode_ShakeScreenHorizDiagStrong(); return;
-  case fnRoomCode_CrocomireShaking: RoomCode_CrocomireShaking(); return;
-  case fnRoomCode_RidleyRoomShaking: RoomCode_RidleyRoomShaking(); return;
-  default: Unreachable();
-  }
-}
-
-void RunRoomMainCode(void) {  // 0x8FE8BD
-  if (room_main_code_ptr)
-    CallRoomCode(room_main_code_ptr | 0x8F0000);
-}
-
 void RoomCode_CrocomireShaking(void) {  // 0x8FE8CD
   uint16 ai_var_D;
 
@@ -950,4 +929,30 @@ void RoomCode_RidleyRoomShaking(void) {  // 0x8FE950
     reg_BG1VOFS += kRoomCode_RidleyRoomShaking_Y[v1];
     reg_BG2VOFS += kRoomCode_RidleyRoomShaking_Y[v1];
   }
+}
+
+void CallRoomCode(uint32 ea) {
+  switch (ea) {
+  case fnRoomCode_ScrollingSkyLand_: RoomCode_ScrollingSkyLand_(); return;
+  case fnRoomCode_ScrollingSkyOcean_: RoomCode_ScrollingSkyOcean_(); return;
+  case fnRoomCode_ScrollingSkyLand_Shakes: RoomCode_ScrollingSkyLand_Shakes(); return;
+  case fnRoomCode_ExplodeShakes: RoomCode_ExplodeShakes(); return;
+  case fnRoomCode_ScrollRightDachora: RoomCode_ScrollRightDachora(); return;
+  case fnRoomCode_Elevatube: RoomCode_Elevatube(); return;
+  case fnRoomCode_CeresElevatorShaft_: RoomCode_CeresElevatorShaft_(); return;
+  case fnnullsub_148: return;
+  case fnRoomCode_SpawnCeresFallingDebris: RoomCode_SpawnCeresFallingDebris(); return;
+  case fnRoomCode_HandleCeresRidleyGetaway: RoomCode_HandleCeresRidleyGetaway(); return;
+  case fnRoomCode_ShakeScreenHorizDiag: RoomCode_ShakeScreenHorizDiag(); return;
+  case fnRoomCode_GenRandomExplodes_4th_: RoomCode_GenRandomExplodes_4th(); return;
+  case fnRoomCode_ShakeScreenHorizDiagStrong: RoomCode_ShakeScreenHorizDiagStrong(); return;
+  case fnRoomCode_CrocomireShaking: RoomCode_CrocomireShaking(); return;
+  case fnRoomCode_RidleyRoomShaking: RoomCode_RidleyRoomShaking(); return;
+  default: Unreachable();
+  }
+}
+
+void RunRoomMainCode(void) {  // 0x8FE8BD
+  if (room_main_code_ptr)
+    CallRoomCode(room_main_code_ptr | 0x8F0000);
 }
