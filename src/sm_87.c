@@ -12,7 +12,7 @@ void EnableAnimtiles(void) {  // 0x878000
 }
 
 void DisableAnimtiles(void) {  // 0x87800B
-  animtiles_enable_flag &= ~0x8000u;
+  animtiles_enable_flag &= ~0x8000;
 }
 
 void ClearAnimtiles(void) {  // 0x878016
@@ -26,7 +26,7 @@ void SpawnAnimtiles(uint16 j) {  // 0x878027
   uint16 v1 = 10;
   while (animtiles_ids[v1 >> 1]) {
     v1 -= 2;
-    if ((v1 & 0x8000u) != 0)
+    if ((v1 & 0x8000) != 0)
       return;
   }
   int v2 = v1 >> 1;
@@ -41,7 +41,7 @@ void SpawnAnimtiles(uint16 j) {  // 0x878027
 }
 
 void AnimtilesHandler(void) {  // 0x878064
-  if ((animtiles_enable_flag & 0x8000u) != 0) {
+  if ((animtiles_enable_flag & 0x8000) != 0) {
     for (int i = 10; i >= 0; i -= 2) {
       animtiles_object_index = i;
       if (animtiles_ids[i >> 1]) {
@@ -90,7 +90,7 @@ void ProcessAnimtilesObject(void) {  // 0x878085
     while (1) {
       const uint16 *v4 = (const uint16 *)RomPtr_87(v3);
       v5 = *v4;
-      if ((*v4 & 0x8000u) == 0)
+      if ((*v4 & 0x8000) == 0)
         break;
       animtiles_instruction = *v4;
       v3 = CallAnimtilesInstr(v5 | 0x870000, v0, v3 + 2);
@@ -166,7 +166,7 @@ uint16 AnimtilesInstr_QueueSfx3(uint16 k, uint16 j) {  // 0x878114
 uint16 AnimtilesInstr_GotoIfBossBitSet(uint16 k, uint16 j) {  // 0x878120
   const uint8 *v2 = RomPtr_87(j);
   uint16 v3 = j + 1;
-  if (CheckBossBitForCurArea((uint8) * (uint16 *)v2) & 1)
+  if (CheckBossBitForCurArea((uint8) *(uint16 *)v2) & 1)
     return AnimtilesInstr_Goto(k, v3);
   else
     return v3 + 2;
@@ -198,11 +198,11 @@ void UNUSED_sub_87815A(void) {  // 0x87815A
 }
 
 void UNUSED_sub_878162(void) {  // 0x878162
-  CallSomeSamusCode(1u);
+  CallSomeSamusCode(1);
 }
 
 uint16 AnimtilesInstr_WaitUntilAreaBossDead_DoubleRet(uint16 k, uint16 j) {  // 0x8781BA
-  if (!(CheckBossBitForCurArea(1u) & 1)) {
+  if (!(CheckBossBitForCurArea(1) & 1)) {
     animtiles_instr_timers[k >> 1] = 1;
     return 0;
   }
@@ -231,7 +231,7 @@ uint16 AnimtilesInstr_SpawnTourianStatueSoul(uint16 k, uint16 j) {  // 0x87832F
 }
 
 uint16 AnimtilesInstr_GotoIfTourianStatueBusy(uint16 k, uint16 j) {  // 0x87833E
-  if ((tourian_entrance_statue_animstate & 0x8000u) == 0)
+  if ((tourian_entrance_statue_animstate & 0x8000) == 0)
     return j + 2;
   else
     return AnimtilesInstr_Goto(k, j);

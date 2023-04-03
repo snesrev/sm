@@ -5,18 +5,33 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
-
 #define kEnemyLayerToQueuePtr ((uint16*)RomFixedPtr(0xa0b133))
 #define kStandardSpriteTiles ((uint16*)RomFixedPtr(0x9ad200))
 #define kSine8bit ((uint8*)RomFixedPtr(0xa0b143))
 #define kEquationForQuarterCircle ((uint16*)RomFixedPtr(0xa0b7ee))
 #define g_off_A0C2DA ((uint16*)RomFixedPtr(0xa0c2da))
-#define CHECK_locret_A0C434(i) (byte_A0C435[i] & 0x80 ? -1 : 0)
+#define CHECK_locret_A0C434(Ek) (byte_A0C435[Ek] & 0x80 ? -1 : 0)
 #define g_word_A0C49F ((uint16*)RomFixedPtr(0xa0c49f))
 #define kAlignYPos_Tab0 ((uint8*)RomFixedPtr(0x948b2b))
 
+typedef struct EnemyBlockCollInfo {
+  int32 ebci_r18_r20;
+  uint16 ebci_r24;
+  uint16 ebci_r26;
+  uint16 ebci_r28;
+  uint16 ebci_r30;
+  uint16 ebci_r32;
+} EnemyBlockCollInfo;
 
+typedef uint8 Func_EnemyBlockCollInfo_U8(EnemyBlockCollInfo *ebci);
 
+static uint8 EnemyBlockCollReact_Vert(EnemyBlockCollInfo *ebci, uint16 k);
+static uint8 EnemyBlockCollReact_Horiz(EnemyBlockCollInfo *ebci, uint16 k);
+static uint8 Enemy_MoveRight_IgnoreSlopes_Inner(uint16 k, int32 amount32, uint16 r32);
+static uint8 EnemyBlockCollHorizReact_Slope_NonSquare(EnemyBlockCollInfo *ebci);
+static uint8 EnemyBlockCollHorizReact_Slope_Square(EnemyBlockCollInfo *ebci, uint16 k, uint16 a);
+static uint8 EnemyBlockCollVertReact_Slope_NonSquare(EnemyBlockCollInfo *ebci);
+static uint8 EnemyBlockCollVertReact_Slope_Square(EnemyBlockCollInfo *ebci, uint16 a, uint16 k);
 
 void Enemy_GrappleReact_NoInteract_A0(void) {  // 0xA08000
   SwitchEnemyAiToMainAi();
@@ -141,14 +156,14 @@ const uint16 *EnemyInstr_Skip2bytes(uint16 k, const uint16 *jp) {  // 0xA0812C
 
 const uint16 *EnemyInstr_Sleep(uint16 k, const uint16 *jp) {  // 0xA2812F
   EnemyData *ED = gEnemyData(k);
-  const uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
+  const uint8 *base_ptr = RomBankBase(ED->bank);
   ED->current_instruction = (const uint8 *)jp - 2 - base_ptr;
   return 0;
 }
 
 const uint16 *EnemyInstr_WaitNframes(uint16 k, const uint16 *jp) {  // 0xA0813A
   EnemyData *ED = gEnemyData(k);
-  const uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
+  const uint8 *base_ptr = RomBankBase(ED->bank);
   ED->instruction_timer = jp[0];
   ED->current_instruction = (const uint8 *)jp + 2 - base_ptr;
   return 0;
@@ -170,13 +185,13 @@ const uint16 *EnemyInstr_CopyToVram(uint16 k, const uint16 *jp) {  // 0xA0814B
 
 const uint16 *EnemyInstr_EnableOffScreenProcessing(uint16 k, const uint16 *jp) {  // 0xA08173
   EnemyData *v2 = gEnemyData(k);
-  v2->properties |= 0x800u;
+  v2->properties |= 0x800;
   return jp;
 }
 
 const uint16 *EnemyInstr_DisableOffScreenProcessing(uint16 k, const uint16 *jp) {  // 0xA0817D
   EnemyData *v2 = gEnemyData(k);
-  v2->properties &= ~0x800u;
+  v2->properties &= ~0x800;
   return jp;
 }
 
@@ -222,7 +237,7 @@ static const uint16 kRoomShakes[144] = {  // 0xA08687
 void HandleRoomShaking(void) {
 
   if (earthquake_timer && !time_is_frozen_flag && sign16(earthquake_type - 36)) {
-    int v0 = (uint16)(8 * earthquake_type) >> 1;
+    int v0 = (8 * earthquake_type) >> 1;
     if ((earthquake_timer & 2) != 0) {
       reg_BG1HOFS -= kRoomShakes[v0];
       reg_BG1VOFS -= kRoomShakes[v0 + 1];
@@ -272,27 +287,26 @@ void DrawSamusEnemiesAndProjectiles(void) {  // 0xA0884D
   DrawSpriteObjects();
   DrawBombAndProjectileExplosions();
   DrawLowPriorityEnemyProjectiles();
-  for (draw_enemy_layer = 0; draw_enemy_layer != 8; ++draw_enemy_layer) {
-    if (draw_enemy_layer == 3) {
+  for (uint16 phase_varE32 = 0; phase_varE32 != 8; ++phase_varE32) {
+    if (phase_varE32 == 3) {
       DrawSamusAndProjectiles();
-    } else if (draw_enemy_layer == 6) {
+    } else if (phase_varE32 == 6) {
       DrawHighPriorityEnemyProjectiles();
     }
-    int v0 = draw_enemy_layer;
-    if (enemy_drawing_queue_sizes[v0]) {
-      loop_index_end = enemy_drawing_queue_sizes[v0];
-      enemy_drawing_queue_base = kEnemyLayerToQueuePtr[v0];
-      uint16 v1 = 0;
-      enemy_drawing_queue_sizes[v0] = 0;
+    if (enemy_drawing_queue_sizes[phase_varE32]) {
+      uint16 varE36 = enemy_drawing_queue_sizes[phase_varE32];
+      uint16 varE3A = kEnemyLayerToQueuePtr[phase_varE32];
+      uint16 v1 = 0, varE38;
+      enemy_drawing_queue_sizes[phase_varE32] = 0;
       do {
-        loop_index = v1;
-        uint8 *v2 = RomPtr_RAM(enemy_drawing_queue_base + v1);
+        varE38 = v1;
+        uint8 *v2 = RomPtr_RAM(varE3A + v1);
         uint16 v3 = GET_WORD(v2);
         *(uint16 *)v2 = 0;
         cur_enemy_index = v3;
         WriteEnemyOams();
-        v1 = loop_index + 2;
-      } while (loop_index + 2 != loop_index_end);
+        v1 = varE38 + 2;
+      } while (varE38 + 2 != varE36);
     }
   }
   CallEnemyGfxDrawHook(Load24(&enemy_gfx_drawn_hook));
@@ -312,37 +326,30 @@ void RecordEnemySpawnData(uint16 j) {  // 0xA088D0
   v2->extra_properties = v1->extra_properties;
   v2->param_1 = v1->parameter_1;
   v2->param_2 = v1->parameter_2;
-  R18_ = 0;
-  R20_ = 0;
-  R22_ = 0;
-  R24_ = 0;
-  R26_ = 0;
-  R28_ = 0;
+  uint16 r18 = 0, r20 = 0, r22 = 0, r24 = 0, R26 = 0, R28 = 0;
   uint16 name_ptr = get_EnemyDef_A2(v1->enemy_ptr)->name_ptr;
   if (name_ptr) {
     const uint16 *v4 = (const uint16 *)RomPtr_B4(name_ptr);
-    R18_ = *v4;
-    R20_ = v4[1];
-    R22_ = v4[2];
-    R24_ = v4[3];
-    R26_ = v4[4];
-    R28_ = v4[6];
+    r18 = v4[0];
+    r20 = v4[1];
+    r22 = v4[2];
+    r24 = v4[3];
+    R26 = v4[4];
+    R28 = v4[6];
   }
   v5 = gEnemySpawnData(j);
-  *(uint16 *)v5->name = R18_;
-  *(uint16 *)&v5->name[2] = R20_;
-  *(uint16 *)&v5->name[4] = R22_;
-  *(uint16 *)&v5->name[6] = R24_;
-  *(uint16 *)&v5->name[8] = R26_;
-  *(uint16 *)&v5->name[10] = R28_;
+  *(uint16 *)v5->name = r18;
+  *(uint16 *)&v5->name[2] = r20;
+  *(uint16 *)&v5->name[4] = r22;
+  *(uint16 *)&v5->name[6] = r24;
+  *(uint16 *)&v5->name[8] = R26;
+  *(uint16 *)&v5->name[10] = R28;
 }
 
 void LoadEnemies(void) {  // 0xA08A1E
   debug_time_frozen_for_enemies = 0;
-  *(uint16 *)&enemy_gfx_drawn_hook.bank = 160;
+  enemy_gfx_drawn_hook.bank = 160;
   enemy_gfx_drawn_hook.addr = FUNC16(nullsub_170);
-  *(uint16 *)&set_to_rtl_when_loading_enemies_unused.bank = 160;
-  set_to_rtl_when_loading_enemies_unused.addr = FUNC16(nullsub_170);
   enemy_bg2_tilemap_size = 2048;
   UNUSED_word_7E179E = 0;
   UNUSED_word_7E17A0 = 0;
@@ -355,133 +362,89 @@ void LoadEnemies(void) {  // 0xA08A1E
 }
 
 void ClearEnemyDataAndProcessEnemySet(void) {  // 0xA08A6D
-  int16 v0;
-
-  v0 = 2048;
-  uint16 v1 = 0;
-  do {
-    gEnemyData(v1)->enemy_ptr = 0;
-    v1 += 2;
-    v0 -= 2;
-  } while (v0);
+  memset(g_ram + 0xF78, 0, 2048);
   if (*(uint16 *)RomPtr_A1(room_enemy_population_ptr) != 0xFFFF)
     ProcessEnemyTilesets();
 }
 
 void InitializeEnemies(void) {  // 0xA08A9E
-  int16 v0;
-  uint16 j;
-  EnemyPopulation *v9;
-  EnemyDef_A2 *v10;
-  EnemyPopulation *EnemyPopulation;
-  EnemyDef_A2 *EnemyDef_A2;
-
-  v0 = 5120;
-  uint16 v1 = 0;
-  do {
-    gEnemySpawnData(v1)->some_flag = 0;
-    v1 += 2;
-    --v0;
-  } while (v0);
+  memset(&g_ram[0x7000], 0, 0x2800);
   num_enemies_in_room = 0;
   num_enemies_killed_in_room = 0;
   flag_process_all_enemies = 0;
   for (int i = 286; i >= 0; i -= 2)
     enemy_projectile_flags[i >> 1] = 0;
-  for (j = 34; (j & 0x8000u) == 0; j -= 2)
+  for (int j = 34; j >= 0; j -= 2)
     enemy_projectile_killed_enemy_index[j >> 1] = -1;
   uint16 v4 = room_enemy_population_ptr;
-  if (get_EnemyPopulation(0xa1, room_enemy_population_ptr)->enemy_ptr != 0xFFFF) {
-    UNUSED_word_7E0E48 = 0;
-    uint16 v5 = 0;
-    do {
-      LoadEnemyGfxIndexes(v4, v5);
-      uint16 v13 = v4;
-      EnemyPopulation = get_EnemyPopulation(0xa1, v4);
-      EnemyDef_A2 = get_EnemyDef_A2(EnemyPopulation->enemy_ptr);
-      uint16 *v8 = (uint16 *)gEnemyData(v5);
-      v8[5] = EnemyDef_A2->x_radius;
-      v8[6] = EnemyDef_A2->y_radius;
-      v8[10] = EnemyDef_A2->health;
-      v8[17] = EnemyDef_A2->layer;
-      v8[23] = *(uint16 *)&EnemyDef_A2->bank;
-      if (EnemyDef_A2->boss_fight_value)
-        boss_id = EnemyDef_A2->boss_fight_value;
-      v9 = get_EnemyPopulation(0xa1, v4);
-      *v8 = v9->enemy_ptr;
-      v8[1] = v9->x_pos;
-      v8[3] = v9->y_pos;
-      v8[13] = v9->init_param;
-      v8[7] = v9->properties;
-      v8[8] = v9->extra_properties;
-      v8[30] = v9->parameter1;
-      v8[31] = v9->parameter2;
-      v8[22] = 0;
-      v8[12] = 0;
-      v8[14] = 1;
-      v8[22] = 0;
-      RecordEnemySpawnData(v5);
-      cur_enemy_index = v5;
-      v10 = get_EnemyDef_A2(*v8);
-      enemy_ai_pointer.addr = v10->ai_init;
-      *(uint16 *)&enemy_ai_pointer.bank = *(uint16 *)&v10->bank;
-      CallEnemyAi(Load24(&enemy_ai_pointer));
-      EnemyData *v11 = gEnemyData(v5);
-      v11->spritemap_pointer = 0;
-      if ((v11->properties & 0x2000) != 0) {
-        uint16 v12 = addr_kSpritemap_Nothing_A4;
-        if ((v11->extra_properties & 4) != 0)
-          v12 = addr_kExtendedSpritemap_Nothing_A4;
-        v11->spritemap_pointer = v12;
-        v4 = v13;
-      }
-      v5 += 64;
-      v4 += 16;
-    } while (get_EnemyPopulation(0xa1, v4)->enemy_ptr != 0xFFFF);
-    first_free_enemy_index = v5;
-    num_enemies_in_room = v5 >> 6;
-    num_enemy_deaths_left_to_clear = RomPtr_A1(v4)[2];
-  }
+  if (get_EnemyPopulation(0xa1, room_enemy_population_ptr)->enemy_ptr == 0xFFFF)
+    return;
+  UNUSED_word_7E0E48 = 0;
+  uint16 v5 = 0;
+  do {
+    LoadEnemyGfxIndexes(v4, v5);
+    EnemyPopulation *EP = get_EnemyPopulation(0xa1, v4);
+    EnemyDef_A2 *ED = get_EnemyDef_A2(EP->enemy_ptr);
+    EnemyData *E = gEnemyData(v5);
+    E->x_width = ED->x_radius;
+    E->y_height = ED->y_radius;
+    E->health = ED->health;
+    E->layer = ED->layer;
+    *(uint16 *)&E->bank = *(uint16 *)&ED->bank;
+    if (ED->boss_fight_value)
+      boss_id = ED->boss_fight_value;
+    E->enemy_ptr = EP->enemy_ptr;
+    E->x_pos = EP->x_pos;
+    E->y_pos = EP->y_pos;
+    E->current_instruction = EP->init_param;
+    E->properties = EP->properties;
+    E->extra_properties = EP->extra_properties;
+    E->parameter_1 = EP->parameter1;
+    E->parameter_2 = EP->parameter2;
+    E->frame_counter = 0;
+    E->timer = 0;
+    E->instruction_timer = 1;
+    E->frame_counter = 0;
+    RecordEnemySpawnData(v5);
+    cur_enemy_index = v5;
+    CallEnemyAi(ED->bank << 16 | ED->ai_init);
+    E->spritemap_pointer = 0;
+    if ((E->properties & 0x2000) != 0) {
+      uint16 v12 = addr_kSpritemap_Nothing_A4;
+      if ((E->extra_properties & 4) != 0)
+        v12 = addr_kExtendedSpritemap_Nothing_A4;
+      E->spritemap_pointer = v12;
+    }
+    v5 += 64;
+    v4 += 16;
+  } while (get_EnemyPopulation(0xa1, v4)->enemy_ptr != 0xFFFF);
+  first_free_enemy_index = v5;
+  num_enemies_in_room = v5 >> 6;
+  num_enemy_deaths_left_to_clear = RomPtr_A1(v4)[2];
 }
 
 void LoadEnemyGfxIndexes(uint16 k, uint16 j) {  // 0xA08BF3
-  VoidP enemy_ptr;
-  EnemyTileset *EnemyTileset;
-  EnemySpawnData *v6;
-  EnemySpawnData *v10;
-
-  R18_ = k;
-  R20_ = j;
-  R28_ = room_enemy_tilesets_ptr;
-  R30_ = 0;
+  EnemyData *E = gEnemyData(j);
+  EnemySpawnData *ES = gEnemySpawnData(j);
+  uint16 e = room_enemy_tilesets_ptr;
+  uint16 f = 0;
   while (1) {
-    enemy_ptr = get_EnemyPopulation(0xa1, R18_)->enemy_ptr;
-    EnemyTileset = get_EnemyTileset(R28_);
-    if (enemy_ptr == EnemyTileset->enemy_def)
-      break;
-    if (EnemyTileset->enemy_def == 0xFFFF) {
-      uint16 v4 = R20_;
-      EnemyData *v5 = gEnemyData(R20_);
-      v5->vram_tiles_index = 0;
-      v6 = gEnemySpawnData(v4);
-      v6->vram_tiles_index = 0;
-      v5->palette_index = 2560;
-      v6->palette_index = 2560;
+    EnemyTileset *ET = get_EnemyTileset(e);
+    if (get_EnemyPopulation(0xa1, k)->enemy_ptr == ET->enemy_def) {
+      E->palette_index = ES->palette_index = (ET->vram_dst & 0xF) << 9;
+      E->vram_tiles_index = ES->vram_tiles_index = f;
       return;
     }
-    R30_ += get_EnemyDef_A2(EnemyTileset->enemy_def)->tile_data_size >> 5;
-    R28_ += 4;
+    if (ET->enemy_def == 0xFFFF) {
+      E->vram_tiles_index = ES->vram_tiles_index = 0;
+      E->palette_index = ES->palette_index = 2560;
+      return;
+    }
+    f += get_EnemyDef_A2(ET->enemy_def)->tile_data_size >> 5;
+    e += 4;
   }
-  uint16 v7 = (get_EnemyTileset(R28_)->vram_dst & 0xF) << 9;
-  uint16 v8 = R20_;
-  EnemyData *v9 = gEnemyData(R20_);
-  v9->palette_index = v7;
-  v10 = gEnemySpawnData(v8);
-  v10->palette_index = v7;
-  uint16 v11 = R30_;
-  v9->vram_tiles_index = R30_;
-  v10->vram_tiles_index = v11;
 }
+
 void LoadEnemyTileData(void) {  // 0xA08C6C
   for (int i = 510; i >= 0; i -= 2)
     gEnemySpawnData(i)->some_flag = kStandardSpriteTiles[(i >> 1) + 3072];
@@ -490,14 +453,14 @@ void LoadEnemyTileData(void) {  // 0xA08C6C
     EnemyTileLoadData *load_data = enemy_tile_load_data;
     do {
       uint16 v2 = load_data->tile_data_ptr.addr;
-      R18_ = load_data->tile_data_size + v2;
+      uint16 r18 = load_data->tile_data_size + v2;
       uint16 v3 = load_data->offset_into_ram;
       uint8 db = load_data->tile_data_ptr.bank;
       do {
         memcpy(&g_ram[0x7000 + v3], RomPtrWithBank(db, v2), 8);
         v3 += 8;
         v2 += 8;
-      } while (v2 != R18_);
+      } while (v2 != r18);
       load_data++;
       v1 += 7;
     } while (v1 != enemy_tile_load_data_write_pos);
@@ -506,8 +469,6 @@ void LoadEnemyTileData(void) {  // 0xA08C6C
 }
 
 void TransferEnemyTilesToVramAndInit(void) {  // 0xA08CD7
-  VramWriteEntry *v2;
-
   uint16 v0 = enemy_tile_vram_src;
   if (!enemy_tile_vram_src) {
     v0 = ADDR16_OF_RAM(*enemy_spawn_data);
@@ -522,7 +483,7 @@ void TransferEnemyTilesToVramAndInit(void) {  // 0xA08CD7
       enemy_tile_vram_src = -2;
     } else {
       uint16 v1 = vram_write_queue_tail;
-      v2 = gVramWriteEntry(vram_write_queue_tail);
+      VramWriteEntry *v2 = gVramWriteEntry(vram_write_queue_tail);
       v2->size = 2048;
       uint16 v3 = enemy_tile_vram_src;
       v2->src.addr = enemy_tile_vram_src;
@@ -538,7 +499,7 @@ void TransferEnemyTilesToVramAndInit(void) {  // 0xA08CD7
 
 void ProcessEnemyTilesets(void) {  // 0xA08D64
   enemy_tile_load_data_write_pos = 0;
-  R30_ = 2048;
+  uint16 r30 = 2048;
   enemy_def_ptr[0] = 0;
   enemy_def_ptr[1] = 0;
   enemy_def_ptr[2] = 0;
@@ -551,19 +512,18 @@ void ProcessEnemyTilesets(void) {  // 0xA08D64
   enemy_gfxdata_vram_ptr[1] = 0;
   enemy_gfxdata_vram_ptr[2] = 0;
   enemy_gfxdata_vram_ptr[3] = 0;
-  enemy_gfx_data_write_ptr = 0;
-  next_enemy_tiles_index = 0;
+  uint16 enemy_gfx_data_write_ptr = 0;
+  uint16 next_enemy_tiles_index = 0;
   EnemyTileset *ET = get_EnemyTileset(room_enemy_tilesets_ptr);
   EnemyTileLoadData *LD = enemy_tile_load_data;
   for (; ET->enemy_def != 0xffff; ET++) {
     EnemyDef_A2 *ED = get_EnemyDef_A2(ET->enemy_def);
     memcpy(&target_palettes[(LOBYTE(ET->vram_dst) + 8) * 16], 
            RomPtrWithBank(ED->bank, ED->palette_ptr), 32);
-    varE2E = 0;
     LD->tile_data_size = ED->tile_data_size & 0x7FFF;
     LD->tile_data_ptr = ED->tile_data;
-    uint16 v10 = R30_;
-    if ((ED->tile_data_size & 0x8000u) != 0)
+    uint16 v10 = r30;
+    if ((ED->tile_data_size & 0x8000) != 0)
       v10 = (uint16)(ET->vram_dst & 0x3000) >> 3;
     LD->offset_into_ram = v10;
     enemy_tile_load_data_write_pos += 7;
@@ -574,7 +534,7 @@ void ProcessEnemyTilesets(void) {  // 0xA08D64
     enemy_gfxdata_vram_ptr[v11 >> 1] = ET->vram_dst;
     enemy_gfx_data_write_ptr += 2;
     next_enemy_tiles_index += ED->tile_data_size >> 5;
-    R30_ += ED->tile_data_size;
+    r30 += ED->tile_data_size;
   }
 }
 
@@ -1757,13 +1717,12 @@ const uint16 *CallEnemyInstr(uint32 ea, uint16 k, const uint16 *j) {
   case fnMotherBrain_Instr_SpawnEprojToOffset: return MotherBrain_Instr_SpawnEprojToOffset(k, j);
   case fnMotherBrain_Instr_SpawnDeathBeamEproj: return MotherBrain_Instr_SpawnDeathBeamEproj(k, j);
   case fnMotherBrain_Instr_IncrBeamAttackPhase: return MotherBrain_Instr_IncrBeamAttackPhase(k, j);
-
   default: Unreachable(); return NULL;
   }
 }
 
 void EnemyMain(void) {  // 0xA08FD4
-  EnemyDef_A2 *EnemyDef_A2;
+  EnemyDef_A2 *ED;
   int16 v6;
   int8 v8; // cf
 
@@ -1772,34 +1731,29 @@ void EnemyMain(void) {  // 0xA08FD4
       gEnemyData(enemy_index_to_shake)->shake_timer = 64;
       enemy_index_to_shake = -1;
     }
-    for (active_enemy_indexes_index = 0; ; ++active_enemy_indexes_index) {
-      int v0 = active_enemy_indexes_index >> 1;
-      uint16 v1 = active_enemy_indexes[v0];
+    for (int active_enemy_indexes_index = 0; ; active_enemy_indexes_index += 2) {
+      uint16 v1 = active_enemy_indexes[active_enemy_indexes_index >> 1];
       if (v1 == 0xFFFF)
         break;
-      cur_enemy_index = active_enemy_indexes[v0];
-      uint16 v2 = v1;
-      enemy_data_ptr = v1 + 3960;
-      EnemyData *v3 = gEnemyData(v1);
-      *(uint16 *)&enemy_ai_pointer.bank = *(uint16 *)&v3->bank;
-      if ((v3->properties & 0x400) == 0) {
-        if (v3->invincibility_timer) {
-          --v3->invincibility_timer;
+      cur_enemy_index = v1;
+      EnemyData *E = gEnemyData(cur_enemy_index);
+      if ((E->properties & 0x400) == 0) {
+        if (E->invincibility_timer) {
+          --E->invincibility_timer;
         } else if (!debug_disable_sprite_interact) {
           if (!(debug_time_frozen_for_enemies | time_is_frozen_flag)) {
             EnemyCollisionHandler();
-            if (!gEnemyData(cur_enemy_index)->enemy_ptr)
+            if (!E->enemy_ptr)
               goto LABEL_32;
           }
-          v2 = cur_enemy_index;
-          if ((gEnemyData(cur_enemy_index)->extra_properties & 1) != 0)
+          if ((E->extra_properties & 1) != 0)
             goto LABEL_23;
         }
       }
       UNUSED_word_7E17A2 = 0;
       if (!(debug_time_frozen_for_enemies | time_is_frozen_flag)) {
         v6 = 0;
-        uint16 ai_handler_bits = gEnemyData(cur_enemy_index)->ai_handler_bits;
+        uint16 ai_handler_bits = E->ai_handler_bits;
         if (ai_handler_bits) {
           do {
             ++v6;
@@ -1807,60 +1761,44 @@ void EnemyMain(void) {  // 0xA08FD4
             ai_handler_bits >>= 1;
           } while (!v8);
         }
-        EnemyData *v9 = gEnemyData(cur_enemy_index);
-        enemy_ai_pointer.addr = get_EnemyDef_A2(v9->enemy_ptr + 2 * v6)->main_ai;
+        CallEnemyAi(E->bank << 16 | get_EnemyDef_A2(E->enemy_ptr + 2 * v6)->main_ai);
         goto LABEL_20;
       }
-      EnemyData *v4;
-      v4 = gEnemyData(v2);
-      EnemyDef_A2 = get_EnemyDef_A2(v4->enemy_ptr);
-      if (EnemyDef_A2->time_is_frozen_ai) {
-        enemy_ai_pointer.addr = EnemyDef_A2->time_is_frozen_ai;
+      ED = get_EnemyDef_A2(E->enemy_ptr);
+      if (ED->time_is_frozen_ai) {
+        CallEnemyAi(E->bank << 16 | ED->time_is_frozen_ai);
 LABEL_20:
-        enemy_ai_pointer.bank = gEnemyData(cur_enemy_index)->bank;
-        CallEnemyAi(Load24(&enemy_ai_pointer));
         if (!(debug_time_frozen_for_enemies | time_is_frozen_flag)) {
-          EnemyData *v10 = gEnemyData(cur_enemy_index);
-          ++v10->frame_counter;
-          if ((v10->properties & 0x2000) != 0) {
+          ++E->frame_counter;
+          if ((E->properties & 0x2000) != 0) {
             enemy_processing_stage = 2;
             ProcessEnemyInstructions();
           }
         }
       }
 LABEL_23:;
-      uint16 v11;
-      v11 = cur_enemy_index;
-      EnemyData *v12;
-      v12 = gEnemyData(cur_enemy_index);
-      if ((v12->extra_properties & 1) != 0 && (v12->flash_timer == 1 || v12->frozen_timer == 1)) {
+      if ((E->extra_properties & 1) != 0 && (E->flash_timer == 1 || E->frozen_timer == 1)) {
         gEnemySpawnData(cur_enemy_index)->cause_of_death = 0;
-        EnemyDeathAnimation(v11, 0);
+        EnemyDeathAnimation(cur_enemy_index, 0);
       }
-      if (((gEnemyData(cur_enemy_index)->extra_properties & 4) != 0 || !EnemyWithNormalSpritesIsOffScreen())
-          && (gEnemyData(cur_enemy_index)->properties & 0x300) == 0
+      if (((E->extra_properties & 4) != 0 || !EnemyWithNormalSpritesIsOffScreen())
+          && (E->properties & 0x300) == 0
           && (UNUSED_word_7E17A2 & 1) == 0) {
         DrawOneEnemy();
       }
 LABEL_32:;
-      EnemyData *v13 = gEnemyData(cur_enemy_index);
-      if (v13->flash_timer && !(debug_time_frozen_for_enemies | time_is_frozen_flag)) {
-        if (sign16(--v13->flash_timer - 8))
-          v13->ai_handler_bits &= ~2u;
+      if (E->flash_timer && !(debug_time_frozen_for_enemies | time_is_frozen_flag)) {
+        if (sign16(--E->flash_timer - 8))
+          E->ai_handler_bits &= ~2;
       }
-      ++active_enemy_indexes_index;
     }
   }
   HandleSpriteObjects();
-  ++enemy_damage_routine_exec_count;
+  random_enemy_counter++;
   enemy_index_colliding_dirs[0] = -1;
   enemy_index_colliding_dirs[1] = -1;
   enemy_index_colliding_dirs[2] = -1;
   enemy_index_colliding_dirs[3] = -1;
-  distance_to_enemy_colliding_dirs[0] = 0;
-  distance_to_enemy_colliding_dirs[1] = 0;
-  distance_to_enemy_colliding_dirs[2] = 0;
-  distance_to_enemy_colliding_dirs[3] = 0;
 }
 
 void DecrementSamusTimers(void) {  // 0xA09169
@@ -1874,9 +1812,9 @@ void DecrementSamusTimers(void) {  // 0xA09169
   active_enemy_indexes[0] = -1;
 }
 
-void SpawnEnemyDrops(uint16 a, uint16 k) {  // 0xA0920E
-  varE24 = a;
-  SpawnEnemyProjectileWithGfx(enemy_population_ptr, k, addr_kEproj_Pickup);
+void SpawnEnemyDrops(uint16 a, uint16 k, uint16 varE20) {  // 0xA0920E
+  eproj_spawn_varE24 = a;
+  SpawnEnemyProjectileWithGfx(varE20, k, addr_kEproj_Pickup);
 }
 
 void DeleteEnemyAndConnectedEnemies(void) {  // 0xA0922B
@@ -1893,175 +1831,138 @@ void DeleteEnemyAndConnectedEnemies(void) {  // 0xA0922B
 }
 
 uint16 SpawnEnemy(uint8 db, uint16 k) {  // 0xA09275
-  VoidP v7;
-  enemy_population_ptr = k;
-  cur_enemy_index_backup = cur_enemy_index;
-  enemy_ai_pointer_backup.addr = enemy_ai_pointer.addr;
-  *(uint16 *)&enemy_ai_pointer_backup.bank = *(uint16 *)&enemy_ai_pointer.bank;
+  uint16 varE20 = k;
+  uint16 cur_enemy_index_backup = cur_enemy_index;
   uint16 enemy_ptr = get_EnemyPopulation(db, k)->enemy_ptr;
   int16 v3 = get_EnemyDef_A2(enemy_ptr)->num_parts - 1;
   if (v3 < 0)
     v3 = 0;
-  draw_oam_x_offset = v3;
-  varE26 = v3;
-  new_enemy_index = 0;
+  uint16 varE22 = v3;
+  uint16 varE26 = v3;
+  uint16 new_enemy_index = 0;
   do {
     uint16 v4 = new_enemy_index;
-    if (!gEnemyData(new_enemy_index)->enemy_ptr) {
-      while (!gEnemyData(v4)->enemy_ptr) {
-        if (!draw_oam_x_offset) {
-          while (1) {
-            uint16 v5 = new_enemy_index;
-            EnemyPopulation *EP = get_EnemyPopulation(db, enemy_population_ptr);
-            v7 = EP->enemy_ptr;
-            uint16 v8 = 0;
-            if (EP->enemy_ptr == enemy_def_ptr[0]
-                || (v8 = 2, v7 == enemy_def_ptr[1])
-                || (v8 = 4, v7 == enemy_def_ptr[2])
-                || (v8 = 6, v7 == enemy_def_ptr[3])) {
-              int v10 = v8 >> 1;
-              EnemyData *v11 = gEnemyData(new_enemy_index);
-              v11->vram_tiles_index = enemy_gfxdata_tiles_index[v10];
-              v11->palette_index = 2 * swap16(enemy_gfxdata_vram_ptr[v10]);
-            } else {
-              EnemyData *v9 = gEnemyData(new_enemy_index);
-              v9->vram_tiles_index = 0;
-              v9->palette_index = 0;
-            }
-            EnemyDef_A2 * edef = get_EnemyDef_A2(EP->enemy_ptr);
-            EnemyData *v15 = gEnemyData(v5);
-            v15->x_width = edef->x_radius;
-            v15->y_height = edef->y_radius;
-            v15->health = edef->health;
-            v15->layer = edef->layer;
-            *(uint16 *)&v15->bank = *(uint16 *)&edef->bank;
-            v15->enemy_ptr = EP->enemy_ptr;
-            v15->x_pos = EP->x_pos;
-            v15->y_pos = EP->y_pos;
-            v15->current_instruction = EP->init_param;
-            v15->properties = EP->properties;
-            v15->extra_properties = EP->extra_properties;
-            v15->parameter_1 = EP->parameter1;
-            v15->parameter_2 = EP->parameter2;
-            v15->frame_counter = 0;
-            v15->timer = 0;
-            v15->ai_var_A = 0;
-            v15->ai_var_B = 0;
-            v15->ai_var_C = 0;
-            v15->ai_var_D = 0;
-            v15->ai_var_E = 0;
-            v15->ai_preinstr = 0;
-            v15->instruction_timer = 1;
-            v15->frame_counter = 0;
-            RecordEnemySpawnData(v5);
-            cur_enemy_index = v5;
-            if (sign16(edef->ai_init))
-              CallEnemyAi(edef->bank << 16 | edef->ai_init);
-            EnemyData *v18 = gEnemyData(v5);
-            if ((v18->properties & 0x2000) != 0)
-              v18->spritemap_pointer = addr_kSpritemap_Nothing_A0;
-            if (!varE26)
-              break;
-            if (!--varE26)
-              break;
-            new_enemy_index += 64;
-            enemy_population_ptr += 16;
-          }
-          enemy_ai_pointer.addr = enemy_ai_pointer_backup.addr;
-          *(uint16 *)&enemy_ai_pointer.bank = *(uint16 *)&enemy_ai_pointer_backup.bank;
-          cur_enemy_index = cur_enemy_index_backup;
-          return new_enemy_index;
-        }
-        --draw_oam_x_offset;
-        v4 += 64;
-        if ((int16)(v4 - 2048) >= 0)
-          return 0xffff;
-      }
+    while (!gEnemyData(v4)->enemy_ptr) {
+      if (!varE22)
+        goto add_enemy;
+      --varE22;
+      v4 += 64;
+      if (v4 >= 2048)
+        return 0xffff;
     }
     new_enemy_index += 64;
-  } while (sign16(new_enemy_index - 2048));
+  } while (new_enemy_index < 2048);
   return 0xffff;
+
+add_enemy:
+  while (1) {
+    EnemyData *E = gEnemyData(new_enemy_index);
+    EnemyPopulation *EP = get_EnemyPopulation(db, varE20);
+    int v10 = 0;
+    if (EP->enemy_ptr == enemy_def_ptr[0] ||
+      (v10 = 1, EP->enemy_ptr == enemy_def_ptr[1]) ||
+      (v10 = 2, EP->enemy_ptr == enemy_def_ptr[2]) ||
+      (v10 = 3, EP->enemy_ptr == enemy_def_ptr[3])) {
+      E->vram_tiles_index = enemy_gfxdata_tiles_index[v10];
+      E->palette_index = 2 * swap16(enemy_gfxdata_vram_ptr[v10]);
+    } else {
+      E->vram_tiles_index = 0;
+      E->palette_index = 0;
+    }
+    EnemyDef_A2 *ED = get_EnemyDef_A2(EP->enemy_ptr);
+    E->x_width = ED->x_radius;
+    E->y_height = ED->y_radius;
+    E->health = ED->health;
+    E->layer = ED->layer;
+    *(uint16 *)&E->bank = *(uint16 *)&ED->bank;
+    E->enemy_ptr = EP->enemy_ptr;
+    E->x_pos = EP->x_pos;
+    E->y_pos = EP->y_pos;
+    E->current_instruction = EP->init_param;
+    E->properties = EP->properties;
+    E->extra_properties = EP->extra_properties;
+    E->parameter_1 = EP->parameter1;
+    E->parameter_2 = EP->parameter2;
+    E->frame_counter = 0;
+    E->timer = 0;
+    E->ai_var_A = 0;
+    E->ai_var_B = 0;
+    E->ai_var_C = 0;
+    E->ai_var_D = 0;
+    E->ai_var_E = 0;
+    E->ai_preinstr = 0;
+    E->instruction_timer = 1;
+    E->frame_counter = 0;
+    RecordEnemySpawnData(new_enemy_index);
+    cur_enemy_index = new_enemy_index;
+    if (sign16(ED->ai_init))
+      CallEnemyAi(ED->bank << 16 | ED->ai_init);
+    if ((E->properties & 0x2000) != 0)
+      E->spritemap_pointer = addr_kSpritemap_Nothing_A0;
+    if (!varE26 || !--varE26) {
+      cur_enemy_index = cur_enemy_index_backup;
+      return new_enemy_index;
+    }
+    new_enemy_index += 64;
+    varE20 += 16;
+  }
 }
 
 void DrawOneEnemy(void) {  // 0xA09423
-  enemy_drawing_queue_index = 2 * gEnemyData(cur_enemy_index)->layer;
-  *(uint16 *)RomPtr_RAM(
-    enemy_drawing_queue_sizes[enemy_drawing_queue_index >> 1]
-    + kEnemyLayerToQueuePtr[enemy_drawing_queue_index >> 1]) = cur_enemy_index;
-  int v0 = enemy_drawing_queue_index >> 1;
-  ++enemy_drawing_queue_sizes[v0];
-  ++enemy_drawing_queue_sizes[v0];
+  uint16 varE34 = 2 * gEnemyData(cur_enemy_index)->layer;
+  *(uint16 *)RomPtr_RAM(enemy_drawing_queue_sizes[varE34 >> 1] + kEnemyLayerToQueuePtr[varE34 >> 1]) = cur_enemy_index;
+  enemy_drawing_queue_sizes[varE34 >> 1] += 2;
 }
 
 void WriteEnemyOams(void) {  // 0xA0944A
-  EnemySpawnData *v1;
   VoidP palette_index;
-  ExtendedSpriteMap *ExtendedSpriteMap;
-
-  uint8 db = gEnemyData(cur_enemy_index)->bank;
-  EnemyData *v0 = gEnemyData(cur_enemy_index);
-  v1 = gEnemySpawnData(cur_enemy_index);
-  draw_oam_x_offset = v1->xpos2 + v0->x_pos - layer1_x_pos;
-  R20_ = draw_oam_x_offset;
-  enemy_population_ptr = v1->ypos2 + v0->y_pos - layer1_y_pos;
-  R18_ = enemy_population_ptr;
-  if (v0->shake_timer) {
-    if ((v0->frame_counter & 2) != 0) {
-      --R20_;
-      --draw_oam_x_offset;
-    } else {
-      ++R20_;
-      ++draw_oam_x_offset;
-    }
-    --v0->shake_timer;
+  
+  EnemyData *E = gEnemyData(cur_enemy_index);
+  EnemySpawnData *ES = gEnemySpawnData(cur_enemy_index);
+  uint16 x2 = ES->xpos2 + E->x_pos - layer1_x_pos;
+  uint16 y2 = ES->ypos2 + E->y_pos - layer1_y_pos;
+  if (E->shake_timer) {
+    x2 += ((E->frame_counter & 2) == 0) ? 1 : -1;
+    E->shake_timer--;
   }
-  if (v0->flash_timer && (enemy_damage_routine_exec_count & 2) != 0) {
+  uint16 x = x2, y = y2;
+  if (E->flash_timer && (random_enemy_counter & 2) != 0) {
     palette_index = 0;
   } else {
-    uint16 frozen_timer = v0->frozen_timer;
-    if (frozen_timer && (frozen_timer >= 0x5Au || (frozen_timer & 2) != 0))
+    if (E->frozen_timer && (E->frozen_timer >= 0x5A || (E->frozen_timer & 2) != 0))
       palette_index = 3072;
     else
-      palette_index = v0->palette_index;
+      palette_index = E->palette_index;
   }
-  R3_.addr = palette_index;
-  R0_.addr = v0->vram_tiles_index;
-  if ((v0->extra_properties & 4) != 0) {
-    while ((int16)(v0->spritemap_pointer + 0x8000) < 0)
-      ;
-    uint16 spritemap_pointer = v0->spritemap_pointer;
-    remaining_enemy_spritemap_entries = *RomPtrWithBank(db, spritemap_pointer);
-    uint16 v5 = spritemap_pointer + 2;
+  uint16 r3 = palette_index;
+  uint16 r0 = E->vram_tiles_index;
+  if ((E->extra_properties & 4) != 0) {
+    if ((int16)(E->spritemap_pointer + 0x8000) < 0)
+      Unreachable();
+    int n = *RomPtrWithBank(E->bank, E->spritemap_pointer);
+    uint16 v5 = E->spritemap_pointer + 2;
     do {
-      ExtendedSpriteMap = get_ExtendedSpriteMap(db, v5);
-      R22_ = ExtendedSpriteMap->spritemap;
-      if (*(uint16 *)RomPtrWithBank(db, R22_) == 0xFFFE) {
-        R20_ = draw_oam_x_offset + ExtendedSpriteMap->xpos;
-        R18_ = enemy_population_ptr + ExtendedSpriteMap->ypos;
-        if ((gEnemyData(cur_enemy_index)->extra_properties & 0x8000u) != 0)
-          ProcessExtendedTilemap(db);
+      ExtendedSpriteMap *ext = get_ExtendedSpriteMap(E->bank, v5);
+      if (*(uint16 *)RomPtrWithBank(E->bank, ext->spritemap) == 0xFFFE) {
+        x = x2 + ext->xpos;
+        y = y2 + ext->ypos;
+        if ((E->extra_properties & 0x8000) != 0)
+          ProcessExtendedTilemap(E->bank, ext->spritemap);
       } else {
-        R20_ = draw_oam_x_offset + ExtendedSpriteMap->xpos;
-        if (((R20_ + 128) & 0xFE00) == 0) {
-          uint16 ypos = ExtendedSpriteMap->ypos;
-          R18_ = enemy_population_ptr + ypos;
-          if (((R18_ + 128) & 0xFE00) == 0) {
-            if (HIBYTE(R18_))
-              DrawSpritemapWithBaseTileOffscreen(db, R22_, R20_, R18_);
-            else
-              DrawSpritemapWithBaseTile2(db, R22_);
-          }
+        x = x2 + ext->xpos;
+        y = y2 + ext->ypos;
+        if (((x + 128) & 0xFE00) == 0 && ((y + 128) & 0xFE00) == 0) {
+          if (HIBYTE(y))
+            DrawSpritemapWithBaseTileOffscreen(E->bank, ext->spritemap, x, y, r3, r0);
+          else
+            DrawSpritemapWithBaseTile2(E->bank, ext->spritemap, x, y, r3, r0);
         }
       }
       v5 += 8;
-      --remaining_enemy_spritemap_entries;
-    } while (remaining_enemy_spritemap_entries);
+    } while (--n);
   } else {
-    g_word_7EF37E = v0->enemy_ptr;
-    g_word_7EF37A = v0->current_instruction;
-    g_word_7EF37C = cur_enemy_index;
     enemy_processing_stage = 1;
-    DrawSpritemapWithBaseTile(db, v0->spritemap_pointer);
+    DrawSpritemapWithBaseTile(E->bank, E->spritemap_pointer, x, y, r3, r0);
   }
 }
 
@@ -2075,8 +1976,8 @@ void NormalEnemyFrozenAI(void) {  // 0xA0957E
   }
 }
 
-void ProcessExtendedTilemap(uint8 db) {  // 0xA096CA
-  const uint8 *p = RomPtrWithBank(db, R22_ + 2);
+void ProcessExtendedTilemap(uint8 db, uint16 r22) {  // 0xA096CA
+  const uint8 *p = RomPtrWithBank(db, r22 + 2);
   while (1) {
     uint16 v2 = *(uint16 *)p;
     if (v2 == 0xFFFF)
@@ -2087,7 +1988,6 @@ void ProcessExtendedTilemap(uint8 db) {  // 0xA096CA
     p += n * 2;
   }
   ++nmi_flag_bg2_enemy_vram_transfer;
-  remaining_enemy_hitbox_entries = 0;
 }
 
 void QueueEnemyBG2TilemapTransfers(void) {  // 0xA09726
@@ -2097,7 +1997,7 @@ void QueueEnemyBG2TilemapTransfers(void) {  // 0xA09726
     v0 = gVramWriteEntry(vram_write_queue_tail);
     v0->size = enemy_bg2_tilemap_size;
     v0->src.addr = ADDR16_OF_RAM(*tilemap_stuff);
-    *(uint16 *)&v0->src.bank = 126;
+    v0->src.bank = 126;
     v0->vram_dst = addr_unk_604800;
     vram_write_queue_tail += 7;
   }
@@ -2121,97 +2021,57 @@ void func_nullsub_4(void) {
 }
 
 void SamusProjectileInteractionHandler(void) {  // 0xA09785
-  int16 v2;
-
   enemy_processing_stage = 10;
-  if (!flag_disable_projectile_interaction) {
-    num_projs_to_check = 5;
-    if (bomb_counter) {
-      num_projs_to_check = 10;
-    } else if (!projectile_counter) {
-      return;
-    }
-    if (!projectile_invincibility_timer && !samus_contact_damage_index) {
-      collision_detection_index = 0;
-      do {
-        int v1 = collision_detection_index;
-        if (projectile_damage[v1]) {
-          v2 = projectile_type[v1];
-          if (v2 >= 0) {
-            if (sign16((v2 & 0xF00) - 1792)) {
-              int v3 = collision_detection_index;
-              if ((projectile_dir[v3] & 0x10) == 0) {
-                uint16 v4 = abs16(projectile_x_pos[v3] - samus_x_pos);
-                bool v5 = v4 < projectile_x_radius[v3];
-                uint16 v6 = v4 - projectile_x_radius[v3];
-                if (v5 || v6 < samus_x_radius) {
-                  uint16 v7 = abs16(projectile_y_pos[v3] - samus_y_pos);
-                  v5 = v7 < projectile_y_radius[v3];
-                  uint16 v8 = v7 - projectile_y_radius[v3];
-                  if (v5 || v8 < samus_y_radius) {
-                    if ((projectile_type[v3] & 0xFF00) != 768 && (projectile_type[v3] & 0xFF00) != 1280) {
-                      projectile_dir[v3] |= 0x10u;
-                      uint16 v10 = SuitDamageDivision(projectile_damage[v3]);
-                      Samus_DealDamage(v10);
-                      samus_invincibility_timer = 96;
-                      samus_knockback_timer = 5;
-                      assert(0);
-                      uint16 v0 = 0;
-                      knockback_x_dir = (int16)(samus_x_pos - enemy_projectile_x_pos[v0 >> 1]) >= 0;
-                      return;
-                    }
-                    if (projectile_variables[v3] == 8) {
-                      uint16 v9;
-                      if (samus_x_pos == projectile_x_pos[v3]) {
-                        v9 = 2;
-                      } else if ((int16)(samus_x_pos - projectile_x_pos[v3]) < 0) {
-                        v9 = 1;
-                      } else {
-                        v9 = 3;
-                      }
-                      bomb_jump_dir = v9;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-        ++collision_detection_index;
-      } while (collision_detection_index != num_projs_to_check);
+  if (flag_disable_projectile_interaction)
+    return;
+  int num_colls_to_check = 5;
+  if (bomb_counter) {
+    num_colls_to_check = 10;
+  } else if (!projectile_counter) {
+    return;
+  }
+  if (projectile_invincibility_timer || samus_contact_damage_index)
+    return;
+  for (int pidx = 0; pidx != num_colls_to_check;pidx++) {
+    collision_detection_index = pidx;
+    if (!projectile_damage[pidx] || sign16(projectile_type[pidx]) || !sign16((projectile_type[pidx] & 0xF00) - 1792))
+      continue;
+    if ((projectile_dir[pidx] & 0x10) != 0)
+      continue;
+    if (abs16(projectile_x_pos[pidx] - samus_x_pos) - projectile_x_radius[pidx] < samus_x_radius &&
+        abs16(projectile_y_pos[pidx] - samus_y_pos) - projectile_y_radius[pidx] < samus_y_radius) {
+      if ((projectile_type[pidx] & 0xFF00) != 768 && (projectile_type[pidx] & 0xFF00) != 1280) {
+        projectile_dir[pidx] |= 0x10;
+        Samus_DealDamage(SuitDamageDivision(projectile_damage[pidx]));
+        samus_invincibility_timer = 96;
+        samus_knockback_timer = 5;
+        assert(0);
+        uint16 v0 = 0;
+        knockback_x_dir = (int16)(samus_x_pos - enemy_projectile_x_pos[v0 >> 1]) >= 0;
+        return;
+      }
+      if (projectile_variables[pidx] == 8) {
+        bomb_jump_dir = (samus_x_pos == projectile_x_pos[pidx]) ? 2 :
+            (int16)(samus_x_pos - projectile_x_pos[pidx]) < 0 ? 1 : 3;
+      }
     }
   }
 }
 
 void EprojSamusCollDetect(void) {  // 0xA09894
   enemy_processing_stage = 11;
-  if (!samus_invincibility_timer && !samus_contact_damage_index) {
-    collision_detection_index = 34;
-    do {
-      if (*(uint16 *)((uint8 *)enemy_projectile_id + collision_detection_index)) {
-        int v0 = collision_detection_index >> 1;
-        if ((enemy_projectile_properties[v0] & 0x2000) == 0) {
-          if (LOBYTE(enemy_projectile_radius[v0])) {
-            enemy_population_ptr = LOBYTE(enemy_projectile_radius[v0]);
-            if (HIBYTE(enemy_projectile_radius[v0])) {
-              draw_oam_x_offset = HIBYTE(enemy_projectile_radius[v0]);
-              uint16 v1 = abs16(samus_x_pos - enemy_projectile_x_pos[v0]);
-              bool v2 = v1 < samus_x_radius;
-              uint16 v3 = v1 - samus_x_radius;
-              if (v2 || v3 < enemy_population_ptr) {
-                uint16 v4 = abs16(samus_y_pos - enemy_projectile_y_pos[v0]);
-                v2 = v4 < samus_y_radius;
-                uint16 v5 = v4 - samus_y_radius;
-                if (v2 || v5 < draw_oam_x_offset)
-                  HandleEprojCollWithSamus(collision_detection_index);
-              }
-            }
-          }
-        }
+  if (samus_invincibility_timer || samus_contact_damage_index)
+    return;
+  for(int i = 17; i >= 0; i--) {
+    if (enemy_projectile_id[i] && (enemy_projectile_properties[i] & 0x2000) == 0 && enemy_projectile_radius[i]) {
+      uint16 varE20 = LOBYTE(enemy_projectile_radius[i]);
+      uint16 varE22 = HIBYTE(enemy_projectile_radius[i]);
+      if (abs16(samus_x_pos - enemy_projectile_x_pos[i]) - samus_x_radius < varE20 &&
+          abs16(samus_y_pos - enemy_projectile_y_pos[i]) - samus_y_radius < varE22) {
+        collision_detection_index = i * 2;
+        HandleEprojCollWithSamus(i * 2);
       }
-      --collision_detection_index;
-      --collision_detection_index;
-    } while ((collision_detection_index & 0x8000u) == 0);
+    }
   }
 }
 
@@ -2227,69 +2087,46 @@ void HandleEprojCollWithSamus(uint16 k) {  // 0xA09923
   int v3 = k >> 1;
   if ((enemy_projectile_properties[v3] & 0x4000) == 0)
     *(uint16 *)((uint8 *)enemy_projectile_id + k) = 0;
-  uint16 v4 = SuitDamageDivision(enemy_projectile_properties[v3] & 0xFFF);
-  Samus_DealDamage(v4);
+  Samus_DealDamage(SuitDamageDivision(enemy_projectile_properties[v3] & 0xFFF));
   knockback_x_dir = (int16)(samus_x_pos - enemy_projectile_x_pos[v3]) >= 0;
 }
 
 void EprojProjCollDet(void) {  // 0xA0996C
-  int16 v5;
-
   enemy_processing_stage = 12;
-  if (projectile_counter) {
-    collision_detection_index = 34;
-    do {
-      uint16 v0 = collision_detection_index;
-      if (*(uint16 *)((uint8 *)enemy_projectile_id + collision_detection_index)
-          && (enemy_projectile_properties[collision_detection_index >> 1] & 0x8000u) != 0) {
-        uint16 v1 = 0;
-        do {
-          int v2 = v0 >> 1;
-          if (enemy_projectile_flags[v2] == 2)
-            break;
-          int v3 = v1 >> 1;
-          uint16 v4 = projectile_type[v3];
-          if (v4) {
-            v5 = v4 & 0xF00;
-            if (v5 != 768 && v5 != 1280) {
-              if (sign16(v5 - 1792)) {
-                R18_ = projectile_x_pos[v3] & 0xFFE0;
-                if ((enemy_projectile_x_pos[v2] & 0xFFE0) == R18_) {
-                  R18_ = projectile_y_pos[v3] & 0xFFE0;
-                  if ((enemy_projectile_y_pos[v2] & 0xFFE0) == R18_)
-                    HandleEprojCollWithProj(v0, v1);
-                }
-              }
-            }
-          }
-          v1 += 2;
-        } while ((int16)(v1 - 10) < 0);
+  if (!projectile_counter)
+    return;
+  for(int i = 17; i >= 0; i--) {
+    if (!enemy_projectile_id[i] || (enemy_projectile_properties[i] & 0x8000) == 0)
+      continue;
+    for(int j = 0; j < 5; j++) {
+      if (enemy_projectile_flags[i] == 2)
+        break;
+      uint16 v4 = projectile_type[j];
+      if (v4 && (v4 & 0xF00) != 768 && (v4 & 0xF00) != 1280 && sign16((v4 & 0xF00) - 1792)) {
+        if ((enemy_projectile_x_pos[i] & 0xFFE0) == (projectile_x_pos[j] & 0xFFE0) && 
+            (enemy_projectile_y_pos[i] & 0xFFE0) == (projectile_y_pos[j] & 0xFFE0)) {
+          HandleEprojCollWithProj(i * 2, j * 2);
+        }
       }
-      --collision_detection_index;
-      --collision_detection_index;
-    } while ((collision_detection_index & 0x8000u) == 0);
+    }
   }
 }
 
 void HandleEprojCollWithProj(uint16 k, uint16 j) {  // 0xA099F9
-  int v2 = j >> 1;
-  if ((projectile_type[v2] & 8) == 0)
-    projectile_dir[v2] |= 0x10u;
+  int i = j >> 1;
+  if ((projectile_type[i] & 8) == 0)
+    projectile_dir[i] |= 0x10;
   if (enemy_projectile_flags[k >> 1] == 1) {
     int v4 = k >> 1;
-    R18_ = projectile_x_pos[v4];
-    R20_ = projectile_y_pos[v4];
-    R22_ = 6;
-    R24_ = 0;
-    CreateSpriteAtPos();
-    QueueSfx1_Max6(0x3Du);
+    CreateSpriteAtPos(projectile_x_pos[v4], projectile_y_pos[v4], 6, 0);
+    QueueSfx1_Max6(0x3D);
   } else {
-    int v3 = k >> 1;
-    enemy_projectile_G[v3] = projectile_type[v2];
-    enemy_projectile_instr_list_ptr[v3] = get_EnemyProjectileDef(*(uint16 *)((uint8 *)enemy_projectile_id + k))->shot_instruction_list;
-    enemy_projectile_instr_timers[v3] = 1;
-    enemy_projectile_pre_instr[v3] = FUNC16(EprojPreInstr_nullsub_83);
-    enemy_projectile_properties[v3] &= 0xFFFu;
+    int j = k >> 1;
+    enemy_projectile_G[j] = projectile_type[i];
+    enemy_projectile_instr_list_ptr[j] = get_EnemyProjectileDef(enemy_projectile_id[j])->shot_instruction_list;
+    enemy_projectile_instr_timers[j] = 1;
+    enemy_projectile_pre_instr[j] = FUNC16(EprojPreInstr_nullsub_83);
+    enemy_projectile_properties[j] &= 0xFFF;
   }
 }
 
@@ -2351,157 +2188,84 @@ void CallHitboxShot(uint32 ea, uint16 j) {  // 0xA09D17
 }
 
 void EnemySamusCollHandler_Multibox(void) {  // 0xA09A5A
-  VoidP touch_ai;
-  ExtendedSpriteMap *ExtendedSpriteMap;
-  VoidP hitbox_ptr_;
-  Hitbox *Hitbox;
-
-  uint16 *v0 = (uint16 *)gEnemyData(cur_enemy_index);
-  *(uint16 *)&enemy_ai_pointer.bank = v0[23];
+  EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 6;
-  if (v0[11]) {
-    touch_ai = get_EnemyDef_A2(*v0)->touch_ai;
-    if (touch_ai != FUNC16(nullsub_170) && touch_ai != FUNC16(nullsub_169)) {
-      if (samus_contact_damage_index) {
-        samus_invincibility_timer = 0;
-      } else if (samus_invincibility_timer) {
+  if (!E->spritemap_pointer)
+    return;
+
+  uint16 touch_ai = get_EnemyDef_A2(E->enemy_ptr)->touch_ai;
+  if (touch_ai == FUNC16(nullsub_170) || touch_ai == FUNC16(nullsub_169))
+    return;
+
+  if (samus_contact_damage_index) {
+    samus_invincibility_timer = 0;
+  } else if (samus_invincibility_timer) {
+    return;
+  }
+  if (!sign16(E->spritemap_pointer))
+    return;
+
+  uint16 samus_right_border_coll = samus_x_radius + samus_x_pos;
+  uint16 samus_left_border_coll = samus_x_pos - samus_x_radius;
+  uint16 samus_bottom_border_coll = samus_y_radius + samus_y_pos;
+  uint16 samus_top_border_coll = samus_y_pos - samus_y_radius;
+  int n = *RomPtrWithBank(E->bank, E->spritemap_pointer);
+  uint16 enemy_spritemap_entry_pointer = E->spritemap_pointer + 2;
+  do {
+    ExtendedSpriteMap *ES = get_ExtendedSpriteMap(E->bank, enemy_spritemap_entry_pointer);
+    uint16 coll_x_pos = ES->xpos + E->x_pos;
+    uint16 coll_y_pos = ES->ypos + E->y_pos;
+    const uint8 *p = RomPtrWithBank(E->bank, ES->hitbox_ptr_);
+    int m = GET_WORD(p);
+    for(Hitbox *hb = (Hitbox *)(p + 2); m; m--, hb++) {
+      if ((int16)(hb->left + coll_x_pos - samus_right_border_coll) < 0
+          && (int16)(hb->right + coll_x_pos - samus_left_border_coll) >= 0
+          && (int16)(hb->top + coll_y_pos - samus_bottom_border_coll) < 0
+          && (int16)(hb->bottom + coll_y_pos - samus_top_border_coll) >= 0) {
+        CallHitboxTouch(E->bank << 16 | hb->func_ptr);
         return;
       }
-      EnemyData *v2 = gEnemyData(cur_enemy_index);
-      if (!sign16(v2->spritemap_pointer + 0x8000)) {
-        samus_right_border_coll = samus_x_radius + samus_x_pos;
-        samus_left_border_coll = samus_x_pos - samus_x_radius;
-        samus_bottom_border_coll = samus_y_radius + samus_y_pos;
-        samus_top_border_coll = samus_y_pos - samus_y_radius;
-        uint16 spritemap_pointer = v2->spritemap_pointer;
-        remaining_enemy_spritemap_entries = *RomPtrWithBank(enemy_ai_pointer.bank, spritemap_pointer);
-        enemy_spritemap_entry_pointer = spritemap_pointer + 2;
-        uint16 *v7;
-        while (1) {
-          EnemyData *v4;
-          v4 = gEnemyData(cur_enemy_index);
-          ExtendedSpriteMap = get_ExtendedSpriteMap(enemy_ai_pointer.bank, enemy_spritemap_entry_pointer);
-          enemy_spritemap_entry_coll_x_pos = ExtendedSpriteMap->xpos + v4->x_pos;
-          num_projs_to_check = ExtendedSpriteMap->ypos + v4->y_pos;
-          hitbox_ptr_ = ExtendedSpriteMap->hitbox_ptr_;
-          v7 = (uint16 *)RomPtrWithBank(enemy_ai_pointer.bank, hitbox_ptr_);
-          if (*v7)
-            break;
-LABEL_18:
-          enemy_spritemap_entry_pointer += 8;
-          if ((int16)--remaining_enemy_spritemap_entries <= 0)
-            return;
-        }
-        remaining_enemy_hitbox_entries = *v7;
-        hitbox_ptr = hitbox_ptr_ + 2;
-        while (1) {
-          Hitbox = get_Hitbox(enemy_ai_pointer.bank, hitbox_ptr);
-          if ((int16)(Hitbox->left + enemy_spritemap_entry_coll_x_pos - samus_right_border_coll) < 0
-              && (int16)(Hitbox->right + enemy_spritemap_entry_coll_x_pos - samus_left_border_coll) >= 0
-              && (int16)(Hitbox->top + num_projs_to_check - samus_bottom_border_coll) < 0
-              && (int16)(Hitbox->bottom + num_projs_to_check - samus_top_border_coll) >= 0) {
-            break;
-          }
-          hitbox_ptr += 12;
-          if ((int16)--remaining_enemy_hitbox_entries <= 0)
-            goto LABEL_18;
-        }
-        enemy_ai_pointer.addr = get_Hitbox(enemy_ai_pointer.bank, hitbox_ptr)->func_ptr;
-        CallHitboxTouch(Load24(&enemy_ai_pointer));
-      }
     }
-  }
+    enemy_spritemap_entry_pointer += 8;
+  } while (--n);
 }
 
 void EnemyProjectileCollHandler_Multibox(void) {  // 0xA09B7F
-  VoidP shot_ai;
-  int16 v5;
-  Hitbox *v11;
-  Hitbox *v12;
-  Hitbox *Hitbox;
-
-  *(uint16 *)&enemy_ai_pointer.bank = *(uint16 *)&gEnemyData(cur_enemy_index)->bank;
+  EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 3;
-  if (projectile_counter) {
-    num_projectiles_to_check_enemy_coll = projectile_counter;
-    EnemyData *v0 = gEnemyData(cur_enemy_index);
-    uint16 spritemap_pointer = v0->spritemap_pointer;
-    if (spritemap_pointer) {
-      if (spritemap_pointer != addr_kExtendedSpritemap_Nothing_A0) {
-        shot_ai = get_EnemyDef_A2(v0->enemy_ptr)->shot_ai;
-        if (shot_ai != FUNC16(nullsub_170) && shot_ai != FUNC16(nullsub_169)) {
-          EnemyData *v3 = gEnemyData(cur_enemy_index);
-          if ((v3->properties & 0x400) == 0
-              && !v3->invincibility_timer
-              && v3->enemy_ptr != addr_kEnemyDef_DAFF) {
-            collision_detection_index = 0;
-            while (1) {
-              uint16 v4;
-              v4 = projectile_type[collision_detection_index];
-              if (v4) {
-                v5 = v4 & 0xF00;
-                if (v5 != 768 && v5 != 1280 && sign16(v5 - 1792))
-                  break;
-              }
-LABEL_37:
-              if (!sign16(++collision_detection_index - 5))
-                return;
-            }
-            EnemyData *v6 = gEnemyData(cur_enemy_index);
-            while ((int16)(v6->spritemap_pointer + 0x8000) < 0)
-              ;
-            uint16 v7 = v6->spritemap_pointer;
-            uint16 bottom;
-            remaining_enemy_spritemap_entries = *RomPtrWithBank(enemy_ai_pointer.bank, v7);
-            enemy_spritemap_entry_pointer = v7 + 2;
-            while (1) {
-              EnemyData *v8;
-              v8 = gEnemyData(cur_enemy_index);
-              Hitbox = get_Hitbox(enemy_ai_pointer.bank, enemy_spritemap_entry_pointer);
-              enemy_spritemap_entry_coll_x_pos = Hitbox->left + v8->x_pos;
-              num_projs_to_check = Hitbox->top + v8->y_pos;
-              bottom = Hitbox->bottom;
-              v11 = get_Hitbox(enemy_ai_pointer.bank, bottom);
-              if (v11->left)
-                break;
-LABEL_34:
-              enemy_spritemap_entry_pointer += 8;
-              bool v15 = (--remaining_enemy_spritemap_entries & 0x8000u) != 0;
-              if (!remaining_enemy_spritemap_entries || v15)
-                goto LABEL_37;
-            }
-            remaining_enemy_hitbox_entries = v11->left;
-            hitbox_ptr = bottom + 2;
-            int v13;
-            while (1) {
-              v12 = get_Hitbox(enemy_ai_pointer.bank, hitbox_ptr);
-              enemy_left_border_collision = enemy_spritemap_entry_coll_x_pos + v12->left;
-              v13 = collision_detection_index;
-              if ((int16)(projectile_x_radius[v13] + projectile_x_pos[v13] - enemy_left_border_collision) >= 0) {
-                enemy_right_border_collision = enemy_spritemap_entry_coll_x_pos + v12->right;
-                if ((int16)(projectile_x_pos[v13] - projectile_x_radius[v13] - enemy_right_border_collision) < 0) {
-                  enemy_bottom_border_collision = num_projs_to_check + v12->top;
-                  if ((int16)(projectile_y_radius[v13] + projectile_y_pos[v13] - enemy_bottom_border_collision) >= 0) {
-                    enemy_top_border_collision = num_projs_to_check + v12->bottom;
-                    if ((int16)(projectile_y_pos[v13] - projectile_y_radius[v13] - enemy_top_border_collision) < 0)
-                      break;
-                  }
-                }
-              }
-              hitbox_ptr += 12;
-              bool v14 = (--remaining_enemy_hitbox_entries & 0x8000u) != 0;
-              if (!remaining_enemy_hitbox_entries || v14)
-                goto LABEL_34;
-            }
-            if ((projectile_type[v13] & 0xF00) == 512) {
-              earthquake_timer = 30;
-              earthquake_type = 18;
-            }
-            if ((gEnemyData(cur_enemy_index)->properties & 0x1000) != 0 || (projectile_type[v13] & 8) == 0)
-              projectile_dir[v13] |= 0x10u;
-            enemy_ai_pointer.addr = get_Hitbox(enemy_ai_pointer.bank, hitbox_ptr)->func_ptrA;
-            CallHitboxShot(Load24(&enemy_ai_pointer), collision_detection_index * 2);
+  if (!projectile_counter || !E->spritemap_pointer || E->spritemap_pointer == addr_kExtendedSpritemap_Nothing_A0)
+    return;
+  uint16 shot_ai = get_EnemyDef_A2(E->enemy_ptr)->shot_ai;
+  if (shot_ai == FUNC16(nullsub_170) || shot_ai == FUNC16(nullsub_169))
+    return;
+  if ((E->properties & 0x400) != 0 || E->invincibility_timer || E->enemy_ptr == addr_kEnemyDef_DAFF)
+    return;
+  for(int pidx = 0; pidx < 5; pidx++) {
+    uint16 v4 = projectile_type[pidx];
+    if (!(v4 && (v4 & 0xF00) != 768 && (v4 & 0xF00) != 1280 && sign16((v4 & 0xF00) - 1792)))
+      continue;
+    if (!sign16(E->spritemap_pointer))
+      Unreachable();
+    const uint8 *esep = RomPtrWithBank(E->bank, E->spritemap_pointer);
+    int n = esep[0];
+    for(ExtendedSpriteMap *ES = (ExtendedSpriteMap *)(esep + 2); n; n--, ES++) {
+      uint16 coll_x_pos = ES->xpos + E->x_pos, coll_y_pos = ES->ypos + E->y_pos;
+      const uint8 *p = RomPtrWithBank(E->bank, ES->hitbox_ptr_);
+      int m = GET_WORD(p);
+      for (Hitbox *hb = (Hitbox *)(p + 2); m; m--, hb++) {
+        if ((int16)(projectile_x_radius[pidx] + projectile_x_pos[pidx] - (coll_x_pos + hb->left)) >= 0 && 
+            (int16)(projectile_x_pos[pidx] - projectile_x_radius[pidx] - (coll_x_pos + hb->right)) < 0 &&
+            (int16)(projectile_y_radius[pidx] + projectile_y_pos[pidx] - (coll_y_pos + hb->top)) >= 0 &&
+            (int16)(projectile_y_pos[pidx] - projectile_y_radius[pidx] - (coll_y_pos + hb->bottom)) < 0) {
+          if ((projectile_type[pidx] & 0xF00) == 512) {
+            earthquake_timer = 30;
+            earthquake_type = 18;
           }
+          if ((E->properties & 0x1000) != 0 || (projectile_type[pidx] & 8) == 0)
+            projectile_dir[pidx] |= 0x10;
+          collision_detection_index = pidx;
+          CallHitboxShot(E->bank << 16 | hb->func_ptrA, pidx * 2);
+          return;
         }
       }
     }
@@ -2509,119 +2273,71 @@ LABEL_34:
 }
 
 void EnemyBombCollHandler_Multibox(void) {  // 0xA09D23
-  VoidP shot_ai;
-  Hitbox *v11;
-  ExtendedSpriteMap *ExtendedSpriteMap;
-  Hitbox *Hitbox;
-
-  *(uint16 *)&enemy_ai_pointer.bank = *(uint16 *)&gEnemyData(cur_enemy_index)->bank;
+  EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 4;
-  if (gEnemyData(cur_enemy_index)->spritemap_pointer) {
-    EnemyData *v0 = gEnemyData(cur_enemy_index);
-    if ((v0->properties & 0x400) == 0 && !v0->invincibility_timer) {
-      uint16 enemy_ptr = gEnemyData(cur_enemy_index)->enemy_ptr;
-      shot_ai = get_EnemyDef_A2(enemy_ptr)->shot_ai;
-      if (shot_ai != FUNC16(nullsub_170)
-          && shot_ai != FUNC16(nullsub_169)
-          && bomb_counter) {
-        collision_detection_index = 5;
-        while (1) {
-          int v3;
-          v3 = collision_detection_index;
-          if (projectile_x_pos[v3]) {
-            uint16 v4 = projectile_type[v3];
-            if (v4) {
-              if ((v4 & 0xF00) == 1280 && !projectile_variables[v3])
-                break;
-            }
-          }
-LABEL_26:
-          if (++collision_detection_index == 10)
-            return;
+  if (!E->spritemap_pointer || (E->properties & 0x400) != 0 || E->invincibility_timer)
+    return;
+  uint16 shot_ai = get_EnemyDef_A2(E->enemy_ptr)->shot_ai;
+  if (shot_ai == FUNC16(nullsub_170) || shot_ai == FUNC16(nullsub_169) || !bomb_counter)
+    return;
+  for (int pidx = 5; pidx != 10; pidx++) {
+    if (!projectile_x_pos[pidx])
+      continue;
+    uint16 v4 = projectile_type[pidx];
+    if (!(v4 && (v4 & 0xF00) == 1280 && !projectile_variables[pidx]))
+      continue;
+    if (!sign16(E->spritemap_pointer))
+      Unreachable();
+    const uint8 *esep = RomPtrWithBank(E->bank, E->spritemap_pointer);
+    int n = GET_WORD(esep);
+    for (ExtendedSpriteMap *ES = (ExtendedSpriteMap *)(esep + 2); n; n--, ES++) {
+      uint16 coll_x_pos = ES->xpos + E->x_pos, coll_y_pos = ES->ypos + E->y_pos;
+      const uint8 *p = RomPtrWithBank(E->bank, ES->hitbox_ptr_);
+      int m = GET_WORD(p);
+      for (Hitbox *hb = (Hitbox *)(p + 2); m; m--, hb++) {
+        if ((int16)(projectile_x_radius[pidx] + projectile_x_pos[pidx] - (coll_x_pos + hb->left)) >= 0 &&
+            (int16)(projectile_x_pos[pidx] - projectile_x_radius[pidx] - (coll_x_pos + hb->right)) < 0 &&
+            (int16)(projectile_y_radius[pidx] + projectile_y_pos[pidx] - (coll_y_pos + hb->top)) >= 0 &&
+            (int16)(projectile_y_pos[pidx] - projectile_y_radius[pidx] - (coll_y_pos + hb->bottom)) < 0) {
+          projectile_dir[pidx] |= 0x10;
+          collision_detection_index = pidx;
+          CallHitboxShot(E->bank << 16 | hb->func_ptrA, pidx * 2);
+          return;
         }
-        EnemyData *v5 = gEnemyData(cur_enemy_index);
-        while ((int16)(v5->spritemap_pointer + 0x8000) < 0)
-          ;
-        uint16 spritemap_pointer = v5->spritemap_pointer;
-        remaining_enemy_spritemap_entries = *RomPtrWithBank(enemy_ai_pointer.bank, spritemap_pointer);
-        enemy_spritemap_entry_pointer = spritemap_pointer + 2;
-        uint16 hitbox_ptr_;
-        while (1) {
-          EnemyData *v7;
-          v7 = gEnemyData(cur_enemy_index);
-          ExtendedSpriteMap = get_ExtendedSpriteMap(enemy_ai_pointer.bank, enemy_spritemap_entry_pointer);
-          enemy_spritemap_entry_coll_x_pos = ExtendedSpriteMap->xpos + v7->x_pos;
-          num_projs_to_check = ExtendedSpriteMap->ypos + v7->y_pos;
-          hitbox_ptr_ = ExtendedSpriteMap->hitbox_ptr_;
-          Hitbox = get_Hitbox(enemy_ai_pointer.bank, hitbox_ptr_);
-          if (Hitbox->left)
-            break;
-LABEL_25:
-          enemy_spritemap_entry_pointer += 8;
-          if ((int16)--remaining_enemy_spritemap_entries <= 0)
-            goto LABEL_26;
-        }
-        remaining_enemy_hitbox_entries = Hitbox->left;
-        hitbox_ptr = hitbox_ptr_ + 2;
-        int v12;
-        while (1) {
-          v11 = get_Hitbox(enemy_ai_pointer.bank, hitbox_ptr);
-          enemy_left_border_collision = enemy_spritemap_entry_coll_x_pos + v11->left;
-          v12 = collision_detection_index;
-          if ((int16)(projectile_x_radius[v12] + projectile_x_pos[v12] - enemy_left_border_collision) >= 0) {
-            enemy_right_border_collision = enemy_spritemap_entry_coll_x_pos + v11->right;
-            if ((int16)(projectile_x_pos[v12] - projectile_x_radius[v12] - enemy_right_border_collision) < 0) {
-              enemy_bottom_border_collision = num_projs_to_check + v11->top;
-              if ((int16)(projectile_y_radius[v12] + projectile_y_pos[v12] - enemy_bottom_border_collision) >= 0) {
-                enemy_top_border_collision = num_projs_to_check + v11->bottom;
-                if ((int16)(projectile_y_pos[v12] - projectile_y_radius[v12] - enemy_top_border_collision) < 0)
-                  break;
-              }
-            }
-          }
-          hitbox_ptr += 12;
-          if ((int16)--remaining_enemy_hitbox_entries <= 0)
-            goto LABEL_25;
-        }
-        projectile_dir[v12] |= 0x10u;
-        enemy_ai_pointer.addr = get_Hitbox(enemy_ai_pointer.bank, hitbox_ptr)->func_ptrA;
-        CallHitboxShot(Load24(&enemy_ai_pointer), collision_detection_index * 2);
       }
     }
   }
 }
 
-uint16 GrappleBeam_CollDetect_Enemy(void) {  // 0xA09E9A
+PairU16 GrappleBeam_CollDetect_Enemy(void) {  // 0xA09E9A
   VoidP grapple_ai;
-  EnemyData *ED;
+  EnemyData *E;
 
-  CallSomeSamusCode(0xDu);
+  CallSomeSamusCode(0xD);
   collision_detection_index = 0;
   for (int i = 0; ; i++) {
     cur_enemy_index = interactive_enemy_indexes[i];
-    if (cur_enemy_index == 0xFFFF) {
-      R18_ = 0;
-      return 0;
-    }
-    ED = gEnemyData(cur_enemy_index);
-    if (!ED->invincibility_timer) {
-      uint16 v5 = abs16(ED->x_pos - grapple_beam_end_x_pos);
-      bool v6 = v5 < ED->x_width;
-      uint16 v7 = v5 - ED->x_width;
-      if (v6 || v7 < 8u) {
-        uint16 v8 = abs16(ED->y_pos - grapple_beam_end_y_pos);
-        v6 = v8 < ED->y_height;
-        uint16 v9 = v8 - ED->y_height;
-        if (v6 || v9 < 8u)
+    if (cur_enemy_index == 0xFFFF)
+      return (PairU16) { 0, 0 };
+    E = gEnemyData(cur_enemy_index);
+    if (!E->invincibility_timer) {
+      uint16 v5 = abs16(E->x_pos - grapple_beam_end_x_pos);
+      bool v6 = v5 < E->x_width;
+      uint16 v7 = v5 - E->x_width;
+      if (v6 || v7 < 8) {
+        uint16 v8 = abs16(E->y_pos - grapple_beam_end_y_pos);
+        v6 = v8 < E->y_height;
+        uint16 v9 = v8 - E->y_height;
+        if (v6 || v9 < 8)
           break;
       }
     }
   }
-  ED->ai_handler_bits = 1;
+  E->ai_handler_bits = 1;
   uint16 v0 = 0;
-  uint16 enemy_ptr = ED->enemy_ptr;
-  grapple_ai = get_EnemyDef_A2(ED->enemy_ptr)->grapple_ai;
-  if (grapple_ai + FUNC16(Enemy_GrappleReact_NoInteract_A0)) {
+  uint16 enemy_ptr = E->enemy_ptr;
+  grapple_ai = get_EnemyDef_A2(E->enemy_ptr)->grapple_ai;
+  if (grapple_ai != FUNC16(Enemy_GrappleReact_NoInteract_A0)) {
     v0 = 1;
     if (grapple_ai != FUNC16(Enemy_GrappleReact_SamusLatchesOn_A0)) {
       v0 = 2;
@@ -2641,41 +2357,32 @@ uint16 GrappleBeam_CollDetect_Enemy(void) {  // 0xA09E9A
       }
     }
   }
-  R18_ = enemy_ptr;
-  uint16 result = v0;
   if (v0 == 1 || v0 == 4 || v0 == 5) {
     EnemyData *v11 = gEnemyData(cur_enemy_index);
     grapple_beam_end_x_pos = v11->x_pos;
     grapple_beam_end_y_pos = v11->y_pos;
-    return v0;
   }
-  return result;
+  return (PairU16) { v0, enemy_ptr };
 }
 
 void SwitchEnemyAiToMainAi(void) {  // 0xA09F6D
-  EnemyData *v0 = gEnemyData(cur_enemy_index);
-  v0->ai_handler_bits = 0;
-  v0->invincibility_timer = 0;
-  v0->frozen_timer = 0;
-  v0->shake_timer = 0;
+  EnemyData *E = gEnemyData(cur_enemy_index);
+  E->ai_handler_bits = 0;
+  E->invincibility_timer = 0;
+  E->frozen_timer = 0;
+  E->shake_timer = 0;
 }
 
 void SamusLatchesOnWithGrapple(void) {  // 0xA09F7D
-  EnemyDef_A2 *EnemyDef_A2;
-
-  EnemyData *v0 = gEnemyData(cur_enemy_index);
-  grapple_beam_end_x_pos = v0->x_pos;
-  grapple_beam_end_y_pos = v0->y_pos;
-  if (v0->frozen_timer) {
-    gEnemyData(cur_enemy_index)->ai_handler_bits = 4;
+  EnemyData *E = gEnemyData(cur_enemy_index);
+  grapple_beam_end_x_pos = E->x_pos;
+  grapple_beam_end_y_pos = E->y_pos;
+  if (E->frozen_timer) {
+    E->ai_handler_bits = 4;
   } else {
-    EnemyData *v1 = gEnemyData(cur_enemy_index);
-    EnemyDef_A2 = get_EnemyDef_A2(v1->enemy_ptr);
-    uint16 hurt_ai_time = EnemyDef_A2->hurt_ai_time;
-    if (!EnemyDef_A2->hurt_ai_time)
-      hurt_ai_time = 4;
-    gEnemyData(cur_enemy_index)->flash_timer = hurt_ai_time;
-    gEnemyData(cur_enemy_index)->ai_handler_bits = 0;
+    EnemyDef_A2 *ED = get_EnemyDef_A2(E->enemy_ptr);
+    E->flash_timer = ED->hurt_ai_time ? ED->hurt_ai_time : 4;
+    E->ai_handler_bits = 0;
   }
 }
 
@@ -2690,37 +2397,23 @@ void Enemy_SwitchToFrozenAi(void) {  // 0xA09FDF
 }
 
 void SamusLatchesOnWithGrappleNoInvinc(void) {  // 0xA09FE9
-  EnemyData *v0;
-
-  if (gEnemyData(cur_enemy_index)->frozen_timer) {
-    v0 = gEnemyData(cur_enemy_index);
-    grapple_beam_end_x_pos = v0->x_pos;
-    grapple_beam_end_y_pos = v0->y_pos;
-    v0->ai_handler_bits = 4;
+  EnemyData *E = gEnemyData(cur_enemy_index);
+  if (E->frozen_timer) {
+    E->ai_handler_bits = 4;
   } else {
-    v0 = gEnemyData(cur_enemy_index);
-    enemy_ai_pointer.addr = get_EnemyDef_A2(v0->enemy_ptr)->main_ai;
-    *(uint16 *)&enemy_ai_pointer.bank = *(uint16 *)&gEnemyData(cur_enemy_index)->bank;
-    CallEnemyAi(Load24(&enemy_ai_pointer));
-    EnemyData *v1 = gEnemyData(cur_enemy_index);
-    grapple_beam_end_x_pos = v1->x_pos;
-    grapple_beam_end_y_pos = v1->y_pos;
-    v1->ai_handler_bits = 0;
+    CallEnemyAi(E->bank << 16 | get_EnemyDef_A2(E->enemy_ptr)->main_ai);
+    E->ai_handler_bits = 0;
   }
+  grapple_beam_end_x_pos = E->x_pos;
+  grapple_beam_end_y_pos = E->y_pos;
 }
 
 void SamusLatchesOnWithGrappleParalyze(void) {  // 0xA0A03E
-  EnemyDef_A2 *EnemyDef_A2;
-
-  EnemyData *v0 = gEnemyData(cur_enemy_index);
-  EnemyDef_A2 = get_EnemyDef_A2(v0->enemy_ptr);
-  uint16 hurt_ai_time = EnemyDef_A2->hurt_ai_time;
-  if (!EnemyDef_A2->hurt_ai_time)
-    hurt_ai_time = 4;
-  gEnemyData(cur_enemy_index)->flash_timer = hurt_ai_time;
-  gEnemyData(cur_enemy_index)->ai_handler_bits = 0;
-  EnemyData *v3 = gEnemyData(cur_enemy_index);
-  v3->extra_properties |= 1u;
+  EnemyData *E = gEnemyData(cur_enemy_index);
+  EnemyDef_A2 *ED = get_EnemyDef_A2(E->enemy_ptr);
+  E->flash_timer = ED->hurt_ai_time ? ED->hurt_ai_time : 4;
+  E->ai_handler_bits = 0;
+  E->extra_properties |= 1;
 }
 
 void SamusHurtFromGrapple(void) {  // 0xA0A070
@@ -2728,246 +2421,144 @@ void SamusHurtFromGrapple(void) {  // 0xA0A070
 }
 
 void EnemySamusCollHandler(void) {  // 0xA0A07A
-  VoidP touch_ai;
-
+  EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 9;
-  if (gEnemyData(cur_enemy_index)->spritemap_pointer) {
-    if (samus_contact_damage_index) {
-      samus_invincibility_timer = 0;
-    } else if (samus_invincibility_timer) {
-      if (gEnemyData(cur_enemy_index)->enemy_ptr != addr_kEnemyDef_DAFF)
-        return;
-      uint16 some_flag = gEnemySpawnData(cur_enemy_index)->some_flag;
-      if (!some_flag || some_flag == 8)
-        return;
-    }
-    uint16 enemy_ptr = gEnemyData(cur_enemy_index)->enemy_ptr;
-    touch_ai = get_EnemyDef_A2(enemy_ptr)->touch_ai;
-    if (touch_ai != FUNC16(nullsub_170) && touch_ai != FUNC16(nullsub_169)) {
-      EnemyData *v3 = gEnemyData(cur_enemy_index);
-      uint16 v4 = abs16(samus_x_pos - v3->x_pos);
-      bool v5 = v4 < samus_x_radius;
-      uint16 v6 = v4 - samus_x_radius;
-      if (v5 || v6 < v3->x_width) {
-        uint16 v7 = abs16(samus_y_pos - v3->y_pos);
-        v5 = v7 < samus_y_radius;
-        uint16 v8 = v7 - samus_y_radius;
-        if (v5 || v8 < v3->y_height) {
-          R20_ = 2 * gEnemyData(cur_enemy_index)->spritemap_pointer;
-          if (gEnemyData(cur_enemy_index)->enemy_ptr == addr_kEnemyDef_DAFF
-              || !gEnemyData(cur_enemy_index)->frozen_timer) {
-            enemy_ptr = gEnemyData(cur_enemy_index)->enemy_ptr;
-            enemy_ai_pointer.addr = get_EnemyDef_A2(enemy_ptr)->touch_ai;
-            enemy_ai_pointer.bank = gEnemyData(cur_enemy_index)->bank;
-            CallEnemyAi(Load24(&enemy_ai_pointer));
-          }
-        }
-      }
-    }
+  if (!E->spritemap_pointer)
+    return;
+  if (samus_contact_damage_index) {
+    samus_invincibility_timer = 0;
+  } else if (samus_invincibility_timer) {
+    if (E->enemy_ptr != addr_kEnemyDef_DAFF)
+      return;
+    uint16 some_flag = gEnemySpawnData(cur_enemy_index)->some_flag;
+    if (some_flag == 0 || some_flag == 8)
+      return;
+  }
+  EnemyDef_A2 *ED = get_EnemyDef_A2(E->enemy_ptr);
+  if (ED->touch_ai == FUNC16(nullsub_170) || ED->touch_ai == FUNC16(nullsub_169))
+    return;
+  if (abs16(samus_x_pos - E->x_pos) - samus_x_radius < E->x_width &&
+      abs16(samus_y_pos - E->y_pos) - samus_y_radius < E->y_height) {
+    // r20 = 2 * E->spritemap_pointer;
+    if (E->enemy_ptr == addr_kEnemyDef_DAFF || !E->frozen_timer)
+      CallEnemyAi(E->bank << 16 | ED->touch_ai);
   }
 }
 
 void EnemyProjectileCollHandler(void) {  // 0xA0A143
-  int16 v4;
-
-  *(uint16 *)&enemy_ai_pointer.bank = *(uint16 *)&gEnemyData(cur_enemy_index)->bank;
+  EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 7;
-  if (projectile_counter) {
-    EnemyData *v0 = gEnemyData(cur_enemy_index);
-    uint16 spritemap_pointer = v0->spritemap_pointer;
-    if (spritemap_pointer) {
-      if (spritemap_pointer != addr_kSpritemap_Nothing_A0
-          && (v0->properties & 0x400) == 0
-          && v0->enemy_ptr != addr_kEnemyDef_DAFF
-          && !v0->invincibility_timer) {
-        collision_detection_index = 0;
-        int v2;
-        while (1) {
-          v2 = collision_detection_index;
-          uint16 v3 = projectile_type[v2];
-          if (v3) {
-            v4 = v3 & 0xF00;
-            if (v4 != 768 && v4 != 1280) {
-              if (sign16(v4 - 1792)) {
-                EnemyData *v5 = gEnemyData(cur_enemy_index);
-                uint16 v6 = abs16(projectile_x_pos[v2] - v5->x_pos);
-                bool v7 = v6 < projectile_x_radius[v2];
-                uint16 v8 = v6 - projectile_x_radius[v2];
-                if (v7 || v8 < v5->x_width) {
-                  uint16 v9 = abs16(projectile_y_pos[v2] - v5->y_pos);
-                  v7 = v9 < projectile_y_radius[v2];
-                  uint16 v10 = v9 - projectile_y_radius[v2];
-                  if (v7 || v10 < v5->y_height)
-                    break;
-                }
-              }
-            }
+  if (!projectile_counter)
+    return;
+  if (!E->spritemap_pointer || E->spritemap_pointer == addr_kSpritemap_Nothing_A0 || (E->properties & 0x400) != 0 ||
+      E->enemy_ptr == addr_kEnemyDef_DAFF || E->invincibility_timer)
+    return;
+  for (int pidx = 0; pidx < 5; pidx++) {
+    uint16 j = projectile_type[pidx];
+    if (j && (j & 0xF00) != 768 && (j & 0xF00) != 1280 && sign16((j & 0xF00) - 1792)) {
+      uint16 x = abs16(projectile_x_pos[pidx] - E->x_pos);
+      uint16 y = abs16(projectile_y_pos[pidx] - E->y_pos);
+      if (x - projectile_x_radius[pidx] < E->x_width) {
+        if (y - projectile_y_radius[pidx] < E->y_height) {
+          if ((projectile_type[pidx] & 0xF00) == 512) {
+            earthquake_timer = 30;
+            earthquake_type = 18;
           }
-          if (++collision_detection_index == 5)
-            return;
+          if ((E->properties & 0x1000) != 0 || (projectile_type[pidx] & 8) == 0)
+            projectile_dir[pidx] |= 0x10;
+          collision_detection_index = pidx;
+          CallEnemyAi(E->bank << 16 | get_EnemyDef_A2(E->enemy_ptr)->shot_ai);
+          return;
         }
-        if ((projectile_type[v2] & 0xF00) == 512) {
-          earthquake_timer = 30;
-          earthquake_type = 18;
-        }
-        uint16 v11 = 2 * collision_detection_index;
-        if ((gEnemyData(cur_enemy_index)->properties & 0x1000) != 0 || (projectile_type[v11 >> 1] & 8) == 0)
-          projectile_dir[v11 >> 1] |= 0x10u;
-        uint16 enemy_ptr;
-        enemy_ptr = gEnemyData(cur_enemy_index)->enemy_ptr;
-        enemy_ai_pointer.addr = get_EnemyDef_A2(enemy_ptr)->shot_ai;
-        CallEnemyAi(Load24(&enemy_ai_pointer));
       }
     }
   }
 }
 
 void EnemyBombCollHandler(void) {  // 0xA0A236
-  int v8;
-  *(uint16 *)&enemy_ai_pointer.bank = *(uint16 *)&gEnemyData(cur_enemy_index)->bank;
+  EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 8;
-  if (bomb_counter) {
-    if (gEnemyData(cur_enemy_index)->spritemap_pointer) {
-      EnemyData *v0 = gEnemyData(cur_enemy_index);
-      if (!v0->invincibility_timer && v0->enemy_ptr != addr_kEnemyDef_DAFF) {
-        collision_detection_index = 5;
-        while (1) {
-          int v1 = collision_detection_index;
-          if (projectile_type[v1]
-              && !projectile_variables[v1]
-              && ((projectile_type[v1] & 0xF00) == 1280 || (projectile_type[v1] & 0x8000u) != 0)) {
-            EnemyData *v2 = gEnemyData(cur_enemy_index);
-            uint16 v3 = abs16(projectile_x_pos[v1] - v2->x_pos);
-            bool v4 = v3 < projectile_x_radius[v1];
-            uint16 v5 = v3 - projectile_x_radius[v1];
-            if (v4 || v5 < v2->x_width) {
-              uint16 v6 = abs16(projectile_y_pos[v1] - v2->y_pos);
-              v4 = v6 < projectile_y_radius[v1];
-              uint16 v7 = v6 - projectile_y_radius[v1];
-              if (v4 || v7 < v2->y_height) {
-                v8 = collision_detection_index;
-                if (!projectile_variables[v8])
-                  break;
-              }
-            }
-          }
-          if (++collision_detection_index == 10)
-            return;
-        }
-        projectile_dir[v8] |= 0x10u;
-        uint16 enemy_ptr = gEnemyData(cur_enemy_index)->enemy_ptr;
-        enemy_ai_pointer.addr = get_EnemyDef_A2(enemy_ptr)->shot_ai;
-        CallEnemyAi(Load24(&enemy_ai_pointer));
-      }
+  if (!bomb_counter || !E->spritemap_pointer ||
+      E->invincibility_timer || E->enemy_ptr == addr_kEnemyDef_DAFF)
+    return;
+  for(int pidx = 5; pidx < 10; pidx++) {
+    if (!projectile_type[pidx] || projectile_variables[pidx] ||
+        (projectile_type[pidx] & 0xF00) != 1280 && (projectile_type[pidx] & 0x8000) == 0)
+      continue;
+    if (abs16(projectile_x_pos[pidx] - E->x_pos) - projectile_x_radius[pidx] < E->x_width && 
+        abs16(projectile_y_pos[pidx] - E->y_pos) - projectile_y_radius[pidx] < E->y_height) {
+      collision_detection_index = pidx;
+      projectile_dir[pidx] |= 0x10;
+      CallEnemyAi(E->bank << 16 | get_EnemyDef_A2(E->enemy_ptr)->shot_ai);
+      return;
     }
   }
 }
 
 void ProcessEnemyPowerBombInteraction(void) {  // 0xA0A306
-  VoidP powerbomb_reaction;
-
   enemy_processing_stage = 5;
-  R18_ = HIBYTE(power_bomb_explosion_radius);
-  if (HIBYTE(power_bomb_explosion_radius)) {
-    R20_ = (uint16)(R18_ + (HIBYTE(power_bomb_explosion_radius) & 1) + (power_bomb_explosion_radius >> 9)) >> 1;
-    cur_enemy_index = 1984;
-    do {
-      EnemyData *v0 = gEnemyData(cur_enemy_index);
-      if (!v0->invincibility_timer) {
-        uint16 enemy_ptr = v0->enemy_ptr;
-        if (v0->enemy_ptr) {
-          if (enemy_ptr != addr_kEnemyDef_DAFF) {
-            uint16 vulnerability_ptr = get_EnemyDef_A2(enemy_ptr)->vulnerability_ptr;
-            if (!vulnerability_ptr)
-              vulnerability_ptr = addr_stru_B4EC1C;
-            if ((get_Vulnerability(vulnerability_ptr)->power_bomb & 0x7F) != 0) {
-              EnemyData *v3 = gEnemyData(cur_enemy_index);
-              if (abs16(power_bomb_explosion_x_pos - v3->x_pos) < R18_
-                  && abs16(power_bomb_explosion_y_pos - v3->y_pos) < R20_) {
-                powerbomb_reaction = get_EnemyDef_A2(v3->enemy_ptr)->powerbomb_reaction;
-                if (!powerbomb_reaction)
-                  powerbomb_reaction = FUNC16(Enemy_NormalPowerBombAI_A0);
-                enemy_ai_pointer.addr = powerbomb_reaction;
-                *(uint16 *)&enemy_ai_pointer.bank = *(uint16 *)&gEnemyData(cur_enemy_index)->bank;
-                CallEnemyAi(Load24(&enemy_ai_pointer));
-                EnemyData *v5 = gEnemyData(cur_enemy_index);
-                v5->properties |= 0x800u;
-              }
-            }
-          }
-        }
-      }
-      cur_enemy_index -= 64;
-    } while ((cur_enemy_index & 0x8000u) == 0);
+  uint16 rx = HIBYTE(power_bomb_explosion_radius);
+  uint16 ry = (rx + (rx >> 1)) >> 1;
+  for(int i = 0x7c0; rx && i >= 0; i -= 0x40) {
+    EnemyData *E = gEnemyData(i);
+    if (E->invincibility_timer || !E->enemy_ptr || E->enemy_ptr == addr_kEnemyDef_DAFF)
+      continue;
+    EnemyDef_A2 *ED = get_EnemyDef_A2(E->enemy_ptr);
+    if ((get_Vulnerability(ED->vulnerability_ptr ? ED->vulnerability_ptr : addr_stru_B4EC1C)->power_bomb & 0x7F) == 0)
+      continue;
+    if (abs16(power_bomb_explosion_x_pos - E->x_pos) < rx && abs16(power_bomb_explosion_y_pos - E->y_pos) < ry) {
+      cur_enemy_index = i;
+      uint16 func = ED->powerbomb_reaction ? ED->powerbomb_reaction : FUNC16(Enemy_NormalPowerBombAI_A0);
+      CallEnemyAi(E->bank << 16 | func);
+      E->properties |= 0x800;
+    }
   }
 }
 
 void EnemyDeathAnimation(uint16 k, uint16 a) {  // 0xA0A3AF
-  int16 v3;
-
-  if (gEnemyData(k)->ai_handler_bits == 1)
+  EnemyData *E = gEnemyData(cur_enemy_index);
+  if (E->ai_handler_bits == 1)
     grapple_beam_function = FUNC16(GrappleBeam_Func2);
   if (!sign16(a - 5))
     a = 0;
-  enemy_population_ptr = a;
+//  varE20 = a;
   SpawnEnemyProjectileWithGfx(a, cur_enemy_index, addr_kEproj_EnemyDeathExplosion);
-  R18_ = gEnemyData(cur_enemy_index)->properties & 0x4000;
-  v3 = 62;
-  int v4 = cur_enemy_index;
-  do {
-    gEnemyData(v4)->enemy_ptr = 0;
-    v4 += 2;
-    v3 -= 2;
-  } while (v3 >= 0);
-  if (R18_) {
-    EnemyData *v5 = gEnemyData(cur_enemy_index);
-    v5->enemy_ptr = addr_kEnemyDef_DAFF;
-    *(uint16 *)&v5->bank = 0xa3;
+  uint16 r18 = E->properties & 0x4000;
+  memset(E, 0, 64);
+  if (r18) {
+    E->enemy_ptr = addr_kEnemyDef_DAFF;
+    E->bank = 0xa3;
   }
-  ++num_enemies_killed_in_room;
+  num_enemies_killed_in_room++;
 }
 
 void RinkasDeathAnimation(uint16 a) {  // 0xA0A410
-  int16 v2;
-
+  EnemyData *E = gEnemyData(cur_enemy_index);
   if (!sign16(a - 3))
     a = 0;
-  enemy_population_ptr = a;
+//  varE20 = a;
   SpawnEnemyProjectileWithGfx(a, cur_enemy_index, addr_kEproj_EnemyDeathExplosion);
-  R18_ = gEnemyData(cur_enemy_index)->properties & 0x4000;
-  v2 = 62;
-  int v4 = cur_enemy_index;
-  do {
-    gEnemyData(v4)->enemy_ptr = 0;
-    v4 += 2;
-    v2 -= 2;
-  } while (v2 >= 0);
-  if (R18_) {
-    EnemyData *v4 = gEnemyData(cur_enemy_index);
-    v4->enemy_ptr = addr_kEnemyDef_DAFF;
-    *(uint16 *)&v4->bank = 163;
+  uint16 r18 = E->properties & 0x4000;
+  memset(E, 0, 64);
+  if (r18) {
+    E->enemy_ptr = addr_kEnemyDef_DAFF;
+    E->bank = 0xa3;
   }
 }
 
 uint16 SuitDamageDivision(uint16 a) {  // 0xA0A45E
-  R18_ = a;
-  if ((equipped_items & 0x20) != 0) {
-    R18_ >>= 1;
-    R18_ >>= 1;
-    return R18_;
-  } else {
-    if (equipped_items & 1)
-      R18_ >>= 1;
-    return R18_;
-  }
+  if ((equipped_items & 0x20) != 0)
+    return a >> 2;
+  if (equipped_items & 1)
+    return a >> 1;
+  return a;
 }
 
 void NormalEnemyTouchAi(void) {  // 0xA0A477
-
   NormalEnemyTouchAiSkipDeathAnim();
   if (!gEnemyData(cur_enemy_index)->health) {
     gEnemySpawnData(cur_enemy_index)->cause_of_death = 6;
-    EnemyDeathAnimation(cur_enemy_index, 1u);
+    EnemyDeathAnimation(cur_enemy_index, 1);
   }
 }
 
@@ -2976,70 +2567,44 @@ void NormalEnemyTouchAiSkipDeathAnim_CurEnemy(void) {  // 0xA0A497
 }
 
 void NormalEnemyTouchAiSkipDeathAnim(void) {  // 0xA0A4A1
-  VoidP vulnerability_ptr;
-  int16 hurt_ai_time;
-  int16 v7;
-  EnemyDef_A2 *v9;
-  EnemyDef_A2 *EnemyDef_A2;
-
-  if (samus_contact_damage_index) {
-    R20_ = samus_contact_damage_index + 15;
-    uint16 v0 = 500;
-    if (samus_contact_damage_index != 1) {
-      v0 = 300;
-      if (samus_contact_damage_index != 2) {
-        v0 = 2000;
-        if (samus_contact_damage_index != 3) {
-          ++R20_;
-          v0 = 200;
-          if (samus_contact_damage_index == 4)
-            CallSomeSamusCode(4u);
-          else
-            v0 = 200;
-        }
-      }
-    }
-    R22_ = v0;
-    EnemyData *v1 = gEnemyData(cur_enemy_index);
-    vulnerability_ptr = get_EnemyDef_A2(v1->enemy_ptr)->vulnerability_ptr;
-    if (!vulnerability_ptr)
-      vulnerability_ptr = addr_stru_B4EC1C;
-    enemy_damage_multiplier = *(uint16 *)&get_Vulnerability(R20_ + vulnerability_ptr)->power;
-    draw_enemy_layer = enemy_damage_multiplier & 0x7F;
-    if ((enemy_damage_multiplier & 0x7F) != 0) {
-      R40 = draw_enemy_layer;
-      R38 = R22_ >> 1;
-      Mult32bit();
-      if (R42) {
-        R18_ = R42;
-        EnemyData *v3 = gEnemyData(cur_enemy_index);
-        EnemyDef_A2 = get_EnemyDef_A2(v3->enemy_ptr);
-        hurt_ai_time = EnemyDef_A2->hurt_ai_time;
-        if (!EnemyDef_A2->hurt_ai_time)
-          hurt_ai_time = 4;
-        EnemyData *v6 = gEnemyData(cur_enemy_index);
-        v6->flash_timer = hurt_ai_time;
-        v6->ai_handler_bits |= 2u;
-        samus_invincibility_timer = 0;
-        samus_knockback_timer = 0;
-        v7 = v6->health - R18_;
-        if (v7 < 0)
-          v7 = 0;
-        v6->health = v7;
-        QueueSfx2_Max1(0xBu);
-      }
-    }
-  } else {
-    EnemyData *v8 = gEnemyData(cur_enemy_index);
-    v9 = get_EnemyDef_A2(v8->enemy_ptr);
-    uint16 v10 = SuitDamageDivision(v9->damage);
-    Samus_DealDamage(v10);
+  EnemyData *E = gEnemyData(cur_enemy_index);
+  EnemyDef_A2 *ED = get_EnemyDef_A2(E->enemy_ptr);
+  if (samus_contact_damage_index == 0) {
+    Samus_DealDamage(SuitDamageDivision(ED->damage));
     samus_invincibility_timer = 96;
     samus_knockback_timer = 5;
-    knockback_x_dir = (int16)(samus_x_pos - gEnemyData(cur_enemy_index)->x_pos) >= 0;
+    knockback_x_dir = (int16)(samus_x_pos - E->x_pos) >= 0;
+    return;
+  }
+  uint16 r20 = samus_contact_damage_index + 15;
+  uint16 r22;
+  if (samus_contact_damage_index == 1) {
+    r22 = 500;
+  } else if (samus_contact_damage_index == 2) {
+    r22 = 300;
+  } else if (samus_contact_damage_index == 3) {
+    r22 = 2000;
+  } else {
+    ++r20;
+    if (samus_contact_damage_index == 4)
+      CallSomeSamusCode(4);
+    r22 = 200;
+  }
+  uint16 vp = ED->vulnerability_ptr ? ED->vulnerability_ptr : addr_stru_B4EC1C;
+  last_enemy_power = *(uint16 *)&get_Vulnerability(r20 + vp)->power;
+  uint16 varE32 = last_enemy_power & 0x7F;
+  if ((last_enemy_power & 0x7F) != 0) {
+    uint16 dmg = (r22 >> 1) * varE32;
+    if (dmg) {
+      E->flash_timer = ED->hurt_ai_time ? ED->hurt_ai_time : 4;
+      E->ai_handler_bits |= kEnemyAiBits_Hurt;
+      samus_invincibility_timer = 0;
+      samus_knockback_timer = 0;
+      E->health = (int16)(E->health - dmg) < 0 ? 0 : (int16)(E->health - dmg);
+      QueueSfx2_Max1(0xB);
+    }
   }
 }
-// 72078: conditional instruction was optimized away because ax.2<80u
 
 void NormalEnemyPowerBombAi(void) {  // 0xA0A597
   NormalEnemyPowerBombAiSkipDeathAnim();
@@ -3063,25 +2628,22 @@ void NormalEnemyPowerBombAiSkipDeathAnim(void) {  // 0xA0A5C1
     vulnerability_ptr = -5092;
   uint8 power_bomb = get_Vulnerability(vulnerability_ptr)->power_bomb;
   if (power_bomb != 255) {
-    draw_enemy_layer = power_bomb & 0x7F;
+    uint16 varE32 = power_bomb & 0x7F;
     if ((power_bomb & 0x7F) != 0) {
-      R38 = 100;
-      R40 = draw_enemy_layer;
-      Mult32bit();
-      enemy_spritemap_entry_coll_x_pos = R42;
-      if (R42) {
+      uint32 ttt = 100 * varE32;
+      if (ttt) {
         gEnemyData(cur_enemy_index)->invincibility_timer = 48;
-        EnemyData *v3 = gEnemyData(cur_enemy_index);
-        EnemyDef_A2 = get_EnemyDef_A2(v3->enemy_ptr);
+        EnemyData *j = gEnemyData(cur_enemy_index);
+        EnemyDef_A2 = get_EnemyDef_A2(j->enemy_ptr);
         hurt_ai_time = EnemyDef_A2->hurt_ai_time;
         if (!EnemyDef_A2->hurt_ai_time)
           hurt_ai_time = 4;
         EnemyData *v6 = gEnemyData(cur_enemy_index);
         v6->flash_timer = hurt_ai_time + 8;
-        v6->ai_handler_bits |= 2u;
+        v6->ai_handler_bits |= 2;
         uint16 health = v6->health;
-        bool v9 = health < enemy_spritemap_entry_coll_x_pos;
-        uint16 v8 = health - enemy_spritemap_entry_coll_x_pos;
+        bool v9 = health < ttt;
+        uint16 v8 = health - ttt;
         v9 = !v9;
         if (!v8 || !v9)
           v8 = 0;
@@ -3092,90 +2654,73 @@ void NormalEnemyPowerBombAiSkipDeathAnim(void) {  // 0xA0A5C1
 }
 
 void NormalEnemyShotAi(void) {  // 0xA0A63D
-  EnemyDef_A2 *EnemyDef_A2;
-
-  varE2E = 0;
-  NormalEnemyShotAiSkipDeathAnim();
+  uint16 varE2E = NormalEnemyShotAiSkipDeathAnim();
+  EnemyData *E = gEnemyData(cur_enemy_index);
   if (varE2E) {
-    EnemyData *v1 = gEnemyData(cur_enemy_index);
-    R18_ = v1->x_pos;
-    R20_ = v1->y_pos;
-    R22_ = 55;
-    R24_ = 0;
-    CreateSpriteAtPos();
+    CreateSpriteAtPos(E->x_pos, E->y_pos, 55, 0);
   }
-  EnemyData *v2 = gEnemyData(cur_enemy_index);
-  if (!v2->health) {
-    uint16 v3 = HIBYTE(projectile_type[collision_detection_index]) & 0xF;
-    gEnemySpawnData(cur_enemy_index)->cause_of_death = v3;
+  if (!E->health) {
+    uint16 j = HIBYTE(projectile_type[collision_detection_index]) & 0xF;
+    gEnemySpawnData(cur_enemy_index)->cause_of_death = j;
     uint16 death_anim = 2;
-    uint16 enemy_ptr;
-    if (v3 == 2) {
-      enemy_ptr = gEnemyData(cur_enemy_index)->enemy_ptr;
-      EnemyDef_A2 = get_EnemyDef_A2(enemy_ptr);
-      if (!sign16(EnemyDef_A2->death_anim - 3))
-        death_anim = EnemyDef_A2->death_anim;
+    if (j == 2) {
+      EnemyDef_A2 *ED = get_EnemyDef_A2(E->enemy_ptr);
+      if (!sign16(ED->death_anim - 3))
+        death_anim = ED->death_anim;
     } else {
-      enemy_ptr = v2->enemy_ptr;
-      death_anim = get_EnemyDef_A2(v2->enemy_ptr)->death_anim;
+      death_anim = get_EnemyDef_A2(E->enemy_ptr)->death_anim;
     }
-    EnemyDeathAnimation(enemy_ptr, death_anim);
+    EnemyDeathAnimation(E->enemy_ptr, death_anim);
   }
 }
 
 void NormalEnemyShotAiSkipDeathAnim_CurEnemy(void) {  // 0xA0A6A7
-  varE2E = 0;
   NormalEnemyShotAiSkipDeathAnim();
 }
 
 void EnemyFunc_A6B4_UsedBySporeSpawn(void) {  // 0xA0A6B4
-  varE2E = 0;
-  NormalEnemyShotAiSkipDeathAnim();
+  uint16 varE2E = NormalEnemyShotAiSkipDeathAnim();
   if (varE2E) {
-    EnemyData *v0 = gEnemyData(cur_enemy_index);
-    R18_ = v0->x_pos;
-    R20_ = v0->y_pos;
-    R22_ = 55;
-    R24_ = 0;
-    CreateSpriteAtPos();
+    EnemyData *ED = gEnemyData(cur_enemy_index);
+    CreateSpriteAtPos(ED->x_pos, ED->y_pos, 55, 0);
   }
 }
 
-void NormalEnemyShotAiSkipDeathAnim(void) {  // 0xA0A6DE
+uint16 NormalEnemyShotAiSkipDeathAnim(void) {  // 0xA0A6DE
+  uint16 varE2E = 0;
   int16 v5;
   int16 v6;
   int16 v9;
   EnemyDef_A2 *EnemyDef_A2;
   int16 hurt_ai_time;
   int16 v20;
+  uint16 varE32;
 
   int v0 = collision_detection_index;
-  enemy_spritemap_entry_coll_x_pos = projectile_damage[v0];
-  R18_ = projectile_type[v0];
-  EnemyData *v1 = gEnemyData(cur_enemy_index);
-  uint16 vulnerability_ptr = get_EnemyDef_A2(v1->enemy_ptr)->vulnerability_ptr;
+  uint16 pd = projectile_damage[v0];
+  uint16 r18 = projectile_type[v0];
+  EnemyData *j = gEnemyData(cur_enemy_index);
+  uint16 vulnerability_ptr = get_EnemyDef_A2(j->enemy_ptr)->vulnerability_ptr;
   if (!vulnerability_ptr)
     vulnerability_ptr = addr_stru_B4EC1C;
-  R20_ = vulnerability_ptr;
-  if ((R18_ & 0xF00) != 0) {
-    v5 = R18_ & 0xF00;
-    if ((R18_ & 0xF00) == 256 || v5 == 512) {
-      LOBYTE(v6) = (uint16)(R18_ & 0xF00) >> 8;
-      HIBYTE(v6) = 0;
-      draw_enemy_layer = get_Vulnerability(R20_ + v6)->plasma_ice_wave & 0x7F;
+  uint16 r20 = vulnerability_ptr;
+  if ((r18 & 0xF00) != 0) {
+    v5 = r18 & 0xF00;
+    if ((r18 & 0xF00) == 256 || v5 == 512) {
+      v6 = (r18 & 0xF00) >> 8;
+      varE32 = get_Vulnerability(r20 + v6)->plasma_ice_wave & 0x7F;
     } else if (v5 == 1280) {
-      draw_enemy_layer = get_Vulnerability(R20_)->bomb & 0x7F;
+      varE32 = get_Vulnerability(r20)->bomb & 0x7F;
     } else {
       if (v5 != 768)
         goto LABEL_18;
-      draw_enemy_layer = get_Vulnerability(R20_)->power_bomb & 0x7F;
+      varE32 = get_Vulnerability(r20)->power_bomb & 0x7F;
     }
-LABEL_9:
-    R38 = enemy_spritemap_entry_coll_x_pos >> 1;
-    R40 = draw_enemy_layer;
-    Mult32bit();
-    if (R42) {
-      enemy_spritemap_entry_coll_x_pos = R42;
+LABEL_9:;
+    uint32 ttt = (uint32)(pd >> 1) * (uint32)varE32;
+    uint16 r42 = ttt;
+    if (r42) {
+      pd = r42;
       EnemyData *v10 = gEnemyData(cur_enemy_index);
       EnemyDef_A2 = get_EnemyDef_A2(v10->enemy_ptr);
       hurt_ai_time = EnemyDef_A2->hurt_ai_time;
@@ -3183,7 +2728,7 @@ LABEL_9:
         hurt_ai_time = 4;
       EnemyData *v13 = gEnemyData(cur_enemy_index);
       v13->flash_timer = hurt_ai_time + 8;
-      v13->ai_handler_bits |= 2u;
+      v13->ai_handler_bits |= 2;
       if (!v13->frozen_timer) {
         uint16 hurt_sfx = get_EnemyDef_A2(v13->enemy_ptr)->hurt_sfx;
         if (hurt_sfx)
@@ -3195,134 +2740,134 @@ LABEL_9:
         gEnemyData(cur_enemy_index)->invincibility_timer = 16;
       EnemyData *v16 = gEnemyData(v15);
       uint16 health = v16->health;
-      bool v19 = health < enemy_spritemap_entry_coll_x_pos;
-      uint16 v18 = health - enemy_spritemap_entry_coll_x_pos;
+      bool v19 = health < pd;
+      uint16 v18 = health - pd;
       v19 = !v19;
       if (!v18 || !v19) {
         if ((projectile_type[collision_detection_index] & 2) != 0
-            && (enemy_damage_multiplier & 0xF0) != 128
+            && (last_enemy_power & 0xF0) != 128
             && !v16->frozen_timer) {
           v20 = 400;
           if (area_index == 2)
             v20 = 300;
           v16->frozen_timer = v20;
-          v16->ai_handler_bits |= 4u;
+          v16->ai_handler_bits |= 4;
           v16->invincibility_timer = 10;
-          QueueSfx3_Max3(0xAu);
-          return;
+          QueueSfx3_Max3(0xA);
+          return varE2E;
         }
         v18 = 0;
       }
       v16->health = v18;
-      return;
+      return varE2E;
     }
 LABEL_18:;
     int v7 = collision_detection_index;
-    projectile_dir[v7] |= 0x10u;
-    R18_ = projectile_x_pos[v7];
-    R20_ = projectile_y_pos[v7];
-    R22_ = 6;
-    R24_ = 0;
-    CreateSpriteAtPos();
-    QueueSfx1_Max3(0x3Du);
-    return;
+    projectile_dir[v7] |= 0x10;
+    CreateSpriteAtPos(projectile_x_pos[v7], projectile_y_pos[v7], 6, 0);
+    QueueSfx1_Max3(0x3D);
+    return varE2E;
   }
-  enemy_damage_multiplier = get_Vulnerability(R20_ + ((uint8)R18_ & 0xFu))->power;
-  draw_enemy_layer = enemy_damage_multiplier & 0x7F;
-  if (enemy_damage_multiplier != 255) {
-    if ((R18_ & 0x10) != 0) {
-      uint8 charged_beam = get_Vulnerability(R20_)->charged_beam;
+  last_enemy_power = get_Vulnerability(r20 + (r18 & 0xF))->power;
+  varE32 = last_enemy_power & 0x7F;
+  if (last_enemy_power != 255) {
+    if ((r18 & 0x10) != 0) {
+      uint8 charged_beam = get_Vulnerability(r20)->charged_beam;
       if (charged_beam == 255)
         goto LABEL_18;
       uint16 v4 = charged_beam & 0xF;
       if (!v4)
         goto LABEL_18;
-      draw_enemy_layer = v4;
+      varE32 = v4;
     }
     goto LABEL_9;
   }
   EnemyData *v8 = gEnemyData(cur_enemy_index);
   if (!v8->frozen_timer)
-    QueueSfx3_Max3(0xAu);
+    QueueSfx3_Max3(0xA);
   v9 = 400;
   if (area_index == 2)
     v9 = 300;
   v8->frozen_timer = v9;
-  v8->ai_handler_bits |= 4u;
+  v8->ai_handler_bits |= 4;
   v8->invincibility_timer = 10;
+  return varE2E;
 }
 
 void CreateDudShot(void) {  // 0xA0A8BC
   int v0 = collision_detection_index;
-  R18_ = projectile_x_pos[v0];
-  R20_ = projectile_y_pos[v0];
-  R22_ = 6;
-  R24_ = 0;
-  CreateSpriteAtPos();
-  QueueSfx1_Max3(0x3Du);
-  projectile_dir[collision_detection_index] |= 0x10u;
+  CreateSpriteAtPos(projectile_x_pos[v0], projectile_y_pos[v0], 6, 0);
+  QueueSfx1_Max3(0x3D);
+  projectile_dir[collision_detection_index] |= 0x10;
 }
 
-uint16 Samus_CheckSolidEnemyColl(void) {  // 0xA0A8F0
-  int16 v1;
-  int16 v16;
+typedef struct PositionAndWidth {
+  uint16 x_pos;
+  uint16 x_subpos;
+  uint16 y_pos;
+  uint16 y_subpos;
+  uint16 width;
+  uint16 height;
+} PositionAndWidth;
+
+CheckEnemyColl_Result Samus_CheckSolidEnemyColl(int32 amt) {  // 0xA0A8F0
   int16 v18;
+  uint16 r18 = amt >> 16, r20 = amt;
+  uint16 varE32;
+  PositionAndWidth pos;
 
   if (!interactive_enemy_indexes_write_ptr)
-    return 0;
-  v1 = 2 * (samus_collision_direction & 3);
-  switch (v1) {
+    return (CheckEnemyColl_Result) {0, amt};
+  switch (samus_collision_direction & 3) {
   case 0: {
-    samus_target_x_pos = samus_x_pos - R18_;
-    bool v2 = samus_x_subpos == R20_;
-    if (samus_x_subpos < R20_)
-      v2 = samus_target_x_pos-- == 1;
-    if (!v2)
-      --samus_target_x_pos;
-    samus_target_y_pos = samus_y_pos;
-    samus_target_y_subpos = samus_y_subpos;
+    pos.x_pos = samus_x_pos - r18;
+    bool i = samus_x_subpos == r20;
+    if (samus_x_subpos < r20)
+      i = pos.x_pos-- == 1;
+    if (!i)
+      --pos.x_pos;
+    pos.y_pos = samus_y_pos;
+    pos.y_subpos = samus_y_subpos;
+    break;
+  }
+  case 1: {
+    pos.x_pos = samus_x_pos + r18;
+    bool j = samus_x_subpos + r20 == 0;
+    if (__CFADD__uint16(samus_x_subpos, r20))
+      j = pos.x_pos++ == 0xFFFF;
+    if (!j)
+      ++pos.x_pos;
+    pos.y_pos = samus_y_pos;
+    pos.y_subpos = samus_y_subpos;
     break;
   }
   case 2: {
-    samus_target_x_pos = samus_x_pos + R18_;
-    bool v3 = samus_x_subpos + R20_ == 0;
-    if (__CFADD__uint16(samus_x_subpos, R20_))
-      v3 = samus_target_x_pos++ == 0xFFFF;
-    if (!v3)
-      ++samus_target_x_pos;
-    samus_target_y_pos = samus_y_pos;
-    samus_target_y_subpos = samus_y_subpos;
-    break;
-  }
-  case 4: {
-    samus_target_y_pos = samus_y_pos - R18_;
-    bool v4 = samus_y_subpos == R20_;
-    if (samus_y_subpos < R20_)
-      v4 = samus_target_y_pos-- == 1;
+    pos.y_pos = samus_y_pos - r18;
+    bool v4 = samus_y_subpos == r20;
+    if (samus_y_subpos < r20)
+      v4 = pos.y_pos-- == 1;
     if (!v4)
-      --samus_target_y_pos;
-    samus_target_x_pos = samus_x_pos;
-    samus_target_x_subpos = samus_x_subpos;
+      --pos.y_pos;
+    pos.x_pos = samus_x_pos;
+    pos.x_subpos = samus_x_subpos;
     break;
   }
-  case 6: {
-    samus_target_y_pos = samus_y_pos + R18_;
-    bool v5 = samus_y_subpos + R20_ == 0;
-    if (__CFADD__uint16(samus_y_subpos, R20_))
-      v5 = samus_target_y_pos++ == 0xFFFF;
+  case 3: {
+    pos.y_pos = samus_y_pos + r18;
+    bool v5 = samus_y_subpos + r20 == 0;
+    if (__CFADD__uint16(samus_y_subpos, r20))
+      v5 = pos.y_pos++ == 0xFFFF;
     if (!v5)
-      ++samus_target_y_pos;
-    samus_target_x_pos = samus_x_pos;
-    samus_target_x_subpos = samus_x_subpos;
+      ++pos.y_pos;
+    pos.x_pos = samus_x_pos;
+    pos.x_subpos = samus_x_subpos;
     break;
   }
   default:
     Unreachable();
-    while (1)
-      ;
   }
-  samus_x_radius_mirror = samus_x_radius;
-  samus_y_radius_mirror = samus_y_radius;
+  pos.width = samus_x_radius;
+  pos.height = samus_y_radius;
   collision_detection_index = 0;
   for (int i = 0; ;i++) {
     uint16 v7 = interactive_enemy_indexes[i];
@@ -3330,10 +2875,10 @@ uint16 Samus_CheckSolidEnemyColl(void) {  // 0xA0A8F0
       break;
     collision_detection_index = v7;
     EnemyData *ED = gEnemyData(v7);
-    if (!ED->frozen_timer && (ED->properties & 0x8000u) == 0)
+    if (!ED->frozen_timer && (ED->properties & 0x8000) == 0)
       continue;
     uint16 *v9 = &ED->x_pos;
-    uint16 *v10 = &samus_target_x_pos;
+    uint16 *v10 = &pos.x_pos;
     uint16 v11 = abs16(*v9 - *v10);
     bool v12 = v11 < *(v9 + 4);
     uint16 v13 = v11 - *(v9 + 4);
@@ -3342,19 +2887,18 @@ uint16 Samus_CheckSolidEnemyColl(void) {  // 0xA0A8F0
       v12 = v14 < *(v9 + 5);
       uint16 v15 = v14 - *(v9 + 5);
       if (v12 || v15 < *(v10 + 5)) {
-        v16 = 2 * (samus_collision_direction & 3);
-        switch (v16) {
+        switch (samus_collision_direction & 3) {
         case 0: {
-          draw_enemy_layer = ED->x_width + ED->x_pos;
-          v18 = samus_x_pos - samus_x_radius - draw_enemy_layer;
-          if (samus_x_pos - samus_x_radius == draw_enemy_layer)
+          varE32 = ED->x_width + ED->x_pos;
+          v18 = samus_x_pos - samus_x_radius - varE32;
+          if (samus_x_pos - samus_x_radius == varE32)
             goto LABEL_57;
-          if ((int16)(samus_x_pos - samus_x_radius - draw_enemy_layer) >= 0)
+          if ((int16)(samus_x_pos - samus_x_radius - varE32) >= 0)
             goto LABEL_58;
           break;
         }
-        case 2: {
-          draw_enemy_layer = samus_x_radius + samus_x_pos;
+        case 1: {
+          varE32 = samus_x_radius + samus_x_pos;
           v18 = ED->x_pos - ED->x_width - (samus_x_radius + samus_x_pos);
           if (!v18)
             goto LABEL_57;
@@ -3362,186 +2906,131 @@ uint16 Samus_CheckSolidEnemyColl(void) {  // 0xA0A8F0
             goto LABEL_58;
           break;
         }
-        case 4: {
-          draw_enemy_layer = ED->y_height + ED->y_pos;
-          v18 = samus_y_pos - samus_y_radius - draw_enemy_layer;
-          if (samus_y_pos - samus_y_radius == draw_enemy_layer)
+        case 2: {
+          varE32 = ED->y_height + ED->y_pos;
+          v18 = samus_y_pos - samus_y_radius - varE32;
+          if (samus_y_pos - samus_y_radius == varE32)
             goto LABEL_57;
-          if ((int16)(samus_y_pos - samus_y_radius - draw_enemy_layer) >= 0)
+          if ((int16)(samus_y_pos - samus_y_radius - varE32) >= 0)
             goto LABEL_58;
           break;
         }
-        case 6: {
-          draw_enemy_layer = samus_y_radius + samus_y_pos;
+        case 3: {
+          varE32 = samus_y_radius + samus_y_pos;
           v18 = ED->y_pos - ED->y_height - (samus_y_radius + samus_y_pos);
           if (!v18) {
 LABEL_57:
             samus_y_subpos = 0;
-            samus_x_pos_colliding_solid = samus_x_pos;
-            samus_x_subpos_colliding_solid = samus_x_subpos;
-            enemy_x_pos_colliding_solid = ED->x_pos;
-            enemy_x_subpos_colliding_solid = ED->x_subpos;
-            samus_pos_delta_colliding_solid = R18_;
-            samus_subpos_delta_colliding_solid = R20_;
-            samus_y_pos_colliding_solid = samus_y_pos;
-            samus_y_subpos_colliding_solid = 0;
-            solid_enemy_collision_type = 1;
-            R18_ = 0;
-            R20_ = 0;
-            R22_ = collision_detection_index;
             int v23 = samus_collision_direction & 3;
             enemy_index_colliding_dirs[v23] = collision_detection_index;
-            distance_to_enemy_colliding_dirs[v23] = 0;
-            return -1;
+            return (CheckEnemyColl_Result) { -1, 0 };
           }
           if (v18 >= 0) {
 LABEL_58:
-            samus_x_pos_colliding_solid = samus_x_pos;
-            samus_x_subpos_colliding_solid = samus_x_subpos;
-            enemy_x_pos_colliding_solid = ED->x_pos;
-            enemy_x_subpos_colliding_solid = ED->x_subpos;
-            samus_pos_delta_colliding_solid = R18_;
-            samus_subpos_delta_colliding_solid = R20_;
-            samus_y_pos_colliding_solid = samus_y_pos;
-            samus_y_subpos_colliding_solid = samus_y_subpos;
-            solid_enemy_collision_type = 2;
-            R18_ = v18;
             int v25 = samus_collision_direction & 3;
-            distance_to_enemy_colliding_dirs[v25] = v18;
-            R20_ = 0;
-            R22_ = collision_detection_index;
             enemy_index_colliding_dirs[v25] = collision_detection_index;
-            return -1;
+            return (CheckEnemyColl_Result) { -1, INT16_SHL16(v18) };
           }
           break;
         }
         default:
           Unreachable();
-          while (1)
-            ;
         }
       }
     }
   }
-  return 0;
+  return (CheckEnemyColl_Result) { 0, amt };
 }
 
 uint16 CheckIfEnemyTouchesSamus(uint16 k) {  // 0xA0ABE7
-  EnemyData *v1 = gEnemyData(k);
-  uint16 v2 = abs16(samus_x_pos - v1->x_pos);
-  bool v3 = v2 < samus_x_radius;
-  uint16 v4 = v2 - samus_x_radius;
-  if (!v3 && v4 >= v1->x_width)
+  EnemyData *E = gEnemyData(k);
+  uint16 i = abs16(samus_x_pos - E->x_pos);
+  bool v3 = i < samus_x_radius;
+  uint16 v4 = i - samus_x_radius;
+  if (!v3 && v4 >= E->x_width)
     return 0;
-  if ((int16)(samus_y_pos + 3 - v1->y_pos) < 0) {
-    uint16 v6 = v1->y_pos - (samus_y_pos + 3);
-    v3 = v6 < samus_y_radius;
+  if ((int16)(samus_y_pos + 3 - E->y_pos) < 0) {
+    uint16 v6 = E->y_pos - (samus_y_pos + 3);
     uint16 v7 = v6 - samus_y_radius;
-    if (v3 || v7 == v1->y_height || v7 < v1->y_height)
+    if (v6 < samus_y_radius || v7 == E->y_height || v7 < E->y_height)
       return -1;
   }
   return 0;
 }
 
 uint16 EnemyFunc_AC67(uint16 k) {  // 0xA0AC67
-  EnemyData *v1 = gEnemyData(k);
-  uint16 v2 = abs16(samus_x_pos - v1->x_pos);
-  bool v3 = v2 < samus_x_radius;
-  uint16 v4 = v2 - samus_x_radius;
-  if (!v3 && v4 >= v1->x_width && v4 >= 8u)
+  EnemyData *E = gEnemyData(k);
+  uint16 i = abs16(samus_x_pos - E->x_pos);
+  bool v3 = i < samus_x_radius;
+  uint16 v4 = i - samus_x_radius;
+  if (!v3 && v4 >= E->x_width && v4 >= 8)
     return 0;
-  uint16 v6 = abs16(samus_y_pos - v1->y_pos);
+  uint16 v6 = abs16(samus_y_pos - E->y_pos);
   v3 = v6 < samus_y_radius;
   uint16 v7 = v6 - samus_y_radius;
-  if (v3 || v7 < v1->y_height)
+  if (v3 || v7 < E->y_height)
     return -1;
   else
     return 0;
 }
 
-uint16 EnemyFunc_ACA8(void) {  // 0xA0ACA8
-  int16 v1;
-  int16 v2;
-
-  g_word_7E0E3C = loop_index_end - draw_enemy_layer;
-  uint16 result = abs16(loop_index_end - draw_enemy_layer);
+PairU16 EnemyFunc_ACA8(Point16U base_pt, Point16U samus_pt) {  // 0xA0ACA8
+  uint16 varE3C = samus_pt.x - base_pt.x;
+  uint16 result = abs16(varE3C);
   if (sign16(result - 255)) {
-    R18_ = result;
-    enemy_population_ptr = result;
-    g_word_7E0E3E = loop_index - enemy_drawing_queue_index;
-    result = abs16(loop_index - enemy_drawing_queue_index);
+    uint16 x = result;
+    uint16 varE20 = result;
+    uint16 varE3E = samus_pt.y - base_pt.y;
+    result = abs16(varE3E);
     if (sign16(result - 255)) {
-      R20_ = result;
-      draw_oam_x_offset = result;
-      varE24 = CalculateAngleFromXY();
-      draw_enemy_layer = enemy_population_ptr;
-      v1 = SineMult8bitNegative(varE24);
-      if (v1 < 0)
-        v1 = -v1;
-      varE26 = v1;
-      draw_enemy_layer = draw_oam_x_offset;
-      v2 = CosineMult8bit(varE24);
-      if (v2 < 0)
-        v2 = -v2;
-      uint16 v3 = varE26 + v2;
-      R18_ = g_word_7E0E3C;
-      R20_ = g_word_7E0E3E;
-      enemy_drawing_queue_base = CalculateAngleFromXY();
-      return v3;
+      uint16 y = result;
+      uint16 varE22 = result;
+      uint16 varE24 = CalculateAngleFromXY(x, y);
+      uint16 dist = abs16(SineMult8bit(varE24, varE20)) + abs16(CosineMult8bit(varE24, varE22));
+      uint16 varE3A = CalculateAngleFromXY(varE3C, varE3E);
+      return (PairU16) {dist, varE3A };
     }
   }
-  return result;
+  return (PairU16) { result, 0 };
 }
 
 uint16 CheckIfEnemyIsOnScreen(void) {  // 0xA0AD70
   EnemyData *v0 = gEnemyData(cur_enemy_index);
-  return (int16)(v0->x_pos - layer1_x_pos) < 0
-    || (int16)(layer1_x_pos + 256 - v0->x_pos) < 0
-    || (int16)(v0->y_pos - layer1_y_pos) < 0
-    || (int16)(layer1_y_pos + 256 - v0->y_pos) < 0;
+  return (int16)(v0->x_pos - layer1_x_pos) < 0 || (int16)(layer1_x_pos + 256 - v0->x_pos) < 0 || 
+      (int16)(v0->y_pos - layer1_y_pos) < 0 || (int16)(layer1_y_pos + 256 - v0->y_pos) < 0;
 }
 
 uint16 EnemyFunc_ADA3(uint16 a) {  // 0xA0ADA3
-  R18_ = a;
-  EnemyData *v1 = gEnemyData(cur_enemy_index);
-  return (int16)(a + v1->x_pos - layer1_x_pos) < 0
-    || (int16)(R18_ + layer1_x_pos + 256 - v1->x_pos) < 0
-    || (int16)(R18_ + v1->y_pos - layer1_y_pos) < 0
-    || (int16)(R18_ + layer1_y_pos + 256 - v1->y_pos) < 0;
+  EnemyData *E = gEnemyData(cur_enemy_index);
+  return (int16)(a + E->x_pos - layer1_x_pos) < 0 || (int16)(a + layer1_x_pos + 256 - E->x_pos) < 0 ||
+      (int16)(a + E->y_pos - layer1_y_pos) < 0 || (int16)(a + layer1_y_pos + 256 - E->y_pos) < 0;
 }
 
 uint16 EnemyWithNormalSpritesIsOffScreen(void) {  // 0xA0ADE7
-  EnemyData *v0 = gEnemyData(cur_enemy_index);
-  return (int16)(v0->x_width + v0->x_pos - layer1_x_pos) < 0
-    || (int16)(v0->x_width + layer1_x_pos + 256 - v0->x_pos) < 0
-    || (int16)(v0->y_pos + 8 - layer1_y_pos) < 0
-    || (int16)(layer1_y_pos + 248 - v0->y_pos) < 0;
+  EnemyData *E = gEnemyData(cur_enemy_index);
+  return (int16)(E->x_width + E->x_pos - layer1_x_pos) < 0 || (int16)(E->x_width + layer1_x_pos + 256 - E->x_pos) < 0 ||
+      (int16)(E->y_pos + 8 - layer1_y_pos) < 0 || (int16)(layer1_y_pos + 248 - E->y_pos) < 0;
 }
 
 uint16 DetermineDirectionOfSamusFromEnemy(void) {  // 0xA0AE29
   if (IsSamusWithinEnemy_Y(cur_enemy_index, 0x20)) {
-    uint16 v1 = 2;
-    if ((GetSamusEnemyDelta_X(cur_enemy_index) & 0x8000u) != 0)
+    if ((GetSamusEnemyDelta_X(cur_enemy_index) & 0x8000) != 0)
       return 7;
-    return v1;
+    return 2;
   } else if (IsSamusWithinEnemy_X(cur_enemy_index, 0x20)) {
-    uint16 v3 = 4;
-    if ((GetSamusEnemyDelta_Y(cur_enemy_index) & 0x8000u) != 0)
+    if ((GetSamusEnemyDelta_Y(cur_enemy_index) & 0x8000) != 0)
       return 0;
-    return v3;
-  } else if ((GetSamusEnemyDelta_X(cur_enemy_index) & 0x8000u) != 0) {
-    uint16 v5 = 6;
-    if ((GetSamusEnemyDelta_Y(cur_enemy_index) & 0x8000u) != 0)
+    return 4;
+  } else if ((GetSamusEnemyDelta_X(cur_enemy_index) & 0x8000) != 0) {
+    if ((GetSamusEnemyDelta_Y(cur_enemy_index) & 0x8000) != 0)
       return 8;
-    return v5;
+    return 6;
   } else {
-    uint16 v4 = 3;
-    if ((GetSamusEnemyDelta_Y(cur_enemy_index) & 0x8000u) != 0)
+    if ((GetSamusEnemyDelta_Y(cur_enemy_index) & 0x8000) != 0)
       return 1;
-    return v4;
+    return 3;
   }
 }
-
 
 uint16 GetSamusEnemyDelta_Y(uint16 k) {  // 0xA0AEDD
   return samus_y_pos - gEnemyData(k)->y_pos;
@@ -3552,55 +3041,44 @@ uint16 GetSamusEnemyDelta_X(uint16 k) {  // 0xA0AEE5
 }
 
 uint16 IsSamusWithinEnemy_Y(uint16 k, uint16 a) {  // 0xA0AEED
-  enemy_population_ptr = a;
-  EnemyData *v2 = gEnemyData(k);
-  return (int16)(SubtractThenAbs16(v2->y_pos, samus_y_pos) - a) < 0;
+  return (int16)(SubtractThenAbs16(gEnemyData(k)->y_pos, samus_y_pos) - a) < 0;
 }
 
 uint16 IsSamusWithinEnemy_X(uint16 k, uint16 a) {  // 0xA0AF0B
-  enemy_population_ptr = a;
-  EnemyData *v2 = gEnemyData(k);
-  return (int16)(SubtractThenAbs16(v2->x_pos, samus_x_pos) - a) < 0;
+  return (int16)(SubtractThenAbs16(gEnemyData(k)->x_pos, samus_x_pos) - a) < 0;
 }
 
-void Enemy_SubPos_X(uint16 k) {  // 0xA0AF5A
-  EnemyData *v1 = gEnemyData(k);
-  uint16 x_subpos = v1->x_subpos;
-  bool v3 = x_subpos < R18_;
-  v1->x_subpos = x_subpos - R18_;
-  v1->x_pos -= v3 + R20_;
+void Enemy_SubPos_X(uint16 k, uint32 amount32) {  // 0xA0AF5A
+  EnemyData *E = gEnemyData(k);
+  uint32 t = __PAIR32__(E->x_pos, E->x_subpos) - amount32;
+  E->x_subpos = t;
+  E->x_pos = t >> 16;
 }
 
-void Enemy_AddPos_X(uint16 k) {  // 0xA0AF6C
-  EnemyData *v1 = gEnemyData(k);
-  uint16 x_subpos = v1->x_subpos;
-  bool v3 = __CFADD__uint16(R18_, x_subpos);
-  v1->x_subpos = R18_ + x_subpos;
-  v1->x_pos += R20_ + v3;
+void Enemy_AddPos_X(uint16 k, uint32 amount32) {  // 0xA0AF6C
+  EnemyData *E = gEnemyData(k);
+  uint32 t = __PAIR32__(E->x_pos, E->x_subpos) + amount32;
+  E->x_subpos = t;
+  E->x_pos = t >> 16;
 }
 
-void Enemy_SubPos_Y(uint16 k) {  // 0xA0AF7E
-  EnemyData *v1 = gEnemyData(k);
-  uint16 y_subpos = v1->y_subpos;
-  bool v3 = y_subpos < R18_;
-  v1->y_subpos = y_subpos - R18_;
-  v1->y_pos -= v3 + R20_;
+void Enemy_SubPos_Y(uint16 k, uint32 amount32) {  // 0xA0AF7E
+  EnemyData *E = gEnemyData(k);
+  uint32 t = __PAIR32__(E->y_pos, E->y_subpos) - amount32;
+  E->y_subpos = t;
+  E->y_pos = t >> 16;
 }
 
-void Enemy_AddPos_Y(uint16 k) {  // 0xA0AF90
-  EnemyData *v1 = gEnemyData(k);
-  uint16 y_subpos = v1->y_subpos;
-  bool v3 = __CFADD__uint16(R18_, y_subpos);
-  v1->y_subpos = R18_ + y_subpos;
-  v1->y_pos += R20_ + v3;
+void Enemy_AddPos_Y(uint16 k, uint32 amount32) {  // 0xA0AF90
+  EnemyData *E = gEnemyData(k);
+  uint32 t = __PAIR32__(E->y_pos, E->y_subpos) + amount32;
+  E->y_subpos = t;
+  E->y_pos = t >> 16;
 }
 
 uint16 SignExtend8(uint16 a) {  // 0xA0AFEA
-  draw_enemy_layer = a;
-  if ((a & 0x80) != 0)
-    return (uint8)draw_enemy_layer | 0xFF00;
-  else
-    return draw_enemy_layer;
+  // not quite sign extend
+  return (a & 0x80) ? a | 0xff00 : a;
 }
 
 uint16 Mult32(uint16 a) {  // 0xA0B002
@@ -3608,547 +3086,464 @@ uint16 Mult32(uint16 a) {  // 0xA0B002
 }
 
 uint16 Abs16(uint16 a) {  // 0xA0B067
-  draw_enemy_layer = a;
-  if ((a & 0x8000) != 0)
-    draw_enemy_layer = -draw_enemy_layer;
-  return draw_enemy_layer;
+  return ((a & 0x8000) != 0) ? -a : a;
 }
 
 uint16 SubtractThenAbs16(uint16 k, uint16 j) {  // 0xA0B07D
-  draw_enemy_layer = k;
-  enemy_drawing_queue_index = j - k;
-  if ((int16)(j - k) < 0)
-    enemy_drawing_queue_index = -enemy_drawing_queue_index;
-  return enemy_drawing_queue_index;
+  return Abs16(j - k);
 }
 
-uint16 CosineMult8bit(uint16 a) {  // 0xA0B0B2
-  enemy_drawing_queue_index = (uint8)(a + 64);
-  return SineMult8bit();
-}
-
-uint16 SineMult8bitNegative(uint16 a) {  // 0xA0B0C6
-  enemy_drawing_queue_index = (uint8)(a + 0x80);
-  return SineMult8bit();
-}
-
-uint16 SineMult8bit(void) {  // 0xA0B0DA
-  uint16 RegWord = Mult8x8(kSine8bit[enemy_drawing_queue_index & 0x7F], draw_enemy_layer);
-  loop_index_end = RegWord >> 8;
-  loop_index = RegWord << 8;
-  if ((enemy_drawing_queue_index & 0x80) != 0) {
-    loop_index_end = -loop_index_end;
-    loop_index = -loop_index;
+static uint32 SineMult8bitInner(uint16 varE32, uint16 varE34) {  // 0xA0B0DA
+  uint16 mult = Mult8x8(kSine8bit[varE34 & 0x7F], varE32);
+  uint16 a = mult >> 8;
+  uint16 b = mult << 8;
+  if ((varE34 & 0x80) != 0) {
+    a = -a;
+    b = -b;
   }
-  return loop_index_end;
+  return __PAIR32__(a, b);
+//  varE38 = b;
+//  varE36 = a;
+//  return a;
 }
 
-void ConvertAngleToXy(void) {  // 0xA0B643
-  R38 = kEquationForQuarterCircle[((uint8)R18_ + 0x80) & 0x7F];
-  R40 = R20_;
-  Mult32bit();
-  R26_ = R44;
-  R28_ = R42;
-  R38 = kEquationForQuarterCircle[((uint8)R18_ + 64) & 0x7F];
-  R40 = R20_;
-  Mult32bit();
-  R22_ = R44;
-  R24_ = R42;
+uint16 CosineMult8bit(uint16 a, uint16 varE32) {  // 0xA0B0B2
+  return SineMult8bitInner(varE32, (uint8)(a + 64)) >> 16;
 }
 
-void EnemyFunc_B691(void) {  // 0xA0B691
-  EnemyData *v1 = gEnemyData(cur_enemy_index);
-  uint16 x_subpos = v1->x_subpos;
-  if (((enemy_population_ptr + 64) & 0x80) != 0) {
+uint16 SineMult8bit(uint16 a, uint16 varE32) {  // 0xA0B0C6
+  return SineMult8bitInner(varE32, (uint8)(a + 0x80)) >> 16;
+}
+
+uint32 CosineMult8bitFull(uint16 a, uint16 varE32) {
+  return SineMult8bitInner(varE32, (uint8)(a + 64));
+}
+
+uint32 SineMult8bitFull(uint16 a, uint16 varE32) {
+  return SineMult8bitInner(varE32, (uint8)(a + 0x80));
+}
+
+
+Point32 ConvertAngleToXy(uint16 r18, uint16 r20) {  // 0xA0B643
+  uint32 ss = kEquationForQuarterCircle[(r18 + 0x40) & 0x7F] * r20;
+  uint32 tt = kEquationForQuarterCircle[(r18 + 0x80) & 0x7F] * r20;
+  return (Point32) { ss, tt };
+}
+
+void EnemyFunc_B691(uint16 varE20, Point32 pt) {  // 0xA0B691
+  uint16 varE24 = pt.x >> 16;
+  uint16 varE26 = pt.x;
+  uint16 varE28 = pt.y >> 16;
+  uint16 varE2A = pt.y;
+
+  EnemyData *E = gEnemyData(cur_enemy_index);
+  uint16 x_subpos = E->x_subpos;
+  if (((varE20 + 64) & 0x80) != 0) {
     bool v3 = x_subpos < varE26;
-    v1->x_subpos = x_subpos - varE26;
-    v1->x_pos -= v3 + varE24;
+    E->x_subpos = x_subpos - varE26;
+    E->x_pos -= v3 + varE24;
   } else {
     bool v3 = __CFADD__uint16(varE26, x_subpos);
-    v1->x_subpos = varE26 + x_subpos;
-    v1->x_pos += varE24 + v3;
+    E->x_subpos = varE26 + x_subpos;
+    E->x_pos += varE24 + v3;
   }
-  EnemyData *v4 = gEnemyData(cur_enemy_index);
-  uint16 y_subpos = v4->y_subpos;
-  if (((enemy_population_ptr + 128) & 0x80) != 0) {
+  uint16 y_subpos = E->y_subpos;
+  if (((varE20 + 128) & 0x80) != 0) {
     bool v3 = y_subpos < varE2A;
-    v4->y_subpos = y_subpos - varE2A;
-    v4->y_pos -= v3 + varE28;
+    E->y_subpos = y_subpos - varE2A;
+    E->y_pos -= v3 + varE28;
   } else {
     bool v3 = __CFADD__uint16(varE2A, y_subpos);
-    v4->y_subpos = varE2A + y_subpos;
-    v4->y_pos += varE28 + v3;
+    E->y_subpos = varE2A + y_subpos;
+    E->y_pos += varE28 + v3;
   }
 }
 
-void Mult32bit(void) {  // 0xA0B6FF
-  uint32 t = (uint32)R38 * (uint32)R40;
-  R42 = t;
-  R44 = t >> 16;
-}
-
-void EnemyFunc_B761(void) {  // 0xA0B761
-  int16 v0;
-  unsigned int v1; // kr00_4
-
-  R40 = 0;
-  R38 = 0;
-  if (__PAIR32__(R48, R46)) {
-    v0 = 33;
-    uint8 carry = 0, carry2;
-
-    while (1) {
-      carry2 = R44 >> 15;
-      R44 = (R44 << 1) | (R42 >> 15);
-      R42 = (R42 << 1) | carry;
-      if (!--v0)
-        break;
-      carry = R38 >> 15;
-      R40 = (R40 << 1) | (R38 >> 15);
-      R38 = (R38 << 1) | carry2;
-
-      if (__PAIR32__(R40, R38)) {
-        carry = 0;
-        v1 = __PAIR32__(R40, R38) - __PAIR32__(R48, R46);
-        if (__PAIR32__(R40, R38) >= __PAIR32__(R48, R46)) {
-          R40 = v1 >> 16;
-          R38 = v1;
-          carry = 1;
-        }
+uint32 EnemyFunc_Divide(uint32 a, uint32 b) {  // 0xA0B761
+  if (!a)
+    return 0;
+  uint32 c = 0;
+  int n = 33;
+  uint8 carry = 0, carry2;
+  while (1) {
+    carry2 = b >> 31;
+    b = b * 2 + carry;
+    if (!--n)
+      break;
+    carry = c >> 31;
+    c = c * 2 + carry2;
+    if (c) {
+      carry = 0;
+      if (c >= a) {
+        c -= a;
+        carry = 1;
       }
     }
-  } else {
-    R44 = 0;
-    R42 = 0;
   }
+  return b;
 }
 
 void EnemyFunc_B7A1(void) {  // 0xA0B7A1
-  int16 v1;
-  int16 v3;
-
-  R18_ = samus_y_pos - samus_prev_y_pos;
+  uint16 yd = samus_y_pos - samus_prev_y_pos;
   uint16 v0 = Abs16(samus_y_pos - samus_prev_y_pos);
-  if (!sign16(v0 - 12)) {
-    v1 = -12;
-    if ((R18_ & 0x8000u) == 0)
-      v1 = 12;
-    samus_prev_y_pos = samus_y_pos + v1;
-  }
-  R18_ = samus_x_pos - samus_prev_x_pos;
-  uint16 v2 = Abs16(samus_x_pos - samus_prev_x_pos);
-  if (!sign16(v2 - 12)) {
-    v3 = -12;
-    if ((R18_ & 0x8000u) == 0)
-      v3 = 12;
-    samus_prev_x_pos = samus_x_pos + v3;
-  }
+  if (!sign16(v0 - 12))
+    samus_prev_y_pos = samus_y_pos + ((yd & 0x8000) == 0 ? 12 : -12);
+  uint16 xd = samus_x_pos - samus_prev_x_pos;
+  uint16 i = Abs16(samus_x_pos - samus_prev_x_pos);
+  if (!sign16(i - 12))
+    samus_prev_x_pos = samus_x_pos + ((xd & 0x8000) == 0 ? 12 : -12);
 }
 
 void Enemy_ItemDrop_MiniKraid(uint16 k) {  // 0xA0B8EE
-  remaining_enemy_spritemap_entries = 4;
+  int n = 4;
   do {
-    R18_ = special_death_item_drop_x_origin_pos + (NextRandom() & 0x1F) - 16;
-    R20_ = special_death_item_drop_y_origin_pos + ((uint16)(random_number & 0x1F00) >> 8) - 16;
-    SpawnEnemyDrops(addr_kEnemyDef_E0FF, k);
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+    eproj_spawn_pt.x = special_death_item_drop_x_origin_pos + (NextRandom() & 0x1F) - 16;
+    eproj_spawn_pt.y = special_death_item_drop_y_origin_pos + ((random_number & 0x1F00) >> 8) - 16;
+    SpawnEnemyDrops(addr_kEnemyDef_E0FF, k, 0);
+  } while (--n);
 }
 
 void Enemy_ItemDrop_LowerNorfairSpacePirate(uint16 k) {  // 0xA0B92B
-  remaining_enemy_spritemap_entries = 5;
+  int n = 5;
   do {
-    R18_ = special_death_item_drop_x_origin_pos + (NextRandom() & 0x1F) - 16;
-    R20_ = special_death_item_drop_y_origin_pos + ((uint16)(random_number & 0x1F00) >> 8) - 16;
-    SpawnEnemyDrops(addr_kEnemyDef_F593, k);
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+    eproj_spawn_pt.x = special_death_item_drop_x_origin_pos + (NextRandom() & 0x1F) - 16;
+    eproj_spawn_pt.y = special_death_item_drop_y_origin_pos + ((random_number & 0x1F00) >> 8) - 16;
+    SpawnEnemyDrops(addr_kEnemyDef_F593, k, 0);
+  } while (--n);
 }
 
 void Enemy_ItemDrop_Metroid(uint16 k) {  // 0xA0B968
-  remaining_enemy_spritemap_entries = 5;
+  int n = 5;
   do {
-    R18_ = special_death_item_drop_x_origin_pos + (NextRandom() & 0x1F) - 16;
-    R20_ = special_death_item_drop_y_origin_pos + ((uint16)(random_number & 0x1F00) >> 8) - 16;
-    SpawnEnemyDrops(addr_kEnemyDef_DD7F, k);
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+    eproj_spawn_pt.x = special_death_item_drop_x_origin_pos + (NextRandom() & 0x1F) - 16;
+    eproj_spawn_pt.y = special_death_item_drop_y_origin_pos + ((random_number & 0x1F00) >> 8) - 16;
+    SpawnEnemyDrops(addr_kEnemyDef_DD7F, k, 0);
+  } while (--n);
 }
 
 void Enemy_ItemDrop_Ridley(uint16 k) {  // 0xA0B9A5
-  remaining_enemy_spritemap_entries = 16;
+  int n = 16;
   do {
-    R18_ = (NextRandom() & 0x7F) + 64;
-    R20_ = ((uint16)(random_number & 0x3F00) >> 8) + 320;
-    SpawnEnemyDrops(addr_kEnemyDef_E17F, k);
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+    eproj_spawn_pt.x = (NextRandom() & 0x7F) + 64;
+    eproj_spawn_pt.y = ((random_number & 0x3F00) >> 8) + 320;
+    SpawnEnemyDrops(addr_kEnemyDef_E17F, k, 0);
+  } while (--n);
 }
 
 void Enemy_ItemDrop_Crocomire(uint16 k) {  // 0xA0B9D8
-  remaining_enemy_spritemap_entries = 16;
+  int n = 16;
   do {
-    R18_ = (NextRandom() & 0x7F) + 576;
-    R20_ = ((uint16)(random_number & 0x3F00) >> 8) + 96;
-    SpawnEnemyDrops(addr_kEnemyDef_DDBF, k);
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+    eproj_spawn_pt.x = (NextRandom() & 0x7F) + 576;
+    eproj_spawn_pt.y = ((random_number & 0x3F00) >> 8) + 96;
+    SpawnEnemyDrops(addr_kEnemyDef_DDBF, k, 0);
+  } while (--n);
 }
 
 void Enemy_ItemDrop_Phantoon(uint16 k) {  // 0xA0BA0B
-  remaining_enemy_spritemap_entries = 16;
+  int n = 16;
   do {
-    R18_ = (NextRandom() & 0x7F) + 64;
-    R20_ = ((uint16)(random_number & 0x3F00) >> 8) + 96;
-    SpawnEnemyDrops(addr_kEnemyDef_E4BF, k);
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+    eproj_spawn_pt.x = (NextRandom() & 0x7F) + 64;
+    eproj_spawn_pt.y = ((random_number & 0x3F00) >> 8) + 96;
+    SpawnEnemyDrops(addr_kEnemyDef_E4BF, k, 0);
+  } while (--n);
 }
 
 void Enemy_ItemDrop_Botwoon(uint16 k) {  // 0xA0BA3E
-  remaining_enemy_spritemap_entries = 16;
+  int n = 16;
   do {
-    R18_ = (NextRandom() & 0x7F) + 64;
-    R20_ = ((uint16)(random_number & 0x3F00) >> 8) + 128;
-    SpawnEnemyDrops(addr_kEnemyDef_F293, k);
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+    eproj_spawn_pt.x = (NextRandom() & 0x7F) + 64;
+    eproj_spawn_pt.y = ((random_number & 0x3F00) >> 8) + 128;
+    SpawnEnemyDrops(addr_kEnemyDef_F293, k, 0);
+  } while (--n);
 }
 
 void Enemy_ItemDrop_Kraid(uint16 k) {  // 0xA0BA71
-  remaining_enemy_spritemap_entries = 16;
+  int n = 16;
   do {
-    R18_ = (uint8)NextRandom() + 128;
-    R20_ = ((uint16)(random_number & 0x3F00) >> 8) + 352;
-    SpawnEnemyDrops(addr_kEnemyDef_E2BF, k);
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+    eproj_spawn_pt.x = (uint8)NextRandom() + 128;
+    eproj_spawn_pt.y = ((random_number & 0x3F00) >> 8) + 352;
+    SpawnEnemyDrops(addr_kEnemyDef_E2BF, k, 0);
+  } while (--n);
 }
 
 void Enemy_ItemDrop_BombTorizo(uint16 k) {  // 0xA0BAA4
-  remaining_enemy_spritemap_entries = 16;
+  int n = 16;
   do {
-    R18_ = (NextRandom() & 0x7F) + 64;
-    R20_ = ((uint16)(random_number & 0x3F00) >> 8) + 96;
-    SpawnEnemyDrops(addr_kEnemyDef_EEFF, k);
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+    eproj_spawn_pt.x = (NextRandom() & 0x7F) + 64;
+    eproj_spawn_pt.y = ((random_number & 0x3F00) >> 8) + 96;
+    SpawnEnemyDrops(addr_kEnemyDef_EEFF, k, 0);
+  } while (--n);
 }
 
 void Enemy_ItemDrop_GoldenTorizo(uint16 k) {  // 0xA0BAD7
-  remaining_enemy_spritemap_entries = 16;
+  int n = 16;
   do {
-    R18_ = (uint8)NextRandom() + 128;
-    R20_ = ((uint16)(random_number & 0x3F00) >> 8) + 288;
-    SpawnEnemyDrops(addr_kEnemyDef_EEFF, k);
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+    eproj_spawn_pt.x = (uint8)NextRandom() + 128;
+    eproj_spawn_pt.y = ((random_number & 0x3F00) >> 8) + 288;
+    SpawnEnemyDrops(addr_kEnemyDef_EEFF, k, 0);
+  } while (--n);
 }
 
 void Enemy_ItemDrop_SporeSpawn(uint16 k) {  // 0xA0BB0A
-  remaining_enemy_spritemap_entries = 16;
+  int n = 16;
   do {
-    R18_ = (NextRandom() & 0x7F) + 64;
-    R20_ = ((uint16)(random_number & 0x3F00) >> 8) + 528;
-    SpawnEnemyDrops(addr_kEnemyDef_DF3F, k);
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+    eproj_spawn_pt.x = (NextRandom() & 0x7F) + 64;
+    eproj_spawn_pt.y = ((random_number & 0x3F00) >> 8) + 528;
+    SpawnEnemyDrops(addr_kEnemyDef_DF3F, k, 0);
+  } while (--n);
 }
 
 void Enemy_ItemDrop_Draygon(uint16 k) {  // 0xA0BB3D
-  remaining_enemy_spritemap_entries = 16;
+  int n = 16;
   do {
-    R18_ = (uint8)NextRandom() + 128;
-    R20_ = ((uint16)(random_number & 0x3F00) >> 8) + 352;
-    SpawnEnemyDrops(addr_kEnemyDef_DE3F, k);
-    --remaining_enemy_spritemap_entries;
-  } while (remaining_enemy_spritemap_entries);
+    eproj_spawn_pt.x = (uint8)NextRandom() + 128;
+    eproj_spawn_pt.y = ((random_number & 0x3F00) >> 8) + 352;
+    SpawnEnemyDrops(addr_kEnemyDef_DE3F, k, 0);
+  } while (--n);
 }
 
 uint8 CompareDistToSamus_X(uint16 k, uint16 a) {  // 0xA0BB9B
-  EnemyData *v2 = gEnemyData(k);
-  return abs16(samus_x_pos - v2->x_pos) >= a;
+  EnemyData *i = gEnemyData(k);
+  return abs16(samus_x_pos - i->x_pos) >= a;
 }
 
 uint8 CompareDistToSamus_Y(uint16 k, uint16 a) {  // 0xA0BBAD
-  EnemyData *v2 = gEnemyData(k);
-  return abs16(samus_y_pos - v2->y_pos) >= a;
+  EnemyData *i = gEnemyData(k);
+  return abs16(samus_y_pos - i->y_pos) >= a;
 }
 
-uint8 EnemyFunc_BBBF(uint16 k) {  // 0xA0BBBF
-  int16 v7;
-  int16 v8;
-  int16 v11;
-
-  EnemyData *v1 = gEnemyData(k);
-  R26_ = (v1->y_pos - v1->y_height) & 0xFFF0;
-  R26_ = (uint16)(v1->y_height + v1->y_pos - 1 - R26_) >> 4;
-  uint16 prod = Mult8x8((uint16)(v1->y_pos - v1->y_height) >> 4, room_width_in_blocks);
-  uint16 v2 = (__PAIR32__(R20_, R18_) + __PAIR32__(v1->x_pos, v1->x_subpos)) >> 16;
-  uint16 v3;
-  R22_ = R18_ + v1->x_subpos;
-  R24_ = v2;
-  if ((R20_ & 0x8000u) != 0)
-    v3 = v2 - v1->x_width;
+uint8 EnemyFunc_BBBF(uint16 k, int32 amt) {  // 0xA0BBBF
+  EnemyData *E = gEnemyData(k);
+  uint16 R26 = (E->y_pos - E->y_height) & 0xFFF0;
+  R26 = (uint16)(E->y_height + E->y_pos - 1 - R26) >> 4;
+  uint16 prod = Mult8x8((uint16)(E->y_pos - E->y_height) >> 4, room_width_in_blocks);
+  uint16 i = (amt + __PAIR32__(E->x_pos, E->x_subpos)) >> 16;
+  uint16 j;
+  //R22_ = r18 + E->x_subpos;
+  //r24 = i;
+  if (sign32(amt))
+    j = i - E->x_width;
   else
-    v3 = v1->x_width + v2 - 1;
-  R34 = v3;
-  uint16 v4 = 2 * (prod + (v3 >> 4));
-  while ((level_data[v4 >> 1] & 0x8000u) == 0) {
+    j = E->x_width + i - 1;
+  uint16 R34 = j;
+  uint16 v4 = 2 * (prod + (j >> 4));
+  while ((level_data[v4 >> 1] & 0x8000) == 0) {
     v4 += room_width_in_blocks * 2;
-    if ((--R26_ & 0x8000u) != 0)
+    if ((--R26 & 0x8000) != 0)
       return 0;
   }
-  R18_ = 0;
-  if ((R20_ & 0x8000u) != 0) {
+  /*
+  r18 = 0;
+  if (sign32(amt)) {
     v8 = R34 | 0xF;
-    EnemyData *v9 = gEnemyData(k);
-    v11 = v9->x_width + 1 + v8 - v9->x_pos;
+    v11 = E->x_width + 1 + v8 - E->x_pos;
     if (v11 >= 0)
       v11 = 0;
-    R20_ = -v11;
-    return 1;
+    r20 = -v11;
   } else {
-    EnemyData *v6 = gEnemyData(k);
-    v7 = (R34 & 0xFFF0) - v6->x_width - v6->x_pos;
+    v7 = (R34 & 0xFFF0) - E->x_width - E->x_pos;
     if (v7 < 0)
       v7 = 0;
-    R20_ = v7;
-    return 1;
-  }
+    r20 = v7;
+  }*/
+  return 1;
 }
 
-uint8 EnemyFunc_BC76(uint16 k) {  // 0xA0BC76
+uint8 EnemyFunc_BC76(uint16 k, int32 amt) {  // 0xA0BC76
   int16 v4;
-  int16 v8;
-  int16 v9;
-  int16 v12;
 
-  EnemyData *v1 = gEnemyData(k);
-  R26_ = (v1->x_pos - v1->x_width) & 0xFFF0;
-  R26_ = (uint16)(v1->x_width + v1->x_pos - 1 - R26_) >> 4;
-  uint16 v2 = (__PAIR32__(R20_, R18_) + __PAIR32__(v1->y_pos, v1->y_subpos)) >> 16;
-  uint16 v3;
-  R22_ = R18_ + v1->y_subpos;
-  R24_ = v2;
-  if ((R20_ & 0x8000u) != 0)
-    v3 = v2 - v1->y_height;
+  EnemyData *E = gEnemyData(k);
+  uint16 R26 = (E->x_pos - E->x_width) & 0xFFF0;
+  R26 = (uint16)(E->x_width + E->x_pos - 1 - R26) >> 4;
+  uint16 i = (amt + __PAIR32__(E->y_pos, E->y_subpos)) >> 16;
+  uint16 j;
+  //R22_ = r18 + E->y_subpos;
+  //r24 = i;
+  if (sign32(amt))
+    j = i - E->y_height;
   else
-    v3 = v1->y_height + v2 - 1;
-  R34 = v3;
-  uint16 prod = Mult8x8(v3 >> 4, room_width_in_blocks);
-  v4 = (uint16)(v1->x_pos - v1->x_width) >> 4;
-  for (int i = 2 * (prod + v4); (level_data[i >> 1] & 0x8000u) == 0; i += 2) {
-    if ((--R26_ & 0x8000u) != 0)
+    j = E->y_height + i - 1;
+  uint16 R34 = j;
+  uint16 prod = Mult8x8(j >> 4, room_width_in_blocks);
+  v4 = (uint16)(E->x_pos - E->x_width) >> 4;
+  for (int i = 2 * (prod + v4); (level_data[i >> 1] & 0x8000) == 0; i += 2) {
+    if ((--R26 & 0x8000) != 0)
       return 0;
   }
-  R18_ = 0;
-  if ((R20_ & 0x8000u) != 0) {
+  /*r18 = 0;
+  if (sign32(amt)) {
     v9 = R34 | 0xF;
-    EnemyData *v10 = gEnemyData(k);
-    v12 = v10->y_height + 1 + v9 - v10->y_pos;
+    v12 = E->y_height + 1 + v9 - E->y_pos;
     if (v12 >= 0)
       v12 = 0;
-    R20_ = -v12;
-    return 1;
+    r20 = -v12;
   } else {
-    EnemyData *v7 = gEnemyData(k);
-    v8 = (R34 & 0xFFF0) - v7->y_height - v7->y_pos;
+    v8 = (R34 & 0xFFF0) - E->y_height - E->y_pos;
     if (v8 < 0)
       v8 = 0;
-    R20_ = v8;
-    return 1;
-  }
+    r20 = v8;
+  }*/
+  return 1;
 }
 
-uint8 EnemyFunc_BF8A(uint16 k, uint16 a) {  // 0xA0BF8A
+uint8 EnemyFunc_BF8A(uint16 k, uint16 a, int32 amt) {  // 0xA0BF8A
   int16 v6;
-  int16 v10;
-  int16 v13;
   uint16 v4;
 
-  R28_ = a;
-  EnemyData *v2 = gEnemyData(k);
-  R26_ = (v2->x_pos - v2->x_width) & 0xFFF0;
-  R26_ = (uint16)(v2->x_width + v2->x_pos - 1 - R26_) >> 4;
+  EnemyData *E = gEnemyData(k);
+  uint16 R26 = (E->x_pos - E->x_width) & 0xFFF0;
+  R26 = (uint16)(E->x_width + E->x_pos - 1 - R26) >> 4;
 
   if (a & 1) {
-    uint16 v3 = (__PAIR32__(R20_, R18_) + __PAIR32__(v2->y_pos, v2->y_subpos)) >> 16;
-    R22_ = R18_ + v2->y_subpos;
-    R24_ = v3;
-    v4 = v2->y_height + v3 - 1;
+    uint16 j = (amt + __PAIR32__(E->y_pos, E->y_subpos)) >> 16;
+    //R22_ = r18 + E->y_subpos;
+    //r24 = j;
+    v4 = E->y_height + j - 1;
   } else {
-    uint16 v5 = (__PAIR32__(v2->y_pos, v2->y_subpos) - __PAIR32__(R20_, R18_)) >> 16;
-    R22_ = v2->y_subpos - R18_;
-    R24_ = v5;
-    v4 = v5 - v2->y_height;
+    uint16 v5 = (__PAIR32__(E->y_pos, E->y_subpos) - amt) >> 16;
+    //R22_ = E->y_subpos - r18;
+    //r24 = v5;
+    v4 = v5 - E->y_height;
   }
-  R34 = v4;
+  uint16 R34 = v4;
   uint16 prod = Mult8x8(v4 >> 4, room_width_in_blocks);
-  v6 = (uint16)(v2->x_pos - v2->x_width) >> 4;
-  for (int i = 2 * (prod + v6); (level_data[i >> 1] & 0x8000u) == 0; i += 2) {
-    if ((--R26_ & 0x8000u) != 0)
+  v6 = (uint16)(E->x_pos - E->x_width) >> 4;
+  for (int i = 2 * (prod + v6); (level_data[i >> 1] & 0x8000) == 0; i += 2) {
+    if ((--R26 & 0x8000) != 0)
       return 0;
   }
-  R18_ = 0;
-  if (R28_ & 1) {
-    EnemyData *v9 = gEnemyData(k);
-    v10 = (__PAIR32__((R34 & 0xFFF0) - v9->y_height, R34 & 0xFFF0) - __PAIR32__(v9->y_pos, v9->y_height)) >> 16;
+/*  r18 = 0;
+  if (a & 1) {
+    v10 = (__PAIR32__((R34 & 0xFFF0) - E->y_height, R34 & 0xFFF0) - __PAIR32__(E->y_pos, E->y_height)) >> 16;
     if (v10 < 0)
       v10 = 0;
-    R20_ = v10;
-    return 1;
+    r20 = v10;
   } else {
-    EnemyData *v11 = gEnemyData(k);
-    v13 = v11->y_height + 1 + (R34 | 0xF) - v11->y_pos;
+    v13 = E->y_height + 1 + (R34 | 0xF) - E->y_pos;
     if (v13 >= 0)
       v13 = 0;
-    R20_ = -v13;
-    return 1;
-  }
+    r20 = -v13;
+  }*/
+  return 1;
 }
 
 uint16 CalculateAngleOfSamusFromEproj(uint16 k) {  // 0xA0C04E
-  int v1 = k >> 1;
-  R18_ = samus_x_pos - enemy_projectile_x_pos[v1];
-  R20_ = samus_y_pos - enemy_projectile_y_pos[v1];
-  return CalculateAngleFromXY_();
+  int j = k >> 1;
+  return CalculateAngleFromXY(samus_x_pos - enemy_projectile_x_pos[j], samus_y_pos - enemy_projectile_y_pos[j]);
 }
 
 uint16 CalculateAngleOfSamusFromEnemy(uint16 k) {  // 0xA0C066
-  EnemyData *v1 = gEnemyData(k);
-  R18_ = samus_x_pos - v1->x_pos;
-  R20_ = samus_y_pos - v1->y_pos;
-  return CalculateAngleFromXY_();
+  EnemyData *E = gEnemyData(k);
+  return CalculateAngleFromXY(samus_x_pos - E->x_pos, samus_y_pos - E->y_pos);
 }
 
 uint16 CalculateAngleOfEnemyXfromEnemyY(uint16 k, uint16 j) {  // 0xA0C096
-  EnemyData *v2 = gEnemyData(k);
-  EnemyData *v3 = gEnemyData(j);
-  R18_ = v2->x_pos - v3->x_pos;
-  R20_ = v2->y_pos - v3->y_pos;
-  return CalculateAngleFromXY_();
+  EnemyData *Ek = gEnemyData(k);
+  EnemyData *Ej = gEnemyData(j);
+  return CalculateAngleFromXY(Ek->x_pos - Ej->x_pos, Ek->y_pos - Ej->y_pos);
 }
 
-uint16 CalculateAngleFromXY(void) {  // 0xA0C0AE
-  return CalculateAngleFromXY_();
+static uint8 CalculateAngleFromXY_0(uint16 div) {  // 0xA0C112
+  return (div >> 3) + 64;
 }
 
-static Func_Y_Y *const funcs_758EE[4] = { CalculateAngleFromXY_1, CalculateAngleFromXY_2, CalculateAngleFromXY_4, CalculateAngleFromXY_7 };
-static Func_Y_Y *const funcs_7587D[4] = { CalculateAngleFromXY_0, CalculateAngleFromXY_3, CalculateAngleFromXY_5, CalculateAngleFromXY_6 };
-uint16 CalculateAngleFromXY_(void) {  // 0xA0C0B1
-  uint16 v0 = 0;
-  uint16 v1 = R18_;
-  uint16 r;
+static uint8 CalculateAngleFromXY_1(uint16 div) {  // 0xA0C120
+  return 0x80 - (div >> 3);
+}
 
-  if ((R18_ & 0x8000u) != 0) {
-    v0 = 4;
-    v1 = -R18_;
+static uint8 CalculateAngleFromXY_2(uint16 div) {  // 0xA0C132
+  return div >> 3;
+}
+
+static uint8 CalculateAngleFromXY_3(uint16 div) {  // 0xA0C13C
+  return 64 - (div >> 3);
+}
+
+static uint8 CalculateAngleFromXY_4(uint16 div) {  // 0xA0C14E
+  return (div >> 3) + 0x80;
+}
+
+static uint8 CalculateAngleFromXY_5(uint16 div) {  // 0xA0C15C
+  return -64 - (div >> 3);
+}
+
+static uint8 CalculateAngleFromXY_6(uint16 div) {  // 0xA0C16E
+  return (div >> 3) - 64;
+}
+
+static uint8 CalculateAngleFromXY_7(uint16 div) {  // 0xA0C17C
+  return 0 - (div >> 3);
+}
+
+typedef uint8 CalculateAngleFromXYFunc(uint16 j);
+static CalculateAngleFromXYFunc *const funcs_758EE[4] = { CalculateAngleFromXY_1, CalculateAngleFromXY_2, CalculateAngleFromXY_4, CalculateAngleFromXY_7 };
+static CalculateAngleFromXYFunc *const funcs_7587D[4] = { CalculateAngleFromXY_0, CalculateAngleFromXY_3, CalculateAngleFromXY_5, CalculateAngleFromXY_6 };
+uint16 CalculateAngleFromXY(uint16 x_r18, uint16 y_r20) {  // 0xA0C0B1
+  int idx = 0;
+  if ((x_r18 & 0x8000) != 0) {
+    idx += 2;
+    x_r18 = -x_r18;
   }
-  R18_ = v1;
-  uint16 v2 = R20_;
-  if ((R20_ & 0x8000u) != 0) {
-    v0 += 2;
-    v2 = -R20_;
+  if ((y_r20 & 0x8000) != 0) {
+    idx += 1;
+    y_r20 = -y_r20;
   }
-  R20_ = v2;
-  if (v2 < R18_) {
-    uint16 div = SnesDivide(R20_ << 8, R18_);
-    r = funcs_7587D[v0 >> 1](div);
+  if (y_r20 < x_r18) {
+    uint16 div = SnesDivide(y_r20 << 8, x_r18);
+    return funcs_7587D[idx](div);
   } else {
-    uint16 div = SnesDivide(R18_ << 8, R20_);
-    r = funcs_758EE[v0 >> 1](div);
+    uint16 div = SnesDivide(x_r18 << 8, y_r20);
+    return funcs_758EE[idx](div);
   }
-
-  return r;
-}
-
-uint16 CalculateAngleFromXY_0(uint16 div) {  // 0xA0C112
-  return (uint8)((div >> 3) + 64);
-}
-
-uint16 CalculateAngleFromXY_1(uint16 div) {  // 0xA0C120
-  R18_ = div >> 3;
-  return (uint8)(0x80 - R18_);
-}
-
-uint16 CalculateAngleFromXY_2(uint16 div) {  // 0xA0C132
-  return (uint8)(div >> 3);
-}
-
-uint16 CalculateAngleFromXY_3(uint16 div) {  // 0xA0C13C
-  R18_ = div >> 3;
-  return (uint8)(64 - R18_);
-}
-
-uint16 CalculateAngleFromXY_4(uint16 div) {  // 0xA0C14E
-  return (div >> 3) + 0x80 & 0xff;
-}
-
-uint16 CalculateAngleFromXY_5(uint16 div) {  // 0xA0C15C
-  R18_ = div >> 3;
-  return (uint8)(-64 - R18_);
-}
-
-uint16 CalculateAngleFromXY_6(uint16 div) {  // 0xA0C16E
-  return (uint8)((div >> 3) - 64);
-}
-
-uint16 CalculateAngleFromXY_7(uint16 div) {  // 0xA0C17C
-  R18_ = div >> 3;
-  return (uint8)-(int8)R18_;
 }
 
 uint8 IsEnemyLeavingScreen(uint16 k) {  // 0xA0C18E
   int16 x_pos;
   int16 v3;
 
-  EnemyData *v1 = gEnemyData(k);
-  x_pos = v1->x_pos;
-  uint8 result = 1;
+  EnemyData *E = gEnemyData(k);
+  x_pos = E->x_pos;
   if (x_pos >= 0) {
-    v3 = v1->x_width + x_pos - layer1_x_pos;
-    if (v3 >= 0 && (int16)(v3 - 256 - v1->x_width) < 0)
+    v3 = E->x_width + x_pos - layer1_x_pos;
+    if (v3 >= 0 && (int16)(v3 - 256 - E->x_width) < 0)
       return 0;
   }
-  return result;
+  return 1;
 }
 
 void ProcessEnemyInstructions(void) {  // 0xA0C26A
-  EnemyData *ED = gEnemyData(cur_enemy_index);
-  if ((ED->ai_handler_bits & 4) == 0) {
-    if (ED->instruction_timer-- == 1) {
-      assert(ED->current_instruction & 0x8000);
-      const uint8 *base_ptr = RomPtrWithBank(ED->bank, 0x8000) - 0x8000;
-      const uint16 *pc = (const uint16 *)(base_ptr + ED->current_instruction);
-      while ((*pc & 0x8000u) != 0) {
-        enemy_ai_pointer.addr = *pc;
-        pc = CallEnemyInstr(Load24(&enemy_ai_pointer), cur_enemy_index, pc + 1);
+  EnemyData *E = gEnemyData(cur_enemy_index);
+  if ((E->ai_handler_bits & 4) == 0) {
+    if (E->instruction_timer-- == 1) {
+      assert(E->current_instruction & 0x8000);
+      const uint8 *base_ptr = RomBankBase(E->bank);
+      const uint16 *pc = (const uint16 *)(base_ptr + E->current_instruction);
+      while ((*pc & 0x8000) != 0) {
+        pc = CallEnemyInstr(E->bank << 16 | *pc, cur_enemy_index, pc + 1);
         if (!pc)
           return;
         if ((uintptr_t)pc < 0x10000)
           pc = (const uint16*)(base_ptr + (uintptr_t)pc);
       }
-      ED->instruction_timer = pc[0];
-      ED->spritemap_pointer = pc[1];
-      ED->current_instruction = (uint8 *)pc + 4 - base_ptr;
-      ED->extra_properties |= 0x8000;
+      E->instruction_timer = pc[0];
+      E->spritemap_pointer = pc[1];
+      E->current_instruction = (uint8 *)pc + 4 - base_ptr;
+      E->extra_properties |= 0x8000;
     } else {
-      ED->extra_properties &= ~0x8000;
+      E->extra_properties &= ~0x8000;
     }
   }
 }
 
-uint8 ClearCarry_13(void) {  // 0xA0C2BC
+static uint8 ClearCarry_13(EnemyBlockCollInfo *ebci) {  // 0xA0C2BC
   return 0;
 }
 
-uint8 SetCarry_4(void) {  // 0xA0C2BE
+static uint8 SetCarry_4(EnemyBlockCollInfo *ebci) {  // 0xA0C2BE
   return 1;
 }
 
-
-uint8 EnemyBlockCollReact_Spike(void) {  // 0xA0C2C0
+static uint8 EnemyBlockCollReact_Spike(EnemyBlockCollInfo *ebci) {  // 0xA0C2C0
   uint16 v0 = g_off_A0C2DA[BTS[cur_block_index] & 0x7F];
   if (!v0)
     return 1;
@@ -4156,22 +3551,20 @@ uint8 EnemyBlockCollReact_Spike(void) {  // 0xA0C2C0
   return 0;
 }
 
-uint8 EnemyBlockCollHorizReact_Slope(void) {  // 0xA0C2FA
-  if ((BTS[cur_block_index] & 0x1Fu) >= 5) {
-    uint16 v0 = BTS[cur_block_index];
-    current_slope_bts = v0;
-    return EnemyBlockCollHorizReact_Slope_NonSquare();
+static uint8 EnemyBlockCollHorizReact_Slope(EnemyBlockCollInfo *ebci) {  // 0xA0C2FA
+  if ((BTS[cur_block_index] & 0x1F) >= 5) {
+    current_slope_bts = BTS[cur_block_index];
+    return EnemyBlockCollHorizReact_Slope_NonSquare(ebci);
   } else {
-    return EnemyBlockCollHorizReact_Slope_Square(cur_block_index, BTS[cur_block_index] & 0x1F);
+    return EnemyBlockCollHorizReact_Slope_Square(ebci, cur_block_index, BTS[cur_block_index] & 0x1F);
   }
 }
 
-uint8 EnemyBlockCollVertReact_Slope(void) {  // 0xA0C319
-  uint16 v0 = BTS[cur_block_index] & 0x1F;
-  if (v0 >= 5u)
-    return EnemyBlockCollVertReact_Slope_NonSquare();
+static uint8 EnemyBlockCollVertReact_Slope(EnemyBlockCollInfo *ebci) {  // 0xA0C319
+  if ((BTS[cur_block_index] & 0x1F) >= 5)
+    return EnemyBlockCollVertReact_Slope_NonSquare(ebci);
   else
-    return EnemyBlockCollVertReact_Slope_Square(v0, cur_block_index);
+    return EnemyBlockCollVertReact_Slope_Square(ebci, BTS[cur_block_index] & 0x1F, cur_block_index);
 }
 
 static const uint8 byte_A0C435[20] = {  // 0xA0C32E
@@ -4182,86 +3575,56 @@ static const uint8 byte_A0C435[20] = {  // 0xA0C32E
   0x80, 0x81, 0x82, 0x83,
 };
 
-
-uint8 EnemyBlockCollHorizReact_Slope_Square(uint16 k, uint16 a) {
-  EnemyData *v4;
-
-  uint16 temp_collision_DD4 = 4 * a;
-  uint16 temp_collision_DD6 = BTS[k] >> 6;
-  uint16 v2 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R26_ & 8) >> 3));
-  if (!R28_) {
-    EnemyData *v3 = gEnemyData(cur_enemy_index);
-    if (((LOBYTE(v3->y_height) + LOBYTE(v3->y_pos) - 1) & 8) == 0)
-      return CHECK_locret_A0C434(v2) < 0;
-    goto LABEL_7;
-  }
-  if (R28_ != R30_ || (v4 = gEnemyData(cur_enemy_index), ((v4->y_pos - v4->y_height) & 8) == 0)) {
-LABEL_7:
-    if (CHECK_locret_A0C434(v2) < 0)
-      return 1;
-  }
-  return CHECK_locret_A0C434(v2 ^ 2) < 0;
-}
-
-void Enemy_SetXpos_Aligned(uint16 j) {  // 0xA0C390
-  EnemyData *v1 = gEnemyData(j);
-  uint16 v2;
-  v1->x_subpos = 0;
-  if ((R20_ & 0x8000u) != 0)
-    v2 = v1->x_width + (R26_ | 7) + 1;
-  else
-    v2 = (R26_ & 0xFFF8) - v1->x_width;
-  v1->x_pos = v2;
-}
-
-uint8 EnemyBlockCollVertReact_Slope_Square(uint16 a, uint16 k) {  // 0xA0C3B2
-  EnemyData *v4;
+static uint8 EnemyBlockCollHorizReact_Slope_Square(EnemyBlockCollInfo *ebci, uint16 k, uint16 a) {
+  EnemyData *E = gEnemyData(cur_enemy_index);
 
   uint16 temp_collision_DD4 = 4 * a;
   uint16 temp_collision_DD6 = BTS[k] >> 6;
-  uint16 v2 = 4 * a + (temp_collision_DD6 ^ ((uint8)(R26_ & 8) >> 2));
-  if (!R28_) {
-    EnemyData *v3 = gEnemyData(cur_enemy_index);
-    if (((LOBYTE(v3->x_width) + LOBYTE(v3->x_pos) - 1) & 8) == 0)
-      return CHECK_locret_A0C434(v2) < 0;
+  uint16 i = 4 * a + (temp_collision_DD6 ^ ((ebci->ebci_r26 & 8) >> 3));
+  if (!ebci->ebci_r28) {
+    if (((LOBYTE(E->y_height) + LOBYTE(E->y_pos) - 1) & 8) == 0)
+      return CHECK_locret_A0C434(i) < 0;
     goto LABEL_7;
   }
-  if (R28_ != R30_ || (v4 = gEnemyData(cur_enemy_index), ((v4->x_pos - v4->x_width) & 8) == 0)) {
+  if (ebci->ebci_r28 != ebci->ebci_r30 || ((E->y_pos - E->y_height) & 8) == 0) {
 LABEL_7:
-    if (CHECK_locret_A0C434(v2) < 0)
+    if (CHECK_locret_A0C434(i) < 0)
       return 1;
   }
-  return CHECK_locret_A0C434(v2 ^ 1) < 0;
+  return CHECK_locret_A0C434(i ^ 2) < 0;
 }
 
-uint8 Enemy_SetYpos_Aligned(uint16 j) {  // 0xA0C413
-  EnemyData *v1 = gEnemyData(j);
-  uint16 v2;
-  v1->y_subpos = 0;
-  if ((R20_ & 0x8000u) != 0)
-    v2 = v1->y_height + (R26_ | 7) + 1;
-  else
-    v2 = (R26_ & 0xFFF8) - v1->y_height;
-  v1->y_pos = v2;
-  return 1;
+static uint8 EnemyBlockCollVertReact_Slope_Square(EnemyBlockCollInfo *ebci, uint16 a, uint16 k) {  // 0xA0C3B2
+  EnemyData *E = gEnemyData(cur_enemy_index);
+  uint16 temp_collision_DD4 = 4 * a;
+  uint16 temp_collision_DD6 = BTS[k] >> 6;
+  uint16 i = 4 * a + (temp_collision_DD6 ^ ((ebci->ebci_r26 & 8) >> 2));
+  if (!ebci->ebci_r28) {
+    if (((LOBYTE(E->x_width) + LOBYTE(E->x_pos) - 1) & 8) == 0)
+      return CHECK_locret_A0C434(i) < 0;
+    goto LABEL_7;
+  }
+  if (ebci->ebci_r28 != ebci->ebci_r30 || ((E->x_pos - E->x_width) & 8) == 0) {
+LABEL_7:
+    if (CHECK_locret_A0C434(i) < 0)
+      return 1;
+  }
+  return CHECK_locret_A0C434(i ^ 1) < 0;
 }
-uint8 EnemyBlockCollHorizReact_Slope_NonSquare(void) {  // 0xA0C449
-  if ((R32_ & 0x8000u) == 0)
-    return (R32_ & 0x4000) != 0;
-  uint16 v2 = 4 * (current_slope_bts & 0x1F);
-  if ((R20_ & 0x8000u) == 0) {
-    Multiply16x16(R19_, g_word_A0C49F[(v2 >> 1) + 1]);
-    R18_ = mult_product_lo;
-    R20_ = mult_product_hi;
+
+static uint8 EnemyBlockCollHorizReact_Slope_NonSquare(EnemyBlockCollInfo *ebci) {  // 0xA0C449
+  if ((ebci->ebci_r32 & 0x8000) == 0)
+    return (ebci->ebci_r32 & 0x4000) != 0;
+  int i = 2 * (current_slope_bts & 0x1F);
+  if (ebci->ebci_r18_r20 >= 0) {
+    ebci->ebci_r18_r20 = (ebci->ebci_r18_r20 >> 8) * g_word_A0C49F[i + 1];
   } else {
-    Multiply16x16(-R19_, g_word_A0C49F[(v2 >> 1) + 1]);
-    Negate32(&mult_product_hi, &mult_product_lo, &R20_, &R18_);
+    ebci->ebci_r18_r20 = -(-(int16)(ebci->ebci_r18_r20 >> 8) * g_word_A0C49F[i + 1]);
   }
   return 0;
 }
 
-
-uint8 EnemyBlockCollVertReact_Slope_NonSquare(void) {  // 0xA0C51F
+static uint8 EnemyBlockCollVertReact_Slope_NonSquare(EnemyBlockCollInfo *ebci) {  // 0xA0C51F
   int16 v3;
   int16 v5;
   int16 v6;
@@ -4272,59 +3635,49 @@ uint8 EnemyBlockCollVertReact_Slope_NonSquare(void) {  // 0xA0C51F
   int16 x_pos;
   uint16 v14;
   int16 v15;
+  uint16 mod = SnesModulus(cur_block_index, room_width_in_blocks);
+  EnemyData *E = gEnemyData(cur_enemy_index);
+  uint16 v1 = cur_block_index;
 
-  if ((R20_ & 0x8000u) != 0) {
-    uint16 v9 = cur_block_index;
-    uint16 mod = SnesModulus(cur_block_index, room_width_in_blocks);
-    EnemyData *v10 = gEnemyData(cur_enemy_index);
-    v11 = v10->x_pos >> 4;
-    if (v11 == mod) {
-      uint16 temp_collision_DD4 = (R24_ - v10->y_height) & 0xF ^ 0xF;
-      uint16 temp_collision_DD6 = 16 * (BTS[v9] & 0x1F);
-      v12 = BTS[v9] << 8;
-      if (v12 < 0
-          && ((v12 & 0x4000) != 0 ? (x_pos = v10->x_pos ^ 0xF) : (x_pos = v10->x_pos),
-              (v14 = temp_collision_DD6 + (x_pos & 0xF),
-               v15 = (kAlignYPos_Tab0[v14] & 0x1F) - temp_collision_DD4 - 1,
-               (kAlignYPos_Tab0[v14] & 0x1F) - temp_collision_DD4 == 1)
-              || v15 < 0)) {
-        v10->y_pos = R24_ - v15;
-        v10->y_subpos = 0;
-        return 1;
-      } else {
-        return 0;
-      }
+  if (ebci->ebci_r18_r20 < 0) {
+    v11 = E->x_pos >> 4;
+    if (v11 != mod)
+      return 0;
+    uint16 temp_collision_DD4 = (ebci->ebci_r24 - E->y_height) & 0xF ^ 0xF;
+    uint16 temp_collision_DD6 = 16 * (BTS[v1] & 0x1F);
+    v12 = BTS[v1] << 8;
+    if (v12 < 0
+        && ((v12 & 0x4000) != 0 ? (x_pos = E->x_pos ^ 0xF) : (x_pos = E->x_pos),
+        (v14 = temp_collision_DD6 + (x_pos & 0xF),
+        v15 = (kAlignYPos_Tab0[v14] & 0x1F) - temp_collision_DD4 - 1, v15 <= 0))) {
+      E->y_pos = ebci->ebci_r24 - v15;
+      E->y_subpos = 0;
+      return 1;
     } else {
       return 0;
     }
   } else {
-    uint16 v1 = cur_block_index;
-    uint16 mod = SnesModulus(cur_block_index, room_width_in_blocks);
-    EnemyData *v2 = gEnemyData(cur_enemy_index);
-    v3 = v2->x_pos >> 4;
-    if (v3 == mod) {
-      uint16 temp_collision_DD4 = (LOBYTE(v2->y_height) + (uint8)R24_ - 1) & 0xF;
-      uint16 temp_collision_DD6 = 16 * (BTS[v1] & 0x1F);
-      v5 = BTS[v1] << 8;
-      if (v5 >= 0
-          && ((v5 & 0x4000) != 0 ? (v6 = v2->x_pos ^ 0xF) : (v6 = v2->x_pos),
-              (v7 = temp_collision_DD6 + (v6 & 0xF),
-               v8 = (kAlignYPos_Tab0[v7] & 0x1F) - temp_collision_DD4 - 1,
-               (kAlignYPos_Tab0[v7] & 0x1F) - temp_collision_DD4 == 1)
-              || v8 < 0)) {
-        v2->y_pos = R24_ + v8;
-        v2->y_subpos = -1;
-        return 1;
-      } else {
-        return 0;
-      }
+    v3 = E->x_pos >> 4;
+    if (v3 != mod)
+      return 0;
+    uint16 temp_collision_DD4 = (E->y_height + ebci->ebci_r24 - 1) & 0xF;
+    uint16 temp_collision_DD6 = 16 * (BTS[v1] & 0x1F);
+    v5 = BTS[v1] << 8;
+    if (v5 >= 0
+      && ((v5 & 0x4000) != 0 ? (v6 = E->x_pos ^ 0xF) : (v6 = E->x_pos),
+      (v7 = temp_collision_DD6 + (v6 & 0xF),
+      v8 = (kAlignYPos_Tab0[v7] & 0x1F) - temp_collision_DD4 - 1,
+      (kAlignYPos_Tab0[v7] & 0x1F) - temp_collision_DD4 == 1) || v8 < 0)) {
+      E->y_pos = ebci->ebci_r24 + v8;
+      E->y_subpos = -1;
+      return 1;
     } else {
       return 0;
     }
   }
 }
 
-uint8 EnemyBlockCollReact_HorizExt(void) {  // 0xA0C619
+static uint8 EnemyBlockCollReact_HorizExt(EnemyBlockCollInfo *ebci) {  // 0xA0C619
   uint8 t = BTS[cur_block_index];
   if (t) {
     cur_block_index += (int8)t;
@@ -4333,141 +3686,105 @@ uint8 EnemyBlockCollReact_HorizExt(void) {  // 0xA0C619
   return 0;
 }
 
-uint8 EnemyBlockCollReact_VertExt(void) {  // 0xA0C64F
-  uint16 v0;
+static uint8 EnemyBlockCollReact_VertExt(EnemyBlockCollInfo *ebci) {  // 0xA0C64F
   if (BTS[cur_block_index]) {
-    if ((BTS[cur_block_index] & 0x80) != 0) {
-      uint16 temp_collision_DD4 = BTS[cur_block_index] | 0xFF00;
-      v0 = cur_block_index;
-      do {
-        v0 -= room_width_in_blocks;
-        ++temp_collision_DD4;
-      } while (temp_collision_DD4);
-    } else {
-      uint16 temp_collision_DD4 = BTS[cur_block_index];
-      v0 = cur_block_index;
-      do {
-        v0 += room_width_in_blocks;
-        --temp_collision_DD4;
-      } while (temp_collision_DD4);
-    }
-    cur_block_index = v0;
+    cur_block_index += (int8)BTS[cur_block_index] * room_width_in_blocks;
     return 0xff;
   }
   return 0;
 }
 
-uint8 Enemy_MoveRight_SlopesAsWalls(uint16 k) {  // 0xA0C69D
-  R32_ = 0x4000;
-  return Enemy_MoveRight_IgnoreSlopes_Inner(k);
+uint8 Enemy_MoveRight_SlopesAsWalls(uint16 k, int32 amt) {  // 0xA0C69D
+  return Enemy_MoveRight_IgnoreSlopes_Inner(k, amt, 0x4000);
 }
 
-uint8 Enemy_MoveRight_ProcessSlopes(uint16 k) {  // 0xA0C6A4
-  R32_ = 0x8000;
-  return Enemy_MoveRight_IgnoreSlopes_Inner(k);
+uint8 Enemy_MoveRight_ProcessSlopes(uint16 k, int32 amt) {  // 0xA0C6A4
+  return Enemy_MoveRight_IgnoreSlopes_Inner(k, amt, 0x8000);
 }
 
-uint8 Enemy_MoveRight_IgnoreSlopes(uint16 k) {  // 0xA0C6AB
-  R32_ = 0;
-  return Enemy_MoveRight_IgnoreSlopes_Inner(k);
+uint8 Enemy_MoveRight_IgnoreSlopes(uint16 k, int32 amt) {  // 0xA0C6AB
+  return Enemy_MoveRight_IgnoreSlopes_Inner(k, amt, 0);
 }
 
-uint8 Enemy_MoveRight_IgnoreSlopes_Inner(uint16 k) {  // 0xA0C6AD
-  if (!__PAIR32__(R20_, R18_))
+// amount32 is r20:r18
+static uint8 Enemy_MoveRight_IgnoreSlopes_Inner(uint16 k, int32 amount32, uint16 r32) {  // 0xA0C6AD
+  if (!amount32)
     return 0;
-  EnemyData *v3 = gEnemyData(k);
-  R28_ = (v3->y_pos - v3->y_height) & 0xFFF0;
-  R28_ = (uint16)(v3->y_height + v3->y_pos - 1 - R28_) >> 4;
-  R30_ = R28_;
-  uint16 prod = Mult8x8((uint16)(v3->y_pos - v3->y_height) >> 4, room_width_in_blocks);
-  uint16 v4 = (__PAIR32__(R20_, R18_) + __PAIR32__(v3->x_pos, v3->x_subpos)) >> 16;
-  R22_ = R18_ + v3->x_subpos;
-  R24_ = v4;
+  EnemyData *E = gEnemyData(k);
+  uint16 r28 = (uint16)(E->y_height + E->y_pos - 1 - ((E->y_pos - E->y_height) & 0xFFF0)) >> 4;
+  uint16 r30 = r28;
+  uint16 prod = Mult8x8((uint16)(E->y_pos - E->y_height) >> 4, room_width_in_blocks);
+  uint32 new_pos = amount32 + __PAIR32__(E->x_pos, E->x_subpos);
   uint16 v5;
-  if ((R20_ & 0x8000u) != 0)
-    v5 = v4 - v3->x_width;
+  uint16 r24 = new_pos >> 16;  // read by EnemyBlockCollVertReact_Slope_NonSquare
+  if (sign32(amount32))
+    v5 = (new_pos >> 16) - E->x_width;
   else
-    v5 = v3->x_width + v4 - 1;
-  R26_ = v5;
+    v5 = E->x_width + (new_pos >> 16) - 1;
+  EnemyBlockCollInfo ebci = { .ebci_r18_r20 = amount32, .ebci_r24 = r24, .ebci_r26 = v5, .ebci_r28 = r28, .ebci_r30 = r30, .ebci_r32 = r32};
   uint16 v6 = 2 * (prod + (v5 >> 4));
-  while (!(EnemyBlockCollReact_Horiz(v6) & 1)) {
+  while (!(EnemyBlockCollReact_Horiz(&ebci, v6) & 1)) {
     v6 += room_width_in_blocks * 2;
-    if ((--R28_ & 0x8000u) != 0) {
-      EnemyData *v7 = gEnemyData(k);
-      bool v8 = __CFADD__uint16(v7->x_subpos, R18_);
-      v7->x_subpos += R18_;
-      v7->x_pos += v8 + R20_;
+    if ((--ebci.ebci_r28 & 0x8000) != 0) {
+      AddToHiLo(&E->x_pos, &E->x_subpos, ebci.ebci_r18_r20);
       return 0;
     }
   }
-  if ((R20_ & 0x8000u) != 0) {
-    EnemyData *v11 = gEnemyData(k);
-    uint16 v12 = v11->x_width + 1 + (R26_ | 0xF);
-    if (v12 == v11->x_pos || v12 < v11->x_pos)
-      v11->x_pos = v12;
-    v11->x_subpos = 0;
+  if (sign32(amount32)) {
+    uint16 v12 = E->x_width + 1 + (ebci.ebci_r26 | 0xF);
+    if (v12 <= E->x_pos)
+      E->x_pos = v12;
+    E->x_subpos = 0;
     return 1;
   } else {
-    EnemyData *v9 = gEnemyData(k);
-    uint16 v10 = (R26_ & 0xFFF0) - v9->x_width;
-    if (v10 >= v9->x_pos)
-      v9->x_pos = v10;
-    v9->x_subpos = -1;
+    uint16 v10 = (ebci.ebci_r26 & 0xFFF0) - E->x_width;
+    if (v10 >= E->x_pos)
+      E->x_pos = v10;
+    E->x_subpos = -1;
     return 1;
   }
 }
 
-uint8 Enemy_MoveDown(uint16 k) {  // 0xA0C786
-  R32_ = 0;
-  return Enemy_MoveDownInner(k);
-}
-
-uint8 Enemy_MoveDownInner(uint16 k) {  // 0xA0C788
+uint8 Enemy_MoveDown(uint16 k, int32 amount32) {  // 0xA0C786
   int16 v6;
   uint16 v5;
-
-  if (!__PAIR32__(R20_, R18_))
+  if (!amount32)
     return 0;
-  EnemyData *v3 = gEnemyData(k);
-  R28_ = (v3->x_pos - v3->x_width) & 0xFFF0;
-  R28_ = (uint16)(v3->x_width + v3->x_pos - 1 - R28_) >> 4;
-  R30_ = R28_;
-  uint16 v4 = (__PAIR32__(R20_, R18_) + __PAIR32__(v3->y_pos, v3->y_subpos)) >> 16;
-  R22_ = R18_ + v3->y_subpos;
-  R24_ = v4;
-  if ((R20_ & 0x8000u) != 0)
-    v5 = v4 - v3->y_height;
+  EnemyData *E = gEnemyData(k);
+  uint16 r28 = (uint16)(E->x_width + E->x_pos - 1 - ((E->x_pos - E->x_width) & 0xFFF0)) >> 4;
+  uint16 r30 = r28;
+  uint32 new_pos = amount32 + __PAIR32__(E->y_pos, E->y_subpos);
+  uint16 r24 = new_pos >> 16;  // read by EnemyBlockCollVertReact_Slope_NonSquare
+//  R22_ = new_pos;
+  if (sign32(amount32))
+    v5 = (new_pos >> 16) - E->y_height;
   else
-    v5 = v3->y_height + v4 - 1;
-  R26_ = v5;
+    v5 = E->y_height + (new_pos >> 16) - 1;
   uint16 prod = Mult8x8(v5 >> 4, room_width_in_blocks);
-  v6 = (uint16)(v3->x_pos - v3->x_width) >> 4;
-  for (int i = 2 * (prod + v6); !(EnemyBlockCollReact_Vert(i) & 1); i += 2) {
-    if ((--R28_ & 0x8000u) != 0) {
-      EnemyData *v8 = gEnemyData(k);
-      v8->y_subpos = R22_;
-      v8->y_pos = R24_;
+  v6 = (uint16)(E->x_pos - E->x_width) >> 4;
+  EnemyBlockCollInfo ebci = { .ebci_r18_r20 = amount32, .ebci_r24 = r24, .ebci_r26 = v5, .ebci_r28 = r28, .ebci_r30 = r30, .ebci_r32 = 0 };
+  for (int i = 2 * (prod + v6); !(EnemyBlockCollReact_Vert(&ebci, i) & 1); i += 2) {
+    if ((--ebci.ebci_r28 & 0x8000) != 0) {
+      E->y_subpos = new_pos, E->y_pos = new_pos >> 16;
       return 0;
     }
   }
-  if ((R20_ & 0x8000u) != 0) {
-    EnemyData *v11 = gEnemyData(k);
-    uint16 v13 = v11->y_height + 1 + (R26_ | 0xF);
-    if (v13 == v11->y_pos || v13 < v11->y_pos)
-      v11->y_pos = v13;
-    v11->y_subpos = 0;
+  if (sign32(amount32)) {
+    uint16 v13 = E->y_height + 1 + (ebci.ebci_r26 | 0xF);
+    if (v13 <= E->y_pos)
+      E->y_pos = v13;
+    E->y_subpos = 0;
     return 1;
   } else {
-    EnemyData *v9 = gEnemyData(k);
-    uint16 v10 = (R26_ & 0xFFF0) - v9->y_height;
-    if (v10 >= v9->y_pos)
-      v9->y_pos = v10;
-    v9->y_subpos = -1;
+    uint16 v10 = (ebci.ebci_r26 & 0xFFF0) - E->y_height;
+    if (v10 >= E->y_pos)
+      E->y_pos = v10;
+    E->y_subpos = -1;
     return 1;
   }
 }
 
-static Func_U8 *const off_A0C859[16] = {  // 0xA0C845
+static Func_EnemyBlockCollInfo_U8 *const off_A0C859[16] = {  // 0xA0C845
   ClearCarry_13,
   EnemyBlockCollHorizReact_Slope,
   ClearCarry_13,
@@ -4486,16 +3803,16 @@ static Func_U8 *const off_A0C859[16] = {  // 0xA0C845
   SetCarry_4,
 };
 
-uint8 EnemyBlockCollReact_Horiz(uint16 k) {
+static uint8 EnemyBlockCollReact_Horiz(EnemyBlockCollInfo *ebci, uint16 k) {
   cur_block_index = k >> 1;
   uint8 rv = 0;
   do {
-    rv = off_A0C859[(level_data[cur_block_index] & 0xf000) >> 12]();
+    rv = off_A0C859[(level_data[cur_block_index] & 0xf000) >> 12](ebci);
   } while (rv & 0x80);
   return rv;
 }
 
-static Func_U8 *const off_A0C88D[16] = {  // 0xA0C879
+static Func_EnemyBlockCollInfo_U8 *const off_A0C88D[16] = {  // 0xA0C879
   ClearCarry_13,
   EnemyBlockCollVertReact_Slope,
   ClearCarry_13,
@@ -4514,11 +3831,11 @@ static Func_U8 *const off_A0C88D[16] = {  // 0xA0C879
   SetCarry_4,
 };
 
-uint8 EnemyBlockCollReact_Vert(uint16 k) {
+static uint8 EnemyBlockCollReact_Vert(EnemyBlockCollInfo *ebci, uint16 k) {
   cur_block_index = k >> 1;
   uint8 rv = 0;
   do {
-    rv = off_A0C88D[(level_data[cur_block_index] & 0xf000) >> 12]();
+    rv = off_A0C88D[(level_data[cur_block_index] & 0xf000) >> 12](ebci);
   } while (rv & 0x80);
   return rv;
 }
@@ -4529,45 +3846,31 @@ void CalculateBlockContainingPixelPos(uint16 xpos, uint16 ypos) {
 }
 
 uint8 EnemyFunc_C8AD(uint16 k) {  // 0xA0C8AD
-  int16 v2;
-  int16 v3;
-  int16 v4;
-  int16 v5;
-  int16 x_pos;
-  int16 v7;
-
   uint8 result = 0;
 
-  EnemyData *v1 = gEnemyData(k);
-  CalculateBlockContainingPixelPos(v1->x_pos, v1->y_pos + v1->y_height - 1);
-  if ((level_data[cur_block_index] & 0xF000) == 4096
-      && (BTS[cur_block_index] & 0x1Fu) >= 5) {
+  EnemyData *E = gEnemyData(k);
+  CalculateBlockContainingPixelPos(E->x_pos, E->y_pos + E->y_height - 1);
+  if ((level_data[cur_block_index] & 0xF000) == 4096 && (BTS[cur_block_index] & 0x1F) >= 5) {
     result = 1;
-    uint16 temp_collision_DD4 = (LOBYTE(v1->y_height) + LOBYTE(v1->y_pos) - 1) & 0xF;
+    uint16 temp_collision_DD4 = (E->y_height + E->y_pos - 1) & 0xF;
     uint16 temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
-    v2 = BTS[cur_block_index] << 8;
-    if (v2 >= 0) {
-      v3 = (v2 & 0x4000) != 0 ? v1->x_pos ^ 0xF : v1->x_pos;
-      v4 = (kAlignYPos_Tab0[(uint16)(temp_collision_DD6 + (v3 & 0xF))] & 0x1F) - temp_collision_DD4 - 1;
+    if ((BTS[cur_block_index] & 0x80) == 0) {
+      uint16 j = (BTS[cur_block_index] & 0x40) != 0 ? E->x_pos ^ 0xF : E->x_pos;
+      int16 v4 = (kAlignYPos_Tab0[temp_collision_DD6 + (j & 0xF)] & 0x1F) - temp_collision_DD4 - 1;
       if (v4 < 0)
-        v1->y_pos += v4;
+        E->y_pos += v4;
     }
   }
-  CalculateBlockContainingPixelPos(v1->x_pos, v1->y_pos - v1->y_height);
-  if ((level_data[cur_block_index] & 0xF000) == 4096
-      && (BTS[cur_block_index] & 0x1Fu) >= 5) {
+  CalculateBlockContainingPixelPos(E->x_pos, E->y_pos - E->y_height);
+  if ((level_data[cur_block_index] & 0xF000) == 4096 && (BTS[cur_block_index] & 0x1F) >= 5) {
     result = 1;
-    uint16 temp_collision_DD4 = (v1->y_pos - v1->y_height) & 0xF ^ 0xF;
+    uint16 temp_collision_DD4 = (E->y_pos - E->y_height) & 0xF ^ 0xF;
     uint16 temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
-    v5 = BTS[cur_block_index] << 8;
-    if (v5 < 0) {
-      if ((v5 & 0x4000) != 0)
-        x_pos = v1->x_pos ^ 0xF;
-      else
-        x_pos = v1->x_pos;
-      v7 = (kAlignYPos_Tab0[(uint16)(temp_collision_DD6 + (x_pos & 0xF))] & 0x1F) - temp_collision_DD4 - 1;
-      if (v7 <= 0)
-        v1->y_pos -= v7;
+    if (BTS[cur_block_index] & 0x80) {
+      uint16 j = (BTS[cur_block_index] & 0x40) != 0 ? E->x_pos ^ 0xF : E->x_pos;
+      int16 v7 = (kAlignYPos_Tab0[temp_collision_DD6 + (j & 0xF)] & 0x1F) - temp_collision_DD4 - 1;
+      if (v7 < 0)
+        E->y_pos -= v7;
     }
   }
   return result;

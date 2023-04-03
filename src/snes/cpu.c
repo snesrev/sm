@@ -8,8 +8,9 @@
 #include "cpu.h"
 #include "snes.h"
 #include "../types.h"
+#include "../ida_types.h"
+#include "../enemy_types.h"
 #include "../variables.h"
-
 static const int cyclesPerOpcode[256] = {
   7, 6, 7, 4, 5, 3, 5, 6, 3, 2, 2, 4, 6, 4, 6, 5,
   2, 5, 5, 7, 5, 4, 6, 6, 2, 4, 2, 2, 6, 4, 7, 5,
@@ -43,6 +44,8 @@ static uint16_t cpu_readWord(Cpu* cpu, uint32_t adrl, uint32_t adrh);
 static void cpu_writeWord(Cpu* cpu, uint32_t adrl, uint32_t adrh, uint16_t value, bool reversed);
 static void cpu_doInterrupt(Cpu* cpu, bool irq);
 static void cpu_doOpcode(Cpu* cpu, uint8_t opcode);
+
+extern Snes *g_snes; // for debugging
 
 // addressing modes and opcode functions not declared, only used after defintions
 

@@ -14,14 +14,11 @@
 #define kProjInstrList_Explosion (*(ProjectileDamagesAndInstrPtr*)RomFixedPtr(0x938681))
 #define g_off_938413 ((uint16*)RomFixedPtr(0x938413))
 
-
-
-
 void InitializeProjectile(uint16 k) {  // 0x938000
   ProjectileDataTable *ProjectileDataTable;
 
   int v1 = k >> 1;
-  int R18 = 2 * (projectile_dir[v1] & 0xF);
+  int r18 = 2 * (projectile_dir[v1] & 0xF);
   uint16 v2 = projectile_type[v1], v3;
   if ((v2 & 0xF00) != 0) {
     v3 = kProjectileData_NonBeams[HIBYTE(v2) & 0xF];
@@ -34,7 +31,7 @@ void InitializeProjectile(uint16 k) {  // 0x938000
   if (sign16(ProjectileDataTable->damage))
     InvalidInterrupt_Crash();
   projectile_damage[v1] = ProjectileDataTable->damage;
-  uint16 v7 = GET_WORD(RomPtr_93(v3 + R18 + 2));
+  uint16 v7 = GET_WORD(RomPtr_93(v3 + r18 + 2));
   projectile_bomb_instruction_ptr[v1] = v7;
   const uint8 *v8 = RomPtr_93(v7);
   projectile_x_radius[v1] = v8[4];
@@ -68,7 +65,7 @@ void KillProjectileInner(uint16 k) {  // 0x9380CF
   int v1 = k >> 1;
   if ((projectile_type[v1] & 0xF00) != 0) {
     if (!cinematic_function)
-      QueueSfx2_Max6(7u);
+      QueueSfx2_Max6(7);
     uint16 v2 = projectile_type[v1];
     projectile_type[v1] = v2 & 0xF0FF | 0x800;
     if ((v2 & 0x200) != 0) {
@@ -83,7 +80,7 @@ void KillProjectileInner(uint16 k) {  // 0x9380CF
   } else {
     projectile_type[v1] = projectile_type[v1] & 0xF0FF | 0x700;
     projectile_bomb_instruction_ptr[v1] = HIWORD(g_stru_938679.damages);
-    QueueSfx2_Max6(0xCu);
+    QueueSfx2_Max6(0xC);
   }
   projectile_bomb_instruction_timers[v1] = 1;
   projectile_damage[v1] = 8;
@@ -97,13 +94,13 @@ void InitializeBombExplosion(uint16 k) {  // 0x93814E
 
 void InitializeShinesparkEchoOrSpazerSba(uint16 k) {  // 0x938163
   int v1 = k >> 1;
-  int R18 = 2 * (projectile_dir[v1] & 0xF);
+  int r18 = 2 * (projectile_dir[v1] & 0xF);
   const uint8 *v3 = RomPtr_93(kShinesparkEchoSpazer_ProjectileData[LOBYTE(projectile_type[v1]) - 34]);
   uint16 v4 = GET_WORD(v3);
   projectile_damage[v1] = GET_WORD(v3);
   if (sign16(v4))
     InvalidInterrupt_Crash();
-  projectile_bomb_instruction_ptr[v1] = GET_WORD(v3 + 2 + R18);
+  projectile_bomb_instruction_ptr[v1] = GET_WORD(v3 + 2 + r18);
   projectile_bomb_instruction_timers[v1] = 1;
 }
 
@@ -118,10 +115,10 @@ void InitializeSbaProjectile(uint16 k) {  // 0x9381A4
   projectile_bomb_instruction_timers[v1] = 1;
 }
 
-void ProjectileInsts_GetValue(uint16 k) {  // 0x9381D1
+uint16 ProjectileInsts_GetValue(uint16 k) {  // 0x9381D1
   int ip = projectile_bomb_instruction_ptr[k >> 1];
   int delta = (projectile_bomb_instruction_timers[k >> 1] == 1 && !sign16(get_ProjectileInstr(ip)->timer)) ? 0 : -8;
-  R22_ = get_ProjectileInstr(ip + delta)->field_6;
+  return get_ProjectileInstr(ip + delta)->field_6;
 }
 
 uint16 CallProj93Instr(uint32 ea, uint16 j, uint16 k) {
@@ -134,30 +131,25 @@ uint16 CallProj93Instr(uint32 ea, uint16 j, uint16 k) {
 }
 
 void RunProjectileInstructions(void) {  // 0x9381E9
-  ProjectileInstr *v7;
-  ProjectileInstr *ProjectileInstr;
+  ProjectileInstr *PI;
 
   uint16 v0 = projectile_index;
   int v1 = projectile_index >> 1;
   if (projectile_bomb_instruction_timers[v1]-- == 1) {
-    uint16 v3 = projectile_bomb_instruction_ptr[v1], timer;
+    uint16 v3 = projectile_bomb_instruction_ptr[v1];
     while (1) {
-      ProjectileInstr = get_ProjectileInstr(v3);
-      timer = ProjectileInstr->timer;
-      if ((ProjectileInstr->timer & 0x8000u) == 0)
+      PI = get_ProjectileInstr(v3);
+      if ((PI->timer & 0x8000) == 0)
         break;
-      R18_ = ProjectileInstr->timer;
-      v3 = CallProj93Instr(timer | 0x930000, v0, v3 + 2);
+      v3 = CallProj93Instr(PI->timer | 0x930000, v0, v3 + 2);
       if (!v3)
         return;
     }
-    int v6 = v0 >> 1;
-    projectile_bomb_instruction_timers[v6] = timer;
-    v7 = get_ProjectileInstr(v3);
-    projectile_spritemap_pointers[v6] = v7->spritemap_ptr;
-    projectile_x_radius[v6] = v7->x_radius;
-    projectile_y_radius[v6] = v7->y_radius;
-    projectile_bomb_instruction_ptr[v6] = v3 + 8;
+    projectile_bomb_instruction_timers[v1] = PI->timer;
+    projectile_spritemap_pointers[v1] = PI->spritemap_ptr;
+    projectile_x_radius[v1] = PI->x_radius;
+    projectile_y_radius[v1] = PI->y_radius;
+    projectile_bomb_instruction_ptr[v1] = v3 + 8;
   }
 }
 
@@ -180,6 +172,7 @@ uint16 Proj93Instr_GotoIfLess(uint16 k, uint16 j) {  // 0x938240
 
 void DrawPlayerExplosions2(void) {  // 0x938254
   uint16 v0 = 8;
+  uint16 r18, r20;
   projectile_index = 8;
   do {
     int v1 = v0 >> 1;
@@ -203,25 +196,23 @@ void DrawPlayerExplosions2(void) {  // 0x938254
     } else if ((nmi_frame_counter_word & 1) == 0) {
       goto LABEL_25;
     }
-    if ((ceres_status & 0x8000u) == 0) {
-      R20_ = projectile_x_pos[v1] - layer1_x_pos;
+    if ((ceres_status & 0x8000) == 0) {
+      r20 = projectile_x_pos[v1] - layer1_x_pos;
       v3 = projectile_y_pos[v1] - layer1_y_pos;
-      R18_ = v3;
+      r18 = v3;
     } else {
-      CalcExplosion_Mode7(v0);
-      v3 = R18_;
+      Point16U pt = CalcExplosion_Mode7(v0);
+      v3 = pt.y;
+      r20 = pt.x;
     }
-    if ((v3 & 0xFF00) != 0) {
-      if ((projectile_spritemap_pointers[v1] & 0x8000u) != 0){
-      }
-    } else if ((projectile_spritemap_pointers[v1] & 0x8000u) != 0) {
-      DrawProjectileSpritemap(v0);
+    if ((v3 & 0xFF00) == 0 && (projectile_spritemap_pointers[v1] & 0x8000) != 0) {
+      DrawProjectileSpritemap(v0, r20, r18);
     }
     v0 = projectile_index;
 LABEL_25:
     v0 -= 2;
     projectile_index = v0;
-  } while ((v0 & 0x8000u) == 0);
+  } while ((v0 & 0x8000) == 0);
   Samus_DrawShinesparkCrashEchoProjectiles();
   HandleProjectileTrails();
 }
@@ -232,22 +223,23 @@ void sub_9382FD(void) {  // 0x9382FD
   do {
     int v1 = v0 >> 1;
     if (projectile_bomb_instruction_ptr[v1]) {
-      R20_ = projectile_x_pos[v1] - layer1_x_pos;
-      R18_ = projectile_y_pos[v1] - 8 - layer1_y_pos;
-      if ((R18_ & 0xFF00) != 0) {
-      } else if ((projectile_spritemap_pointers[v1] & 0x8000u) != 0) {
-        DrawProjectileSpritemap(v0);
+      uint16 r20 = projectile_x_pos[v1] - layer1_x_pos;
+      uint16 r18 = projectile_y_pos[v1] - 8 - layer1_y_pos;
+      if ((r18 & 0xFF00) != 0) {
+      } else if ((projectile_spritemap_pointers[v1] & 0x8000) != 0) {
+        DrawProjectileSpritemap(v0, r20, r18);
       }
       v0 = projectile_index;
     }
     v0 -= 2;
     projectile_index = v0;
-  } while ((v0 & 0x8000u) == 0);
+  } while ((v0 & 0x8000) == 0);
   HandleProjectileTrails();
 }
 
 void DrawBombAndProjectileExplosions(void) {  // 0x93834D
   uint16 v0 = 18, v2;
+  uint16 r18, r20;
   projectile_index = 18;
   do {
     int v1 = v0 >> 1;
@@ -258,25 +250,25 @@ void DrawBombAndProjectileExplosions(void) {  // 0x93834D
         goto LABEL_16;
 LABEL_9:;
       uint16 v3 = projectile_x_pos[v1] - layer1_x_pos;
-      R20_ = v3;
+      r20 = v3;
       if (!sign16(v3 - 304) || sign16(v3 + 48))
         goto LABEL_16;
       v2 = projectile_y_pos[v1] - layer1_y_pos;
-      R18_ = v2;
+      r18 = v2;
       goto LABEL_12;
     }
-    if ((projectile_type[v1] & 0xF00) == 1280 || (ceres_status & 0x8000u) == 0)
+    if ((projectile_type[v1] & 0xF00) == 1280 || (ceres_status & 0x8000) == 0)
       goto LABEL_9;
     CalcExplosion_Mode7(v0);
-    v2 = R18_;
+    v2 = r18;
 LABEL_12:
     if ((v2 & 0xFF00) != 0)
       ;
     else
-      DrawProjectileSpritemap(v0);
+      DrawProjectileSpritemap(v0, r20, r18);
     v0 = projectile_index;
 LABEL_16:
     v0 -= 2;
     projectile_index = v0;
-  } while ((v0 & 0x8000u) == 0);
+  } while ((v0 & 0x8000) == 0);
 }

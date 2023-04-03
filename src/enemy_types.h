@@ -1010,17 +1010,6 @@ uint8 pad1[0x7800 - 0xFB8];
   uint16 fzr_var_1E;
   uint16 fzr_var_1F;
 }Enemy_FireZoomer;
-typedef struct Enemy_Fireflea {
-EnemyBase base;
-uint16 firefl_var_A;
-uint16 firefl_var_B;
-uint16 firefl_var_C;
-uint16 firefl_var_D;
-uint16 firefl_var_E;
-uint16 firefl_var_F;
-uint16 firefl_parameter_1;
-uint16 firefl_parameter_2;
-}Enemy_Fireflea;
 typedef struct Enemy_Flies {
 EnemyBase base;
 uint16 flies_var_A;
@@ -3993,7 +3982,6 @@ struct Enemy_FakeKraid; static inline Enemy_FakeKraid *Get_FakeKraid(int o) { re
 struct Enemy_FireFlea; static inline Enemy_FireFlea *Get_FireFlea(int o) { return (Enemy_FireFlea *)(g_ram + 0xF78 + o); }
 struct Enemy_FireGeyser; static inline Enemy_FireGeyser *Get_FireGeyser(int o) { return (Enemy_FireGeyser *)(g_ram + 0xF78 + o); }
 struct Enemy_FireZoomer; static inline Enemy_FireZoomer *Get_FireZoomer(int o) { return (Enemy_FireZoomer *)(g_ram + 0xF78 + o); }
-struct Enemy_Fireflea; static inline Enemy_Fireflea *Get_Fireflea(int o) { return (Enemy_Fireflea *)(g_ram + 0xF78 + o); }
 struct Enemy_Flies; static inline Enemy_Flies *Get_Flies(int o) { return (Enemy_Flies *)(g_ram + 0xF78 + o); }
 struct Enemy_Fune; static inline Enemy_Fune *Get_Fune(int o) { return (Enemy_Fune *)(g_ram + 0xF78 + o); }
 struct Enemy_Gripper; static inline Enemy_Gripper *Get_Gripper(int o) { return (Enemy_Gripper *)(g_ram + 0xF78 + o); }

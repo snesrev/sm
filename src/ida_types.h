@@ -64,11 +64,6 @@ typedef struct XraySpecialCasing {
 } XraySpecialCasing;
 
 /* 7 */
-typedef struct SpawnHardcodedPlmArgs {
-  uint8 field_0;
-  uint8 field_1;
-  VoidP field_2;
-} SpawnHardcodedPlmArgs;
 
 /* 8 */
 typedef struct RoomPlmEntry {
@@ -1514,8 +1509,8 @@ enum Consts_60 {
 enum Consts_80 {
   addr_kHudTilemaps_AutoReserve = 0x998B,
   addr_kHudTilemaps_Missiles = 0x99A3,
-  addr_kDigitTilesetsHealth = 0x9DBF,
-  addr_kDigitTilesetsWeapon = 0x9DD3,
+  addrl_kDigitTilesetsHealth = 0x809DBF,
+  addrl_kDigitTilesetsWeapon = 0x809DD3,
   addr_word_80A060 = 0xA060,
 };
 enum Consts_81 {
@@ -2009,6 +2004,8 @@ enum Consts_90 {
   addr_kSamusSpeedTable_Normal_X__plus__12 = 0x9F55,
   addr_kSamusSpeedTable_Water_X = 0xA08D,
   addr_kSamusSpeedTable_LavaAcid_X = 0xA1DD,
+  addr_kSuperMissileAccelerations = 0xc303,
+  addr_kSuperMissileAccelerations2 = 0xc32b,
   addr_loc_90C4F0 = 0xC4F0,
 };
 enum Consts_91 {

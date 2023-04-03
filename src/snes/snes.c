@@ -164,7 +164,7 @@ void snes_handle_pos_stuff(Snes *snes) {
   }
 }
 
-#define IS_ADR(x) (x == 0xfffff )
+#define IS_ADR(x) (x == 0xfffff)
 
 void snes_catchupApu(Snes* snes) {
   if (snes->apuCatchupCycles > 10000)
@@ -407,9 +407,11 @@ uint8_t snes_read(Snes* snes, uint32_t adr) {
 }
 
 void LogWrite(Snes *snes, uint32_t adr, uint8_t val) {
-  printf("@%d: Write to 0x%x = 0x%.2x: 0x%x: 0x%x: x = 0x%x, y = 0x%x, c = %d\n",
+  printf("@%d: Write to 0x%x = 0x%.2x: 0x%x: r18=0x%x: r20=0x%x: a = 0x%x, x = 0x%x, y = 0x%x, c = %d\n",
          snes_frame_counter, adr, val, snes->cpu->k << 16 | snes->cpu->pc,
-         snes->ram[0x12] | snes->ram[0x13] << 8, snes->cpu->x, snes->cpu->y, snes->cpu->c);
+         snes->ram[0x12] | snes->ram[0x13] << 8, 
+          snes->ram[0x14] | snes->ram[0x15] << 8,
+         snes->cpu->a, snes->cpu->x, snes->cpu->y, snes->cpu->c);
 }
 
 void snes_write(Snes* snes, uint32_t adr, uint8_t val) {
