@@ -58,7 +58,7 @@
 #define g_word_A3EAD6 ((uint16*)RomFixedPtr(0xa3ead6))
 #define g_word_A3EA3F ((uint16*)RomFixedPtr(0xa3ea3f))
 
-void CallSidehopperFunc(uint32 ea);
+static void CallSidehopperFunc(uint32 ea);
 
 static const int16 g_word_A3A76D[4] = { 2, 0, -2, 0 };
 static const int16 g_word_A3A775[4] = { 0, -2, 0, 2 };

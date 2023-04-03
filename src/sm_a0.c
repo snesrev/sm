@@ -2926,7 +2926,7 @@ LABEL_57:
             return (CheckEnemyColl_Result) { -1, 0 };
           }
           if (v18 >= 0) {
-LABEL_58:
+LABEL_58:;
             int v25 = samus_collision_direction & 3;
             enemy_index_colliding_dirs[v25] = collision_detection_index;
             return (CheckEnemyColl_Result) { -1, INT16_SHL16(v18) };

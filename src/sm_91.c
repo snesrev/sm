@@ -1302,8 +1302,7 @@ void VariaSuitPickup(void) {  // 0x91D4E4
   suit_pickup_color_math_B = 0x80;
   suit_pickup_palette_transition_color = 0;
   Samus_CancelSpeedBoost();
-  samus_x_extra_run_speed = 0;
-  samus_x_extra_run_subspeed = 0;
+  SetHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, 0);
   samus_x_base_speed = 0;
   samus_x_base_subspeed = 0;
   samus_y_subspeed = 0;
@@ -1341,8 +1340,7 @@ void GravitySuitPickup(void) {  // 0x91D5BA
   suit_pickup_color_math_B = -112;
   suit_pickup_palette_transition_color = 1;
   Samus_CancelSpeedBoost();
-  samus_x_extra_run_speed = 0;
-  samus_x_extra_run_subspeed = 0;
+  SetHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, 0);
   samus_x_base_speed = 0;
   samus_x_base_subspeed = 0;
   samus_y_subspeed = 0;
@@ -2028,8 +2026,7 @@ void MakeSamusFaceForward(void) {  // 0x91E3F6
   samus_special_transgfx_index = 0;
   samus_hurt_switch_index = 0;
   CallSomeSamusCode(0x1F);
-  samus_x_extra_run_speed = 0;
-  samus_x_extra_run_subspeed = 0;
+  SetHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, 0);
   samus_x_base_speed = 0;
   samus_x_base_subspeed = 0;
   samus_y_subspeed = 0;
@@ -2594,14 +2591,10 @@ LABEL_16:
 
 void Samus_HandleTransitionsA_1(void) {  // 0x91EC50
   if (samus_x_base_speed || samus_x_base_subspeed) {
-    uint16 v0 = (__PAIR32__(samus_x_extra_run_speed, samus_x_base_subspeed)
-                 + __PAIR32__(samus_x_base_speed, samus_x_extra_run_subspeed)) >> 16;
-    samus_x_base_subspeed += samus_x_extra_run_subspeed;
-    samus_x_base_speed = v0;
+    AddToHiLo(&samus_x_base_speed, &samus_x_base_subspeed, __PAIR32__(samus_x_extra_run_speed, samus_x_extra_run_subspeed));
     samus_x_accel_mode = 2;
     Samus_CancelSpeedBoost();
-    samus_x_extra_run_subspeed = 0;
-    samus_x_extra_run_speed = 0;
+    SetHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, 0);
     SamusFunc_EC80();
   } else {
     Samus_HandleTransitionsA_2();
@@ -2617,8 +2610,7 @@ void Samus_HandleTransitionsA_6(void) {  // 0x91EC85
 
 void Samus_HandleTransitionsA_8(void) {  // 0x91EC8E
   Samus_CancelSpeedBoost();
-  samus_x_extra_run_subspeed = 0;
-  samus_x_extra_run_speed = 0;
+  SetHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, 0);
   SamusFunc_EC80();
 }
 
@@ -2842,8 +2834,7 @@ void Samus_HandleTransitionsB_9(void) {  // 0x91EF4F
   samus_x_base_subspeed = 0;
   samus_y_subspeed = 0;
   samus_y_speed = 0;
-  samus_x_extra_run_speed = 0;
-  samus_x_extra_run_subspeed = 0;
+  SetHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, 0);
 }
 
 void Samus_HandleTransitionsB_10(void) {  // 0x91EFBC
@@ -2874,8 +2865,7 @@ void Samus_HandleTransitionsB_9B(void) {  // 0x91EF53
   samus_x_base_subspeed = 0;
   samus_y_subspeed = 0;
   samus_y_speed = 0;
-  samus_x_extra_run_speed = 0;
-  samus_x_extra_run_subspeed = 0;
+  SetHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, 0);
 }
 
 
@@ -3402,13 +3392,9 @@ uint8 SamusFunc_F468_SpinJump(void) {  // 0x91F624
     } else if ((samus_prev_pose_x_dir & 0xF) != 4 || *(uint16 *)&samus_pose_x_dir != 776) {
       goto LABEL_9;
     }
-    uint16 v0 = (__PAIR32__(samus_x_extra_run_speed, samus_x_base_subspeed)
-                 + __PAIR32__(samus_x_base_speed, samus_x_extra_run_subspeed)) >> 16;
-    samus_x_base_subspeed += samus_x_extra_run_subspeed;
-    samus_x_base_speed = v0;
+    AddToHiLo(&samus_x_base_speed, &samus_x_base_subspeed, __PAIR32__(samus_x_extra_run_speed, samus_x_extra_run_subspeed));
     Samus_CancelSpeedBoost();
-    samus_x_extra_run_subspeed = 0;
-    samus_x_extra_run_speed = 0;
+    SetHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, 0);
     samus_x_accel_mode = 1;
   }
 LABEL_9:
@@ -3592,50 +3578,36 @@ uint8 SamusFunc_F468_TurningAroundOnGround(void) {  // 0x91F8D3
   if (samus_prev_pose && samus_prev_pose != kPose_9B_FaceF_VariaGravitySuit) {
     uint16 v0 = kPoseParams[samus_prev_pose].direction_shots_fired;
     if (samus_prev_movement_type2 == kMovementType_10_Moonwalking) {
-      new_projectile_direction_changed_pose = *(&kPoseParams[0].direction_shots_fired
-                                                + (8 * samus_prev_pose)) | 0x100;
+      new_projectile_direction_changed_pose = v0 | 0x100;
       if ((button_config_jump_a & joypad1_lastkeys) != 0) {
         samus_pose = kSamusTurnPose_Moonwalk[v0];
-        goto LABEL_9;
+      } else {
+        samus_pose = kSamusTurnPose_Standing[v0];
       }
     } else if (samus_prev_movement_type2 == 5) {
-      samus_pose = kSamusTurnPose_Crouching[*(&kPoseParams[0].direction_shots_fired
-                                              + (8 * samus_prev_pose))];
-      goto LABEL_9;
+      samus_pose = kSamusTurnPose_Crouching[v0];
+    } else {
+      samus_pose = kSamusTurnPose_Standing[v0];
     }
-    samus_pose = kSamusTurnPose_Standing[v0];
   }
-LABEL_9:;
-  uint16 v1 = (__PAIR32__(samus_x_extra_run_speed, samus_x_base_subspeed)
-               + __PAIR32__(samus_x_base_speed, samus_x_extra_run_subspeed)) >> 16;
-  samus_x_base_subspeed += samus_x_extra_run_subspeed;
-  samus_x_base_speed = v1;
-  samus_x_extra_run_subspeed = 0;
-  samus_x_extra_run_speed = 0;
+  AddToHiLo(&samus_x_base_speed, &samus_x_base_subspeed, __PAIR32__(samus_x_extra_run_speed, samus_x_extra_run_subspeed));
+  SetHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, 0);
   samus_x_accel_mode = 1;
   return 1;
 }
 
 uint8 SamusFunc_F468_TurnAroundJumping(void) {  // 0x91F952
   samus_pose = kSamusTurnPose_Jumping[kPoseParams[samus_prev_pose].direction_shots_fired];
-  uint16 v0 = (__PAIR32__(samus_x_extra_run_speed, samus_x_base_subspeed)
-               + __PAIR32__(samus_x_base_speed, samus_x_extra_run_subspeed)) >> 16;
-  samus_x_base_subspeed += samus_x_extra_run_subspeed;
-  samus_x_base_speed = v0;
-  samus_x_extra_run_subspeed = 0;
-  samus_x_extra_run_speed = 0;
+  AddToHiLo(&samus_x_base_speed, &samus_x_base_subspeed, __PAIR32__(samus_x_extra_run_speed, samus_x_extra_run_subspeed));
+  SetHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, 0);
   samus_x_accel_mode = 1;
   return 1;
 }
 
 uint8 SamusFunc_F468_TurnAroundFalling(void) {  // 0x91F98A
   samus_pose = kSamusTurnPose_Falling[kPoseParams[samus_prev_pose].direction_shots_fired];
-  uint16 v0 = (__PAIR32__(samus_x_extra_run_speed, samus_x_base_subspeed)
-               + __PAIR32__(samus_x_base_speed, samus_x_extra_run_subspeed)) >> 16;
-  samus_x_base_subspeed += samus_x_extra_run_subspeed;
-  samus_x_base_speed = v0;
-  samus_x_extra_run_subspeed = 0;
-  samus_x_extra_run_speed = 0;
+  AddToHiLo(&samus_x_base_speed, &samus_x_base_subspeed, __PAIR32__(samus_x_extra_run_speed, samus_x_extra_run_subspeed));
+  SetHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, 0);
   samus_x_accel_mode = 1;
   return 1;
 }
@@ -3657,13 +3629,9 @@ void SamusFunc_FA0A(void) {  // 0x91FA0F
   }
   if (samus_pose_x_dir == 8) {
 LABEL_5:;
-    uint16 v0 = (__PAIR32__(samus_x_extra_run_speed, samus_x_base_subspeed)
-                 + __PAIR32__(samus_x_base_speed, samus_x_extra_run_subspeed)) >> 16;
-    samus_x_base_subspeed += samus_x_extra_run_subspeed;
-    samus_x_base_speed = v0;
+    AddToHiLo(&samus_x_base_speed, &samus_x_base_subspeed, __PAIR32__(samus_x_extra_run_speed, samus_x_extra_run_subspeed));
     Samus_CancelSpeedBoost();
-    samus_x_extra_run_subspeed = 0;
-    samus_x_extra_run_speed = 0;
+    SetHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, 0);
     samus_x_accel_mode = 1;
   }
 }
