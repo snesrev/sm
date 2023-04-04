@@ -504,10 +504,7 @@ void Crocomire_Func_29(void) {  // 0xA48C90
 
 void Crocomire_Func_30(void) {  // 0xA48C95
   Enemy_Crocomire *E = Get_Crocomire(0);
-  if (!E->crocom_var_A
-      && (((__PAIR32__(E->base.x_pos - E->base.x_width, E->base.x_pos)
-            - __PAIR32__(samus_x_radius, E->base.x_width)
-            - __PAIR32__(samus_x_pos, (E->base.x_pos < E->base.x_width) + samus_x_radius)) >> 16) & 0x8000) != 0) {
+  if (!E->crocom_var_A && (int16)(E->base.x_pos - E->base.x_width - samus_x_radius - samus_x_pos) < 0) {
     NormalEnemyTouchAi();
     samus_x_pos = E->base.x_pos - E->base.x_width - samus_x_radius;
     samus_prev_x_pos = samus_x_pos;
@@ -1379,13 +1376,11 @@ void Crocomire_Func_72(void) {  // 0xA499E5
     AddToHiLo(&E->base.x_pos, &E->base.x_subpos, t);
   }
   Enemy_Crocomire *E2 = Get_Crocomire(0x80);
-  if (E2->crocom_var_D) {
-    if (E2->crocom_var_D-- == 1) {
-      E->crocom_var_E = 0;
-      E->base.current_instruction = addr_kCrocomire_Ilist_E14A;
-      E->base.instruction_timer = 1;
-      Crocomire_9BB3();
-    }
+  if (E2->crocom_var_D && E2->crocom_var_D-- == 1) {
+    E->crocom_var_E = 0;
+    E->base.current_instruction = addr_kCrocomire_Ilist_E14A;
+    E->base.instruction_timer = 1;
+    Crocomire_9BB3();
   }
 }
 

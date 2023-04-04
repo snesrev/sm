@@ -4401,18 +4401,14 @@ uint16 Eproj_FuncE722(uint16 k) {  // 0x86E722
 void Eproj_FuncE73E_MoveXY(uint16 k) {  // 0x86E73E
   int v1 = k >> 1;
   if (((g_word_7E97DC[v1] + 64) & 0x80) != 0) {
-    AddToHiLo(&enemy_projectile_x_pos[v1], &enemy_projectile_x_subpos[v1], 
-              -(int32)__PAIR32__(enemy_projectile_x_vel[v1], enemy_projectile_E[v1]));
+    AddToHiLo(&enemy_projectile_x_pos[v1], &enemy_projectile_x_subpos[v1], -IPAIR32(enemy_projectile_x_vel[v1], enemy_projectile_E[v1]));
   } else {
-    AddToHiLo(&enemy_projectile_x_pos[v1], &enemy_projectile_x_subpos[v1], 
-              __PAIR32__(enemy_projectile_x_vel[v1], enemy_projectile_E[v1]));
+    AddToHiLo(&enemy_projectile_x_pos[v1], &enemy_projectile_x_subpos[v1], __PAIR32__(enemy_projectile_x_vel[v1], enemy_projectile_E[v1]));
   }
   if (((g_word_7E97DC[v1] + 128) & 0x80) != 0) {
-    AddToHiLo(&enemy_projectile_y_pos[v1], &enemy_projectile_y_subpos[v1],
-              -(int32)__PAIR32__(enemy_projectile_y_vel[v1], enemy_projectile_F[v1]));
+    AddToHiLo(&enemy_projectile_y_pos[v1], &enemy_projectile_y_subpos[v1], -IPAIR32(enemy_projectile_y_vel[v1], enemy_projectile_F[v1]));
   } else {
-    AddToHiLo(&enemy_projectile_y_pos[v1], &enemy_projectile_y_subpos[v1],
-              __PAIR32__(enemy_projectile_y_vel[v1], enemy_projectile_F[v1]));
+    AddToHiLo(&enemy_projectile_y_pos[v1], &enemy_projectile_y_subpos[v1], __PAIR32__(enemy_projectile_y_vel[v1], enemy_projectile_F[v1]));
   }
 }
 
@@ -4929,10 +4925,8 @@ void EprojPreInstr_Sparks(uint16 k) {  // 0x86F3F0
     if (v3 < 4)
       enemy_projectile_y_vel[v1] = v3;
   }
-  AddToHiLo(&enemy_projectile_y_pos[v1], &enemy_projectile_y_subpos[v1],
-            __PAIR32__(enemy_projectile_y_vel[v1], enemy_projectile_x_vel[v1]));
-  AddToHiLo(&enemy_projectile_x_pos[v1], &enemy_projectile_x_subpos[v1],
-            __PAIR32__(enemy_projectile_F[v1], enemy_projectile_E[v1]));
+  AddToHiLo(&enemy_projectile_y_pos[v1], &enemy_projectile_y_subpos[v1], __PAIR32__(enemy_projectile_y_vel[v1], enemy_projectile_x_vel[v1]));
+  AddToHiLo(&enemy_projectile_x_pos[v1], &enemy_projectile_x_subpos[v1], __PAIR32__(enemy_projectile_F[v1], enemy_projectile_E[v1]));
   if ((nmi_frame_counter_byte & 3) == 0)
     CreateSpriteAtPos(enemy_projectile_x_pos[v1], enemy_projectile_y_pos[v1], 48, enemy_projectile_gfx_idx[v1]);
 }

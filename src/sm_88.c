@@ -733,14 +733,14 @@ void MoveXrayDown(void) {  // 0x888835
 void CalculateXrayHdmaTable(void) {  // 0x888896
   int16 v0;
   if (samus_pose_x_dir == 4)
-    v0 = (__PAIR32__(samus_x_pos - layer1_x_pos, samus_x_pos) - (layer1_x_pos | 0x30000)) >> 16;
+    v0 = samus_x_pos - layer1_x_pos - 3;
   else
     v0 = samus_x_pos - layer1_x_pos + 3;
   uint16 v1;
   if (samus_movement_type == 5)
-    v1 = (__PAIR32__(samus_y_pos - layer1_y_pos, samus_y_pos) - (layer1_y_pos | 0xC0000)) >> 16;
+    v1 = samus_y_pos - layer1_y_pos - 12;
   else
-    v1 = (__PAIR32__(samus_y_pos - layer1_y_pos, samus_y_pos) - (layer1_y_pos | 0x100000)) >> 16;
+    v1 = samus_y_pos - layer1_y_pos - 16;
   if (v0 < 0) {
     if (samus_pose_x_dir != 4) {
 off_screen:
@@ -1958,7 +1958,6 @@ void CallFxRisingFunc(uint32 ea) {
 static const uint8 kLavaSoundEffects[8] = { 0x12, 0x13, 0x14, 0x12, 0x13, 0x14, 0x12, 0x13 };
 
 void HdmaobjPreInstr_LavaAcidBG3YScroll(uint16 k) {  // 0x88B3B0
-  unsigned int v1; // kr00_4
   int16 v2;
   int16 v3;
   int16 v4;
@@ -1968,9 +1967,7 @@ void HdmaobjPreInstr_LavaAcidBG3YScroll(uint16 k) {  // 0x88B3B0
   if (!time_is_frozen_flag) {
     CallFxRisingFunc(fx_rising_function_bank_88 | 0x880000);
     FxHandleTide();
-    v1 = __PAIR32__(fx_y_offset, fx_y_suboffset) + __PAIR32__(fx_base_y_pos, fx_base_y_subpos);
-    lava_acid_y_pos = HIWORD(v1);
-    lava_acid_y_subpos = v1;
+    SetHiLo(&lava_acid_y_pos, &lava_acid_y_subpos, __PAIR32__(fx_y_offset, fx_y_suboffset) + __PAIR32__(fx_base_y_pos, fx_base_y_subpos));
     bg3_xpos = reg_BG1HOFS;
     *(uint16 *)mother_brain_indirect_hdma = 0;
     bg3_ypos = 0;
@@ -2072,6 +2069,7 @@ void Handle_LavaAcidBG2YScroll_Func3(uint16 v0) {  // 0x88B5A9
     v3 = (v3 - 2) & 0x1E;
   } while (--n >= 0);
 }
+
 static const SpawnHdmaObject_Args unk_88C40F = { 0x42, 0x11, 0xd856 };
 static const SpawnHdmaObject_Args unk_88C41F = { 0x42, 0x0f, 0xd847 };
 void FxTypeFunc_6_Water(void) {  // 0x88C3FF
@@ -2127,61 +2125,45 @@ void CallFxRisingFunction(uint32 ea) {
 }
 
 void HdmaobjPreInstr_WaterBG3XScroll(uint16 k) {  // 0x88C48E
-  unsigned int v1; // kr00_4
-  int16 v2;
-  int16 v3;
-  int16 v9;
-  uint16 v4;
-
   fx_layer_blending_config_c = fx_layer_blending_config_b;
-  if (!time_is_frozen_flag) {
-    CallFxRisingFunction(fx_rising_function_bank_88 | 0x880000);
-    FxHandleTide();
-    v1 = __PAIR32__(fx_y_offset, fx_y_suboffset) + __PAIR32__(fx_base_y_pos, fx_base_y_subpos);
-    fx_y_pos = HIWORD(v1);
-    fx_y_subpos = v1;
-    v2 = (__PAIR32__(fx_y_offset, fx_y_suboffset) + __PAIR32__(fx_base_y_pos, fx_base_y_subpos)) >> 16;
-    if (v2 < 0)
-      goto LABEL_6;
-    v3 = v2 - layer1_y_pos;
-    if (v3 <= 0) {
-      v4 = (v3 ^ 0x1F) & 0x1F | 0x100;
-      goto LABEL_8;
-    }
-    if ((uint16)v3 < 0x100)
-      v4 = (uint8)~(uint8)v3;
-    else
-      LABEL_6:
-    v4 = 0;
-LABEL_8:
-    bg3_ypos = v4;
-    int v5 = (uint8)hdma_object_index >> 1;
-    uint16 r20 = layer1_x_pos + (int8)HIBYTE(hdma_object_C[v5]);
-    if (hdma_object_B[v5]-- == 1) {
-      hdma_object_B[v5] = 10;
-      hdma_object_A[v5] = (hdma_object_A[v5] + 2) & 0x1E;
-    }
-    uint8 v7 = hdma_object_A[v5];
-    for (int i = 30; (i & 0x80) == 0; i -= 2) {
-      *(uint16 *)&mother_brain_indirect_hdma[v7 + 4] = g_word_88C46E[i >> 1] + r20;
-      v7 = (v7 - 2) & 0x1E;
-    }
-    if ((fx_liquid_options & 1) != 0)
-      hdma_object_C[(uint8)hdma_object_index >> 1] += 64;
-    if ((fx_y_pos & 0x8000) == 0) {
-      v9 = fx_y_pos - layer1_y_pos + 256;
-      if (v9 < 0) {
-        v9 = (fx_y_pos - layer1_y_pos) & 0xF | 0x100;
-LABEL_22:
-        hdma_object_table_pointers[(uint8)hdma_object_index >> 1] = 3 * (((v9 ^ 0x1FF) + 1) & 0x3FF) + 0xC645;
-        return;
-      }
-      if ((uint16)v9 < 0x200)
-        goto LABEL_22;
-    }
-    v9 = 511;
-    goto LABEL_22;
+  if (time_is_frozen_flag)
+    return;
+  CallFxRisingFunction(fx_rising_function_bank_88 | 0x880000);
+  FxHandleTide();
+  SetHiLo(&fx_y_pos, &fx_y_subpos, __PAIR32__(fx_y_offset, fx_y_suboffset) + __PAIR32__(fx_base_y_pos, fx_base_y_subpos));
+  int16 v3 = fx_y_pos - layer1_y_pos;
+  if ((int16)fx_y_pos < 0) {
+    bg3_ypos = 0;
+  } else if (v3 <= 0) {
+    bg3_ypos = (v3 ^ 0x1F) & 0x1F | 0x100;
+  } else if ((uint16)v3 < 0x100) {
+    bg3_ypos = (uint8)~v3;
+  } else {
+    bg3_ypos = 0;
   }
+  int v5 = k >> 1;
+  uint16 r20 = layer1_x_pos + (int8)HIBYTE(hdma_object_C[v5]);
+  if (hdma_object_B[v5]-- == 1) {
+    hdma_object_B[v5] = 10;
+    hdma_object_A[v5] = (hdma_object_A[v5] + 2) & 0x1E;
+  }
+  uint8 v7 = hdma_object_A[v5];
+  for (int i = 30; (i & 0x80) == 0; i -= 2) {
+    *(uint16 *)&mother_brain_indirect_hdma[v7 + 4] = g_word_88C46E[i >> 1] + r20;
+    v7 = (v7 - 2) & 0x1E;
+  }
+  if ((fx_liquid_options & 1) != 0)
+    hdma_object_C[k >> 1] += 64;
+  int16 v9 = fx_y_pos - layer1_y_pos + 256;
+  if ((int16)fx_y_pos < 0) {
+    v9 = 511;
+  } else if (v9 >= 0) {
+    if ((uint16)v9 >= 0x200)
+      v9 = 511;
+  } else {
+    v9 = v9 & 0xF | 0x100;
+  }
+  hdma_object_table_pointers[k >> 1] = 3 * (((v9 ^ 0x1FF) + 1) & 0x3FF) + 0xC645;
 }
 
 const uint8 *HdmaobjInstr_SetFlagB_Copy3(uint16 k, const uint8 *hdp) {  // 0x88C582
@@ -2190,31 +2172,24 @@ const uint8 *HdmaobjInstr_SetFlagB_Copy3(uint16 k, const uint8 *hdp) {  // 0x88C
 }
 
 void HdmaobjPreInstr_WaterBG2XScroll(uint16 k) {  // 0x88C589
-  int16 v1;
-
   g_word_7E9C44 = reg_BG2HOFS;
-  if (time_is_frozen_flag)
-    goto LABEL_4;
-  if ((fx_liquid_options & 2) == 0) {
-    hdma_object_channels_bitmask[(uint8)k >> 1] = 0;
-LABEL_4:
+  if (time_is_frozen_flag) {
     HdmaobjPreInstr_WaterBG2XScroll_Func1(k);
-    goto LABEL_6;
+  } else if ((fx_liquid_options & 2) == 0) {
+    hdma_object_channels_bitmask[(uint8)k >> 1] = 0;
+    HdmaobjPreInstr_WaterBG2XScroll_Func1(k);
+  } else {
+    HdmaobjPreInstr_WaterBG2XScroll_Func2(k);
   }
-  HdmaobjPreInstr_WaterBG2XScroll_Func2(k);
-LABEL_6:
-  if ((fx_y_pos & 0x8000) != 0)
-    goto LABEL_10;
-  v1 = fx_y_pos - layer1_y_pos + 256;
-  if (v1 >= 0) {
-    if ((uint16)v1 < 0x200)
-      goto LABEL_11;
-LABEL_10:
+  int16 v1 = fx_y_pos - layer1_y_pos + 256;
+  if ((int16)fx_y_pos < 0) {
     v1 = 511;
-    goto LABEL_11;
+  } else if (v1 >= 0) {
+    if ((uint16)v1 >= 0x200)
+      v1 = 511;
+  } else {
+    v1 = (fx_y_pos - layer1_y_pos) & 0xF | 0x100;
   }
-  v1 = (fx_y_pos - layer1_y_pos) & 0xF | 0x100;
-LABEL_11:
   hdma_object_table_pointers[(uint8)k >> 1] = 3 * ((v1 ^ 0x1FF) & 0x3FF) + 0xCF46;
 }
 

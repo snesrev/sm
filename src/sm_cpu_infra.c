@@ -195,8 +195,6 @@ static const  uint32 kPatchedCarrys[] = {
   0x84ba35,
   0x84d6ae,
   0x84d6bf,
-  0x84d7f4,
-  0x84d803,
   0x84d812,
   0x84daae,
   0x84dbaa,
@@ -273,6 +271,30 @@ static const  uint32 kPatchedCarrys[] = {
   0xA8a573,
   0xA8a57f,
   0xA8a58b,
+
+  0x84D7CB, // PlmInstr room_width
+  0x84D7E2,
+  0x84D7F4,
+  0x84D803,
+
+  0x8888CD,
+
+  0x8888F0,
+  0x8888E3,
+
+  0x80A5F3,
+  0x80A845,
+  0x80A925,
+  0x80A6AA,
+
+  0x948D94,
+  0x948E25,
+
+  0x9082A8,
+  0x9082AE,
+
+  0xA48CA1,
+  0xA48CA4,
 };
 
 static uint8 kPatchedCarrysOrg[arraysize(kPatchedCarrys)];
@@ -662,7 +684,10 @@ void FixupCarry(uint32 addr) {
   *SnesRomPtr(addr) = 0;
 }
 
+uint16 currently_installed_bug_fix_counter;
+
 void RtlUpdateSnesPatchForBugfix() {
+  currently_installed_bug_fix_counter = bug_fix_counter;
   // Patch HandleMessageBoxInteraction logic
   { uint8 t[] = { 0x20, 0x50, 0x96, 0x60 }; PatchBytes(0x8584A3, t, sizeof(t)); }
   // while ((bug_fix_counter < 1 ? joypad1_newkeys : joypad1_lastkeys) == 0);
@@ -858,7 +883,6 @@ Snes *SnesInit(const char *filename) {
   // NormalEnemyShotAiSkipDeathAnim_CurEnemy version that preserves R18 etc.
   { uint8 t[] = { 0xA5, 0x12, 0x48, 0xA5, 0x14, 0x48, 0xA5, 0x16, 0x48, 0x22, 0xA7, 0xA6, 0xA0, 0x68, 0x85, 0x16, 0x68, 0x85, 0x14, 0x68, 0x85, 0x12, 0x6B }; PatchBytes(0xA7FF82, t, sizeof(t)); }
   { uint8 t[] = { 0x22, 0x82, 0xff, 0xa7 }; PatchBytes(0xa7b03a, t, sizeof(t)); }
-
 
   RtlUpdateSnesPatchForBugfix();
 

@@ -153,6 +153,7 @@ void RtlReadSram();
 void RtlWriteSram();
 void RtlSaveSnapshot(const char *filename, bool saving_with_bug);
 void RtlUpdateSnesPatchForBugfix();
+extern uint16 currently_installed_bug_fix_counter;
 
 uint16 Mult8x8(uint8 a, uint8 b);
 uint16 SnesDivide(uint16 a, uint8 b);
@@ -179,8 +180,6 @@ enum {
 
   kJoypadH_AnyDir = 0xf,
 };
-
-void Negate32(const uint16 *src_hi, const uint16 *src_lo, uint16 *dst_hi, uint16 *dst_lo);
 
 struct OamEnt;
 struct VramWriteEntry;

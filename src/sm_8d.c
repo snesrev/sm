@@ -224,9 +224,7 @@ void PalPreInstr_CheckEnemy0Health(uint16 k) {  // 0x8DE2E0
 
 void PalPreInstr_SamusInHeat(uint16 k) {  // 0x8DE379
   if ((equipped_items & 0x21) == 0) {
-    uint16 v1 = (__PAIR32__(samus_periodic_damage, samus_periodic_subdamage) + 0x4000) >> 16;
-    samus_periodic_subdamage += 0x4000;
-    samus_periodic_damage = v1;
+    AddToHiLo(&samus_periodic_damage, &samus_periodic_subdamage, 0x4000);
     if ((nmi_frame_counter_word & 7) == 0 && samus_health > 0x46)
       QueueSfx3_Max6(0x2D);
   }

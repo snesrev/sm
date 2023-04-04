@@ -1897,8 +1897,7 @@ void HandleAutoscrolling_X(void) {  // 0x80A528
       if (scrolls[(uint16)(v2 + 1)])
         return;
       var933 = layer1_x_pos & 0xFF00;
-      uint16 v5 = (__PAIR32__(var939 - absolute_moved_last_frame_x, var939) - (absolute_moved_last_frame_x | 0x20000)) >> 16;
-
+      uint16 v5 = var939 - absolute_moved_last_frame_x - 2;
       if ((int16)(v5 - (layer1_x_pos & 0xFF00)) < 0) {
         v4 = var933;
       } else {
@@ -1911,9 +1910,7 @@ void HandleAutoscrolling_X(void) {  // 0x80A528
       }
     } else {
       var933 = (layer1_x_pos & 0xFF00) + 256;
-      if ((uint16)(absolute_moved_last_frame_x
-                   + var939
-                   + 2) >= var933) {
+      if ((uint16)(absolute_moved_last_frame_x + var939 + 2) >= var933) {
         v4 = var933;
       } else {
         var939 += absolute_moved_last_frame_x + 2;
@@ -1942,7 +1939,7 @@ void HandleScrollingWhenTriggeringScrollRight(void) {  // 0x80A641
     uint16 RegWord = Mult8x8((uint16)(layer1_y_pos + 128) >> 8, room_width_in_scrolls);
     if (!scrolls[(uint16)(RegWord + 1 + v1)]) {
       var933 = layer1_x_pos & 0xFF00;
-      uint16 v4 = (__PAIR32__(var939 - absolute_moved_last_frame_x, var939) - (absolute_moved_last_frame_x | 0x20000)) >> 16;
+      uint16 v4 = var939 - absolute_moved_last_frame_x - 2;
       if ((int16)(v4 - (layer1_x_pos & 0xFF00)) < 0)
         v4 = var933;
       layer1_x_pos = v4;
@@ -2020,7 +2017,7 @@ void HandleAutoscrolling_Y(void) {  // 0x80A731
     if (!scrolls[(uint16)(room_width_in_scrolls + v5)]) {
       var937 = var933 + (layer1_y_pos & 0xFF00);
       if (var937 < layer1_y_pos) {
-        uint16 v9 = (__PAIR32__(var939 - absolute_moved_last_frame_y, var939) - (absolute_moved_last_frame_y | 0x20000)) >> 16;
+        uint16 v9 = var939 - absolute_moved_last_frame_y - 2;
         if ((int16)(v9 - var937) < 0) {
           v8 = var937;
         } else {
@@ -2057,7 +2054,7 @@ void HandleScrollingWhenTriggeringScrollDown(void) {  // 0x80A893
   if ((uint16)(var933 + v2) < layer1_y_pos
       || !scrolls[(uint16)(room_width_in_scrolls + r20)]
       && (var937 = var933 + (layer1_y_pos & 0xFF00), var937 < layer1_y_pos)) {
-    uint16 v3 = (__PAIR32__(var939 - absolute_moved_last_frame_y, var939) - (absolute_moved_last_frame_y | 0x20000)) >> 16;
+    uint16 v3 = var939 - absolute_moved_last_frame_y - 2;
     if ((int16)(v3 - var937) < 0)
       v3 = var937;
     layer1_y_pos = v3;
@@ -2391,11 +2388,8 @@ void Irq_FollowDoorTransition(void) {
 
 uint8 DoorTransition_Right(void) {  // 0x80AE7E
   uint16 v2 = door_transition_frame_counter;
-  uint16 v0 = (__PAIR32__(samus_door_transition_speed, samus_door_transition_subspeed) +
-               __PAIR32__(samus_x_pos, samus_x_subpos)) >> 16;
-  samus_x_subpos += samus_door_transition_subspeed;
-  samus_x_pos = v0;
-  samus_prev_x_pos = v0;
+  AddToHiLo(&samus_x_pos, &samus_x_subpos, __PAIR32__(samus_door_transition_speed, samus_door_transition_subspeed));
+  samus_prev_x_pos = samus_x_pos;
   layer1_x_pos += 4;
   layer2_x_pos += 4;
   UpdateScrollVarsUpdateMap();
@@ -2408,12 +2402,8 @@ uint8 DoorTransition_Right(void) {  // 0x80AE7E
 
 uint8 DoorTransition_Left(void) {  // 0x80AEC2
   uint16 v2 = door_transition_frame_counter;
-  uint16 v0 = (__PAIR32__(samus_x_pos, samus_x_subpos) - __PAIR32__(
-    samus_door_transition_speed,
-    samus_door_transition_subspeed)) >> 16;
-  samus_x_subpos -= samus_door_transition_subspeed;
-  samus_x_pos = v0;
-  samus_prev_x_pos = v0;
+  AddToHiLo(&samus_x_pos, &samus_x_subpos, -IPAIR32(samus_door_transition_speed, samus_door_transition_subspeed));
+  samus_prev_x_pos = samus_x_pos;
   layer1_x_pos -= 4;
   layer2_x_pos -= 4;
   UpdateScrollVarsUpdateMap();
@@ -2425,11 +2415,8 @@ uint8 DoorTransition_Down(void) {  // 0x80AF02
   uint16 v6 = door_transition_frame_counter;
   if (door_transition_frame_counter) {
     if (door_transition_frame_counter < 0x39) {
-      uint16 v0 = (__PAIR32__(samus_door_transition_speed, samus_door_transition_subspeed)
-                   + __PAIR32__(samus_y_pos, samus_y_subpos)) >> 16;
-      samus_y_subpos += samus_door_transition_subspeed;
-      samus_y_pos = v0;
-      samus_prev_y_pos = v0;
+      AddToHiLo(&samus_y_pos, &samus_y_subpos, __PAIR32__(samus_door_transition_speed, samus_door_transition_subspeed));
+      samus_prev_y_pos = samus_y_pos;
       layer1_y_pos += 4;
       layer2_y_pos += 4;
       UpdateScrollVarsUpdateMap();
@@ -2461,11 +2448,8 @@ uint8 DoorTransition_Down(void) {  // 0x80AF02
 uint8 DoorTransition_Up(void) {  // 0x80AF89
   uint16 v6 = door_transition_frame_counter;
   if (door_transition_frame_counter) {
-    uint16 v0 = (__PAIR32__(samus_y_pos, samus_y_subpos)
-                 - __PAIR32__(samus_door_transition_speed, samus_door_transition_subspeed)) >> 16;
-    samus_y_subpos -= samus_door_transition_subspeed;
-    samus_y_pos = v0;
-    samus_prev_y_pos = v0;
+    AddToHiLo(&samus_y_pos, &samus_y_subpos, -IPAIR32(samus_door_transition_speed, samus_door_transition_subspeed));
+    samus_prev_y_pos = samus_y_pos;
     layer1_y_pos -= 4;
     layer2_y_pos -= 4;
     if (door_transition_frame_counter >= 5) {

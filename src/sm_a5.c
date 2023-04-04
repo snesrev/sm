@@ -309,7 +309,7 @@ void Draygon_Func_11(void) {  // 0xA58A00
   Get_Draygon(cur_enemy_index)->base.y_pos = *(uint16 *)((uint8 *)&g_word_7E9002 + draygon_var_B);
   E->draygon_var_B -= 4;
   if (E->draygon_var_B) {
-    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -(int32)__PAIR32__(E->draygon_var_D, E->draygon_var_E));
+    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -IPAIR32(E->draygon_var_D, E->draygon_var_E));
   } else {
     E->draygon_var_A = FUNC16(Draygon_Func_12);
   }
@@ -347,7 +347,7 @@ void Draygon_Func_13(void) {  // 0xA58A90
       E->base.x_pos = E->draygon_var_00;
     }
   } else {
-    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -(int32)__PAIR32__(E->draygon_var_D, E->draygon_var_E));
+    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -IPAIR32(E->draygon_var_D, E->draygon_var_E));
   }
 }
 
@@ -455,7 +455,7 @@ void Draygon_Func_19(void) {  // 0xA58CD4
   } else {
     E->base.y_pos = CosineMult8bit(E->draygon_var_0D, 32) + 384;
     E->draygon_var_0D = (uint8)(E->draygon_var_0D + 1);
-    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -(int32)__PAIR32__(E->draygon_var_D, E->draygon_var_E));
+    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -IPAIR32(E->draygon_var_D, E->draygon_var_E));
   }
 }
 
@@ -473,7 +473,7 @@ void Draygon_Func_20(void) {  // 0xA58D30
   }
   E->base.y_pos = CosineMult8bit(E->draygon_var_0D, 32) + 384;
   E->draygon_var_0D = (uint8)(E->draygon_var_0D + 1);
-  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -(int32)__PAIR32__(E->draygon_var_D, E->draygon_var_E));
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -IPAIR32(E->draygon_var_D, E->draygon_var_E));
   if ((int32)E->base.x_pos < 0 && sign16(E->base.x_pos + 80)) {
 LABEL_8:
     if (!samus_x_speed_divisor) {
@@ -496,7 +496,7 @@ void Draygon_Func_21(uint16 k) {  // 0xA58DB2
   } else {
     E->base.y_pos = CosineMult8bit(E->draygon_var_0D, 32) + 384;
     E->draygon_var_0D = (uint8)(E->draygon_var_0D + 1);
-    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -(int32)__PAIR32__(E->draygon_var_D, E->draygon_var_E));
+    AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -IPAIR32(E->draygon_var_D, E->draygon_var_E));
     if ((int16)E->base.x_pos < 0 && sign16(E->base.x_pos + 80)) {
       E->draygon_var_A = FUNC16(Draygon_Func_4);
       E->base.x_pos = -80;

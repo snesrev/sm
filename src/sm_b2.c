@@ -721,7 +721,7 @@ void WalkingSpacePirates_FD44(void) {  // 0xB2FD44
 
       if (result) {
         EnemyFunc_BBBF(cur_enemy_index, INT16_SHL16(-9));
-        if (!Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-1, -14337))) {
+        if (!Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, -14337)) {
           if ((int16)(E->base.x_pos - E->sps_var_E) >= 0)
             return;
         }
@@ -749,7 +749,7 @@ void WalkingSpacePirates_FDCE(void) {  // 0xB2FDCE
       uint8 result = Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1));
       E->base.x_pos = E->sps_var_00;
       if (!result ||
-          (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(0, 14336))) ||
+          (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, 14336)) ||
           (int16)(E->base.x_pos - E->sps_var_F) >= 0) {
         E->base.current_instruction = addr_kSpacePirates_Ilist_FC48;
         E->base.instruction_timer = 1;

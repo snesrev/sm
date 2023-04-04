@@ -7,10 +7,6 @@
 #include "spc_player.h"
 #include "util.h"
 
-
-
-
-
 struct StateRecorder;
 
 static void RtlSaveMusicStateToRam_Locked();
@@ -417,13 +413,15 @@ bool RtlRunFrame(int inputs) {
         if (bug_fix_counter < kCurrentBugFixCounter) {
           bug_fix_counter = kCurrentBugFixCounter;
           StateRecorder_RecordPatchByte(&state_recorder, (uint8 *)&bug_fix_counter - g_ram, (uint8 *)&bug_fix_counter, 2);
-          RtlUpdateSnesPatchForBugfix();
         }
       }
     }
 
     StateRecorder_Record(&state_recorder, inputs);
   }
+
+  if (bug_fix_counter != currently_installed_bug_fix_counter)
+    RtlUpdateSnesPatchForBugfix();
 
   g_rtl_runframe(inputs, 0);
 
@@ -493,13 +491,6 @@ void RtlSaveLoad(int cmd, int slot) {
 
 void MemCpy(void *dst, const void *src, int size) {
   memcpy(dst, src, size);
-}
-
-void Negate32(const uint16 *src_hi, const uint16 *src_lo, uint16 *dst_hi, uint16 *dst_lo) {
-  uint32 x = (uint32)*src_hi << 16 | *src_lo;
-  x = -(int)x;
-  *dst_lo = x;
-  *dst_hi = x >> 16;
 }
 
 PairU16 MakePairU16(uint16 k, uint16 j) {

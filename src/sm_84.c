@@ -2601,23 +2601,17 @@ const uint8 *PlmInstr_SpawnEyeDoorSmokeProjectile(const uint8 *plmp, uint16 k) {
 
 const uint8 *PlmInstr_MoveUpAndMakeBlueDoorFacingRight(const uint8 *plmp, uint16 k) {  // 0x84D7C3
   int v2 = k >> 1;
-  uint16 v3 = (__PAIR32__(plm_block_indices[v2] - room_width_in_blocks, plm_block_indices[v2])
-        - __PAIR32__(room_width_in_blocks, room_width_in_blocks)) >> 16;
-  plm_block_indices[v2] = v3;
-  uint16 v4 = v3;
-  WriteLevelDataBlockTypeAndBts(v3, 0xC041);
-  sub_84D7EF(v4);
+  uint16 blk = (plm_block_indices[v2] -= room_width_in_blocks * 2);
+  WriteLevelDataBlockTypeAndBts(blk, 0xC041);
+  sub_84D7EF(blk);
   return plmp;
 }
 
 const uint8 *PlmInstr_MoveUpAndMakeBlueDoorFacingLeft(const uint8 *plmp, uint16 k) {  // 0x84D7DA
   int v2 = k >> 1;
-  uint16 v3 = (__PAIR32__(plm_block_indices[v2] - room_width_in_blocks, plm_block_indices[v2])
-        - __PAIR32__(room_width_in_blocks, room_width_in_blocks)) >> 16;
-  plm_block_indices[v2] = v3;
-  uint16 v4 = v3;
-  WriteLevelDataBlockTypeAndBts(v3, 0xC040);
-  sub_84D7EF(v4);
+  uint16 blk = (plm_block_indices[v2] -= room_width_in_blocks * 2);
+  WriteLevelDataBlockTypeAndBts(blk, 0xC040);
+  sub_84D7EF(blk);
   return plmp;
 }
 

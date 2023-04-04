@@ -578,8 +578,7 @@ LABEL_10:
     ci->ci_r18_r20 = v5 << 16;
     samus_x_subpos = 0;
   } else {
-    // todo: carry
-    int16 v4 = (__PAIR32__((ci->ci_r32 & 0xFFF8) - samus_x_radius, ci->ci_r32 & 0xFFF8) - __PAIR32__(samus_x_pos, samus_x_radius)) >> 16;
+    int16 v4 = (ci->ci_r32 & 0xFFF8) - samus_x_radius - samus_x_pos;
     if (v4 < 0)
       v4 = 0;
     ci->ci_r18_r20 = v4 << 16;
@@ -616,8 +615,7 @@ LABEL_10:
     samus_y_subpos = 0;
     return 1;
   } else {
-    // todo: fix carry
-    int16 v4 = (__PAIR32__((ci->ci_r32 & 0xFFF8) - samus_y_radius, ci->ci_r32 & 0xFFF8) - __PAIR32__(samus_y_pos, samus_y_radius)) >> 16;
+    int16 v4 = (ci->ci_r32 & 0xFFF8) - samus_y_radius - samus_y_pos;
     if (v4 < 0)
       v4 = 0;
     ci->ci_r18_r20 = v4 << 16;
@@ -2221,67 +2219,39 @@ static uint8 BlockReact_AA64(void) {  // 0x94AA64
   return rv;
 }
 
-static const uint16 g_word_94AAD7[16] = {  // 0x94AA9E
-  0, 0, 0, 0,
-  0, 0, 0, 0,
-  0, 0, 0, 0,
-  0, 0, 0, 0,
-};
 static const uint16 g_word_94AAF7[16] = {
-  0, 0, 0x10, 0,
-  0, 0,    0, 0,
-  0, 0,    0, 0,
-  0, 0,    0, 0,
+  0, 0, 0x10, 0, 0, 0,    0, 0, 0, 0,    0, 0, 0, 0,    0, 0,
 };
 
 static uint8 BlockReact_AA64_SpikeAir(CollInfo *ci) {
-  int16 v0;
-  int16 v2;
-
-  if (!samus_invincibility_timer) {
-    v0 = *(uint16 *)&BTS[cur_block_index];
-    if (v0 >= 0) {
-      int v1 = v0;
-      if (g_word_94AAF7[v1] | g_word_94AAD7[v1]) {
-        v2 = (g_word_94AAD7[v1] + __PAIR32__(samus_periodic_damage, samus_periodic_subdamage)) >> 16;
-        samus_periodic_subdamage += g_word_94AAD7[v1];
-        samus_periodic_damage = g_word_94AAF7[v1] + v2;
-        samus_invincibility_timer = 60;
-        samus_knockback_timer = 10;
-      }
+  if (samus_invincibility_timer)
+    return 0;
+  int16 v0 = *(uint16 *)&BTS[cur_block_index];
+  if (v0 >= 0) {
+    uint32 v = INT16_SHL16(g_word_94AAF7[v0]);
+    if (v) {
+      AddToHiLo(&samus_periodic_damage, &samus_periodic_subdamage, v);
+      samus_invincibility_timer = 60;
+      samus_knockback_timer = 10;
     }
   }
   return 0;
 }
 
-static const uint16 g_word_94AB50[16] = {  // 0x94AB17
-  0, 0, 0, 0,
-  0, 0, 0, 0,
-  0, 0, 0, 0,
-  0, 0, 0, 0,
-};
 static const uint16 g_word_94AB70[16] = {
-  60, 16, 0, 0,
-   0,  0, 0, 0,
-   0,  0, 0, 0,
-   0,  0, 0, 0,
+  60, 16, 0, 0,  0,  0, 0, 0,  0,  0, 0, 0,  0,  0, 0, 0,
 };
 
 static uint8 BlockReact_AA64_SpikeBlock(CollInfo *ci) {
-  int16 v0;
-  int16 v2;
-
-  if (!samus_invincibility_timer) {
-    v0 = *(uint16 *)&BTS[cur_block_index];
-    if (v0 >= 0) {
-      int v1 = v0;
-      if (g_word_94AB70[v1] | g_word_94AB50[v1]) {
-        v2 = (g_word_94AB50[v1] + __PAIR32__(samus_periodic_damage, samus_periodic_subdamage)) >> 16;
-        samus_periodic_subdamage += g_word_94AB50[v1];
-        samus_periodic_damage = g_word_94AB70[v1] + v2;
-        samus_invincibility_timer = 60;
-        samus_knockback_timer = 10;
-      }
+  if (samus_invincibility_timer)
+    return 1;
+  int16 v0 = *(uint16 *)&BTS[cur_block_index];
+  if (v0 >= 0) {
+    uint32 v = INT16_SHL16(g_word_94AB70[v0]);
+    if (v) {
+      AddToHiLo(&samus_periodic_damage, &samus_periodic_subdamage, v);
+      samus_invincibility_timer = 60;
+      samus_knockback_timer = 10;
     }
   }
   return 1;

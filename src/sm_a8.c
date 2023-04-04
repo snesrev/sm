@@ -1949,7 +1949,7 @@ void Beetom_Func_18(void) {  // 0xA8B9C1
     E->base.x_pos -= 8;
     if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1))) {
       E->base.x_pos += 8;
-      if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-1, -16384)))
+      if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, -16384))
         E->beetom_var_C = FUNC16(Beetom_Func_7);
     } else {
       E->beetom_var_C = FUNC16(Beetom_Func_7);
@@ -1968,7 +1968,7 @@ void Beetom_Func_19(void) {  // 0xA8BA24
     E->base.x_pos += 8;
     if (Enemy_MoveDown(cur_enemy_index, INT16_SHL16(1))) {
       E->base.x_pos -= 8;
-      if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(0, 0x4000)))
+      if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, 0x4000))
         E->beetom_var_C = FUNC16(Beetom_Func_6);
     } else {
       E->beetom_var_C = FUNC16(Beetom_Func_6);
@@ -2010,7 +2010,7 @@ void Beetom_Func_20(void) {  // 0xA8BA84
     Beetom_Func_23(cur_enemy_index);
   else
     Beetom_Func_22(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-1, -16384))) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, -16384)) {
     E->beetom_var_09 ^= 1;
     E->beetom_var_C = FUNC16(Beetom_Func_15);
   }
@@ -2022,7 +2022,7 @@ void Beetom_Func_21(void) {  // 0xA8BAB7
     Beetom_Func_23(cur_enemy_index);
   else
     Beetom_Func_22(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(0, 0x4000))) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, 0x4000)) {
     E->beetom_var_09 ^= 1;
     E->beetom_var_C = FUNC16(Beetom_Func_15);
   }
@@ -2060,7 +2060,7 @@ void Beetom_Func_24(void) {  // 0xA8BB55
     Beetom_Func_27(cur_enemy_index);
   else
     Beetom_Func_26(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(-1, -16384))) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, -16384)) {
     E->beetom_var_09 ^= 1;
     E->beetom_var_C = FUNC16(Beetom_Func_15);
   }
@@ -2072,7 +2072,7 @@ void Beetom_Func_25(void) {  // 0xA8BB88
     Beetom_Func_27(cur_enemy_index);
   else
     Beetom_Func_26(cur_enemy_index);
-  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(0, 0x4000))) {
+  if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, 0x4000)) {
     E->beetom_var_09 ^= 1;
     E->beetom_var_C = FUNC16(Beetom_Func_15);
   }

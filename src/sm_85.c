@@ -379,7 +379,7 @@ static CoroutineRet CloseMessageBox_Async(void) {  // 0x858589
 
 CoroutineRet DisplayMessageBox_Async(uint16 a) {  // 0x858080
   COROUTINE_BEGIN(coroutine_state_3, 0)
-    message_box_index = a;
+  message_box_index = a;
   CancelSoundEffects();
   InitializePpuForMessageBoxes();
   ClearMessageBoxBg3Tilemap();

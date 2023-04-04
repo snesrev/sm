@@ -496,10 +496,8 @@ void Elevator_Init(void) {  // 0xA394E6
   E->base.current_instruction = addr_kElevator_Ilist_94D6;
   E->elevat_parameter_1 *= 2;
   E->elevat_var_A = E->base.y_pos;
-  if (elevator_status != 2) {
-    elevator_flags = 0;
-    elevator_status = 0;
-  }
+  if (elevator_status != 2)
+    elevator_flags = elevator_status = 0;
   if (__PAIR32__(elevator_status, elevator_flags)) {
     E->base.y_pos = E->elevat_parameter_2;
     Elevator_Func_4();
@@ -1544,7 +1542,7 @@ void MaridiaRefillCandy_Func_2(uint16 k) {  // 0xA3B4A8
   Enemy_MaridiaRefillCandy *E = Get_MaridiaRefillCandy(k);
   E->base.properties &= ~kEnemyProps_Invisible;
   if ((GetSamusEnemyDelta_Y(k) & 0x8000) != 0) {
-    Enemy_SubPos_Y(k, 0x8000);
+    AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -0x8000);
   } else {
     --E->mrcy_var_D;
     MaridiaRefillCandy_Func_4();
@@ -1556,10 +1554,8 @@ void MaridiaRefillCandy_Func_2(uint16 k) {  // 0xA3B4A8
 void MaridiaRefillCandy_Func_3(uint16 k) {  // 0xA3B4D6
   Enemy_MaridiaRefillCandy *E = Get_MaridiaRefillCandy(k);
   int v2 = E->mrcy_var_00 >> 1;
-  if (E->mrcy_var_D)
-    Enemy_AddPos_X(k, __PAIR32__(g_word_A3B415[v2], g_word_A3B415[v2 + 1]));
-  else
-    Enemy_SubPos_X(k, __PAIR32__(g_word_A3B415[v2], g_word_A3B415[v2 + 1]));
+  int32 v = __PAIR32__(g_word_A3B415[v2], g_word_A3B415[v2 + 1]);
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, E->mrcy_var_D ? v : -v);
   if (!CheckIfEnemyIsOnScreen()) {
     MaridiaRefillCandy_Func_4();
     return;

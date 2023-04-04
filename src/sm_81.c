@@ -1804,10 +1804,10 @@ void ConfigureWindow1ForExpandingSquare(void) {  // 0x81A5F6
 }
 
 void SetupInitialExpandingSquareHDMA(void) {  // 0x81A61C
-  expanding_square_topbottom_margin_right_pos = 0;
-  expanding_square_topbottom_margin_left_pos = -1;
-  LOBYTE(expanding_square_left_pos) = 127;
-  LOBYTE(expanding_square_right_pos) = -127;
+  expand_sq_topbottom_margin_right_pos = 0;
+  expand_sq_topbottom_margin_left_pos = -1;
+  LOBYTE(expand_sq_left_pos) = 127;
+  LOBYTE(expand_sq_right_pos) = -127;
   hdma_window_1_left_pos[0].field_0 = 111;
   hdma_window_1_left_pos[0].field_1 = 34;
   hdma_window_1_left_pos[0].field_2 = -98;
@@ -1901,8 +1901,8 @@ void FileSelectMap_5_ExpandingSquare(void) {  // 0x81A725
     hdma_window_1_left_pos[2].field_0 = hdma_window_1_left_pos[1].field_0;
     hdma_window_1_right_pos[1].field_0 = hdma_window_1_left_pos[1].field_0;
     hdma_window_1_right_pos[2].field_0 = hdma_window_1_left_pos[1].field_0;
-    LOBYTE(expanding_square_left_pos) = expanding_square_left_pos - kExpandingSquareTransitionSpeed;
-    LOBYTE(expanding_square_right_pos) = kExpandingSquareTransitionSpeed + expanding_square_right_pos;
+    LOBYTE(expand_sq_left_pos) = expand_sq_left_pos - kExpandingSquareTransitionSpeed;
+    LOBYTE(expand_sq_right_pos) = kExpandingSquareTransitionSpeed + expand_sq_right_pos;
   }
 }
 
@@ -2107,26 +2107,26 @@ void FileSelectMap_7_PrepExpandSquareTransToRoomMap(void) {  // 0x81AAAC
   v1->vram_dst = (reg_BG2SC & 0xFC) << 8;
   vram_write_queue_tail = v0 + 7;
 
-  expanding_square_timer = kRoomSelectMapExpandingSquareTimers[area_index];
+  expand_sq_timer = kRoomSelectMapExpandingSquareTimers[area_index];
   int v2 = (uint16)(4 * area_index) >> 1;
-  expanding_square_left_pos = kAreaSelectMapLabelPositions[v2];
-  expanding_square_right_pos = expanding_square_left_pos;
-  expanding_square_top_pos = kAreaSelectMapLabelPositions[v2 + 1];
-  expanding_square_bottom_pos = expanding_square_top_pos;
-  expanding_square_left_subpos = 0;
-  expanding_square_right_subpos = 0;
-  expanding_square_top_subpos = 0;
-  expanding_square_bottom_subpos = 0;
+  expand_sq_left_pos = kAreaSelectMapLabelPositions[v2];
+  expand_sq_right_pos = expand_sq_left_pos;
+  expand_sq_top_pos = kAreaSelectMapLabelPositions[v2 + 1];
+  expand_sq_bottom_pos = expand_sq_top_pos;
+  expand_sq_left_subpos = 0;
+  expand_sq_right_subpos = 0;
+  expand_sq_top_subpos = 0;
+  expand_sq_bottom_subpos = 0;
 
   const ExpandingSquareVels *vels = &kExpandingSquareVels[area_index];
-  expanding_square_left_subvel = vels->left_subvel;
-  expanding_square_left_vel = vels->left_vel;
-  expanding_square_right_subvel = vels->right_subvel;
-  expanding_square_right_vel = vels->right_vel;
-  expanding_square_top_subvel = vels->top_subvel;
-  expanding_square_top_vel = vels->top_vel;
-  expanding_square_bottom_subvel = vels->bottom_subvel;
-  expanding_square_bottom_vel = vels->bottom_vel;
+  expand_sq_left_subvel = vels->left_subvel;
+  expand_sq_left_vel = vels->left_vel;
+  expand_sq_right_subvel = vels->right_subvel;
+  expand_sq_right_vel = vels->right_vel;
+  expand_sq_top_subvel = vels->top_subvel;
+  expand_sq_top_vel = vels->top_vel;
+  expand_sq_bottom_subvel = vels->bottom_subvel;
+  expand_sq_bottom_vel = vels->bottom_vel;
   SetupRoomSelectMapExpandingSquareTransHDMA();
   reg_HDMAEN = 12;
   WriteReg(HDMAEN, 0xC);
@@ -2136,16 +2136,16 @@ void FileSelectMap_7_PrepExpandSquareTransToRoomMap(void) {  // 0x81AAAC
 
 void SetupRoomSelectMapExpandingSquareTransHDMA(void) {  // 0x81ABA7
   uint16 k = 0;
-  uint16 v0 = expanding_square_top_pos;
+  uint16 v0 = expand_sq_top_pos;
   AddExpandingSqTransLeftIndirHDMA(v0, k, 0x9E22);
   k = AddExpandingSqTransRightIndirHDMA(v0, k, 0x9E20);
-  uint16 v2 = expanding_square_bottom_pos - expanding_square_top_pos;
-  if ((uint8)expanding_square_bottom_pos == (uint8)expanding_square_top_pos)
+  uint16 v2 = expand_sq_bottom_pos - expand_sq_top_pos;
+  if ((uint8)expand_sq_bottom_pos == (uint8)expand_sq_top_pos)
     v2 = 1;
   AddExpandingSqTransLeftIndirHDMA(v2, k, 0x9E32);
   k = AddExpandingSqTransRightIndirHDMA(v2, k, 0x9E36);
-  uint16 v4 = -32 - expanding_square_bottom_pos;
-  if ((uint8)expanding_square_bottom_pos == 0xE0)
+  uint16 v4 = -32 - expand_sq_bottom_pos;
+  if ((uint8)expand_sq_bottom_pos == 0xE0)
     v4 = 1;
   AddExpandingSqTransLeftIndirHDMA(v4, k, 0x9E22);
   k = AddExpandingSqTransRightIndirHDMA(v4, k, 0x9E20);
@@ -2191,32 +2191,20 @@ void FileSelectMap_8_ExpandSquareTransToRoomSelectMap(void) {  // 0x81AC66
 }
 
 uint16 HandleRoomSelectMapExpandingSquareTrans(void) {  // 0x81AC84
-  uint16 v0 = (__PAIR32__(expanding_square_left_vel, expanding_square_left_subvel)
-               + __PAIR32__(expanding_square_left_pos, expanding_square_left_subpos)) >> 16;
-  expanding_square_left_subpos += expanding_square_left_subvel;
-  if (sign16(v0 - 1))
-    v0 = 1;
-  expanding_square_left_pos = v0;
-  uint16 v1 = (__PAIR32__(expanding_square_right_vel, expanding_square_right_subvel)
-               + __PAIR32__(expanding_square_right_pos, expanding_square_right_subpos)) >> 16;
-  expanding_square_right_subpos += expanding_square_right_subvel;
-  if (!sign16(v1 - 256))
-    v1 = 255;
-  expanding_square_right_pos = v1;
-  uint16 v2 = (__PAIR32__(expanding_square_top_vel, expanding_square_top_subvel)
-               + __PAIR32__(expanding_square_top_pos, expanding_square_top_subpos)) >> 16;
-  expanding_square_top_subpos += expanding_square_top_subvel;
-  if (sign16(v2 - 1))
-    v2 = 1;
-  expanding_square_top_pos = v2;
-  uint16 v3 = (__PAIR32__(expanding_square_bottom_vel, expanding_square_bottom_subvel)
-               + __PAIR32__(expanding_square_bottom_pos, expanding_square_bottom_subpos)) >> 16;
-  expanding_square_bottom_subpos += expanding_square_bottom_subvel;
-  if (!sign16(v3 - 224))
-    v3 = 224;
-  expanding_square_bottom_pos = v3;
+  AddToHiLo(&expand_sq_left_pos, &expand_sq_left_subpos, __PAIR32__(expand_sq_left_vel, expand_sq_left_subvel));
+  if (sign16(expand_sq_left_pos - 1))
+    expand_sq_left_pos = 1;
+  AddToHiLo(&expand_sq_right_pos, &expand_sq_right_subpos, __PAIR32__(expand_sq_right_vel, expand_sq_right_subvel));
+  if (!sign16(expand_sq_right_pos - 256))
+    expand_sq_right_pos = 255;
+  AddToHiLo(&expand_sq_top_pos, &expand_sq_top_subpos, __PAIR32__(expand_sq_top_vel, expand_sq_top_subvel));
+  if (sign16(expand_sq_top_pos - 1))
+    expand_sq_top_pos = 1;
+  AddToHiLo(&expand_sq_bottom_pos, &expand_sq_bottom_subpos, __PAIR32__(expand_sq_bottom_vel, expand_sq_bottom_subvel));
+  if (!sign16(expand_sq_bottom_pos - 224))
+    expand_sq_bottom_pos = 224;
   SetupRoomSelectMapExpandingSquareTransHDMA();
-  return --expanding_square_timer;
+  return --expand_sq_timer;
 }
 
 void FileSelectMap_9_InitRoomSelectMap(void) {  // 0x81AD17
@@ -2405,29 +2393,29 @@ void FileSelectMap_16_LoadPalettes(void) {  // 0x81AFD3
 void FileSelectMap_20_SetupExpandingSquare(void) {  // 0x81AFF6
   reg_HDMAEN = 0;
   QueueSfx1_Max6(0x3C);
-  expanding_square_timer = kRoomSelectMapExpandingSquareTimers[area_index] - 12;
-  expanding_square_left_subvel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].left_subvel
+  expand_sq_timer = kRoomSelectMapExpandingSquareTimers[area_index] - 12;
+  expand_sq_left_subvel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].left_subvel
                                              + (uint16)(16 * area_index));
-  expanding_square_left_vel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].left_vel + (uint16)(16 * area_index));
-  expanding_square_right_subvel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].right_subvel
+  expand_sq_left_vel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].left_vel + (uint16)(16 * area_index));
+  expand_sq_right_subvel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].right_subvel
                                               + (uint16)(16 * area_index));
-  expanding_square_right_vel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].right_vel
+  expand_sq_right_vel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].right_vel
                                            + (uint16)(16 * area_index));
-  expanding_square_top_subvel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].top_subvel
+  expand_sq_top_subvel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].top_subvel
                                             + (uint16)(16 * area_index));
-  expanding_square_top_vel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].top_vel + (uint16)(16 * area_index));
-  expanding_square_bottom_subvel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].bottom_subvel
+  expand_sq_top_vel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].top_vel + (uint16)(16 * area_index));
+  expand_sq_bottom_subvel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].bottom_subvel
                                                + (uint16)(16 * area_index));
-  expanding_square_bottom_vel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].bottom_vel
+  expand_sq_bottom_vel = *(uint16 *)((uint8 *)&kExpandingSquareVels[0].bottom_vel
                                             + (uint16)(16 * area_index));
-  expanding_square_left_pos = 8;
-  expanding_square_right_pos = 248;
-  expanding_square_top_pos = 8;
-  expanding_square_bottom_pos = 216;
-  expanding_square_left_subpos = 0;
-  expanding_square_right_subpos = 0;
-  expanding_square_top_subpos = 0;
-  expanding_square_bottom_subpos = 0;
+  expand_sq_left_pos = 8;
+  expand_sq_right_pos = 248;
+  expand_sq_top_pos = 8;
+  expand_sq_bottom_pos = 216;
+  expand_sq_left_subpos = 0;
+  expand_sq_right_subpos = 0;
+  expand_sq_top_subpos = 0;
+  expand_sq_bottom_subpos = 0;
   SetupRoomSelectMapExpandingSquareTransHDMA();
   ++menu_index;
   reg_HDMAEN = 12;
@@ -2445,25 +2433,13 @@ void FileSelectMap_20_SetupExpandingSquare(void) {  // 0x81AFF6
 }
 
 void FileSelectMap_21_MoveExpandingSquare(void) {  // 0x81B0BB
-  uint16 v0 = (__PAIR32__(expanding_square_left_pos, expanding_square_left_subpos)
-               - __PAIR32__(expanding_square_left_vel, expanding_square_left_subvel)) >> 16;
-  expanding_square_left_subpos -= expanding_square_left_subvel;
-  expanding_square_left_pos = v0;
-  uint16 v1 = (__PAIR32__(expanding_square_right_pos, expanding_square_right_subpos)
-               - __PAIR32__(expanding_square_right_vel, expanding_square_right_subvel)) >> 16;
-  expanding_square_right_subpos -= expanding_square_right_subvel;
-  expanding_square_right_pos = v1;
-  uint16 v2 = (__PAIR32__(expanding_square_top_pos, expanding_square_top_subpos)
-               - __PAIR32__(expanding_square_top_vel, expanding_square_top_subvel)) >> 16;
-  expanding_square_top_subpos -= expanding_square_top_subvel;
-  expanding_square_top_pos = v2;
-  uint16 v3 = (__PAIR32__(expanding_square_bottom_pos, expanding_square_bottom_subpos)
-               - __PAIR32__(expanding_square_bottom_vel, expanding_square_bottom_subvel)) >> 16;
-  expanding_square_bottom_subpos -= expanding_square_bottom_subvel;
-  expanding_square_bottom_pos = v3;
+  AddToHiLo(&expand_sq_left_pos, &expand_sq_left_subpos, -IPAIR32(expand_sq_left_vel, expand_sq_left_subvel));
+  AddToHiLo(&expand_sq_right_pos, &expand_sq_right_subpos, -IPAIR32(expand_sq_right_vel, expand_sq_right_subvel));
+  AddToHiLo(&expand_sq_top_pos, &expand_sq_top_subpos, -IPAIR32(expand_sq_top_vel, expand_sq_top_subvel));
+  AddToHiLo(&expand_sq_bottom_pos, &expand_sq_bottom_subpos, -IPAIR32(expand_sq_bottom_vel, expand_sq_bottom_subvel));
   SetupRoomSelectMapExpandingSquareTransHDMA();
   DrawAreaSelectMapLabels();
-  if ((--expanding_square_timer & 0x8000) != 0) {
+  if ((--expand_sq_timer & 0x8000) != 0) {
     menu_index -= 15;
     reg_TM = 17;
     reg_TMW = 0;

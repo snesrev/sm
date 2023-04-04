@@ -400,12 +400,10 @@ void SpikeyPlatform_Func_1(void) {  // 0xA68BB4
 }
 
 void SpikeyPlatform_Func_2(void) {  // 0xA68BDC
-  int16 v4;
-
   Enemy_SpikeyPlatform *E = Get_SpikeyPlatform(cur_enemy_index);
   E->spm_var_01 = E->base.y_pos;
   int v1 = E->spm_var_02 >> 1;
-  Enemy_AddPos_Y(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Linear[v1], kCommonEnemySpeeds_Linear[v1 + 1]));
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Linear[v1], kCommonEnemySpeeds_Linear[v1 + 1]));
   if ((int16)(E->base.y_pos - E->spm_var_D) >= 0) {
     E->spm_var_03 = 64;
     E->spm_var_A = FUNC16(SpikeyPlatform_Func_3);
@@ -414,7 +412,7 @@ void SpikeyPlatform_Func_2(void) {  // 0xA68BDC
   }
   if (SpikeyPlatform_Func_5(cur_enemy_index))
     extra_samus_y_displacement += E->base.y_pos - E->spm_var_01;
-  v4 = E->spm_var_02 + 8;
+  int16 v4 = E->spm_var_02 + 8;
   if (!sign16(E->spm_var_02 - 504))
     v4 = 512;
   E->spm_var_02 = v4;
@@ -431,7 +429,7 @@ void SpikeyPlatform_Func_3(uint16 k) {  // 0xA68C4A
 void SpikeyPlatform_Func_4(void) {  // 0xA68C5D
   Enemy_SpikeyPlatform *E = Get_SpikeyPlatform(cur_enemy_index);
   E->spm_var_01 = E->base.y_pos;
-  Enemy_SubPos_Y(cur_enemy_index, 0x8000);
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -0x8000);
   if ((int16)(E->base.y_pos - E->spm_var_C) < 0) {
     E->spm_var_A = FUNC16(SpikeyPlatform_Func_1);
     E->base.y_pos = E->spm_var_C;

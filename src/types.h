@@ -153,6 +153,7 @@ typedef struct Rect16U {
 
 // Generate a pair of operands.
 #define __PAIR32__(high, low)   (((uint32) (high) << 16) | (uint16)(low))
+#define IPAIR32(high, low)   ((int32)(( (high) << 16) | (uint16)(low)))
 
 // Helper functions to represent some assembly instructions.
 

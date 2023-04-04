@@ -464,12 +464,9 @@ void MaridiaBeybladeTurtle_Func6(uint16 k) {  // 0xA28F5F
   if (CheckIfEnemyTouchesSamus(k)) {
     Enemy_MaridiaTurtle *E = Get_MaridiaTurtle(k);
     E->mte_var_A = FUNC16(MaridiaBeybladeTurtle_Func9);
-    uint16 v2 = (__PAIR32__(extra_samus_x_displacement, extra_samus_x_subdisplacement)
-                 - __PAIR32__(E->mte_var_E, E->mte_var_03)) >> 16;
-    extra_samus_x_subdisplacement -= E->mte_var_03;
-    if (sign16(v2 + 16))
-      v2 = -16;
-    extra_samus_x_displacement = v2;
+    AddToHiLo(&extra_samus_x_displacement, &extra_samus_x_subdisplacement, -IPAIR32(E->mte_var_E, E->mte_var_03));
+    if (sign16(extra_samus_x_displacement + 16))
+      extra_samus_x_displacement = -16;
   }
 }
 
@@ -498,8 +495,8 @@ void MaridiaBeybladeTurtle_Func8(uint16 k) {  // 0xA28FEB
   MaridiaBeybladeTurtle_Func4();
   Enemy_MaridiaTurtle *E = Get_MaridiaTurtle(k);
   if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->mte_var_E, E->mte_var_03))) {
-    Negate32(&E->mte_var_E, &E->mte_var_03, &E->mte_var_E, &E->mte_var_03);
-    Negate32(&E->mte_var_02, &E->mte_var_01, &E->mte_var_02, &E->mte_var_01);
+    SetHiLo(&E->mte_var_E, &E->mte_var_03, -IPAIR32(E->mte_var_E, E->mte_var_03));
+    SetHiLo(&E->mte_var_02, &E->mte_var_01, -IPAIR32(E->mte_var_02, E->mte_var_01));
     earthquake_type = 0;
     earthquake_timer = 16;
     QueueSfx2_Max6(0x1B);
@@ -3631,7 +3628,7 @@ void TimedShutter_Func_10(uint16 k) {
 
 void TimedShutter_Func_11(void) {  // 0xA2EC45
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
-  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -(int32)__PAIR32__(E->tsr_var_00, E->tsr_var_01));
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -IPAIR32(E->tsr_var_00, E->tsr_var_01));
   int16 v3 = E->tsr_var_B - 16;
   if ((int16)(v3 - E->base.y_pos) >= 0) {
     E->base.y_pos = v3 + 7;
@@ -3644,7 +3641,7 @@ void TimedShutter_Func_11(void) {  // 0xA2EC45
 
 void TimedShutter_Func_12(void) {  // 0xA2EC86
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
-  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -(int32)__PAIR32__(E->tsr_var_00, E->tsr_var_01));
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -IPAIR32(E->tsr_var_00, E->tsr_var_01));
   int16 v3 = E->tsr_var_C - 16;
   if ((int16)(v3 - E->base.y_pos) >= 0) {
     E->base.y_pos = v3 + 7;
@@ -3657,7 +3654,7 @@ void TimedShutter_Func_12(void) {  // 0xA2EC86
 
 void TimedShutter_Func_13(void) {  // 0xA2ECC7
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
-  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -(int32)__PAIR32__(E->tsr_var_00, E->tsr_var_01));
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -IPAIR32(E->tsr_var_00, E->tsr_var_01));
   int16 v3 = E->tsr_var_D - 16;
   if ((int16)(v3 - E->base.y_pos) >= 0) {
     E->base.y_pos = v3 + 7;
@@ -3670,7 +3667,7 @@ void TimedShutter_Func_13(void) {  // 0xA2ECC7
 
 void TimedShutter_Func_14(void) {  // 0xA2ED08
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
-  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -(int32)__PAIR32__(E->tsr_var_00, E->tsr_var_01));
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -IPAIR32(E->tsr_var_00, E->tsr_var_01));
   uint16 v3 = E->tsr_var_E - 16;
   if ((int16)(v3 - E->base.y_pos) >= 0) {
     E->base.y_pos = v3;

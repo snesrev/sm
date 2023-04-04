@@ -3048,34 +3048,6 @@ uint16 IsSamusWithinEnemy_X(uint16 k, uint16 a) {  // 0xA0AF0B
   return (int16)(SubtractThenAbs16(gEnemyData(k)->x_pos, samus_x_pos) - a) < 0;
 }
 
-void Enemy_SubPos_X(uint16 k, uint32 amount32) {  // 0xA0AF5A
-  EnemyData *E = gEnemyData(k);
-  uint32 t = __PAIR32__(E->x_pos, E->x_subpos) - amount32;
-  E->x_subpos = t;
-  E->x_pos = t >> 16;
-}
-
-void Enemy_AddPos_X(uint16 k, uint32 amount32) {  // 0xA0AF6C
-  EnemyData *E = gEnemyData(k);
-  uint32 t = __PAIR32__(E->x_pos, E->x_subpos) + amount32;
-  E->x_subpos = t;
-  E->x_pos = t >> 16;
-}
-
-void Enemy_SubPos_Y(uint16 k, uint32 amount32) {  // 0xA0AF7E
-  EnemyData *E = gEnemyData(k);
-  uint32 t = __PAIR32__(E->y_pos, E->y_subpos) - amount32;
-  E->y_subpos = t;
-  E->y_pos = t >> 16;
-}
-
-void Enemy_AddPos_Y(uint16 k, uint32 amount32) {  // 0xA0AF90
-  EnemyData *E = gEnemyData(k);
-  uint32 t = __PAIR32__(E->y_pos, E->y_subpos) + amount32;
-  E->y_subpos = t;
-  E->y_pos = t >> 16;
-}
-
 uint16 SignExtend8(uint16 a) {  // 0xA0AFEA
   // not quite sign extend
   return (a & 0x80) ? a | 0xff00 : a;
@@ -3102,9 +3074,6 @@ static uint32 SineMult8bitInner(uint16 varE32, uint16 varE34) {  // 0xA0B0DA
     b = -b;
   }
   return __PAIR32__(a, b);
-//  varE38 = b;
-//  varE36 = a;
-//  return a;
 }
 
 uint16 CosineMult8bit(uint16 a, uint16 varE32) {  // 0xA0B0B2
@@ -3122,7 +3091,6 @@ uint32 CosineMult8bitFull(uint16 a, uint16 varE32) {
 uint32 SineMult8bitFull(uint16 a, uint16 varE32) {
   return SineMult8bitInner(varE32, (uint8)(a + 0x80));
 }
-
 
 Point32 ConvertAngleToXy(uint16 r18, uint16 r20) {  // 0xA0B643
   uint32 ss = kEquationForQuarterCircle[(r18 + 0x40) & 0x7F] * r20;
@@ -3282,8 +3250,6 @@ uint8 EnemyFunc_BBBF(uint16 k, int32 amt) {  // 0xA0BBBF
   uint16 prod = Mult8x8((uint16)(E->y_pos - E->y_height) >> 4, room_width_in_blocks);
   uint16 i = (amt + __PAIR32__(E->x_pos, E->x_subpos)) >> 16;
   uint16 j;
-  //R22_ = r18 + E->x_subpos;
-  //r24 = i;
   if (sign32(amt))
     j = i - E->x_width;
   else
@@ -3295,62 +3261,30 @@ uint8 EnemyFunc_BBBF(uint16 k, int32 amt) {  // 0xA0BBBF
     if ((--R26 & 0x8000) != 0)
       return 0;
   }
-  /*
-  r18 = 0;
-  if (sign32(amt)) {
-    v8 = R34 | 0xF;
-    v11 = E->x_width + 1 + v8 - E->x_pos;
-    if (v11 >= 0)
-      v11 = 0;
-    r20 = -v11;
-  } else {
-    v7 = (R34 & 0xFFF0) - E->x_width - E->x_pos;
-    if (v7 < 0)
-      v7 = 0;
-    r20 = v7;
-  }*/
   return 1;
 }
 
 uint8 EnemyFunc_BC76(uint16 k, int32 amt) {  // 0xA0BC76
-  int16 v4;
-
   EnemyData *E = gEnemyData(k);
   uint16 R26 = (E->x_pos - E->x_width) & 0xFFF0;
   R26 = (uint16)(E->x_width + E->x_pos - 1 - R26) >> 4;
   uint16 i = (amt + __PAIR32__(E->y_pos, E->y_subpos)) >> 16;
   uint16 j;
-  //R22_ = r18 + E->y_subpos;
-  //r24 = i;
   if (sign32(amt))
     j = i - E->y_height;
   else
     j = E->y_height + i - 1;
   uint16 R34 = j;
   uint16 prod = Mult8x8(j >> 4, room_width_in_blocks);
-  v4 = (uint16)(E->x_pos - E->x_width) >> 4;
+  int16 v4 = (uint16)(E->x_pos - E->x_width) >> 4;
   for (int i = 2 * (prod + v4); (level_data[i >> 1] & 0x8000) == 0; i += 2) {
     if ((--R26 & 0x8000) != 0)
       return 0;
   }
-  /*r18 = 0;
-  if (sign32(amt)) {
-    v9 = R34 | 0xF;
-    v12 = E->y_height + 1 + v9 - E->y_pos;
-    if (v12 >= 0)
-      v12 = 0;
-    r20 = -v12;
-  } else {
-    v8 = (R34 & 0xFFF0) - E->y_height - E->y_pos;
-    if (v8 < 0)
-      v8 = 0;
-    r20 = v8;
-  }*/
   return 1;
 }
 
 uint8 EnemyFunc_BF8A(uint16 k, uint16 a, int32 amt) {  // 0xA0BF8A
-  int16 v6;
   uint16 v4;
 
   EnemyData *E = gEnemyData(k);
@@ -3359,34 +3293,18 @@ uint8 EnemyFunc_BF8A(uint16 k, uint16 a, int32 amt) {  // 0xA0BF8A
 
   if (a & 1) {
     uint16 j = (amt + __PAIR32__(E->y_pos, E->y_subpos)) >> 16;
-    //R22_ = r18 + E->y_subpos;
-    //r24 = j;
     v4 = E->y_height + j - 1;
   } else {
     uint16 v5 = (__PAIR32__(E->y_pos, E->y_subpos) - amt) >> 16;
-    //R22_ = E->y_subpos - r18;
-    //r24 = v5;
     v4 = v5 - E->y_height;
   }
   uint16 R34 = v4;
   uint16 prod = Mult8x8(v4 >> 4, room_width_in_blocks);
-  v6 = (uint16)(E->x_pos - E->x_width) >> 4;
+  int16 v6 = (uint16)(E->x_pos - E->x_width) >> 4;
   for (int i = 2 * (prod + v6); (level_data[i >> 1] & 0x8000) == 0; i += 2) {
     if ((--R26 & 0x8000) != 0)
       return 0;
   }
-/*  r18 = 0;
-  if (a & 1) {
-    v10 = (__PAIR32__((R34 & 0xFFF0) - E->y_height, R34 & 0xFFF0) - __PAIR32__(E->y_pos, E->y_height)) >> 16;
-    if (v10 < 0)
-      v10 = 0;
-    r20 = v10;
-  } else {
-    v13 = E->y_height + 1 + (R34 | 0xF) - E->y_pos;
-    if (v13 >= 0)
-      v13 = 0;
-    r20 = -v13;
-  }*/
   return 1;
 }
 
@@ -3718,7 +3636,6 @@ uint8 Enemy_MoveDown(uint16 k, int32 amount32) {  // 0xA0C786
   uint16 r30 = r28;
   uint32 new_pos = amount32 + __PAIR32__(E->y_pos, E->y_subpos);
   uint16 r24 = new_pos >> 16;  // read by EnemyBlockCollVertReact_Slope_NonSquare
-//  R22_ = new_pos;
   if (sign32(amount32))
     v5 = (new_pos >> 16) - E->y_height;
   else

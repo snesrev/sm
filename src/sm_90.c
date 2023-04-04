@@ -150,10 +150,7 @@ void Samus_Animate_LavaFx(void) {  // 0x9081C0
     } else {
       if ((game_time_frames & 7) == 0 && !sign16(samus_health - 71))
         QueueSfx3_Max3(0x2D);
-      uint16 v0 = (__PAIR32__(kSamusPhys_LavaDamagePerFrame, kSamusPhys_LavaSubdamagePerFrame)
-            + __PAIR32__(samus_periodic_damage, samus_periodic_subdamage)) >> 16;
-      samus_periodic_subdamage += kSamusPhys_LavaSubdamagePerFrame;
-      samus_periodic_damage = v0;
+      AddToHiLo(&samus_periodic_damage, &samus_periodic_subdamage, __PAIR32__(kSamusPhys_LavaDamagePerFrame, kSamusPhys_LavaSubdamagePerFrame));
       Samus_Animate_SubmergedLavaAcid();
     }
   } else {
@@ -169,10 +166,7 @@ void Samus_Animate_AcidFx(void) {  // 0x908219
   if ((lava_acid_y_pos & 0x8000) == 0 && sign16(lava_acid_y_pos - r18)) {
     if ((game_time_frames & 7) == 0 && !sign16(samus_health - 71))
       QueueSfx3_Max3(0x2D);
-    uint16 v0 = (__PAIR32__(kSamusPhys_AcidDamagePerFrame, kSamusPhys_AcidSubdamagePerFrame)
-          + __PAIR32__(samus_periodic_damage, samus_periodic_subdamage)) >> 16;
-    samus_periodic_subdamage += kSamusPhys_AcidSubdamagePerFrame;
-    samus_periodic_damage = v0;
+    AddToHiLo(&samus_periodic_damage, &samus_periodic_subdamage, __PAIR32__(kSamusPhys_AcidDamagePerFrame, kSamusPhys_AcidSubdamagePerFrame));
     Samus_Animate_SubmergedLavaAcid();
   } else {
     Samus_Animate_NoFx();
@@ -199,14 +193,12 @@ void Samus_Animate_SubmergedLavaAcid(void) {  // 0x90824C
     atmospheric_gfx_y_pos[3] = lava_acid_y_pos;
     atmospheric_gfx_x_pos[0] = samus_x_pos + 6;
     atmospheric_gfx_x_pos[1] = samus_x_pos;
-    *(uint32 *)&atmospheric_gfx_x_pos[2] = __PAIR32__(samus_x_pos - (samus_x_pos >= 0xFFFA), samus_x_pos)
-      - ((int)(samus_x_pos >= 0xFFFA) | 0x60000);
+    atmospheric_gfx_x_pos[2] = samus_x_pos;
+    atmospheric_gfx_x_pos[3] = samus_x_pos - 6;
     if ((game_time_frames & 1) == 0)
       QueueSfx2_Max6(0x10);
   }
-  if (samus_pose == kPose_00_FaceF_Powersuit
-      || samus_pose == kPose_9B_FaceF_VariaGravitySuit
-      || (equipped_items & 0x20) != 0) {
+  if (samus_pose == kPose_00_FaceF_Powersuit || samus_pose == kPose_9B_FaceF_VariaGravitySuit || (equipped_items & 0x20) != 0) {
     samus_anim_frame_buffer = 0;
   }
 }
@@ -1062,7 +1054,7 @@ void Samus_MoveY_WithSpeedCalc(void) {  // 0x9090E2
     if (samus_y_speed != 5)
       AddToHiLo(&samus_y_speed, &samus_y_subspeed, __PAIR32__(samus_y_accel, samus_y_subaccel));
   } else {
-    AddToHiLo(&samus_y_speed, &samus_y_subspeed, -(int32)__PAIR32__(samus_y_accel, samus_y_subaccel));
+    AddToHiLo(&samus_y_speed, &samus_y_subspeed, -IPAIR32(samus_y_accel, samus_y_subaccel));
   }
   if (samus_y_dir != 2)
     amt = -amt;
@@ -1115,11 +1107,10 @@ void Samus_MorphedBouncingMovement(void) {  // 0x9091D1
       samus_y_subspeed = 0;
       samus_y_speed = 0;
       int32 amt = __PAIR32__(extra_samus_y_displacement, extra_samus_y_subdisplacement);
-      if (amt < 0) {
+      if (amt < 0)
         Samus_MoveUp(amt);
-      } else {
+      else
         Samus_MoveDown(amt + INT16_SHL16(1));
-      }
     } else {
       Samus_CheckStartFalling();
       Samus_MoveY_WithSpeedCalc();
@@ -1328,34 +1319,21 @@ void Samus_ScrollFinishedHook_SporeSpawnFight(void) {  // 0x909589
 void Samus_HandleScroll_X(void) {  // 0x9095A0
   static const uint16 kSamus_HandleScroll_X_FaceLeft[4] = { 0xa0, 0x50, 0x20, 0xe0 };
   static const uint16 kSamus_HandleScroll_X_FaceRight[4] = { 0x60, 0x40, 0x20, 0xe0 };
-
-
   if (samus_prev_x_pos == samus_x_pos) {
     HandleAutoscrolling_X();
     return;
   }
-  // r18 = layer1_x_pos;
-  if (knockback_dir || samus_movement_type == 16 || samus_x_accel_mode == 1) {
-    if (samus_pose_x_dir == 4) {
-LABEL_9:
-      ideal_layer1_xpos = samus_x_pos - kSamus_HandleScroll_X_FaceRight[camera_distance_index >> 1];
-      goto LABEL_11;
-    }
-  } else if (samus_pose_x_dir != 4) {
-    goto LABEL_9;
+  if ((knockback_dir || samus_movement_type == 16 || samus_x_accel_mode == 1) ^ (samus_pose_x_dir != 4)) {
+    ideal_layer1_xpos = samus_x_pos - kSamus_HandleScroll_X_FaceRight[camera_distance_index >> 1];
+  } else {
+    ideal_layer1_xpos = samus_x_pos - kSamus_HandleScroll_X_FaceLeft[camera_distance_index >> 1];
   }
-  ideal_layer1_xpos = samus_x_pos - kSamus_HandleScroll_X_FaceLeft[camera_distance_index >> 1];
-LABEL_11:
   if (ideal_layer1_xpos != layer1_x_pos) {
     if ((int16)(ideal_layer1_xpos - layer1_x_pos) < 0) {
-      uint16 v1 = (__PAIR32__(layer1_x_pos, layer1_x_subpos) - __PAIR32__(absolute_moved_last_frame_x, absolute_moved_last_frame_x_fract)) >> 16;
-      layer1_x_subpos -= absolute_moved_last_frame_x_fract;
-      layer1_x_pos = v1;
+      AddToHiLo(&layer1_x_pos, &layer1_x_subpos, -IPAIR32(absolute_moved_last_frame_x, absolute_moved_last_frame_x_fract));
       HandleScrollingWhenTriggeringScrollLeft();
     } else {
-      uint16 v0 = (__PAIR32__(absolute_moved_last_frame_x, absolute_moved_last_frame_x_fract) + __PAIR32__(layer1_x_pos, layer1_x_subpos)) >> 16;
-      layer1_x_subpos += absolute_moved_last_frame_x_fract;
-      layer1_x_pos = v0;
+      AddToHiLo(&layer1_x_pos, &layer1_x_subpos, __PAIR32__(absolute_moved_last_frame_x, absolute_moved_last_frame_x_fract));
       HandleScrollingWhenTriggeringScrollRight();
     }
   }
@@ -1372,41 +1350,33 @@ void Samus_HandleScroll_Y(void) {  // 0x90964F
       ideal_layer1_ypos = samus_y_pos - up_scroller;
     if (ideal_layer1_ypos != layer1_y_pos) {
       if ((int16)(ideal_layer1_ypos - layer1_y_pos) < 0) {
-        uint16 v1 = (__PAIR32__(layer1_y_pos, layer1_y_subpos)
-              - __PAIR32__(absolute_moved_last_frame_y, absolute_moved_last_frame_y_fract)) >> 16;
-        layer1_y_subpos -= absolute_moved_last_frame_y_fract;
-        layer1_y_pos = v1;
+        AddToHiLo(&layer1_y_pos, &layer1_y_subpos, -IPAIR32(absolute_moved_last_frame_y, absolute_moved_last_frame_y_fract));
         HandleScrollingWhenTriggeringScrollUp();
       } else {
-        uint16 v0 = (__PAIR32__(absolute_moved_last_frame_y, absolute_moved_last_frame_y_fract)
-              + __PAIR32__(layer1_y_pos, layer1_y_subpos)) >> 16;
-        layer1_y_subpos += absolute_moved_last_frame_y_fract;
-        layer1_y_pos = v0;
+        AddToHiLo(&layer1_y_pos, &layer1_y_subpos, __PAIR32__(absolute_moved_last_frame_y, absolute_moved_last_frame_y_fract));
         HandleScrollingWhenTriggeringScrollDown();
       }
     }
   }
 }
 
-static const uint16 g_word_909EAD = 1;
-
 void Samus_CalcDistanceMoved_X(void) {  // 0x9096C0
   if ((int16)(samus_x_pos - samus_prev_x_pos) >= 0) {
-    absolute_moved_last_frame_x_fract = samus_x_subpos - samus_prev_x_subpos;
-    absolute_moved_last_frame_x = g_word_909EAD + ((__PAIR32__(samus_x_pos, samus_x_subpos) - __PAIR32__(samus_prev_x_pos, samus_prev_x_subpos)) >> 16);
+    SetHiLo(&absolute_moved_last_frame_x, &absolute_moved_last_frame_x_fract,
+      __PAIR32__(samus_x_pos, samus_x_subpos) - __PAIR32__(samus_prev_x_pos, samus_prev_x_subpos) + (1 << 16));
   } else {
-    absolute_moved_last_frame_x_fract = samus_prev_x_subpos - samus_x_subpos;
-    absolute_moved_last_frame_x = g_word_909EAD + ((__PAIR32__(samus_prev_x_pos, samus_prev_x_subpos) - __PAIR32__(samus_x_pos, samus_x_subpos)) >> 16);
+    SetHiLo(&absolute_moved_last_frame_x, &absolute_moved_last_frame_x_fract,
+      __PAIR32__(samus_prev_x_pos, samus_prev_x_subpos) - __PAIR32__(samus_x_pos, samus_x_subpos) + (1 << 16));
   }
 }
 
 void Samus_CalcDistanceMoved_Y(void) {  // 0x9096FF
   if ((int16)(samus_y_pos - samus_prev_y_pos) >= 0) {
-    absolute_moved_last_frame_y_fract = samus_y_subpos - samus_prev_y_subpos;
-    absolute_moved_last_frame_y = g_word_909EAD + ((__PAIR32__(samus_y_pos, samus_y_subpos) - __PAIR32__(samus_prev_y_pos, samus_prev_y_subpos)) >> 16);
+    SetHiLo(&absolute_moved_last_frame_y, &absolute_moved_last_frame_y_fract,
+      __PAIR32__(samus_y_pos, samus_y_subpos) - __PAIR32__(samus_prev_y_pos, samus_prev_y_subpos) + (1 << 16));
   } else {
-    absolute_moved_last_frame_y_fract = samus_prev_y_subpos - samus_y_subpos;
-    absolute_moved_last_frame_y = g_word_909EAD + ((__PAIR32__(samus_prev_y_pos, samus_prev_y_subpos) - __PAIR32__(samus_y_pos, samus_y_subpos)) >> 16);
+    SetHiLo(&absolute_moved_last_frame_y, &absolute_moved_last_frame_y_fract,
+      __PAIR32__(samus_prev_y_pos, samus_prev_y_subpos) - __PAIR32__(samus_y_pos, samus_y_subpos) + (1 << 16));
   }
 }
 
@@ -1655,6 +1625,7 @@ int32 Samus_CalcBaseSpeed_X(uint16 k) {  // 0x909A7E
 
 static Pair_Bool_Amt Samus_CalcBaseSpeed_NoDecel_X(uint16 k) {  // 0x909B1F
   SamusSpeedTableEntry *sste = get_SamusSpeedTableEntry(k);
+  bool rv = false;
   if ((samus_x_accel_mode & 1) != 0) {
     int32 delta = samus_x_decel_mult ?
       __PAIR32__(Mult8x8(samus_x_decel_mult, sste->decel) >> 8, Mult8x8(samus_x_decel_mult, HIBYTE(sste->decel_sub))) :
@@ -1670,10 +1641,10 @@ static Pair_Bool_Amt Samus_CalcBaseSpeed_NoDecel_X(uint16 k) {  // 0x909B1F
     if (IsGreaterThanQuirked(samus_x_base_speed, samus_x_base_subspeed, sste->max_speed, sste->max_speed_sub)) {
       samus_x_base_speed = sste->max_speed;
       samus_x_base_subspeed = sste->max_speed_sub;
-      return (Pair_Bool_Amt) { true, __PAIR32__(samus_x_base_speed, samus_x_base_subspeed) };
+      rv = true;
     }
   }
-  return (Pair_Bool_Amt) { false, __PAIR32__(samus_x_base_speed, samus_x_base_subspeed) };
+  return (Pair_Bool_Amt) { rv, __PAIR32__(samus_x_base_speed, samus_x_base_subspeed) };
 }
 
 uint16 Samus_DetermineSpeedTableEntryPtr_X(void) {  // 0x909BD1
@@ -1710,7 +1681,6 @@ void Samus_DetermineAccel_Y(void) {  // 0x909C5B
   static const uint16 g_word_909EA7 = 0;
   static const uint16 g_word_909EA9 = 0;
   static const uint16 g_word_909EAB = 0;
-  static const uint16 g_word_909EAD = 1;
 
   if ((equipped_items & 0x20) != 0)
     goto LABEL_7;
@@ -4595,13 +4565,9 @@ void Samus_ShinesparkMove_X(void) {  // 0x90D132
   int16 v4;
 
   samus_shine_timer = 15;
-  uint16 v0 = (__PAIR32__(samus_y_accel, samus_y_subaccel) + __PAIR32__(samus_x_extra_run_speed, samus_x_extra_run_subspeed)) >> 16;
-  samus_x_extra_run_subspeed += samus_y_subaccel;
-  samus_x_extra_run_speed = v0;
-  if (!sign16(v0 - 15)) {
-    samus_x_extra_run_speed = 15;
-    samus_x_extra_run_subspeed = 0;
-  }
+  AddToHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, __PAIR32__(samus_y_accel, samus_y_subaccel));
+  if (!sign16(samus_x_extra_run_speed - 15))
+    SetHiLo(&samus_x_extra_run_speed, &samus_x_extra_run_subspeed, INT16_SHL16(15));
   int32 amt = 0;
   if (samus_pose_x_dir == 4) {
     amt = Samus_ClampSpeedHi(-(int32)Samus_CalcDisplacementMoveLeft(amt), 15);
@@ -4637,7 +4603,6 @@ void Samus_ShinesparkMove_Y(void) {  // 0x90D1FF
   samus_shine_timer = 15;
 
   AddToHiLo(&substate, &suit_pickup_light_beam_pos, __PAIR32__(samus_y_accel, samus_y_subaccel));
-
   AddToHiLo(&samus_y_speed, &samus_y_subspeed, __PAIR32__(substate, suit_pickup_light_beam_pos));
   int32 amt = Samus_ClampSpeedHi(__PAIR32__(samus_y_speed, samus_y_subspeed), 14);
   amt -= __PAIR32__(extra_samus_y_displacement, extra_samus_y_subdisplacement);
@@ -5025,7 +4990,7 @@ void ProjPreInstr_SpreadBomb(uint16 k) {  // 0x90D8F7
     AddToHiLo(&projectile_bomb_y_speed[v1], &projectile_timers[v1], __PAIR32__(samus_y_accel, samus_y_subaccel));
     AddToHiLo(&projectile_y_pos[v1], &projectile_bomb_y_subpos[v1], __PAIR32__(projectile_bomb_y_speed[v1], projectile_timers[v1]));
     if (BlockCollSpreadBomb(k) & 1) {
-      AddToHiLo(&projectile_y_pos[v1], &projectile_bomb_y_subpos[v1], -(int32)__PAIR32__(projectile_bomb_y_speed[v1], projectile_timers[v1]));
+      AddToHiLo(&projectile_y_pos[v1], &projectile_bomb_y_subpos[v1], -IPAIR32(projectile_bomb_y_speed[v1], projectile_timers[v1]));
       if ((projectile_bomb_y_speed[v1] & 0x8000) != 0) {
         projectile_bomb_y_speed[v1] = 0;
         projectile_y_radius[v1] = 0;
@@ -5879,11 +5844,8 @@ void Samus_Func8(void) {  // 0x90E400
 }
 
 void Samus_Func9(void) {  // 0x90E41B
-  if (sign16(samus_y_speed - 5)) {
-    uint32 v0 = __PAIR32__(samus_y_accel, samus_y_subaccel) + __PAIR32__(samus_y_speed, samus_y_subspeed);
-    samus_y_speed = HIWORD(v0);
-    samus_y_subspeed = v0;
-  }
+  if (sign16(samus_y_speed - 5))
+    AddToHiLo(&samus_y_speed, &samus_y_subspeed, __PAIR32__(samus_y_accel, samus_y_subaccel));
   if ((samus_pose == kPose_29_FaceR_Fall || samus_pose == kPose_2A_FaceL_Fall
        || samus_pose == kPose_67_FaceR_Fall_Gun || samus_pose == kPose_68_FaceL_Fall_Gun)
       && !sign16(samus_y_speed - 5)) {
@@ -6261,42 +6223,23 @@ void SamusMovementType_Xray(void) {  // 0x90E94F
 }
 
 void Samus_HandlePeriodicDamage(void) {  // 0x90E9CE
-  int16 v0;
-  int16 v1;
-  int16 v2;
-
-  if (time_is_frozen_flag)
-    goto LABEL_10;
-  if ((equipped_items & 0x20) != 0) {
-    uint16 v4 = *(uint16 *)((uint8 *)&samus_periodic_subdamage + 1) >> 2;
-    LOBYTE(v1) = (uint16)(*(uint16 *)((uint8 *)&samus_periodic_subdamage + 1) >> 2) >> 8;
-    HIBYTE(v1) = *(uint16 *)((uint8 *)&samus_periodic_subdamage + 1) >> 2;
-    samus_periodic_subdamage = v1 & 0xFF00;
-    samus_periodic_damage = HIBYTE(v4);
-  } else if ((equipped_items & 1) != 0) {
-    uint16 v3 = *(uint16 *)((uint8 *)&samus_periodic_subdamage + 1) >> 1;
-    LOBYTE(v0) = (uint16)(*(uint16 *)((uint8 *)&samus_periodic_subdamage + 1) >> 1) >> 8;
-    HIBYTE(v0) = *(uint16 *)((uint8 *)&samus_periodic_subdamage + 1) >> 1;
-    samus_periodic_subdamage = v0 & 0xFF00;
-    samus_periodic_damage = HIBYTE(v3);
+  if (time_is_frozen_flag) {
+    samus_periodic_damage = samus_periodic_subdamage = 0;
+    return;
   }
-  if ((samus_periodic_damage & 0x8000) != 0) {
+  int32 t = __PAIR32__(samus_periodic_damage, samus_periodic_subdamage);
+  if (t < 0) {
     InvalidInterrupt_Crash();
     return;
   }
-  v2 = (__PAIR32__(samus_health, samus_subunit_health) - __PAIR32__(samus_periodic_damage, samus_periodic_subdamage)) >> 16;
-  samus_subunit_health -= samus_periodic_subdamage;
-  samus_health = v2;
-  if (v2 >= 0) {
-LABEL_10:
-    samus_periodic_subdamage = 0;
-    samus_periodic_damage = 0;
-  } else {
-    samus_subunit_health = 0;
-    samus_health = 0;
-    samus_periodic_subdamage = 0;
-    samus_periodic_damage = 0;
-  }
+  if ((equipped_items & 0x20) != 0)
+    t = (t >> 2) & 0xffff00;
+  else if ((equipped_items & 1) != 0)
+    t = (t >> 1) & 0xffff00;
+  AddToHiLo(&samus_health, &samus_subunit_health, -t);
+  if ((int16)samus_health < 0)
+    samus_health = samus_subunit_health = 0;
+  samus_periodic_damage = samus_periodic_subdamage = 0;
 }
 
 void Samus_PauseCheck(void) {  // 0x90EA45

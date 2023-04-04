@@ -1048,31 +1048,24 @@ void KraidLint_ProduceLint(uint16 k) {  // 0xA7B832
 }
 
 void KraidLint_ChargeLint(uint16 k) {  // 0xA7B868
-  int16 v1;
-
-  v1 = 0;
-  EnemyData *v2 = gEnemyData(k);
-  EnemyData *v3 = v2;
-  if ((v2->ai_preinstr & 1) != 0)
+  EnemyData *E = gEnemyData(k);
+  int16 v1 = 0;
+  if ((E->ai_preinstr & 1) != 0)
     v1 = 3584;
-  v2->palette_index = v1;
-  v2->x_pos = v2->ai_var_C + gEnemyData(0)->x_pos - v2->ai_var_B;
-  if (v3->ai_preinstr-- == 1) {
-    v3->ai_var_A = FUNC16(KraidLint_FireLint);
+  E->palette_index = v1;
+  E->x_pos = E->ai_var_C + gEnemyData(0)->x_pos - E->ai_var_B;
+  if (E->ai_preinstr-- == 1) {
+    E->ai_var_A = FUNC16(KraidLint_FireLint);
     QueueSfx3_Max6(0x1F);
   }
 }
 
 void KraidLint_FireLint(uint16 k) {  // 0xA7B89B
   Enemy_Kraid *E = Get_Kraid(k);
-  uint16 x_subpos = E->base.x_subpos;
-  bool v3 = x_subpos < g_word_A7A926;
-  E->base.x_subpos = x_subpos - g_word_A7A926;
-  uint16 v4 = E->base.x_pos - (v3 + g_word_A7A928);
-  E->base.x_pos = v4;
-  if (sign16(v4 - 56))
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, -IPAIR32(g_word_A7A928, g_word_A7A926));
+  if (sign16(E->base.x_pos - 56))
     E->base.properties |= kEnemyProps_Tangible;
-  if (sign16(v4 - 32)) {
+  if (sign16(E->base.x_pos - 32)) {
     E->base.properties |= kEnemyProps_Invisible;
     E->kraid_var_A = FUNC16(Kraid_AlignEnemyToKraid);
     E->kraid_var_F = 300;
@@ -1080,12 +1073,9 @@ void KraidLint_FireLint(uint16 k) {  // 0xA7B89B
     E->kraid_var_B = 0;
   }
   if (CheckIfEnemyTouchesSamus(k)) {
-    uint16 v5 = (__PAIR32__(extra_samus_x_displacement, extra_samus_x_subdisplacement)
-                 - __PAIR32__(g_word_A7A928, g_word_A7A926)) >> 16;
-    extra_samus_x_subdisplacement -= g_word_A7A926;
-    if (sign16(v5 + 16))
-      v5 = -16;
-    extra_samus_x_displacement = v5;
+    AddToHiLo(&extra_samus_x_displacement, &extra_samus_x_subdisplacement, -IPAIR32(g_word_A7A928, g_word_A7A926));
+    if (sign16(extra_samus_x_displacement + 16))
+      extra_samus_x_displacement = -16;
   }
 }
 
@@ -1100,10 +1090,8 @@ void KraidFingernail_WaitForLintXpos(uint16 k) {  // 0xA7B907
 
 void KraidEnemy_HandleFunctionTimer(uint16 k) {  // 0xA7B92D
   Enemy_Kraid *E = Get_Kraid(k);
-  if (E->kraid_var_F) {
-    if (E->kraid_var_F-- == 1)
-      E->kraid_var_A = E->kraid_next;
-  }
+  if (E->kraid_var_F && E->kraid_var_F-- == 1)
+    E->kraid_var_A = E->kraid_next;
 }
 
 void Kraid_AlignEnemyToKraid(uint16 k) {  // 0xA7B923
@@ -1433,9 +1421,8 @@ void KraidsFingernail_Fire(uint16 k) {  // 0xA7BE8E
     }
   }
   EnemyData *v5 = gEnemyData(k);
-  if (Enemy_MoveDown(k, __PAIR32__(v5->ai_var_E, v5->ai_var_D))) {
-    Negate32(&v5->ai_var_E, &v5->ai_var_D, &v5->ai_var_E, &v5->ai_var_D);
-  }
+  if (Enemy_MoveDown(k, __PAIR32__(v5->ai_var_E, v5->ai_var_D)))
+    SetHiLo(&v5->ai_var_E, &v5->ai_var_D, -IPAIR32(v5->ai_var_E, v5->ai_var_D));
 }
 
 void KraidsFoot_PrepareToLungeForward(void) {  // 0xA7BF2D
@@ -2015,14 +2002,9 @@ void Kraid_Raise_Handler(void) {  // 0xA7C924
   Kraid_RestrictSamusXtoFirstScreen_2();
   if ((earthquake_timer & 5) == 0)
     Kraid_SpawnRandomQuakeProjs();
-  uint16 v0 = 1;
   Enemy_Kraid *E0 = Get_Kraid(0);
-  if ((E0->base.y_pos & 2) == 0)
-    v0 = -1;
-  E0->base.x_pos += v0;
-  uint16 y_subpos = E0->base.y_subpos;
-  E0->base.y_subpos = y_subpos + 0x8000;
-  E0->base.y_pos = (__PAIR32__(E0->base.y_pos, y_subpos) - 0x8000) >> 16;
+  E0->base.x_pos += (E0->base.y_pos & 2) == 0 ? -1 : 1;
+  AddToHiLo(&E0->base.y_pos, &E0->base.y_subpos, -0x8000);
   if (sign16(E0->base.y_pos - 457)) {
     E0->base.x_pos = 176;
     Enemy_Kraid *E5 = Get_Kraid(0x140);
@@ -2348,7 +2330,7 @@ void Phantoon_AdjustSpeedLeftSideClockwise(void) {  // 0xA7D114
         ++E->phant_var_D;
       }
     } else {
-      AddToHiLo(&E->phant_var_C, &E->phant_var_B, -(int32)__PAIR32__(g_word_A7CD79, g_word_A7CD77));
+      AddToHiLo(&E->phant_var_C, &E->phant_var_B, -IPAIR32(g_word_A7CD79, g_word_A7CD77));
       if (E->phant_var_C == g_word_A7CD7F || (int16)(E->phant_var_C - g_word_A7CD7F) < 0) {
         E->phant_var_C = g_word_A7CD7F + 1;
         E->phant_var_B = 0;
@@ -2370,7 +2352,7 @@ void Phantoon_AdjustSpeedRightSideClockwise(void) {  // 0xA7D193
   uint16 phant_var_D = E->phant_var_D;
   if (phant_var_D) {
     if ((phant_var_D & 1) != 0) {
-      AddToHiLo(&E->phant_var_C, &E->phant_var_B, -(int32)__PAIR32__(g_word_A7CD87, g_word_A7CD85));
+      AddToHiLo(&E->phant_var_C, &E->phant_var_B, -IPAIR32(g_word_A7CD87, g_word_A7CD85));
       if (E->phant_var_C == g_word_A7CD8B || (int16)(E->phant_var_C - g_word_A7CD8B) < 0) {
         E->phant_var_C = g_word_A7CD8B + 1;
         E->phant_var_B = 0;
@@ -2385,7 +2367,7 @@ void Phantoon_AdjustSpeedRightSideClockwise(void) {  // 0xA7D193
       }
     }
   } else {
-    AddToHiLo(&E->phant_var_C, &E->phant_var_B, -(int32)__PAIR32__(g_word_A7CD83, g_word_A7CD81));
+    AddToHiLo(&E->phant_var_C, &E->phant_var_B, -IPAIR32(g_word_A7CD83, g_word_A7CD81));
     if (E->phant_var_C == g_word_A7CD89 || (int16)(E->phant_var_C - g_word_A7CD89) < 0) {
       E->phant_var_C = (uint16)(g_word_A7CD89 + 2);
       E->phant_var_B = 0;

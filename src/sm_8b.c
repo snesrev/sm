@@ -1534,10 +1534,8 @@ void CreditsObject_ProcessOne(void) {  // 0x8B996A
   int i;
 
   CallCreditsObjectFunc(cinematic_var24 | 0x8B0000, 0);
-  uint16 v0 = (__PAIR32__(cinematic_var10, cinematic_var9) + 0x8000) >> 16;
-  cinematic_var9 += 0x8000;
-  cinematic_var10 = v0;
-  if (!sign16(v0 - enemy_projectile_pre_instr[0] - 8)) {
+  AddToHiLo(&cinematic_var10, &cinematic_var9, 0x8000);
+  if (!sign16(cinematic_var10 - enemy_projectile_pre_instr[0] - 8)) {
     enemy_projectile_pre_instr[0] = cinematic_var10;
     for (i = cinematic_var21; ; ) {
       const uint16 *v2 = (const uint16 *)RomPtr_8C(i);
@@ -1795,10 +1793,8 @@ uint16 CinematicSprInstr_9CE1(uint16 k, uint16 j) {  // 0x8B9CE1
 }
 
 void CinematicFunc_Func2(void) {  // 0x8B9D17
-  uint16 v0 = (__PAIR32__(g_word_7E199B, g_word_7E1999) + __PAIR32__(cinematic_var8, cinematic_var7)) >> 16;
-  cinematic_var7 += g_word_7E1999;
-  cinematic_var8 = v0;
-  if (sign16(v0 + 7)) {
+  AddToHiLo(&cinematic_var8, &cinematic_var7, __PAIR32__(g_word_7E199B, g_word_7E1999));
+  if (sign16(cinematic_var8 + 7)) {
     reg_TM = 16;
     cinematic_function = FUNC16(CinematicFunctionNone);
     SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BA0F5, FUNC16(CinematicFunctionNone));
@@ -1828,10 +1824,8 @@ uint16 CinematicSprInstr_9D5D(uint16 k, uint16 j) {  // 0x8B9D5D
 }
 
 void CinematicFunc_Func4(void) {  // 0x8B9D90
-  uint16 v0 = (__PAIR32__(g_word_7E199B, g_word_7E1999) + __PAIR32__(cinematic_var8, cinematic_var7)) >> 16;
-  cinematic_var7 += g_word_7E1999;
-  cinematic_var8 = v0;
-  if (sign16(v0 + 176)) {
+  AddToHiLo(&cinematic_var8, &cinematic_var7, __PAIR32__(g_word_7E199B, g_word_7E1999));
+  if (sign16(cinematic_var8 + 176)) {
     reg_TM = 16;
     cinematic_function = FUNC16(CinematicFunctionNone);
     SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BA0FB, FUNC16(CinematicFunctionNone));
@@ -1864,10 +1858,8 @@ uint16 CinematicSprInstr_9DD6(uint16 k, uint16 j) {  // 0x8B9DD6
 }
 
 void CinematicFunc_Func5(void) {  // 0x8B9E12
-  uint16 v0 = (__PAIR32__(g_word_7E199F, g_word_7E199D) + __PAIR32__(cinematic_var10, cinematic_var9)) >> 16;
-  cinematic_var9 += g_word_7E199D;
-  cinematic_var10 = v0;
-  if (!sign16(v0 - 163)) {
+  AddToHiLo(&cinematic_var10, &cinematic_var9, __PAIR32__(g_word_7E199F, g_word_7E199D));
+  if (!sign16(cinematic_var10 - 163)) {
     reg_TM = 16;
     cinematic_function = FUNC16(CinematicFunctionNone);
     SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BA101, FUNC16(CinematicFunctionNone));
@@ -4738,17 +4730,13 @@ static const uint16 kCinematicFunction_Intro_Func121_Tab0[32] = {  // 0x8BDCA5
   0, 0x8000, 0, 0x8000, 0xffff, 0x8000, 0xffff, 0x8000,      0, 0x8000,      0, 0x8000, 0xffff, 0x8000, 0xffff, 0x8000,
 };
 void CinematicFunction_Intro_Func121(void) {
-  int16 v1;
-
   if (cinematic_var13)
     --cinematic_var13;
   else
     CinematicFunction_Intro_Func122();
   cinematic_var5 = (uint8)(cinematic_var5 - 4);
-  int v0 = (uint16)(4 * cinematic_var14) >> 1;
-  v1 = (kCinematicFunction_Intro_Func121_Tab0[v0 + 1] + __PAIR32__(cinematic_var8, cinematic_var7)) >> 16;
-  cinematic_var7 += kCinematicFunction_Intro_Func121_Tab0[v0 + 1];
-  cinematic_var8 = kCinematicFunction_Intro_Func121_Tab0[v0] + v1;
+  int v0 = 2 * cinematic_var14;
+  AddToHiLo(&cinematic_var8, &cinematic_var7, __PAIR32__(kCinematicFunction_Intro_Func121_Tab0[v0], kCinematicFunction_Intro_Func121_Tab0[v0 + 1]));
   cinematic_var14 = (cinematic_var14 + 1) & 0xF;
   cinematic_var6 -= 8;
   if (sign16(cinematic_var6 - 1456)) {
@@ -4761,15 +4749,11 @@ void CinematicFunction_Intro_Func121(void) {
 static const uint16 kCinematicFunction_Intro_Func123_Tab0[16] = { 1, 0, 1, 0, 1, 0, 0xffff, 0, 0xffff, 0, 1, 0, 1, 0, 0xffff, 0 };
 
 void CinematicFunction_Intro_Func123(void) {  // 0x8BDD42
-  int16 v1;
-
   CinematicFunction_Intro_Func122();
   if (cinematic_var5 != 224)
     cinematic_var5 = (uint8)(cinematic_var5 - 1);
-  int v0 = (uint16)(4 * cinematic_var14) >> 1;
-  v1 = (kCinematicFunction_Intro_Func123_Tab0[v0 + 1] + __PAIR32__(cinematic_var8, cinematic_var7)) >> 16;
-  cinematic_var7 += kCinematicFunction_Intro_Func123_Tab0[v0 + 1];
-  cinematic_var8 = kCinematicFunction_Intro_Func123_Tab0[v0] + v1;
+  int v0 = 2 * cinematic_var14;
+  AddToHiLo(&cinematic_var8, &cinematic_var7, __PAIR32__(kCinematicFunction_Intro_Func123_Tab0[v0], kCinematicFunction_Intro_Func123_Tab0[v0 + 1]));
   cinematic_var14 = (cinematic_var14 + 1) & 7;
   cinematic_var6 -= 2;
   if (sign16(cinematic_var6 - 1184)) {
@@ -4785,16 +4769,9 @@ void CinematicFunction_Intro_Func123(void) {  // 0x8BDD42
 static const uint16 g_word_8BDE43[16] = { 0, 0x6f7b, 0x4a52, 0x1ce7, 0, 0x5ad6, 0x4a52, 0x35ad, 0x2529, 0x7fff, 0x56b5, 0x294a, 0x4210, 0x2d6b, 0x18c6, 0x7fff };
 
 void CinematicFunction_Intro_Func124(void) {  // 0x8BDDCD
-  unsigned int v2; // kr04_4
-
   CinematicFunction_Intro_Func122();
-  uint16 v0 = (__PAIR32__(cinematic_var13, cinematic_var14) - 256) >> 16;
-  cinematic_var14 -= 256;
-  cinematic_var13 = v0;
-  v2 = __PAIR32__(v0, cinematic_var14) + __PAIR32__(cinematic_var8, cinematic_var7);
-  uint16 v1 = (__PAIR32__(v0, cinematic_var14) + __PAIR32__(cinematic_var8, cinematic_var7)) >> 16;
-  cinematic_var7 = v2;
-  cinematic_var8 = v1;
+  AddToHiLo(&cinematic_var13, &cinematic_var14, -256);
+  AddToHiLo(&cinematic_var8, &cinematic_var7, __PAIR32__(cinematic_var13, cinematic_var14));
   if (sign16(cinematic_var6 - 384) && (cinematic_var12 & 3) == 0 && cinematic_var5 != 16)
     cinematic_var5 = (uint8)(cinematic_var5 + 2);
   if (sign16(cinematic_var6 - 32)) {
