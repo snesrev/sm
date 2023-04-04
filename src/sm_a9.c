@@ -4791,21 +4791,15 @@ LABEL_12:
       if (v15 >= E0->dms_var_47)
         r18 = E0->dms_var_43;
 
-      LongPtr r20;
-      r20.addr = E0->dms_var_44;
-      r20.bank = 169;
-      CopyMoveCorpseRottingRotEntry(r20, *v6, r18);
+      CopyMoveCorpseRottingRotEntry((const uint16 *)RomPtr_A9(E0->dms_var_44), *v6, r18);
     }
     goto LABEL_12;
   }
   Enemy_DeadMonsters *E = Get_DeadMonsters(0);
   uint16 r18 = E->dms_var_43;
 
-  LongPtr r20;
-  r20.addr = E->dms_var_44;
-  r20.bank = 169;
   uint16 *v11 = (uint16 *)(g_ram + dms_var_52);
-  CopyMoveCorpseRottingRotEntry(r20, *v11, r18);
+  CopyMoveCorpseRottingRotEntry((const uint16 *)RomPtr_A9(E->dms_var_44), *v11, r18);
   uint16 v12 = *v11 + 2;
   if (v12 < E->dms_var_46) {
     *(uint16 *)v11 = v12;
@@ -4819,12 +4813,12 @@ LABEL_12:
   return 0;
 }
 
-void CopyMoveCorpseRottingRotEntry(LongPtr r20, uint16 a, uint16 r18) {  // 0xA9DBE0
+void CopyMoveCorpseRottingRotEntry(const uint16 *r20, uint16 a, uint16 r18) {  // 0xA9DBE0
   Enemy_DeadMonsters *E = Get_DeadMonsters(0);
   E->dms_var_41 = a;
   uint16 v1 = (uint16)(a & 0xFFF8) >> 2;
   uint16 v2 = a & 7;
-  uint16 v6 = IndirReadWord(r20, v1) + 2 * v2;
+  uint16 v6 = r20[v1 >> 1] + 2 * v2;
   if (v2 >= 6) {
     CallCorpseRottingMove(r18 | 0xA90000, E->dms_var_48 + v6, v6);
   } else {

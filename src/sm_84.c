@@ -828,7 +828,8 @@ void DrawPlm(uint16 k) {  // 0x848DAA
   uint16 x = plm_x_block;
   uint16 y = plm_y_block;
   uint16 r3;
-  LongPtr r0, r6;
+  //LongPtr r0, r6;
+  uint16 *r0, *r6;
 LABEL_2:
   r26 = layer1_y_pos >> 4;
   if (sign16((layer1_y_pos >> 4) + 15 - y))
@@ -866,9 +867,8 @@ LABEL_2:
             CalculatePlmDrawTilemapVramDst(vram_write_queue_tail, r9, r12, r20, r24, r26, 0x8000);
             v25 = gVramWriteEntry(v24);
             v25[1].vram_dst = v25[0].vram_dst + 1;
-            r0 = v25[0].src;
-            r6 = v25[1].src;
-
+            r0 = (uint16 *)(g_ram + v25[0].src.addr);
+            r6 = (uint16 *)(g_ram + v25[1].src.addr);
             vram_write_queue_tail = v24 + 14;
             r18 *= 2;
             r3 = r18 + v1 + 2;
@@ -881,30 +881,30 @@ LABEL_2:
               v28 = x & 0xC00;
               if ((x & 0xC00) != 0) {
                 if (v28 == 1024) {
-                  IndirWriteWord(r0, v26, tile_table.tables[v27].top_right ^ 0x4000);
-                  IndirWriteWord(r6, v26, tile_table.tables[v27].top_left ^ 0x4000);
+                  r0[v26 >> 1] = tile_table.tables[v27].top_right ^ 0x4000;
+                  r6[v26 >> 1] = tile_table.tables[v27].top_left ^ 0x4000;
                   v29 = v26 + 2;
-                  IndirWriteWord(r0, v29, tile_table.tables[v27].bottom_right ^ 0x4000);
-                  IndirWriteWord(r6, v29, tile_table.tables[v27].bottom_left ^ 0x4000);
+                  r0[v29 >> 1] = tile_table.tables[v27].bottom_right ^ 0x4000;
+                  r6[v29 >> 1] = tile_table.tables[v27].bottom_left ^ 0x4000;
                 } else if (v28 == 2048) {
-                  IndirWriteWord(r0, v26, tile_table.tables[v27].bottom_left ^ 0x8000);
-                  IndirWriteWord(r6, v26, tile_table.tables[v27].bottom_right ^ 0x8000);
+                  r0[v26 >> 1] = tile_table.tables[v27].bottom_left ^ 0x8000;
+                  r6[v26 >> 1] = tile_table.tables[v27].bottom_right ^ 0x8000;
                   v29 = v26 + 2;
-                  IndirWriteWord(r0, v29, tile_table.tables[v27].top_left ^ 0x8000);
-                  IndirWriteWord(r6, v29, tile_table.tables[v27].top_right ^ 0x8000);
+                  r0[v29 >> 1] = tile_table.tables[v27].top_left ^ 0x8000;
+                  r6[v29 >> 1] = tile_table.tables[v27].top_right ^ 0x8000;
                 } else {
-                  IndirWriteWord(r0, v26, tile_table.tables[v27].bottom_right ^ 0xC000);
-                  IndirWriteWord(r6, v26, tile_table.tables[v27].bottom_left ^ 0xC000);
+                  r0[v26 >> 1] = tile_table.tables[v27].bottom_right ^ 0xC000;
+                  r6[v26 >> 1] = tile_table.tables[v27].bottom_left ^ 0xC000;
                   v29 = v26 + 2;
-                  IndirWriteWord(r0, v29, tile_table.tables[v27].top_right ^ 0xC000);
-                  IndirWriteWord(r6, v29, tile_table.tables[v27].top_left ^ 0xC000);
+                  r0[v29 >> 1] = tile_table.tables[v27].top_right ^ 0xC000;
+                  r6[v29 >> 1] = tile_table.tables[v27].top_left ^ 0xC000;
                 }
               } else {
-                IndirWriteWord(r0, v26, tile_table.tables[v27].top_left);
-                IndirWriteWord(r6, v26, tile_table.tables[v27].top_right);
+                r0[v26 >> 1] = tile_table.tables[v27].top_left;
+                r6[v26 >> 1] = tile_table.tables[v27].top_right;
                 v29 = v26 + 2;
-                IndirWriteWord(r0, v29, tile_table.tables[v27].bottom_left);
-                IndirWriteWord(r6, v29, tile_table.tables[v27].bottom_right);
+                r0[v29 >> 1] = tile_table.tables[v27].bottom_left;
+                r6[v29 >> 1] = tile_table.tables[v27].bottom_right;
               }
               v26 = v29 + 2;
               ++r3;
@@ -989,14 +989,12 @@ LABEL_70:
             v10[3].size = v11;
             v12 = plm_draw_tilemap_index - 14648;
             v10->src.addr = plm_draw_tilemap_index - 14648;
-            r0.addr = v12;
+            r0 = (uint16 *)(g_ram + v12);
             v13 = v10->size + v12;
             v10[1].src.addr = v13;
             uint16 v14 = v10[1].size + v13;
             v10[2].src.addr = v14;
-            r0.bank = 126;
-            r6.bank = 126;
-            r6.addr = v14;
+            r6 = (uint16 *)(g_ram + v14);
             v10[3].src.addr = v10[2].size + v14;
             v10->src.bank = 126;
             v10[1].src.bank = 126;
@@ -1007,8 +1005,8 @@ LABEL_70:
             PartiallyQueueVramForSingleScreenPlm(a, v3, r20, 0);
             v15 = gVramWriteEntry(v3);
             v15[1].vram_dst = v15[0].vram_dst + 32;
-            r0 = v15[0].src;
-            r6 = v15[1].src;
+            r0 = (uint16 *)(g_ram + v15[0].src.addr);
+            r6 = (uint16 *)(g_ram + v15[1].src.addr);
             vram_write_queue_tail = v3 + 14;
           }
           r18 *= 2;
@@ -1020,30 +1018,30 @@ LABEL_70:
             v18 = x & 0xC00;
             if ((x & 0xC00) != 0) {
               if (v18 == 1024) {
-                IndirWriteWord(r0, v16, tile_table.tables[v17].top_right ^ 0x4000);
-                IndirWriteWord(r6, v16, tile_table.tables[v17].bottom_right ^ 0x4000);
+                r0[v16 >> 1] = tile_table.tables[v17].top_right ^ 0x4000;
+                r6[v16 >> 1] = tile_table.tables[v17].bottom_right ^ 0x4000;
                 v19 = v16 + 2;
-                IndirWriteWord(r0, v19, tile_table.tables[v17].top_left ^ 0x4000);
-                IndirWriteWord(r6, v19, tile_table.tables[v17].bottom_left ^ 0x4000);
+                r0[v19 >> 1] = tile_table.tables[v17].top_left ^ 0x4000;
+                r6[v19 >> 1] = tile_table.tables[v17].bottom_left ^ 0x4000;
               } else if (v18 == 2048) {
-                IndirWriteWord(r0, v16, tile_table.tables[v17].bottom_left ^ 0x8000);
-                IndirWriteWord(r6, v16, tile_table.tables[v17].top_left ^ 0x8000);
+                r0[v16 >> 1] = tile_table.tables[v17].bottom_left ^ 0x8000;
+                r6[v16 >> 1] = tile_table.tables[v17].top_left ^ 0x8000;
                 v19 = v16 + 2;
-                IndirWriteWord(r0, v19, tile_table.tables[v17].bottom_right ^ 0x8000);
-                IndirWriteWord(r6, v19, tile_table.tables[v17].top_right ^ 0x8000);
+                r0[v19 >> 1] = tile_table.tables[v17].bottom_right ^ 0x8000;
+                r6[v19 >> 1] = tile_table.tables[v17].top_right ^ 0x8000;
               } else {
-                IndirWriteWord(r0, v16, tile_table.tables[v17].bottom_right ^ 0xC000);
-                IndirWriteWord(r6, v16, tile_table.tables[v17].top_right ^ 0xC000);
+                r0[v16 >> 1] = tile_table.tables[v17].bottom_right ^ 0xC000;
+                r6[v16 >> 1] = tile_table.tables[v17].top_right ^ 0xC000;
                 v19 = v16 + 2;
-                IndirWriteWord(r0, v19, tile_table.tables[v17].bottom_left ^ 0xC000);
-                IndirWriteWord(r6, v19, tile_table.tables[v17].top_left ^ 0xC000);
+                r0[v19 >> 1] = tile_table.tables[v17].bottom_left ^ 0xC000;
+                r6[v19 >> 1] = tile_table.tables[v17].top_left ^ 0xC000;
               }
             } else {
-              IndirWriteWord(r0, v16, tile_table.tables[v17].top_left);
-              IndirWriteWord(r6, v16, tile_table.tables[v17].bottom_left);
+              r0[v16 >> 1] = tile_table.tables[v17].top_left;
+              r6[v16 >> 1] = tile_table.tables[v17].bottom_left;
               v19 = v16 + 2;
-              IndirWriteWord(r0, v19, tile_table.tables[v17].top_right);
-              IndirWriteWord(r6, v19, tile_table.tables[v17].bottom_right);
+              r0[v19 >> 1] = tile_table.tables[v17].top_right;
+              r6[v19 >> 1] = tile_table.tables[v17].bottom_right;
             }
             v16 = v19 + 2;
             r3 += 2;
@@ -1058,8 +1056,6 @@ LABEL_70:
     }
   }
 }
-
-
 
 const uint8 *PlmInstr_MovePlmDownOneBlock(const uint8 *plmp, uint16 k) {  // 0x84AB00
   plm_block_indices[k >> 1] += 2 * room_width_in_blocks;

@@ -2229,7 +2229,6 @@ void InitializeMiniMapBroken(void) {  // 0x90A8EF
 void UpdateMinimap(void) {  // 0x90A91B
   int16 v4;
   int16 v10;
-  LongPtr r9;
 
   if (debug_disable_minimap || (samus_x_pos >> 4) >= room_width_in_blocks ||
       (samus_y_pos >> 4) >= room_height_in_blocks)
@@ -2258,15 +2257,14 @@ void UpdateMinimap(void) {  // 0x90A91B
   uint16 r24 = kShr0xFc00[v6] & swap16(*(uint16 *)&map_tiles_explored[v3]);
   uint16 r26 = kShr0xFc00[v6] & swap16(*(uint16 *)&map_tiles_explored[v3 + 4]);
   uint16 r28 = kShr0xFc00[v6] & swap16(*(uint16 *)&map_tiles_explored[v3 + 8]);
-  r9.bank = 130;
-  r9.addr = kPauseMenuMapData[area_index];
-  uint16 r15 = r9.addr;
-  r9.addr += v3;
-  uint16 r38 = swap16(IndirReadWord(r9, 0));
-  r9.addr += 4;
-  uint16 r40 = swap16(IndirReadWord(r9, 0));
-  r9.addr += 4;
-  uint16 r42 = swap16(IndirReadWord(r9, 0));
+  const uint8 *r9 = RomPtr_82(kPauseMenuMapData[area_index]);
+  const uint8 *r15 = r9;
+  r9 += v3;
+  uint16 r38 = swap16(GET_WORD(r9));
+  r9 += 4;
+  uint16 r40 = swap16(GET_WORD(r9));
+  r9 += 4;
+  uint16 r42 = swap16(GET_WORD(r9));
   if ((R50 & 3) == 3) {
     v10 = r46 ? r52 >> 1 : r32;
     if (!sign16(v10 - 6)) {
@@ -2274,9 +2272,9 @@ void UpdateMinimap(void) {  // 0x90A91B
 
       uint16 v0 = (uint8)R48;
       uint16 r44 = 0;
-      r9.addr = r15 + (uint8)R48;
+      r9 = r15 + (uint8)R48;
       LOBYTE(r44) = map_tiles_explored[(uint8)R48];
-      HIBYTE(r44) = IndirReadByte(r9, 0);
+      HIBYTE(r44) = *r9;
       if ((uint8)r34 == 32) {
         HIBYTE(r38) = HIBYTE(r44);
         HIBYTE(r24) = r44;
@@ -2285,8 +2283,8 @@ void UpdateMinimap(void) {  // 0x90A91B
         LOBYTE(r24) = r44;
       }
       LOBYTE(r44) = map_tiles_explored[v0 + 4];
-      r9.addr += 4;
-      HIBYTE(r44) = IndirReadByte(r9, 0);
+      r9 += 4;
+      HIBYTE(r44) = *r9;
       if ((uint8)r34 == 32) {
         HIBYTE(r40) = HIBYTE(r44);
         HIBYTE(r26) = r44;
@@ -2295,8 +2293,8 @@ void UpdateMinimap(void) {  // 0x90A91B
         LOBYTE(r26) = r44;
       }
       LOBYTE(r44) = map_tiles_explored[v0 + 8];
-      r9.addr += 4;
-      HIBYTE(r44) = IndirReadByte(r9, 0);
+      r9 += 4;
+      HIBYTE(r44) = *r9;
       if ((uint8)r34 == 32) {
         HIBYTE(r42) = HIBYTE(r44);
         HIBYTE(r28) = r44;
@@ -2325,7 +2323,6 @@ void UpdateMinimapInside(uint16 r18, uint16 r22, uint16 r34, uint16 r30, uint16 
   int16 v5;
   int16 v7;
   int16 v8;
-  LongPtr r0, r3, r6;
 
   LOBYTE(v0) = (uint16)(r34 + r22) >> 8;
   HIBYTE(v0) = r34 + r22;
@@ -2335,17 +2332,15 @@ void UpdateMinimapInside(uint16 r18, uint16 r22, uint16 r34, uint16 r30, uint16 
   else
     v1 = t - 34;
   uint16 v2 = 2 * v1;
-  r0 = kPauseMenuMapTilemaps[area_index];
-  r3.bank = r0.bank;
-  r6.bank = r0.bank;
-  r3.addr = r0.addr + 64;
-  r6.addr = r0.addr + 128;
+  const uint16 *r0 = (const uint16 *)RomPtr(Load24(&kPauseMenuMapTilemaps[area_index]));
+  const uint16 *r3 = r0 + 32;
+  const uint16 *r6 = r0 + 64;
   int n = 5;
   uint16 v3 = 0;
   do {
     bool v4 = r38 >> 15;
     r38 *= 2;
-    if (!v4 || (v5 = IndirReadWord(r0, v2), !has_area_map))
+    if (!v4 || (v5 = r0[v2 >> 1], !has_area_map))
       v5 = 31;
     int v6 = v3 >> 1;
     hud_tilemap[v6 + 26] = v5 & 0xC3FF | 0x2C00;
@@ -2353,18 +2348,18 @@ void UpdateMinimapInside(uint16 r18, uint16 r22, uint16 r34, uint16 r30, uint16 
     v4 = r24 >> 15;
     r24 *= 2;
     if (v4)
-      hud_tilemap[v6 + 26] = IndirReadWord(r0, v2) & 0xC3FF | 0x2800;
+      hud_tilemap[v6 + 26] = r0[v2 >> 1] & 0xC3FF | 0x2800;
     
     v4 = r40 >> 15;
     r40 *= 2;
-    if (!v4 || (v7 = IndirReadWord(r3, v2), !has_area_map))
+    if (!v4 || (v7 = r3[v2 >> 1], !has_area_map))
       v7 = 31;
     hud_tilemap[v6 + 58] = v7 & 0xC3FF | 0x2C00;
 
     v4 = r26 >> 15;
     r26 *= 2;
     if (v4) {
-      hud_tilemap[v6 + 58] = IndirReadWord(r3, v2) & 0xC3FF | 0x2800;
+      hud_tilemap[v6 + 58] = r3[v2 >> 1] & 0xC3FF | 0x2800;
       if (n == 3 && (hud_tilemap[v6 + 58] & 0x1FF) == 40) {
         // MarkMapTileAboveSamusAsExplored
         *((uint8 *)&music_data_index + r30) |= kShr0x80[r32];
@@ -2373,14 +2368,14 @@ void UpdateMinimapInside(uint16 r18, uint16 r22, uint16 r34, uint16 r30, uint16 
 
     v4 = r42 >> 15;
     r42 *= 2;
-    if (!v4 || (v8 = IndirReadWord(r6, v2), !has_area_map))
+    if (!v4 || (v8 = r6[v2 >> 1], !has_area_map))
       v8 = 31;
     hud_tilemap[v6 + 90] = v8 & 0xC3FF | 0x2C00;
 
     v4 = r28 >> 15;
     r28 *= 2;
     if (v4)
-      hud_tilemap[v6 + 90] = IndirReadWord(r6, v2) & 0xC3FF | 0x2800;
+      hud_tilemap[v6 + 90] = r6[v2 >> 1] & 0xC3FF | 0x2800;
 
     v3 += 2;
     v2 += 2;

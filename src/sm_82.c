@@ -1566,29 +1566,20 @@ void LoadPauseMenuMapTilemapAndAreaLabel(void) {  // 0x8293C3
 }
 
 void LoadPauseMenuMapTilemap(void) {  // 0x82943D
-  int16 v9;
-  uint16 r18, r38, r40;
-  LongPtr r0, r3, r6, r9;
   uint16 v0 = area_index;
   if (!sign16(area_index - 7))
     v0 = 0;
-  r18 = v0;
-  r0 = kPauseMenuMapTilemaps[v0];
-  r3.addr = ADDR16_OF_RAM(ram4000);
-  r3.bank = 126;
-  r6.addr = kPauseMenuMapData[v0];
-  r6.bank = 130;
+  const uint16 *r0 = (const uint16 *)RomPtr(Load24(&kPauseMenuMapTilemaps[v0]));
+  uint16 *r3 = (uint16 *)&ram4000;
+  const uint16 *r6 = (const uint16 *)RomPtr_82(kPauseMenuMapData[v0]);
+  const uint16 *r9 = (const uint16 *)map_tiles_explored;
   if (map_station_byte_array[area_index]) {
-    r38 = swap16(IndirReadWord(r6, 0));
-    r6.addr += 2;
-    r9.bank = 0;
-    r9.addr = ADDR16_OF_RAM(*map_tiles_explored);
-    r40 = swap16(IndirReadWord(r9, 0));
-    r9.addr += 2;
+    uint16 r38 = swap16(*r6++);
+    uint16 r40 = swap16(*r9++);
     uint16 v8 = 0;
-    v9 = 16;
+    int v9 = 16;
     do {
-      uint16 v10 = IndirReadWord(r0, v8);
+      uint16 v10 = r0[v8 >> 1];
       bool v11 = r40 >> 15;
       r40 *= 2;
       if (v11) {
@@ -1600,13 +1591,11 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
         if (!v11)
           v10 = 31;
       }
-      IndirWriteWord(r3, v8, v10);
+      r3[v8 >> 1] = v10;
       if (!--v9) {
         v9 = 16;
-        r38 = swap16(IndirReadWord(r6, 0));
-        r6.addr += 2;
-        r40 = swap16(IndirReadWord(r9, 0));
-        r9.addr += 2;
+        r38 = swap16(*r6++);
+        r40 = swap16(*r9++);
       }
       v8 += 2;
     } while ((int16)(v8 - 4096) < 0);
@@ -1618,10 +1607,10 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
       uint8 t = map_tiles_explored[v2];
       map_tiles_explored[v2] <<= 1;
       if (!(t & 0x80)) {
-        IndirWriteWord(r3, v1, 0x1F);
+        r3[v1 >> 1] = 0x1f;
       } else {
         ++map_tiles_explored[v2];
-        IndirWriteWord(r3, v1, IndirReadWord(r0, v1) & 0xFBFF);
+        r3[v1 >> 1] = r0[v1 >> 1] & 0xFBFF;
       }
       v1 += 2;
       if (++r18 >= 8) {
@@ -1634,35 +1623,25 @@ void LoadPauseMenuMapTilemap(void) {  // 0x82943D
 }
 
 void DrawRoomSelectMap(void) {  // 0x829517
-  unsigned int v7; // kr00_4
-  int16 v10;
-  VramWriteEntry *v17;
-  LongPtr r0, r3, r6, r9;
-  uint16 r38, r40;
-
   reg_BG12NBA = 51;
   reg_TM = 19;
   reg_BG1VOFS = -40;
   uint16 v0 = area_index;
   if (!sign16(area_index - 7))
     v0 = 0;
-  r0 = kPauseMenuMapTilemaps[v0];
-  r3.addr = ADDR16_OF_RAM(ram3000);
-  r3.bank = 126;
-  r6.bank = 130;
-  r6.addr = kPauseMenuMapData[v0];
+
+  const uint16 *r0 = (const uint16 *)RomPtr(Load24(&kPauseMenuMapTilemaps[v0]));
+  uint16 *r3 = (uint16 *)&ram3000;
+  const uint16 *r6 = (const uint16 *)RomPtr_82(kPauseMenuMapData[v0]);
+  const uint16 *r9 = (const uint16 *)map_tiles_explored;
+
   if (map_station_byte_array[area_index]) {
-    r38 = swap16(IndirReadWord(r6, 0));
-    r6.addr += 2;
-    v7 = 2039;
-    r9.bank = HIWORD(v7);
-    r9.addr = v7;
-    r40 = swap16(IndirReadWord(r9, 0));
-    r9.addr += 2;
+    uint16 r38 = swap16(*r6++);
+    uint16 r40 = swap16(*r9++);
     uint16 v9 = 0;
-    v10 = 16;
+    int v10 = 16;
     do {
-      uint16 v11 = IndirReadWord(r0, v9);
+      uint16 v11 = r0[v9 >> 1];
       bool v12 = r40 >> 15;
       r40 *= 2;
       if (v12) {
@@ -1674,13 +1653,11 @@ void DrawRoomSelectMap(void) {  // 0x829517
         if (!v12)
           v11 = 31;
       }
-      IndirWriteWord(r3, v9, v11);
+      r3[v9 >> 1] = v11;
       if (!--v10) {
         v10 = 16;
-        r38 = swap16(IndirReadWord(r6, 0));
-        r6.addr += 2;
-        r40 = swap16(IndirReadWord(r9, 0));
-        r9.addr += 2;
+        r38 = swap16(*r6++);
+        r40 = swap16(*r9++);
       }
       v9 += 2;
     } while ((int16)(v9 - 4096) < 0);
@@ -1692,10 +1669,10 @@ void DrawRoomSelectMap(void) {  // 0x829517
       uint8 what = map_tiles_explored[v2];
       map_tiles_explored[v2] <<= 1;
       if (!(what & 0x80)) {
-        IndirWriteWord(r3, v1, 0xF);
+        r3[v1 >> 1] = 0xf;
       } else {
         ++map_tiles_explored[v2];
-        IndirWriteWord(r3, v1, IndirReadWord(r0, v1) & ~0x400);
+        r3[v1 >> 1] = r0[v1 >> 1] & ~0x400;
       }
       v1 += 2;
       r18++;
@@ -1707,7 +1684,7 @@ void DrawRoomSelectMap(void) {  // 0x829517
     }
   }
   uint16 v16 = vram_write_queue_tail;
-  v17 = gVramWriteEntry(vram_write_queue_tail);
+  VramWriteEntry *v17 = gVramWriteEntry(vram_write_queue_tail);
   v17->size = 4096;
   v17->src.addr = ADDR16_OF_RAM(ram3000);
   v17->src.bank = 126;
@@ -1715,10 +1692,10 @@ void DrawRoomSelectMap(void) {  // 0x829517
   vram_write_queue_tail = v16 + 7;
 }
 
-void DrawRoomSelectMapAreaLabel(LongPtr r0) {  // 0x829628
-  const uint8 *v2 = RomPtr_82(kPauseAreaLabelTilemap[area_index]);
-  for(int i = 0; i < 24; i += 2)
-    IndirWriteWord(r0, i, *(uint16 *)(v2 + i) & 0xEFFF);
+void DrawRoomSelectMapAreaLabel(uint16 *dst) {  // 0x829628
+  const uint16 *v2 = (const uint16 * )RomPtr_82(kPauseAreaLabelTilemap[area_index]);
+  for(int i = 0; i < 12; i++)
+    dst[i] = v2[i] & 0xEFFF;
 }
 
 void SetupMapScrollingForPauseMenu(uint16 a) {  // 0x829E27
@@ -1750,7 +1727,7 @@ void SetupMapScrollingForPauseMenu(uint16 a) {  // 0x829E27
 static const uint8 k0x80Shr[8] = { 0x80, 0x40, 0x20, 0x10, 8,    4,    2,    1, };
 static const uint8 k0x80Shr_0[8] = { 0x80, 0x40, 0x20, 0x10, 8, 4, 2, 1 };
 
-static uint16 DetermineLeftmostMapColumn(LongPtr r0) {
+static uint16 DetermineLeftmostMapColumn(const uint8 *r0) {
   uint16 v0;
 
   uint16 result = 0;
@@ -1758,16 +1735,16 @@ LABEL_2:
   v0 = result & 7;
   uint8 r18 = k0x80Shr[v0];
   uint16 v2 = 0;
-  while ((r18 & IndirReadByte(r0, v2)) == 0) {
+  while ((r18 & r0[v2]) == 0) {
     v2 += 4;
     if ((int16)(v2 - 128) >= 0) {
       if ((int16)(++result - 64) >= 0)
         return 26;
       if ((result & 7) == 0) {
-        r0.addr += 1;
+        r0 += 1;
       }
       if (result == 32) {
-        r0.addr += 123;
+        r0 += 123;
       }
       goto LABEL_2;
     }
@@ -1775,37 +1752,36 @@ LABEL_2:
   return result;
 }
 
-static uint16 DetermineRightmostMapColumn(LongPtr r0) {  // 0x829FA9
+static uint16 DetermineRightmostMapColumn(const uint8 *r0) {  // 0x829FA9
   uint16 result = 63;
 LABEL_2:;
   uint8 r18 = k0x80Shr_0[result & 7];
   uint16 v1 = 0;
-  while ((r18 & IndirReadByte(r0, v1)) == 0) {
+  while ((r18 & r0[v1]) == 0) {
     v1 += 4;
     if ((int16)(v1 - 128) >= 0) {
       if ((--result & 0x8000) != 0)
         return 28;
       if ((result & 7) == 7) {
-        bool v2 = LOBYTE(r0.addr)-- != 0;
-        HIBYTE(r0.addr) -= !v2;
+        r0--;
       }
       if (result == 31)
-        r0.addr -= 124;
+        r0 -= 124;
       goto LABEL_2;
     }
   }
   return result;
 }
 
-static uint16 DetermineTopmostMapColumn(LongPtr r0) {  // 0x82A009
-  LongPtr r3 = (LongPtr){ r0.addr + 128, r0.bank };
+static uint16 DetermineTopmostMapColumn(const uint8 *r0) {  // 0x82A009
+  const uint8 *r3 = r0 + 128;
   uint16 result = 0;
   uint16 v1 = 0;
-  while (!IndirReadByte(r0, v1) && !IndirReadByte(r3, v1)) {
+  while (!r0[v1] && !r3[v1]) {
     if ((int16)(++v1 - 4) >= 0) {
       v1 = 0;
-      r0.addr += 4;
-      r3.addr += 4;
+      r0 += 4;
+      r3 += 4;
       if ((int16)(++result - 31) >= 0)
         return 1;
     }
@@ -1813,15 +1789,15 @@ static uint16 DetermineTopmostMapColumn(LongPtr r0) {  // 0x82A009
   return result;
 }
 
-static uint16 DetermineBottommostMapColumn(LongPtr r0) {  // 0x82A053
-  LongPtr r3 = (LongPtr){ r0.addr + 128, r0.bank };
+static uint16 DetermineBottommostMapColumn(const uint8 *r0) {  // 0x82A053
+  const uint8 *r3 = r0 + 128;
   uint16 result = 31;
   uint16 v1 = 0;
-  while (!IndirReadByte(r0, v1) && !IndirReadByte(r3, v1)) {
+  while (!r0[v1] && !r3[v1]) {
     if ((int16)(++v1 - 4) >= 0) {
       v1 = 0;
-      r0.addr -= 4;
-      r3.addr -= 4;
+      r0 -= 4;
+      r3 -= 4;
       if (!--result)
         return 11;
     }
@@ -1830,21 +1806,18 @@ static uint16 DetermineBottommostMapColumn(LongPtr r0) {  // 0x82A053
 }
 
 void DetermineMapScrollLimits(void) {  // 0x829EC4
-  LongPtr r6;
+  const uint8 *r6;
   if (has_area_map) {
-    r6.bank = 130;
-    r6.addr = addr_kPauseMenuMapData;
-    r6.addr = IndirReadWord(r6, 2 * area_index);
+    r6 = RomPtr_82(GET_WORD(RomPtr_82(addr_kPauseMenuMapData + 2 * area_index)));
   } else {
-    r6.bank = 0;
-    r6.addr = 2039;
+    r6 = map_tiles_explored;
   }
   map_min_x_scroll = DetermineLeftmostMapColumn(r6) * 8;
   if (area_index == 4)
     map_min_x_scroll -= 24;
-  map_max_x_scroll = DetermineRightmostMapColumn((LongPtr) { r6.addr + 131, r6.bank }) * 8;
-  map_min_y_scroll = DetermineTopmostMapColumn((LongPtr) { r6.addr, r6.bank }) * 8;
-  map_max_y_scroll = DetermineBottommostMapColumn((LongPtr) { r6.addr + 124, r6.bank }) * 8;
+  map_max_x_scroll = DetermineRightmostMapColumn(r6 + 131) * 8;
+  map_min_y_scroll = DetermineTopmostMapColumn(r6) * 8;
+  map_max_y_scroll = DetermineBottommostMapColumn(r6 + 124) * 8;
 }
 
 void SetupPpuForPauseMenu(void) {  // 0x82A09A

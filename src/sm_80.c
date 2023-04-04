@@ -2093,8 +2093,6 @@ void UploadLevelDataColumn(void) {  // 0x80A9DB
 }
 
 void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
-  LongPtr r54;
-
   if (irq_enable_mode7)
     return;
 
@@ -2103,8 +2101,7 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
   uint16 v2 = 2 * (prod + v1) + 2;
   if (k)
     v2 += 0x9600;
-  r54.addr = v2;
-  r54.bank = 127;
+  const uint16 *r54 = (const uint16 * )(g_ram + 0x10000 + v2);
   uint16 v3 = (4 * vram_blocks_to_update_y_block) & 0x3C;
   *(uint16 *)((uint8 *)&bg1_update_col_wrapped_size + k) = v3;
   *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_size + k) = (v3 ^ 0x3F) + 1;
@@ -2134,7 +2131,7 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
   uint16 v9 = 0;
   uint16 var939 = 16;
   do {
-    uint16 var93B = IndirReadWord(r54, v9);
+    uint16 var93B = r54[v9 >> 1];
     uint16 v10 = var93B & 0x3FF;
     uint16 v17 = v9;
     uint16 v11 = var937;
@@ -2185,7 +2182,6 @@ void UpdateLevelDataRow(void) {  // 0x80AB75
 }
 
 void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
-  LongPtr r54;
   if (irq_enable_mode7)
     return;
   uint16 prod = Mult8x8(blocks_to_update_y_block, room_width_in_blocks);
@@ -2193,8 +2189,7 @@ void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
   uint16 v2 = 2 * (prod + v1) + 2;
   if (v0)
     v2 -= 27136;
-  r54.addr = v2;
-  r54.bank = 127;
+  const uint16 *r54 = (const uint16 *)(g_ram + 0x10000 + v2);
   uint16 var933 = vram_blocks_to_update_x_block & 0xF;
   *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_size + v0) = 4 * (16 - var933);
   *(uint16 *)((uint8 *)&bg1_update_row_wrapped_size + v0) = 4 * (var933 + 1);
@@ -2229,7 +2224,7 @@ void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
   uint16 v9 = 0;
   uint16 var939 = 17;
   do {
-    uint16 var93B = IndirReadWord(r54, v9);
+    uint16 var93B = r54[v9 >> 1];
     uint16 v10 = var93B & 0x3FF;
     uint16 v17 = v9;
     uint16 v11 = var937;

@@ -1708,7 +1708,7 @@ void HdmaobjPreInstr_SkyLandBG2Xscroll2(uint16 k) {  // 0x88ADBA
     HdmaobjPreInstr_SkyLandBG2XscrollInner(k);
 }
 
-void RoomMainAsm_ScrollingSky(LongPtr r0) {  // 0x88AFA3
+void RoomMainAsm_ScrollingSky(const uint16 *src) {  // 0x88AFA3
   if (time_is_frozen_flag) {
     WORD(scrolling_sky_bg2_indirect_hdma[0]) = 0;
   } else {
@@ -1726,10 +1726,10 @@ void RoomMainAsm_ScrollingSky(LongPtr r0) {  // 0x88AFA3
     int v2 = 8 * (uint8)tt;
     int y1 = (uint8)(tt >> 8);
     int y2 = (uint8)((tt >> 8) + 1);
-    VoidP v3 = IndirReadWord(r0, 2 * y1) + v2;
+    VoidP v3 = src[y1] + v2;
     v1[0].src.addr = v3;
     v1[1].src.addr = v3 + 64;
-    VoidP v5 = IndirReadWord(r0, 2 * y2) + v2;
+    VoidP v5 = src[y2] + v2;
     v1[2].src.addr = v5;
     v1[3].src.addr = v5 + 64;
     v1[0].src.bank = 0x8a;
@@ -1748,11 +1748,11 @@ void RoomMainAsm_ScrollingSky(LongPtr r0) {  // 0x88AFA3
 }
 
 void RoomCode_ScrollingSkyLand(void) {  // 0x88AF8D
-  RoomMainAsm_ScrollingSky((LongPtr) { addr_off_88AD9C, 0x88 });
+  RoomMainAsm_ScrollingSky((const uint16 *)RomPtr_88(addr_off_88AD9C));
 }
 
 void RoomMainAsm_ScrollingSkyOcean(void) {  // 0x88AF99
-  RoomMainAsm_ScrollingSky((LongPtr) { addr_off_88ADA6, 0x88 });
+  RoomMainAsm_ScrollingSky((const uint16 *)RomPtr_88(addr_off_88ADA6));
 }
 
 static const SpawnHdmaObject_Args unk_88B08C = { 0x42, 0x11, 0xb0ac };

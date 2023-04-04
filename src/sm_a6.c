@@ -3611,22 +3611,13 @@ void Ridley_Func_92(void) {  // 0xA6D2D6
 }
 
 void Ridley_Func_93(uint16 j, uint16 k) {  // 0xA6D3B4
-  int16 v3;
-  int16 v5;
-
-  LongPtr r18;
-  r18.bank = 126;
-  r18.addr = j;
-  uint16 v2 = 0;
-  v3 = 7;
+  uint16 *dst = (uint16*)(g_ram + j);
+  const uint16 *src = (const uint16 *)RomPtr_A6(k);
+  int v3 = 7;
   do {
-    v5 = v3;
-    const uint16 *v4 = (const uint16 *)RomPtr_A6(k);
-    IndirWriteWord(r18, v2, *v4);
-    k += 2;
-    v2 += 20;
-    --v3;
-  } while (v5 != 1);
+    *dst = *src;
+    dst += 10, src++;
+  } while (--v3);
 }
 
 void Ridley_Func_94(void) {  // 0xA6D3D4
