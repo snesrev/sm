@@ -3948,7 +3948,7 @@ void sub_86D83D(uint16 k) {  // 0x86D83D
 void sub_86D89F(uint16 k) {  // 0x86D89F
   uint16 v1 = enemy_projectile_x_vel[k >> 1] & 0x17E | 0x80;
   int v2 = v1 >> 1;
-  int32 amt = INT16_SHL8((int16)kSinCosTable8bit_Sext[v2 + 64]);
+  int32 amt = INT16_SHL8((int16)kSinCosTable8bit_Sext[v2 + 64] >> 2);
   int v5 = enemy_projectile_index >> 1;
   AddToHiLo(&enemy_projectile_F[v5], &enemy_projectile_E[v5], amt);
   enemy_projectile_x_vel[v5] += 4;
