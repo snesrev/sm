@@ -2447,7 +2447,7 @@ void Phantoon_MoveInSwoopingPattern(uint16 k) {  // 0xA7D2D1
   } else if (sign16(E2->phant_var_D - 1536)) {
     E2->phant_var_D += 64;
   }
-  AddToHiLo(&E0->base.x_pos, &E0->base.x_subpos, INT16_SHL8(E2->phant_var_D));
+  AddToHiLo(&E0->base.y_pos, &E0->base.y_subpos, INT16_SHL8(E2->phant_var_D));
   if (sign16(E0->base.y_pos - 64)) {
     E0->base.y_pos = 64;
   } else if (!sign16(E0->base.y_pos - 216)) {
