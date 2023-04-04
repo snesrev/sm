@@ -1752,8 +1752,7 @@ uint8 CalculateLayer2Xpos(void) {  // 0x80A2F9
   }
   if (layer2_scroll_x != 1) {
     int t = layer2_scroll_x & 0xFE;
-    HIBYTE(var933) = 0;
-    LOBYTE(var933) = t * LOBYTE(layer1_x_pos) >> 8;
+    uint8 var933 = t * LOBYTE(layer1_x_pos) >> 8;
     layer2_x_pos = t * HIBYTE(layer1_x_pos) + var933;
     return 0;
   }
@@ -1767,8 +1766,7 @@ uint8 CalculateLayer2Ypos(void) {  // 0x80A33A
   }
   if (layer2_scroll_y != 1) {
     int t = layer2_scroll_y & 0xFE;
-    HIBYTE(var933) = 0;
-    LOBYTE(var933) = t * (uint8)layer1_y_pos >> 8;
+    uint8 var933 = t * (uint8)layer1_y_pos >> 8;
     layer2_y_pos = t * HIBYTE(layer1_y_pos) + var933;
     return 0;
   }
@@ -1883,9 +1881,10 @@ void HandleAutoscrolling_X(void) {  // 0x80A528
   int16 v3;
   int16 v6;
   uint16 v4;
+  uint16 var933;
 
   if (!time_is_frozen_flag) {
-    var939 = layer1_x_pos;
+    uint16 var939 = layer1_x_pos;
     if ((layer1_x_pos & 0x8000) != 0)
       layer1_x_pos = 0;
     uint16 v0 = swap16(room_width_in_scrolls - 1);
@@ -1928,7 +1927,7 @@ void HandleAutoscrolling_X(void) {  // 0x80A528
 void HandleScrollingWhenTriggeringScrollRight(void) {  // 0x80A641
   int16 v1;
 
-  var939 = layer1_x_pos;
+  uint16 var939 = layer1_x_pos;
   if ((int16)(ideal_layer1_xpos - layer1_x_pos) < 0) {
     layer1_x_pos = ideal_layer1_xpos;
     layer1_x_subpos = 0;
@@ -1938,7 +1937,7 @@ void HandleScrollingWhenTriggeringScrollRight(void) {  // 0x80A641
     v1 = HIBYTE(layer1_x_pos);
     uint16 RegWord = Mult8x8((uint16)(layer1_y_pos + 128) >> 8, room_width_in_scrolls);
     if (!scrolls[(uint16)(RegWord + 1 + v1)]) {
-      var933 = layer1_x_pos & 0xFF00;
+      uint16 var933 = layer1_x_pos & 0xFF00;
       uint16 v4 = var939 - absolute_moved_last_frame_x - 2;
       if ((int16)(v4 - (layer1_x_pos & 0xFF00)) < 0)
         v4 = var933;
@@ -1952,7 +1951,7 @@ void HandleScrollingWhenTriggeringScrollRight(void) {  // 0x80A641
 void HandleScrollingWhenTriggeringScrollLeft(void) {  // 0x80A6BB
   int16 v0;
 
-  var939 = layer1_x_pos;
+  uint16 var939 = layer1_x_pos;
   if ((int16)(layer1_x_pos - ideal_layer1_xpos) < 0) {
     layer1_x_pos = ideal_layer1_xpos;
     layer1_x_subpos = 0;
@@ -1961,7 +1960,7 @@ void HandleScrollingWhenTriggeringScrollLeft(void) {  // 0x80A6BB
     v0 = HIBYTE(layer1_x_pos);
     uint16 prod = Mult8x8((uint16)(layer1_y_pos + 128) >> 8, room_width_in_scrolls);
     if (!scrolls[(uint16)(prod + v0)]) {
-      var933 = (layer1_x_pos & 0xFF00) + 256;
+      uint16 var933 = (layer1_x_pos & 0xFF00) + 256;
       uint16 v1 = absolute_moved_last_frame_x + var939 + 2;
       if (v1 >= var933)
         v1 = var933;
@@ -1986,8 +1985,8 @@ void HandleAutoscrolling_Y(void) {  // 0x80A731
     uint16 r20 = Mult8x8(HIBYTE(layer1_y_pos), room_width_in_scrolls) + v1;
     if (scrolls[r20] != 1)
       v0 = 31;
-    var933 = v0;
-    var939 = layer1_y_pos;
+    uint16 var933 = v0;
+    uint16 var939 = layer1_y_pos;
     if ((layer1_y_pos & 0x8000) != 0)
       layer1_y_pos = 0;
     LOBYTE(v2) = (uint16)(room_height_in_scrolls - 1) >> 8;
@@ -1998,7 +1997,7 @@ void HandleAutoscrolling_Y(void) {  // 0x80A731
     v4 = (uint16)(layer1_x_pos + 128) >> 8;
     uint16 v5 = Mult8x8(HIBYTE(layer1_y_pos), room_width_in_scrolls) + v4;
     if (!scrolls[v5]) {
-      var935 = (layer1_y_pos & 0xFF00) + 256;
+      uint16 var935 = (layer1_y_pos & 0xFF00) + 256;
       uint16 v6 = absolute_moved_last_frame_y + var939 + 2;
       if (v6 >= var935) {
         v8 = var935;
@@ -2015,7 +2014,7 @@ void HandleAutoscrolling_Y(void) {  // 0x80A731
       return;
     }
     if (!scrolls[(uint16)(room_width_in_scrolls + v5)]) {
-      var937 = var933 + (layer1_y_pos & 0xFF00);
+      uint16 var937 = var933 + (layer1_y_pos & 0xFF00);
       if (var937 < layer1_y_pos) {
         uint16 v9 = var939 - absolute_moved_last_frame_y - 2;
         if ((int16)(v9 - var937) < 0) {
@@ -2037,20 +2036,20 @@ void HandleAutoscrolling_Y(void) {  // 0x80A731
 }
 
 void HandleScrollingWhenTriggeringScrollDown(void) {  // 0x80A893
-  var939 = layer1_y_pos;
+  uint16 var939 = layer1_y_pos;
   int v0 = 0;
   uint16 prod = Mult8x8(HIBYTE(layer1_y_pos), room_width_in_scrolls);
   uint16 v1 = (uint16)(layer1_x_pos + 128) >> 8;
   uint16 r20 = prod + v1;
   if (scrolls[r20] != 1)
     v0 = 31;
-  var933 = v0;
+  uint16 var933 = v0;
   if ((int16)(ideal_layer1_ypos - layer1_y_pos) < 0) {
     layer1_y_pos = ideal_layer1_ypos;
     layer1_y_subpos = 0;
   }
   uint16 v2 = swap16(room_height_in_scrolls - 1);
-  var937 = var933 + v2;
+  uint16 var937 = var933 + v2;
   if ((uint16)(var933 + v2) < layer1_y_pos
       || !scrolls[(uint16)(room_width_in_scrolls + r20)]
       && (var937 = var933 + (layer1_y_pos & 0xFF00), var937 < layer1_y_pos)) {
@@ -2064,7 +2063,7 @@ void HandleScrollingWhenTriggeringScrollDown(void) {  // 0x80A893
 void HandleScrollingWhenTriggeringScrollUp(void) {  // 0x80A936
   int16 v0;
 
-  var939 = layer1_y_pos;
+  uint16 var939 = layer1_y_pos;
   if ((int16)(layer1_y_pos - ideal_layer1_ypos) < 0) {
     layer1_y_pos = ideal_layer1_ypos;
     layer1_y_subpos = 0;
@@ -2073,7 +2072,7 @@ void HandleScrollingWhenTriggeringScrollUp(void) {  // 0x80A936
     uint16 prod = Mult8x8(HIBYTE(layer1_y_pos), room_width_in_scrolls);
     v0 = (uint16)(layer1_x_pos + 128) >> 8;
     if (!scrolls[(uint16)(prod + v0)]) {
-      var933 = (layer1_y_pos & 0xFF00) + 256;
+      uint16 var933 = (layer1_y_pos & 0xFF00) + 256;
       uint16 v1 = absolute_moved_last_frame_y + var939 + 2;
       if (v1 >= var933)
         v1 = var933;
@@ -2117,15 +2116,15 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
     *(uint16 *)((uint8 *)&bg1_update_col_wrapped_size + k) = v3;
     *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_size + k) = (v3 ^ 0x3F) + 1;
     prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40);
-    var935 = vram_blocks_to_update_x_block & 0x1F;
+    uint16 var935 = vram_blocks_to_update_x_block & 0x1F;
     uint16 v4 = 2 * var935;
-    var933 = prod + v4;
+    uint16 var933 = prod + v4;
     uint16 v5 = addr_unk_605000;
     if (var935 >= 0x10)
       v5 = addr_unk_6053E0;
     if (k)
       v5 -= size_of_bg2;
-    var937 = v5;
+    uint16 var937 = v5;
     *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_dst + k) = var933 + v5;
     *(uint16 *)((uint8 *)&bg1_update_col_wrapped_dst + k) = var935 + var935 + var937;
     uint16 v6 = ADDR16_OF_RAM(*bg1_column_update_tilemap_left_halves);
@@ -2140,9 +2139,9 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
     var937 = v7;
     uint16 t2 = k;
     uint16 v9 = 0;
-    var939 = 16;
+    uint16 var939 = 16;
     do {
-      var93B = IndirReadWord(copywithflip_src, v9);
+      uint16 var93B = IndirReadWord(copywithflip_src, v9);
       uint16 v10 = var93B & 0x3FF;
       uint16 v17 = v9;
       uint16 v11 = var937;
@@ -2202,14 +2201,14 @@ void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
       v2 -= 27136;
     copywithflip_src.addr = v2;
     copywithflip_src.bank = 127;
-    var933 = vram_blocks_to_update_x_block & 0xF;
+    uint16 var933 = vram_blocks_to_update_x_block & 0xF;
     *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_size + v0) = 4 * (16 - var933);
     *(uint16 *)((uint8 *)&bg1_update_row_wrapped_size + v0) = 4 * (var933 + 1);
     prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40);
-    var935 = vram_blocks_to_update_x_block & 0x1F;
+    uint16 var935 = vram_blocks_to_update_x_block & 0x1F;
     uint16 v3 = 2 * var935;
     var933 = prod + v3;
-    var937 = addr_unk_605400;
+    uint16 var937 = addr_unk_605400;
     uint16 v4 = addr_unk_605000;
     if (var935 >= 0x10) {
       var937 = addr_unk_605000;
@@ -2234,9 +2233,9 @@ void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
     var937 = v7;
     uint16 t2 = v0;
     uint16 v9 = 0;
-    var939 = 17;
+    uint16 var939 = 17;
     do {
-      var93B = IndirReadWord(copywithflip_src, v9);
+      uint16 var93B = IndirReadWord(copywithflip_src, v9);
       uint16 v10 = var93B & 0x3FF;
       uint16 v17 = v9;
       uint16 v11 = var937;

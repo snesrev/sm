@@ -479,6 +479,7 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
   memcpy(&a->ram[0x611], &b->ram[0x611], 6);  // coroutine_state (copy from mine to theirs)
   memcpy(&b->ram[0x641], &a->ram[0x641], 2);  // apu_attempts_countdown
   memcpy(&a->ram[0x77e], &b->ram[0x77e], 5);  // my counter
+  memcpy(&a->ram[0x933], &b->ram[0x933], 10);  // var933 etc
   memcpy(&b->ram[0xA82], &a->ram[0xA82], 2);  // xray_angle
   memcpy(&a->ram[0xd1e], &b->ram[0xd1e], 2);  // grapple_beam_unkD1E
   memcpy(&a->ram[0xd82], &b->ram[0xd82], 8);  // grapple_beam_tmpD82
