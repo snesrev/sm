@@ -1390,7 +1390,7 @@ void Crocomire_Func_73(void) {  // 0xA49A38
   if (!sign16((t >> 16) - 5))
     t = (t & 0xffff) | (5 << 16);
   SetHiLo(&E->crocom_var_F, &E->crocom_var_E, t);
-  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -0x2000);
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, 0xe000);
   AddToHiLo(&E->base.x_pos, &E->base.x_subpos, t);
   if (!sign16(E->base.x_pos - 576)) {
     QueueSfx2_Max6(0x25);
