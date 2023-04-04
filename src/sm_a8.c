@@ -2804,7 +2804,7 @@ void WreckedShipRobotDeactivated_Init(void) {  // 0xA8CBCC
 
 void WreckedShipRobot_Main(void) {  // 0xA8CC36
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(cur_enemy_index);
-  if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(E->wsrt_var_F, E->wsrt_var_E))) {
+  if (!Enemy_MoveDown(cur_enemy_index, __PAIR32__(E->wsrt_var_F, E->wsrt_var_E))) {
     ++E->base.instruction_timer;
     uint16 wsrt_var_E = E->wsrt_var_E;
     E->wsrt_var_E = wsrt_var_E + 0x8000;
@@ -3104,7 +3104,7 @@ const uint16 *WreckedShipRobot_D147(uint16 k, const uint16 *jp, uint16 r48, uint
     SpawnEnemyProjectileWithGfx(v3, cur_enemy_index, r48);
     return INSTR_RETURN_ADDR(r50);
   }
-  return INSTR_RETURN_ADDR(jp[0]);
+  return jp;
 }
 
 const uint16 *WreckedShipRobot_Instr_11(uint16 k, const uint16 *jp) {  // 0xA8D16B
