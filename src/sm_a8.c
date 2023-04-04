@@ -664,7 +664,7 @@ void WreckedShipGhost_Func_1(uint16 k) {  // 0xA89B42
   Enemy_WreckedShipGhost *E = Get_WreckedShipGhost(cur_enemy_index);
   uint16 v3 = swap16(E->base.palette_index);
   uint16 v4 = 16 * v3 + 256;
-  int n = 16, v1 = 0;
+  int n = 16, v1 = 16;
   do {
     int v5 = v4 >> 1;
     if (sign16((palette_buffer[v5] & 0x1F) - 31)) {
@@ -773,8 +773,8 @@ void WreckedShipGhost_Func_5(uint16 k) {  // 0xA89C8A
   if (!v6) {
     E->wsgt_var_A = FUNC16(WreckedShipGhost_Func_4);
     E->base.properties |= kEnemyProps_Tangible;
-    
-    int t = E->base.palette_index * 256;
+    // todo: this must be swap16 it seems
+    int t = swap16(E->base.palette_index);
     uint16 v9 = 16 * t + 256;
     int n = 16;
     do {
