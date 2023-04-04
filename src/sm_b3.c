@@ -1127,21 +1127,24 @@ void Botwoon_Func_25(void) {  // 0xB39D4D
 }
 
 void Botwoon_Func_26(uint16 k) {  // 0xB39DC0
-  printf("Botwoon_Func_26 possible bug - overwritten r18\n");
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   uint16 x = E->base.x_pos - E->botwoon_var_56;
   uint16 y = E->base.y_pos - E->botwoon_var_57;
+
   uint16 r22 = CalculateAngleFromXY(x, y);
-  if (x || y) {
+  if (x || y) {  // bugfix: real game overwrote r18
+    uint16 v1;
     if (E->botwoon_var_33) {
       E->base.layer = 7;
       E->base.properties |= kEnemyProps_Tangible;
-      r22 += 256;
+      v1 = addr_kBotwoon_Ilist_9389;
     } else {
       E->base.layer = 2;
       E->base.properties &= ~kEnemyProps_Tangible;
+      // Added hysteresis: Compute a weighted average
+      E->botwoon_var_45 = (uint8)(E->botwoon_var_45 + (int8)(r22 - E->botwoon_var_45) * 3 / 4);
+      v1 = g_off_B3946B[E->botwoon_var_45 >> 5];
     }
-    uint16 v1 = g_off_B3946B[r22 >> 5];
     if (v1 != E->botwoon_var_3B) {
       E->base.current_instruction = v1;
       E->botwoon_var_3B = v1;

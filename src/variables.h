@@ -20,6 +20,7 @@ extern int32 *cur_coll_amt32;
 // Not used anymore
 #define REMOVED_R18 *(uint16*)(g_ram + 18)
 #define REMOVED_R20 *(uint16*)(g_ram + 20)
+#define REMOVED_R22 *(uint16*)(g_ram + 22)
 
 #define INT16_SHL8(x) ((int16)(x) << 8)
 #define INT16_SHL16(x) ((int16)(x) << 16)

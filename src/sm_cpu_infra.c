@@ -3,17 +3,12 @@
 #include "snes/cpu.h"
 #include "snes/snes.h"
 #include "tracing.h"
-
-
-
-
-
 #include "ida_types.h"
 #include "variables.h"
 #include "funcs.h"
 #include "sm_rtl.h"
 #include "util.h"
-
+#include "enemy_types.h"
 #include <time.h>
 
 void RtlRunFrameCompare(uint16 input, int run_what);
@@ -418,6 +413,16 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
   } else if (FixBugHook(0xa5a018)) {
     // Draygon_Func_42 uses undefined varE24 value
     REMOVED_varE24 = 0;
+  } else if (FixBugHook(0xb39ddb)) {
+    // Botwoon_Func_26 uses regs that are overwritten
+    // This made the flicker slightly worse, so added hysteresis
+    Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
+    REMOVED_R18 = E->base.x_pos - E->botwoon_var_56;
+    REMOVED_R20 = E->base.y_pos - E->botwoon_var_57;
+  } else if (FixBugHook(0xB39E13)) {
+    // add botwoon hysteresis
+    Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
+    REMOVED_R22 = E->botwoon_var_45 = (uint8)(E->botwoon_var_45 + (int8)(REMOVED_R22 - E->botwoon_var_45) * 3 / 4);
   }
 
   return 0;
