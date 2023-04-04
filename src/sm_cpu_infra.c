@@ -373,6 +373,9 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
     // Kraid_Shot_Mouth: The real game doesn't preserve R18, R20 so they're junk at this point.
     // Force getting out of the loop.
     g_cpu->x = 0;
+  } else if (FixBugHook(0xa5a018)) {
+    // Draygon_Func_42 uses undefined varE24 value
+    REMOVED_varE24 = 0;
   }
 
   return 0;
