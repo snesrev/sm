@@ -693,6 +693,9 @@ LABEL_12:
     NormalEnemyShotAiSkipDeathAnim_CurEnemy();
     projectile_dir[v6 >> 1] |= 0x10;
     v3 = 1;
+    // The real game doesn't preserve R18, R20 so they're junk at this point.
+    // Force getting out of the loop.
+    v6 = 0; 
     goto LABEL_13;
   }
 LABEL_14:

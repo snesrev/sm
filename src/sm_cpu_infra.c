@@ -369,6 +369,10 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
     // ProcessEnemyPowerBombInteraction - R18 may get overwritten by the enemy death routine
     REMOVED_R18 = HIBYTE(power_bomb_explosion_radius);
     REMOVED_R20 = (REMOVED_R18 + (REMOVED_R18 >> 1)) >> 1;
+  } else if (FixBugHook(0xA7B049)) {
+    // Kraid_Shot_Mouth: The real game doesn't preserve R18, R20 so they're junk at this point.
+    // Force getting out of the loop.
+    g_cpu->x = 0;
   }
 
   return 0;
@@ -825,8 +829,13 @@ Snes *SnesInit(const char *filename) {
 
   { uint8 t[] = { 0xa5, 0x25 }; PatchBytes(0x91C234, t, sizeof(t)); } // Bugfix in XrayHdmaFunc_BeamAimedUUL
 
-    // Remove call to InitializeMiniMapBroken
+  // Remove call to InitializeMiniMapBroken
   { uint8 t[] = { 0x18, 0x18, 0x18, 0x18 }; PatchBytes(0x809AF3, t, sizeof(t)); } // callf   InitializeMiniMapBroken
+
+  // NormalEnemyShotAiSkipDeathAnim_CurEnemy version that preserves R18 etc.
+  { uint8 t[] = { 0xA5, 0x12, 0x48, 0xA5, 0x14, 0x48, 0xA5, 0x16, 0x48, 0x22, 0xA7, 0xA6, 0xA0, 0x68, 0x85, 0x16, 0x68, 0x85, 0x14, 0x68, 0x85, 0x12, 0x6B }; PatchBytes(0xA7FF82, t, sizeof(t)); }
+  { uint8 t[] = { 0x22, 0x82, 0xff, 0xa7 }; PatchBytes(0xa7b03a, t, sizeof(t)); }
+
 
   RtlUpdateSnesPatchForBugfix();
 
