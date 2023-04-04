@@ -2196,7 +2196,7 @@ void Phantoon_Func_2(uint16 k) {  // 0xA7CF0C
 
 uint8 Phantoon_Func_3(int32 amt) {  // 0xA7CF27
   Enemy_Phantoon *E = Get_Phantoon(0xC0);
-  uint32 r18 = amt, r20 = amt >> 16;
+  uint16 r18 = amt, r20 = amt >> 16;
   if (E->phant_var_E) {
     uint16 phant_var_D = E->phant_var_D;
     bool v4 = phant_var_D < r18;
@@ -2428,7 +2428,7 @@ void Phantoon_MoveInFigure8_LeftSideClockwise(uint16 j, uint16 r20) {  // 0xA7D2
 
 void Phantoon_MoveInFigure8_RightSideClockwise(uint16 j, uint16 r20) {  // 0xA7D271
   Enemy_Phantoon *E = Get_Phantoon(0);
-  for(int n = -E->phant_var_C; n; n--) {
+  for(int n = (uint16)-E->phant_var_C; n; n--) {
     const uint8 *v4 = RomPtr_A7(2 * E->phant_var_A + j);
     E->base.x_pos -= (int8)v4[0];
     E->base.y_pos -= (int8)v4[1];
@@ -2636,7 +2636,7 @@ void Phantoon_SpawnFireballsBeforeFight(uint16 k) {  // 0xA7D508
 
 void Phantoon_WavyFadeIn(uint16 k) {  // 0xA7D54A
   Phantoon_FadeIn(0xC);
-if (Phantoon_Func_3(__PAIR32__(g_word_A7CD9D, g_word_A7CD9B))) {
+  if (Phantoon_Func_3(__PAIR32__(g_word_A7CD9D, g_word_A7CD9B))) {
     Enemy_Phantoon *E = Get_Phantoon(k);
     E->phant_var_F = FUNC16(Phantoon_PickPatternForRound1);
     Get_Phantoon(0xC0)->phant_parameter_1 = 1;
