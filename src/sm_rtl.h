@@ -33,7 +33,6 @@ typedef void FuncXY_V(uint16 k, uint16 j);
 typedef PairU16 Func_Y_To_PairU16(uint16 j);
 
 const uint8 *RomPtr(uint32_t addr);
-static inline const uint8 *RomFixedPtr(uint32_t addr) { return &g_rom[(((addr >> 16) << 15) | (addr & 0x7fff)) & 0x3fffff]; }
 
 struct LongPtr;
 void mov24(LongPtr *dst, uint32 src);
@@ -51,9 +50,10 @@ bool Unreachable();
 #if defined(_DEBUG)
 // Gives better warning messages but non inlined on tcc
 static inline uint16 GET_WORD(const uint8 *p) { return *(uint16 *)(p); }
+static inline const uint8 *RomFixedPtr(uint32_t addr) { return &g_rom[(((addr >> 16) << 15) | (addr & 0x7fff)) & 0x3fffff]; }
 #else
 #define GET_WORD(p) (*(uint16*)(p))
-
+#define RomFixedPtr(addr) (&g_rom[(((addr >> 16) << 15) | (addr & 0x7fff)) & 0x3fffff])
 #endif
 
 #define GET_BYTE(p) (*(uint8*)(p))
