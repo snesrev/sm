@@ -932,7 +932,7 @@ void Kraid_InitEyeGlowing(void) {  // 0xA7B6BF
   Enemy_Kraid *E = Get_Kraid(0);
   E->kraid_var_A = FUNC16(Kraid_Shot_MouthIsOpen);
   E->kraid_var_A = FUNC16(Kraid_Shot_GlowHisEye);
-  E->kraid_var_B = addr_stru_A7974A__plus__8;
+  E->kraid_var_B = addr_stru_A7974A + 8;
   E->kraid_var_C = g_stru_A7974A[0].timer;
   Kraid_Shot_GlowHisEye();
 }
@@ -1634,7 +1634,7 @@ void Kraid_Death_Init(void) {  // 0xA7C360
     E1->base.current_instruction = addr_kKraid_Ilist_8AF0;
     E1->base.instruction_timer = 1;
     E0->kraid_var_A = FUNC16(Kraid_Death_Fadeout);
-    E0->kraid_var_B = addr_stru_A79764__plus__8;
+    E0->kraid_var_B = addr_stru_A79764 + 8;
     E0->kraid_var_C = g_stru_A79764[0].timer;
     uint16 v4 = cur_enemy_index;
     uint16 v7 = cur_enemy_index;

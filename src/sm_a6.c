@@ -4666,13 +4666,13 @@ void CeresDoor_Init(void) {  // 0xA6F6C5
   CeresDoor_Func_1(cur_enemy_index);
   uint16 v3;
   if (ceres_status) {
-    v3 = addr_word_A6F50C__plus__2;
+    v3 = addr_word_A6F50C + 2;
   } else {
     if (E->cdr_parameter_1 == 3) {
-      WriteColorsToTargetPalette(0xa6, 0x142, addr_kCeresDoor_Palette__plus__2, 0xF);
+      WriteColorsToTargetPalette(0xa6, 0x142, addr_kCeresDoor_Palette + 2, 0xF);
       return;
     }
-    v3 = addr_kCeresDoor_Palette__plus__2;
+    v3 = addr_kCeresDoor_Palette + 2;
   }
   Get_CeresDoor(cur_enemy_index)->base.palette_index = 3584;
   WriteColorsToTargetPalette(0xa6, 0x1E2, v3, 0xF);
