@@ -2253,8 +2253,8 @@ void UpdateMinimap(void) {  // 0x90A91B
     ++r46;
   }
   uint16 R50 = v3;
-  bg3_tilemap_offset = 2 * v4;
-  int v6 = bg3_tilemap_offset >> 1;
+  int r52 = 2 * v4;
+  int v6 = r52 >> 1;
   uint16 r24 = kShr0xFc00[v6] & swap16(*(uint16 *)&map_tiles_explored[v3]);
   uint16 r26 = kShr0xFc00[v6] & swap16(*(uint16 *)&map_tiles_explored[v3 + 4]);
   uint16 r28 = kShr0xFc00[v6] & swap16(*(uint16 *)&map_tiles_explored[v3 + 8]);
@@ -2268,7 +2268,7 @@ void UpdateMinimap(void) {  // 0x90A91B
   r9.addr += 4;
   uint16 r42 = swap16(IndirReadWord(r9, 0));
   if ((R50 & 3) == 3) {
-    v10 = r46 ? bg3_tilemap_offset >> 1 : r32;
+    v10 = r46 ? r52 >> 1 : r32;
     if (!sign16(v10 - 6)) {
       uint8 R48 = r34 ? (R50 - 124) : (R50 + 125);
 
@@ -2306,7 +2306,7 @@ void UpdateMinimap(void) {  // 0x90A91B
       }
     }
   }
-  for (int n = bg3_tilemap_offset >> 1; n; n--) {
+  for (int n = r52 >> 1; n; n--) {
     r24 *= 2;
     r38 *= 2;
     r26 *= 2;

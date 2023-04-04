@@ -498,13 +498,9 @@ PairU16 MakePairU16(uint16 k, uint16 j) {
   return r;
 }
 
-void mov24(struct LongPtr *a, unsigned int d) {
+void mov24(struct LongPtr *a, uint32 d) {
   a->addr = d & 0xffff;
   a->bank = d >> 16;
-}
-
-void copy24(LongPtr *dst, LongPtr *src) {
-  *dst = *src;
 }
 
 uint32 Load24(const LongPtr *src) {

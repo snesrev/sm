@@ -13,9 +13,6 @@
 #define kLoadStationLists ((uint16*)RomFixedPtr(0x80c4b5))
 #define off_80CD46 ((uint16*)RomFixedPtr(0x80cd46))
 
-
-
-
 void APU_UploadBank(uint32 addr) {  // 0x808028
   if (!g_use_my_apu_code)
     return;
@@ -1081,22 +1078,17 @@ void Vector_NMI(void) {  // 0x809583
   ++nmi_frame_counter_including_lag;
 }
 
-void Irq_DoorTransitionVramUpdate(void) {  // 0x809632
+void CopyToVramNow(uint16 vram_dst, uint32 src, uint16 size) {
+  // src can point either to ram or rom
   WriteReg(INIDISP, 0x80);
-  WriteRegWord(VMADDL, door_transition_vram_update_dst);
+  WriteRegWord(VMADDL, vram_dst);
   WriteRegWord(DMAP1, 0x1801);
-  WriteRegWord(A1T1L, door_transition_vram_update_src.addr);
-  WriteReg(A1B1, door_transition_vram_update_src.bank);
-  WriteRegWord(DAS1L, door_transition_vram_update_size);
+  WriteRegWord(A1T1L, (uint16)src);
+  WriteReg(A1B1, src >> 16);
+  WriteRegWord(DAS1L, size);
   WriteReg(VMAIN, 0x80);
   WriteReg(MDMAEN, 2);
-  door_transition_vram_update_enabled &= ~0x8000;
   WriteReg(INIDISP, 0xF);
-}
-
-void WaitForIrqDoorTransitionVramUpdate(void) {
-  door_transition_vram_update_enabled |= 0x8000;
-  Irq_DoorTransitionVramUpdate();
 }
 
 void IrqHandler_SetResult(uint16 a, uint16 y, uint16 x) {
@@ -1188,15 +1180,12 @@ void IrqHandler_18_VerticalDoor_EndHud(void) {  // 0x809771
   WriteReg(TM, v0);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
-//  if ((door_transition_vram_update_enabled & 0x8000) != 0)
-//    Irq_DoorTransitionVramUpdate();
   if ((door_transition_flag & 0x8000) == 0)
     Irq_FollowDoorTransition();
   IrqHandler_SetResult(20, 216, 152);
 }
 
 void IrqHandler_20_VerticalDoor_EndDraw(void) {  // 0x8097A9
-//  *(uint16 *)&waiting_for_nmi = 1;
   uint16 a = irqhandler_next_handler;
   irqhandler_next_handler = 0;
   IrqHandler_SetResult(a ? a : 16, 0, 152);
@@ -2104,84 +2093,87 @@ void UploadLevelDataColumn(void) {  // 0x80A9DB
 }
 
 void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
-  if (!irq_enable_mode7) {
-    uint16 prod = Mult8x8(blocks_to_update_y_block, room_width_in_blocks);
-    uint16 v1 = blocks_to_update_x_block;
-    uint16 v2 = 2 * (prod + v1) + 2;
-    if (k)
-      v2 += 0x9600;
-    copywithflip_src.addr = v2;
-    copywithflip_src.bank = 127;
-    uint16 v3 = (4 * vram_blocks_to_update_y_block) & 0x3C;
-    *(uint16 *)((uint8 *)&bg1_update_col_wrapped_size + k) = v3;
-    *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_size + k) = (v3 ^ 0x3F) + 1;
-    prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40);
-    uint16 var935 = vram_blocks_to_update_x_block & 0x1F;
-    uint16 v4 = 2 * var935;
-    uint16 var933 = prod + v4;
-    uint16 v5 = addr_unk_605000;
-    if (var935 >= 0x10)
-      v5 = addr_unk_6053E0;
-    if (k)
-      v5 -= size_of_bg2;
-    uint16 var937 = v5;
-    *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_dst + k) = var933 + v5;
-    *(uint16 *)((uint8 *)&bg1_update_col_wrapped_dst + k) = var935 + var935 + var937;
-    uint16 v6 = ADDR16_OF_RAM(*bg1_column_update_tilemap_left_halves);
-    uint16 v7 = 0;
-    if (k) {
-      v6 = ADDR16_OF_RAM(*bg2_column_update_tilemap_left_halves);
-      v7 = 264;
-    }
-    uint16 v8 = *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_size + k) + v6;
-    *(uint16 *)((uint8 *)&bg1_update_col_wrapped_left_src + k) = v8;
-    *(uint16 *)((uint8 *)&bg1_update_col_wrapped_right_src + k) = v8 + 64;
-    var937 = v7;
-    uint16 t2 = k;
-    uint16 v9 = 0;
-    uint16 var939 = 16;
-    do {
-      uint16 var93B = IndirReadWord(copywithflip_src, v9);
-      uint16 v10 = var93B & 0x3FF;
-      uint16 v17 = v9;
-      uint16 v11 = var937;
-      uint16 v12 = var93B & 0xC00;
-      if ((var93B & 0xC00) != 0) {
-        if (v12 == 1024) {
-          uint16 v14 = var937 >> 1;
-          bg1_column_update_tilemap_left_halves[v14] = tile_table.tables[v10].top_right ^ 0x4000;
-          bg1_column_update_tilemap_right_halves[v14] = tile_table.tables[v10].top_left ^ 0x4000;
-          bg1_column_update_tilemap_left_halves[v14 + 1] = tile_table.tables[v10].bottom_right ^ 0x4000;
-          bg1_column_update_tilemap_right_halves[v14 + 1] = tile_table.tables[v10].bottom_left ^ 0x4000;
-        } else {
-          uint16 v15 = var937 >> 1;
-          uint16 v16;
-          if (v12 == 2048) {
-            bg1_column_update_tilemap_left_halves[v15] = tile_table.tables[v10].bottom_left ^ 0x8000;
-            bg1_column_update_tilemap_right_halves[v15] = tile_table.tables[v10].bottom_right ^ 0x8000;
-            bg1_column_update_tilemap_left_halves[v15 + 1] = tile_table.tables[v10].top_left ^ 0x8000;
-            v16 = tile_table.tables[v10].top_right ^ 0x8000;
-          } else {
-            bg1_column_update_tilemap_left_halves[v15] = tile_table.tables[v10].bottom_right ^ 0xC000;
-            bg1_column_update_tilemap_right_halves[v15] = tile_table.tables[v10].bottom_left ^ 0xC000;
-            bg1_column_update_tilemap_left_halves[v15 + 1] = tile_table.tables[v10].top_right ^ 0xC000;
-            v16 = tile_table.tables[v10].top_left ^ 0xC000;
-          }
-          bg1_column_update_tilemap_right_halves[v15 + 1] = v16;
-        }
-      } else {
-        uint16 v13 = var937 >> 1;
-        bg1_column_update_tilemap_left_halves[v13] = tile_table.tables[v10].top_left;
-        bg1_column_update_tilemap_right_halves[v13] = tile_table.tables[v10].top_right;
-        bg1_column_update_tilemap_left_halves[v13 + 1] = tile_table.tables[v10].bottom_left;
-        bg1_column_update_tilemap_right_halves[v13 + 1] = tile_table.tables[v10].bottom_right;
-      }
-      var937 = v11 + 4;
-      v9 = room_width_in_blocks * 2 + v17;
-      --var939;
-    } while (var939);
-    ++ *(uint16 *)((uint8 *)&bg1_update_col_enable + t2);
+  LongPtr r54;
+
+  if (irq_enable_mode7)
+    return;
+
+  uint16 prod = Mult8x8(blocks_to_update_y_block, room_width_in_blocks);
+  uint16 v1 = blocks_to_update_x_block;
+  uint16 v2 = 2 * (prod + v1) + 2;
+  if (k)
+    v2 += 0x9600;
+  r54.addr = v2;
+  r54.bank = 127;
+  uint16 v3 = (4 * vram_blocks_to_update_y_block) & 0x3C;
+  *(uint16 *)((uint8 *)&bg1_update_col_wrapped_size + k) = v3;
+  *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_size + k) = (v3 ^ 0x3F) + 1;
+  prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40);
+  uint16 var935 = vram_blocks_to_update_x_block & 0x1F;
+  uint16 v4 = 2 * var935;
+  uint16 var933 = prod + v4;
+  uint16 v5 = addr_unk_605000;
+  if (var935 >= 0x10)
+    v5 = addr_unk_6053E0;
+  if (k)
+    v5 -= size_of_bg2;
+  uint16 var937 = v5;
+  *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_dst + k) = var933 + v5;
+  *(uint16 *)((uint8 *)&bg1_update_col_wrapped_dst + k) = var935 + var935 + var937;
+  uint16 v6 = ADDR16_OF_RAM(*bg1_column_update_tilemap_left_halves);
+  uint16 v7 = 0;
+  if (k) {
+    v6 = ADDR16_OF_RAM(*bg2_column_update_tilemap_left_halves);
+    v7 = 264;
   }
+  uint16 v8 = *(uint16 *)((uint8 *)&bg1_update_col_unwrapped_size + k) + v6;
+  *(uint16 *)((uint8 *)&bg1_update_col_wrapped_left_src + k) = v8;
+  *(uint16 *)((uint8 *)&bg1_update_col_wrapped_right_src + k) = v8 + 64;
+  var937 = v7;
+  uint16 t2 = k;
+  uint16 v9 = 0;
+  uint16 var939 = 16;
+  do {
+    uint16 var93B = IndirReadWord(r54, v9);
+    uint16 v10 = var93B & 0x3FF;
+    uint16 v17 = v9;
+    uint16 v11 = var937;
+    uint16 v12 = var93B & 0xC00;
+    if ((var93B & 0xC00) != 0) {
+      if (v12 == 1024) {
+        uint16 v14 = var937 >> 1;
+        bg1_column_update_tilemap_left_halves[v14] = tile_table.tables[v10].top_right ^ 0x4000;
+        bg1_column_update_tilemap_right_halves[v14] = tile_table.tables[v10].top_left ^ 0x4000;
+        bg1_column_update_tilemap_left_halves[v14 + 1] = tile_table.tables[v10].bottom_right ^ 0x4000;
+        bg1_column_update_tilemap_right_halves[v14 + 1] = tile_table.tables[v10].bottom_left ^ 0x4000;
+      } else {
+        uint16 v15 = var937 >> 1;
+        uint16 v16;
+        if (v12 == 2048) {
+          bg1_column_update_tilemap_left_halves[v15] = tile_table.tables[v10].bottom_left ^ 0x8000;
+          bg1_column_update_tilemap_right_halves[v15] = tile_table.tables[v10].bottom_right ^ 0x8000;
+          bg1_column_update_tilemap_left_halves[v15 + 1] = tile_table.tables[v10].top_left ^ 0x8000;
+          v16 = tile_table.tables[v10].top_right ^ 0x8000;
+        } else {
+          bg1_column_update_tilemap_left_halves[v15] = tile_table.tables[v10].bottom_right ^ 0xC000;
+          bg1_column_update_tilemap_right_halves[v15] = tile_table.tables[v10].bottom_left ^ 0xC000;
+          bg1_column_update_tilemap_left_halves[v15 + 1] = tile_table.tables[v10].top_right ^ 0xC000;
+          v16 = tile_table.tables[v10].top_left ^ 0xC000;
+        }
+        bg1_column_update_tilemap_right_halves[v15 + 1] = v16;
+      }
+    } else {
+      uint16 v13 = var937 >> 1;
+      bg1_column_update_tilemap_left_halves[v13] = tile_table.tables[v10].top_left;
+      bg1_column_update_tilemap_right_halves[v13] = tile_table.tables[v10].top_right;
+      bg1_column_update_tilemap_left_halves[v13 + 1] = tile_table.tables[v10].bottom_left;
+      bg1_column_update_tilemap_right_halves[v13 + 1] = tile_table.tables[v10].bottom_right;
+    }
+    var937 = v11 + 4;
+    v9 = room_width_in_blocks * 2 + v17;
+    --var939;
+  } while (var939);
+  ++ *(uint16 *)((uint8 *)&bg1_update_col_enable + t2);
 }
 
 void UpdateBackgroundDataRow(void) {  // 0x80AB70
@@ -2193,89 +2185,90 @@ void UpdateLevelDataRow(void) {  // 0x80AB75
 }
 
 void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
-  if (!irq_enable_mode7) {
-    uint16 prod = Mult8x8(blocks_to_update_y_block, room_width_in_blocks);
-    uint16 v1 = blocks_to_update_x_block;
-    uint16 v2 = 2 * (prod + v1) + 2;
-    if (v0)
-      v2 -= 27136;
-    copywithflip_src.addr = v2;
-    copywithflip_src.bank = 127;
-    uint16 var933 = vram_blocks_to_update_x_block & 0xF;
-    *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_size + v0) = 4 * (16 - var933);
-    *(uint16 *)((uint8 *)&bg1_update_row_wrapped_size + v0) = 4 * (var933 + 1);
-    prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40);
-    uint16 var935 = vram_blocks_to_update_x_block & 0x1F;
-    uint16 v3 = 2 * var935;
-    var933 = prod + v3;
-    uint16 var937 = addr_unk_605400;
-    uint16 v4 = addr_unk_605000;
-    if (var935 >= 0x10) {
-      var937 = addr_unk_605000;
-      v4 = addr_unk_6053E0;
-    }
-    if (v0)
-      v4 -= size_of_bg2;
-    *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_dst + v0) = var933 + v4;
-    uint16 v5 = var937;
-    if (v0)
-      v5 = var937 - size_of_bg2;
-    *(uint16 *)((uint8 *)&bg1_update_row_wrapped_dst + v0) = prod + v5;
-    uint16 v6 = ADDR16_OF_RAM(*bg1_column_update_tilemap_top_halves);
-    uint16 v7 = 0;
-    if (v0) {
-      v6 = ADDR16_OF_RAM(*bg2_column_update_tilemap_top_halves);
-      v7 = 264;
-    }
-    uint16 v8 = *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_size + v0) + v6;
-    *(uint16 *)((uint8 *)&bg1_update_row_wrapped_top_src + v0) = v8;
-    *(uint16 *)((uint8 *)&bg1_update_row_wrapped_bottom_src + v0) = v8 + 68;
-    var937 = v7;
-    uint16 t2 = v0;
-    uint16 v9 = 0;
-    uint16 var939 = 17;
-    do {
-      uint16 var93B = IndirReadWord(copywithflip_src, v9);
-      uint16 v10 = var93B & 0x3FF;
-      uint16 v17 = v9;
-      uint16 v11 = var937;
-      uint16 v12 = var93B & 0xC00;
-      if ((var93B & 0xC00) != 0) {
-        if (v12 == 1024) {
-          uint16 v14 = var937 >> 1;
-          bg1_column_update_tilemap_top_halves[v14] = tile_table.tables[v10].top_right ^ 0x4000;
-          bg1_column_update_tilemap_top_halves[v14 + 1] = tile_table.tables[v10].top_left ^ 0x4000;
-          bg1_column_update_tilemap_bottom_halves[v14] = tile_table.tables[v10].bottom_right ^ 0x4000;
-          bg1_column_update_tilemap_bottom_halves[v14 + 1] = tile_table.tables[v10].bottom_left ^ 0x4000;
-        } else {
-          uint16 v15 = var937 >> 1;
-          uint16 v16;
-          if (v12 == 2048) {
-            bg1_column_update_tilemap_top_halves[v15] = tile_table.tables[v10].bottom_left ^ 0x8000;
-            bg1_column_update_tilemap_top_halves[v15 + 1] = tile_table.tables[v10].bottom_right ^ 0x8000;
-            bg1_column_update_tilemap_bottom_halves[v15] = tile_table.tables[v10].top_left ^ 0x8000;
-            v16 = tile_table.tables[v10].top_right ^ 0x8000;
-          } else {
-            bg1_column_update_tilemap_top_halves[v15] = tile_table.tables[v10].bottom_right ^ 0xC000;
-            bg1_column_update_tilemap_top_halves[v15 + 1] = tile_table.tables[v10].bottom_left ^ 0xC000;
-            bg1_column_update_tilemap_bottom_halves[v15] = tile_table.tables[v10].top_right ^ 0xC000;
-            v16 = tile_table.tables[v10].top_left ^ 0xC000;
-          }
-          bg1_column_update_tilemap_bottom_halves[v15 + 1] = v16;
-        }
-      } else {
-        uint16 v13 = var937 >> 1;
-        bg1_column_update_tilemap_top_halves[v13] = tile_table.tables[v10].top_left;
-        bg1_column_update_tilemap_top_halves[v13 + 1] = tile_table.tables[v10].top_right;
-        bg1_column_update_tilemap_bottom_halves[v13] = tile_table.tables[v10].bottom_left;
-        bg1_column_update_tilemap_bottom_halves[v13 + 1] = tile_table.tables[v10].bottom_right;
-      }
-      var937 = v11 + 4;
-      v9 = v17 + 2;
-      --var939;
-    } while (var939);
-    ++ *(uint16 *)((uint8 *)&bg1_update_row_enable + t2);
+  LongPtr r54;
+  if (irq_enable_mode7)
+    return;
+  uint16 prod = Mult8x8(blocks_to_update_y_block, room_width_in_blocks);
+  uint16 v1 = blocks_to_update_x_block;
+  uint16 v2 = 2 * (prod + v1) + 2;
+  if (v0)
+    v2 -= 27136;
+  r54.addr = v2;
+  r54.bank = 127;
+  uint16 var933 = vram_blocks_to_update_x_block & 0xF;
+  *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_size + v0) = 4 * (16 - var933);
+  *(uint16 *)((uint8 *)&bg1_update_row_wrapped_size + v0) = 4 * (var933 + 1);
+  prod = Mult8x8(vram_blocks_to_update_y_block & 0xF, 0x40);
+  uint16 var935 = vram_blocks_to_update_x_block & 0x1F;
+  uint16 v3 = 2 * var935;
+  var933 = prod + v3;
+  uint16 var937 = addr_unk_605400;
+  uint16 v4 = addr_unk_605000;
+  if (var935 >= 0x10) {
+    var937 = addr_unk_605000;
+    v4 = addr_unk_6053E0;
   }
+  if (v0)
+    v4 -= size_of_bg2;
+  *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_dst + v0) = var933 + v4;
+  uint16 v5 = var937;
+  if (v0)
+    v5 = var937 - size_of_bg2;
+  *(uint16 *)((uint8 *)&bg1_update_row_wrapped_dst + v0) = prod + v5;
+  uint16 v6 = ADDR16_OF_RAM(*bg1_column_update_tilemap_top_halves);
+  uint16 v7 = 0;
+  if (v0) {
+    v6 = ADDR16_OF_RAM(*bg2_column_update_tilemap_top_halves);
+    v7 = 264;
+  }
+  uint16 v8 = *(uint16 *)((uint8 *)&bg1_update_row_unwrapped_size + v0) + v6;
+  *(uint16 *)((uint8 *)&bg1_update_row_wrapped_top_src + v0) = v8;
+  *(uint16 *)((uint8 *)&bg1_update_row_wrapped_bottom_src + v0) = v8 + 68;
+  var937 = v7;
+  uint16 t2 = v0;
+  uint16 v9 = 0;
+  uint16 var939 = 17;
+  do {
+    uint16 var93B = IndirReadWord(r54, v9);
+    uint16 v10 = var93B & 0x3FF;
+    uint16 v17 = v9;
+    uint16 v11 = var937;
+    uint16 v12 = var93B & 0xC00;
+    if ((var93B & 0xC00) != 0) {
+      if (v12 == 1024) {
+        uint16 v14 = var937 >> 1;
+        bg1_column_update_tilemap_top_halves[v14] = tile_table.tables[v10].top_right ^ 0x4000;
+        bg1_column_update_tilemap_top_halves[v14 + 1] = tile_table.tables[v10].top_left ^ 0x4000;
+        bg1_column_update_tilemap_bottom_halves[v14] = tile_table.tables[v10].bottom_right ^ 0x4000;
+        bg1_column_update_tilemap_bottom_halves[v14 + 1] = tile_table.tables[v10].bottom_left ^ 0x4000;
+      } else {
+        uint16 v15 = var937 >> 1;
+        uint16 v16;
+        if (v12 == 2048) {
+          bg1_column_update_tilemap_top_halves[v15] = tile_table.tables[v10].bottom_left ^ 0x8000;
+          bg1_column_update_tilemap_top_halves[v15 + 1] = tile_table.tables[v10].bottom_right ^ 0x8000;
+          bg1_column_update_tilemap_bottom_halves[v15] = tile_table.tables[v10].top_left ^ 0x8000;
+          v16 = tile_table.tables[v10].top_right ^ 0x8000;
+        } else {
+          bg1_column_update_tilemap_top_halves[v15] = tile_table.tables[v10].bottom_right ^ 0xC000;
+          bg1_column_update_tilemap_top_halves[v15 + 1] = tile_table.tables[v10].bottom_left ^ 0xC000;
+          bg1_column_update_tilemap_bottom_halves[v15] = tile_table.tables[v10].top_right ^ 0xC000;
+          v16 = tile_table.tables[v10].top_left ^ 0xC000;
+        }
+        bg1_column_update_tilemap_bottom_halves[v15 + 1] = v16;
+      }
+    } else {
+      uint16 v13 = var937 >> 1;
+      bg1_column_update_tilemap_top_halves[v13] = tile_table.tables[v10].top_left;
+      bg1_column_update_tilemap_top_halves[v13 + 1] = tile_table.tables[v10].top_right;
+      bg1_column_update_tilemap_bottom_halves[v13] = tile_table.tables[v10].bottom_left;
+      bg1_column_update_tilemap_bottom_halves[v13 + 1] = tile_table.tables[v10].bottom_right;
+    }
+    var937 = v11 + 4;
+    v9 = v17 + 2;
+    --var939;
+  } while (var939);
+  ++ *(uint16 *)((uint8 *)&bg1_update_row_enable + t2);
 }
 
 void FixDoorsMovingUp(void) {  // 0x80AD1D

@@ -2820,7 +2820,7 @@ static const uint16 kPartialReserveTankSpritemapIds[16] = { 0x20, 0x21, 0x22, 0x
 
 void EquipmentScreenDisplayReserveTankAmount_(void) {
   uint16 r3 = EquipmentScreenDisplayReserves_PaletteSetup();
-  bg3_tilemap_offset = 0;
+  int r52 = 0;
   if (!samus_max_reserve_health)
     return;
   uint16 R44 = samus_max_reserve_health / 100;
@@ -2836,7 +2836,7 @@ void EquipmentScreenDisplayReserveTankAmount_(void) {
       DrawMenuSpritemap(0x1B, kEquipmentScreenReserveTank_X[v0 >> 1], kEquipmentScreenReserveTank_Y - 1, r3);
       v0 += 2;
     } while (--r46);
-    bg3_tilemap_offset = v0;
+    r52 = v0;
   }
   uint16 RegWord = mod_value;
   if (RegWord) {
@@ -2845,17 +2845,17 @@ void EquipmentScreenDisplayReserveTankAmount_(void) {
       v2 += 2;
     if (!sign16(samus_reserve_health - 100))
       v2 += 16;
-    DrawMenuSpritemap(kPartialReserveTankSpritemapIds[v2 >> 1], kEquipmentScreenReserveTank_X[bg3_tilemap_offset >> 1],
+    DrawMenuSpritemap(kPartialReserveTankSpritemapIds[v2 >> 1], kEquipmentScreenReserveTank_X[r52 >> 1],
                       kEquipmentScreenReserveTank_Y - 1, r3);
     ++R48;
-    bg3_tilemap_offset += 2;
+    r52 += 2;
   }
   while (sign16(R48 - R44)) {
-    DrawMenuSpritemap(0x20, kEquipmentScreenReserveTank_X[bg3_tilemap_offset >> 1], kEquipmentScreenReserveTank_Y - 1, r3);
-    bg3_tilemap_offset += 2;
+    DrawMenuSpritemap(0x20, kEquipmentScreenReserveTank_X[r52 >> 1], kEquipmentScreenReserveTank_Y - 1, r3);
+    r52 += 2;
     ++R48;
   }
-  DrawMenuSpritemap(0x1F, kEquipmentScreenReserveTank_X[bg3_tilemap_offset >> 1], kEquipmentScreenReserveTank_Y - 1, r3);
+  DrawMenuSpritemap(0x1F, kEquipmentScreenReserveTank_X[r52 >> 1], kEquipmentScreenReserveTank_Y - 1, r3);
   int div_val = R50 / 10;
   int mod_val = R50 % 10;
   ram3800.cinematic_bg_tilemap[394] = mod_val + 2052;
@@ -3677,24 +3677,21 @@ void LoadRoomHeader(void) {  // 0x82DE6F
   uint16 prod = Mult8x8(room_width_in_blocks, room_height_in_blocks);
   room_size_in_blocks = 2 * prod;
 }
-void LoadStateHeader(void) {  // 0x82DEF2
-  StateHeaderTiles *StateHeaderTiles; // r10
-  RoomDefRoomstate *RoomDefRoomstate; // r11
 
-  int v0 = get_RoomDefRoomstate(roomdefroomstate_ptr)->graphics_set;
-  StateHeaderTiles = get_StateHeaderTiles(kStateHeaderGraphicsSets[v0]);
-  copy24(&tileset_tile_table_pointer, &StateHeaderTiles->tile_table_ptr);
-  copy24(&tileset_tiles_pointer, &StateHeaderTiles->tiles_ptr);
-  copy24(&tileset_compr_palette_ptr, &StateHeaderTiles->palette_ptr);
-  RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
-  copy24(&room_compr_level_data_ptr, &RoomDefRoomstate->compressed_room_map_ptr);
-  room_music_data_index = RoomDefRoomstate->music_track;
-  room_music_track_index = RoomDefRoomstate->music_control;
-  room_layer3_asm_ptr = RoomDefRoomstate->room_layer3_fx_ptr;
-  room_enemy_population_ptr = RoomDefRoomstate->enemy_population_ptr_;
-  room_enemy_tilesets_ptr = RoomDefRoomstate->enemy_tilesets_ptr;
-  *(uint16 *)&layer2_scroll_x = RoomDefRoomstate->vertical_screen_nudge_limit;
-  room_main_code_ptr = RoomDefRoomstate->main_code_ptr;
+void LoadStateHeader(void) {  // 0x82DEF2
+  RoomDefRoomstate *RD = get_RoomDefRoomstate(roomdefroomstate_ptr);
+  StateHeaderTiles *SH = get_StateHeaderTiles(kStateHeaderGraphicsSets[RD->graphics_set]);
+  tileset_tile_table_pointer = SH->tile_table_ptr;
+  tileset_tiles_pointer = SH->tiles_ptr;
+  tileset_compr_palette_ptr = SH->palette_ptr;
+  room_compr_level_data_ptr = RD->compressed_room_map_ptr;
+  room_music_data_index = RD->music_track;
+  room_music_track_index = RD->music_control;
+  room_layer3_asm_ptr = RD->room_layer3_fx_ptr;
+  room_enemy_population_ptr = RD->enemy_population_ptr_;
+  room_enemy_tilesets_ptr = RD->enemy_tilesets_ptr;
+  *(uint16 *)&layer2_scroll_x = RD->vertical_screen_nudge_limit;
+  room_main_code_ptr = RD->main_code_ptr;
 }
 
 void WaitUntilEndOfVblankAndEnableIrq(void) {  // 0x82DF69
@@ -3733,16 +3730,16 @@ void LoadEnemyGfxToVram(void) {  // 0x82DFD1
       if (enemy_def == 0xFFFF)
         break;
       ED = get_EnemyDef_A2(enemy_def);
-      copy24(&door_transition_vram_update_src, &ED->tile_data);
+      uint16 vram_update_size, vram_update_dst;
       if ((ED->tile_data_size & 0x8000) != 0) {
-        door_transition_vram_update_size = ED->tile_data_size & 0x7FFF;
-        door_transition_vram_update_dst = ((uint16)(get_EnemyTileset(i)->vram_dst & 0xF000) >> 4) | 0x6000;
+        vram_update_size = ED->tile_data_size & 0x7FFF;
+        vram_update_dst = ((uint16)(get_EnemyTileset(i)->vram_dst & 0xF000) >> 4) | 0x6000;
       } else {
-        door_transition_vram_update_size = ED->tile_data_size;
-        door_transition_vram_update_dst = dst;
+        vram_update_size = ED->tile_data_size;
+        vram_update_dst = dst;
         dst += ED->tile_data_size >> 1;
       }
-      WaitForIrqDoorTransitionVramUpdate();
+      CopyToVramNow(vram_update_dst, Load24(&ED->tile_data), vram_update_size);
       i += 4;
     }
   }
@@ -3750,10 +3747,7 @@ void LoadEnemyGfxToVram(void) {  // 0x82DFD1
 
 void CopyToVramAtNextInterrupt(const void *p) {  // 0x82E039
   const CopyToVramAtNextInterruptArgs *pp = (const CopyToVramAtNextInterruptArgs *)p;
-  door_transition_vram_update_src = pp->source;
-  door_transition_vram_update_dst = pp->dest;
-  door_transition_vram_update_size = pp->size;
-  WaitForIrqDoorTransitionVramUpdate();
+  CopyToVramNow(pp->dest, Load24(&pp->source), pp->size);
 }
 
 void LoadRoomMusic(void) {  // 0x82E071
@@ -4015,7 +4009,6 @@ CoroutineRet DoorTransitionFunction_PlaceSamusLoadTiles(void) {  // 0x82E3C0
   samus_y_pos = layer1_y_pos + (uint8)samus_y_pos;
   samus_prev_y_pos = samus_y_pos;
   door_transition_flag = 0;
-  door_transition_vram_update_enabled = 0;
   if ((door_direction & 3) == 2)
     v0 = 16;
   else
@@ -4073,13 +4066,8 @@ CoroutineRet DoorTransitionFunction_LoadMoreThings_Async(void) {
   ResetProjectileData();
   Samus_LoadSuitTargetPalette();
   ClearFxTilemap();
-  *(VoidP *)((uint8 *)&door_transition_vram_update_src.addr + 1) = -30208;
-  if (fx_tilemap_ptr) {
-    door_transition_vram_update_src.addr = fx_tilemap_ptr;
-    door_transition_vram_update_dst = addr_unk_605BE0;
-    door_transition_vram_update_size = 2112;
-    WaitForIrqDoorTransitionVramUpdate();
-  }
+  if (fx_tilemap_ptr)
+    CopyToVramNow(addr_unk_605BE0, 0x8a0000 | fx_tilemap_ptr, 2112);
   bg_data_ptr = get_RoomDefRoomstate(roomdefroomstate_ptr)->bg_data_ptr;
   if (bg_data_ptr & 0x8000) {
     do {
@@ -4149,10 +4137,7 @@ uint16 UpdateBackgroundCommand_E_DoorDependentTransferToVRAM(uint16 j) {  // 0x8
 
 uint16 UpdateBackgroundCommand_2_TransferToVram(uint16 j) {  // 0x82E5EB
   const uint8 *v1 = RomPtr_8F(j);
-  door_transition_vram_update_dst = GET_WORD(v1 + 3);
-  copy24(&door_transition_vram_update_src, (LongPtr *)v1);
-  door_transition_vram_update_size = GET_WORD(v1 + 5);
-  WaitForIrqDoorTransitionVramUpdate();
+  CopyToVramNow(GET_WORD(v1 + 3), Load24((LongPtr *)v1), GET_WORD(v1 + 5));
   return j + 7;
 }
 

@@ -83,7 +83,6 @@ static uint16 WriteMessageTilemap(void) {  // 0x8582B8
   message_box_animation_y_radius = 0;
   for (int i = 0; i != 112; ++i)
     ram3000.pause_menu_map_tilemap[i] = 0;
-  bg3_tilemap_offset = 2 * (message_box_index - 1);
   uint16 r0 = *(VoidP *)((uint8 *)&kMessageBoxDefs[0].message_tilemap + (6 * (message_box_index - 1)));
   uint16 r9 = *(VoidP *)((uint8 *)&kMessageBoxDefs[1].message_tilemap + (6 * (message_box_index - 1))) - r0;
   int n = r9 >> 1;
@@ -177,10 +176,10 @@ static void SetupMessageBoxBg3YscrollHdma(void) {  // 0x858363
   WriteReg(HDMAEN, 0x40);
 }
 
-static void SetupPpuForActiveMessageBox(void) {  // 0x85831E
+static void SetupPpuForActiveMessageBox(uint16 r52) {  // 0x85831E
   SetupMessageBoxBg3YscrollHdma();
-  bg3_tilemap_offset += 22528;
-  WriteRegWord(VMADDL, bg3_tilemap_offset);
+  r52 += 22528;
+  WriteRegWord(VMADDL, r52);
   WriteRegWord(DMAP1, 0x1801);
   WriteRegWord(A1T1L, ADDR16_OF_RAM(ram3000) + 512);
   WriteRegWord(A1B1, 0x7E);
@@ -214,8 +213,7 @@ static void DrawSpecialButtonAndSetupPpuForLargeMessageBox(uint16 a) {
     }
   }
   *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[256] + kMsgBoxSpecialButtonTilemapOffs[message_box_index - 1]) = kTileNumbersForButtonLetters[v1 >> 1];
-  bg3_tilemap_offset = 416;
-  SetupPpuForActiveMessageBox();
+  SetupPpuForActiveMessageBox(416);
 }
 
 static void DrawShootButtonAndSetupPpuForLargeMessageBox(void) {  // 0x8583C5
@@ -227,13 +225,11 @@ static void DrawRunButtonAndSetupPpuForLargeMessageBox(void) {  // 0x8583CC
 }
 
 static void SetupPpuForSmallMessageBox(void) {  // 0x858436
-  bg3_tilemap_offset = 448;
-  SetupPpuForActiveMessageBox();
+  SetupPpuForActiveMessageBox(448);
 }
 
 static void SetupPpuForLargeMessageBox(void) {  // 0x858441
-  bg3_tilemap_offset = 416;
-  SetupPpuForActiveMessageBox();
+  SetupPpuForActiveMessageBox(416);
 }
 
 static void CallMsgBoxModify(uint32 ea) {
@@ -247,8 +243,7 @@ static void CallMsgBoxModify(uint32 ea) {
 }
 
 static void InitializeMessageBox(void) {  // 0x858241
-  bg3_tilemap_offset = 2 * (message_box_index - 1);
-  uint16 v0 = message_box_index - 1;
+  int v0 = message_box_index - 1;
   CallMsgBoxDraw(kMessageBoxDefs[v0].draw_initial_tilemap | 0x850000);
   CallMsgBoxModify(kMessageBoxDefs[v0].modify_box_func | 0x850000);
 }
@@ -269,14 +264,12 @@ static void ToggleSaveConfirmationSelection(void) {
   if (save_confirmation_selection == 2)
     v0 = 128;
   uint16 v1 = 128;
-  bg3_tilemap_offset = 32;
+  int r52 = 32;
   do {
     ram3000.pause_menu_map_tilemap[v1 + 256] = kSaveConfirmationSelectionTilemap[v0 >> 1];
     ++v1;
     v0 += 2;
-    --bg3_tilemap_offset;
-  } while (bg3_tilemap_offset);
-  bg3_tilemap_offset = addr_unk_6059A0;
+  } while (--r52);
   WriteRegWord(VMADDL, addr_unk_6059A0);
   WriteRegWord(DMAP1, 0x1801);
   WriteRegWord(A1T1L, ADDR16_OF_RAM(ram3000) + 512);

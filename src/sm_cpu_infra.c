@@ -467,14 +467,12 @@ bool HookedFunctionRts(int is_long) {
 }
 
 static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
-  memcpy(&b->ram[0x0], &a->ram[0x0], 0x34);  // r18, r20, R22 etc
-
+  memcpy(&b->ram[0x0], &a->ram[0x0], 0x51);  // r18, r20, R22 etc
   memcpy(&b->ram[0x1f5b], &a->ram[0x1f5b], 0x100 - 0x5b);  // stacck
-  memcpy(&a->ram[0x3c], &b->ram[0x3c], 2);  // nmicopy1_var_d
-  memcpy(&b->ram[0x44], &a->ram[0x44], 13);  // decompress temp
   memcpy(&b->ram[0xad], &a->ram[0xad], 2);  // ptr_to_retaddr_parameters
   memcpy(&b->ram[0x5e7], &a->ram[0x5e7], 14);  // bitmask, mult_tmp, mult_product_lo etc
 
+  memcpy(&b->ram[0x5BC], &a->ram[0x5BC], 9);  // door_transition_vram_update etc
   memcpy(&a->ram[0x60B], &b->ram[0x60B], 6);  // enemy_projectile_init_param_2, remaining_enemy_hitbox_entries, REMOVED_num_projectiles_to_check_enemy_coll
   memcpy(&a->ram[0x611], &b->ram[0x611], 6);  // coroutine_state (copy from mine to theirs)
   memcpy(&b->ram[0x641], &a->ram[0x641], 2);  // apu_attempts_countdown

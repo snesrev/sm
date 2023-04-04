@@ -4,6 +4,9 @@
 
 extern uint8 g_ram[0x20000];
 
+#define INT16_SHL8(x) ((int16)(x) << 8)
+#define INT16_SHL16(x) ((int16)(x) << 16)
+
 static inline void AddToHiLo(uint16 *hi, uint16 *lo, uint32 v) {
   uint32 t = *lo + (*hi << 16) + v;
   *lo = t;
@@ -22,21 +25,6 @@ extern int32 *cur_coll_amt32;
 #define REMOVED_R20 *(uint16*)(g_ram + 20)
 #define REMOVED_R22 *(uint16*)(g_ram + 22)
 
-#define INT16_SHL8(x) ((int16)(x) << 8)
-#define INT16_SHL16(x) ((int16)(x) << 16)
-
-#define bg3_tilemap_offset (*(uint16*)(g_ram+0x34))
-#define copywithflip_src (*(LongPtr*)(g_ram+0x36))
-#define g_byte_7E0039 (*(uint8*)(g_ram+0x39))
-#define g_byte_7E003A (*(uint8*)(g_ram+0x3A))
-#define nmicopy1_var_d (*(uint16*)(g_ram+0x3C))
-#define g_word_7E003E (*(uint16*)(g_ram+0x3E))
-#define REMOVED_decompress_dst_tmp (*(LongPtr*)(g_ram+0x44))
-#define REMOVED_decompress_src (*(LongPtr*)(g_ram+0x47))
-#define REMOVED_decompress_last_byte (*(uint8*)(g_ram+0x4A))
-#define REMOVED_decompress_tmp1 (*(uint8*)(g_ram+0x4B))
-#define REMOVED_decompress_dst (*(LongPtr*)(g_ram+0x4C))
-#define REMOVED_decompress_want_xor (*(uint16*)(g_ram+0x4F))
 #define reg_INIDISP (*(uint8*)(g_ram+0x51))
 #define reg_OBSEL (*(uint8*)(g_ram+0x52))
 #define reg_OAMaddr_UNUSED (*(uint16*)(g_ram+0x53))
@@ -155,10 +143,6 @@ extern int32 *cur_coll_amt32;
 #define nmi_frame_counter_including_lag (*(uint16*)(g_ram+0x5B8))
 #define nmi_frames_missed (*(uint8*)(g_ram+0x5BA))
 #define nmi_frames_missed_max (*(uint8*)(g_ram+0x5BB))
-#define door_transition_vram_update_enabled (*(uint16*)(g_ram+0x5BC))
-#define door_transition_vram_update_dst (*(uint16*)(g_ram+0x5BE))
-#define door_transition_vram_update_src (*(LongPtr*)(g_ram+0x5C0))
-#define door_transition_vram_update_size (*(uint16*)(g_ram+0x5C3))
 #define joypad_dbg_1 (*(uint16*)(g_ram+0x5C5))
 #define joypad_dbg_2 (*(uint16*)(g_ram+0x5C7))
 #define joypad_dbg_missiles_swap (*(uint16*)(g_ram+0x5C9))
