@@ -3243,8 +3243,7 @@ void MaridiaPuffer_Func_6(void) {  // 0xA8D9DB
   uint32 t = ((Abs16(r18) & 0xFF00) >> 8) * E->mpr_var_D;
   if (R26)
     t = -(int32)t;
-  t = t + E->base.x_subpos;
-  E->base.x_subpos = t, E->base.x_pos = t >> 16;
+  AddToHiLo(&E->base.x_pos, &E->base.x_subpos, t);
 }
 
 void MaridiaPuffer_Func_7(void) {  // 0xA8DA28
@@ -3256,8 +3255,7 @@ void MaridiaPuffer_Func_7(void) {  // 0xA8DA28
   uint32 t = ((Abs16(r18) & 0xFF00) >> 8) * E->mpr_var_D;
   if (R26)
     t = -(int32)t;
-  t = t + E->base.y_subpos;
-  E->base.y_subpos = t, E->base.y_pos = t >> 16;
+  AddToHiLo(&E->base.y_pos, &E->base.y_subpos, t);
 }
 
 void MaridiaPuffer_Func_8(uint16 k) {  // 0xA8DA71
