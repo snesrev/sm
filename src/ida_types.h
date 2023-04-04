@@ -1204,13 +1204,6 @@ typedef struct GameOverBabyMetroidInstruction {
   VoidP field_4;
 } GameOverBabyMetroidInstruction;
 
-/* 121 */
-typedef struct  CopyToVramAtNextInterruptArgs {
-  LongPtr source;
-  VoidP dest;
-  uint16 size;
-}CopyToVramAtNextInterruptArgs;
-
 /* 122 */
 typedef struct EnemyDef_A2 {
   uint16 tile_data_size;

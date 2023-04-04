@@ -3718,11 +3718,6 @@ void LoadEnemyGfxToVram(void) {  // 0x82DFD1
   }
 }
 
-void CopyToVramAtNextInterrupt(const void *p) {  // 0x82E039
-  const CopyToVramAtNextInterruptArgs *pp = (const CopyToVramAtNextInterruptArgs *)p;
-  CopyToVramNow(pp->dest, Load24(&pp->source), pp->size);
-}
-
 void LoadRoomMusic(void) {  // 0x82E071
   if (game_state < kGameState_40_TransitionToDemo && room_music_data_index && room_music_data_index != music_data_index) {
     QueueMusic_Delayed8(0);
@@ -3969,12 +3964,6 @@ CoroutineRet DoorTransitionFunction_SetupScrolling(void) {  // 0x82E38E
 }
 
 CoroutineRet DoorTransitionFunction_PlaceSamusLoadTiles(void) {  // 0x82E3C0
-  static const CopyToVramAtNextInterruptArgs unk_82E449 = { LONGPTR(0x7e2000), 0x0000, 0x2000 };
-  static const CopyToVramAtNextInterruptArgs unk_82E453 = { LONGPTR(0x7e4000), 0x1000, 0x2000 };
-  static const CopyToVramAtNextInterruptArgs unk_82E45D = { LONGPTR(0x7e6000), 0x2000, 0x1000 };
-  static const CopyToVramAtNextInterruptArgs unk_82E477 = { LONGPTR(0x7e7000), 0x2800, 0x1000 };
-  static const CopyToVramAtNextInterruptArgs unk_82E481 = { LONGPTR(0x7e8000), 0x3000, 0x2000 };
-  static const CopyToVramAtNextInterruptArgs unk_82E48B = { LONGPTR(0x9ab200), 0x4000, 0x1000 };
   uint16 v0;
 
   samus_x_pos = layer1_x_pos + (uint8)samus_x_pos;
@@ -3993,13 +3982,13 @@ CoroutineRet DoorTransitionFunction_PlaceSamusLoadTiles(void) {  // 0x82E3C0
   }
   DecompressToMem(Load24(&tileset_tiles_pointer), g_ram + 0x2000);
   DecompressToMem(Load24(&tileset_compr_palette_ptr), g_ram + 0xc200);
-  CopyToVramAtNextInterrupt(&unk_82E449);
-  CopyToVramAtNextInterrupt(&unk_82E453);
-  CopyToVramAtNextInterrupt(&unk_82E45D);
+  CopyToVramNow(0x0000, 0x7e2000, 0x2000);
+  CopyToVramNow(0x1000, 0x7e4000, 0x2000);
+  CopyToVramNow(0x2000, 0x7e6000, 0x1000);
   if ((cre_bitset & 6) != 0 && door_def_ptr != addr_kDoorDef_947a) {
-    CopyToVramAtNextInterrupt(&unk_82E477);
-    CopyToVramAtNextInterrupt(&unk_82E481);
-    CopyToVramAtNextInterrupt(&unk_82E48B);
+    CopyToVramNow(0x2800, 0x7e7000, 0x1000);
+    CopyToVramNow(0x3000, 0x7e8000, 0x2000);
+    CopyToVramNow(0x4000, 0x9ab200, 0x1000);
   }
   if ((door_direction & 3) == 3)
     irqhandler_next_handler = 16;
@@ -4067,17 +4056,12 @@ CoroutineRet DoorTransitionFunction_LoadMoreThings_Async(void) {
   COROUTINE_END(0);
 }
 
-static const CopyToVramAtNextInterruptArgs unk_82E5B5 = { LONGPTR(0x7e4000), 0x4000, 0x1000 };
-static const CopyToVramAtNextInterruptArgs unk_82E5BF = { LONGPTR(0x7e4000), 0x4800, 0x1000 };
-static const CopyToVramAtNextInterruptArgs unk_82E57B = { LONGPTR(0x7e4000), 0x5880, 0x0f00 };
-static const CopyToVramAtNextInterruptArgs unk_82E598 = { LONGPTR(0x7e4000), 0x4800, 0x1000 };
-
 void ClearFxTilemap(void) {  // 0x82E566
   for (int i = 959; i >= 0; --i) {
     ram4000.xray_tilemaps[i] = 6222;
     ram4000.xray_tilemaps[i + 960] = 6222;
   }
-  CopyToVramAtNextInterrupt(&unk_82E57B);
+  CopyToVramNow(0x5880, 0x7e4000, 0xf00);
 }
 
 void ClearBg2Tilemap(void) {  // 0x82E583
@@ -4085,7 +4069,7 @@ void ClearBg2Tilemap(void) {  // 0x82E583
     ram4000.xray_tilemaps[i] = 824;
     ram4000.xray_tilemaps[i + 1024] = 824;
   }
-  CopyToVramAtNextInterrupt(&unk_82E598);
+  CopyToVramNow(0x4800, 0x7e4000, 0x1000);
 }
 
 void ClearKraidBg2Tilemap(void) {  // 0x82E5A0
@@ -4093,8 +4077,8 @@ void ClearKraidBg2Tilemap(void) {  // 0x82E5A0
     ram4000.xray_tilemaps[i] = 824;
     ram4000.xray_tilemaps[i + 1024] = 824;
   }
-  CopyToVramAtNextInterrupt(&unk_82E5B5);
-  CopyToVramAtNextInterrupt(&unk_82E5BF);
+  CopyToVramNow(0x4000, 0x7e4000, 0x1000);
+  CopyToVramNow(0x4800, 0x7e4000, 0x1000);
 }
 
 uint16 UpdateBackgroundCommand_0_Finish(uint16 y) {  // 0x82E5D7

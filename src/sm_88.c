@@ -856,7 +856,7 @@ void HdmaobjPreInstr_XrayFunc5_DeactivateBeam(uint16 k) {  // 0x888A08
   }
 }
 
-static Func_X_V *const kHdmaobjPreInstr_XrayFuncs[6] = {  // 0x8886EF
+static Func_Y_V *const kHdmaobjPreInstr_XrayFuncs[6] = {  // 0x8886EF
   HdmaobjPreInstr_XrayFunc0_NoBeam,
   HdmaobjPreInstr_XrayFunc1_BeamWidening,
   HdmaobjPreInstr_XrayFunc2_FullBeam,

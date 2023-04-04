@@ -354,8 +354,6 @@ void ClearPauseMenuData(void);
 void ClearSamusBeamTiles(void);
 void ContinueInitGameplayResume(void);
 void ContinueInitPauseMenu(void);
-void CopyToVramAtNextInterrupt(const void* p);
-void Copy_R22_Bytes(uint16 k, int r22);
 void CreatePlmsExecuteDoorAsmRoomSetup(void);
 void DeleteAllOptionsMenuObjects_(void);
 void DemoRoom_ChargeBeamRoomScroll21(void);

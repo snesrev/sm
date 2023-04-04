@@ -15,24 +15,13 @@ extern bool g_debug_flag;
 
 typedef void HandlerFunc(void);
 typedef uint8 Func_V_A(void);
-
 typedef void Func_V(void);
-
 typedef CoroutineRet Func_V_Coroutine(void);
 typedef uint8 Func_U8(void);
-typedef uint16 Func_U16(void);
 typedef void Func_Y_V(uint16 j);
-typedef uint8 Func_Y_U8(uint16 j);
-typedef void Func_X_V(uint16 j);
 typedef uint16 Func_Y_Y(uint16 j);
-typedef uint16 Func_Y();
-typedef uint16 Func_XY_Y(uint16 k, uint16 j);
-
-
 typedef void FuncXY_V(uint16 k, uint16 j);
 typedef PairU16 Func_Y_To_PairU16(uint16 j);
-
-const uint8 *RomPtr(uint32_t addr);
 
 struct LongPtr;
 void mov24(LongPtr *dst, uint32 src);
@@ -58,6 +47,7 @@ static inline const uint8 *RomFixedPtr(uint32_t addr) { return &g_rom[(((addr >>
 
 #define GET_BYTE(p) (*(uint8*)(p))
 
+const uint8 *RomPtr(uint32_t addr);
 static inline uint8 *RomPtr_RAM(uint16_t addr) { assert(addr < 0x2000); return g_ram + addr; }
 static inline const uint8 *RomPtr_80(uint16_t addr) { return RomPtr(0x800000 | addr); }
 static inline const uint8 *RomPtr_81(uint16_t addr) { return RomPtr(0x810000 | addr); }
@@ -80,17 +70,7 @@ static inline const uint8 *RomPtr_91(uint16_t addr) { return RomPtr(0x910000 | a
 static inline const uint8 *RomPtr_92(uint16_t addr) { return RomPtr(0x920000 | addr); }
 static inline const uint8 *RomPtr_93(uint16_t addr) { return RomPtr(0x930000 | addr); }
 static inline const uint8 *RomPtr_94(uint16_t addr) { return RomPtr(0x940000 | addr); }
-static inline const uint8 *RomPtr_95(uint16_t addr) { return RomPtr(0x950000 | addr); }
-static inline const uint8 *RomPtr_96(uint16_t addr) { return RomPtr(0x960000 | addr); }
-static inline const uint8 *RomPtr_97(uint16_t addr) { return RomPtr(0x970000 | addr); }
-static inline const uint8 *RomPtr_98(uint16_t addr) { return RomPtr(0x980000 | addr); }
-static inline const uint8 *RomPtr_99(uint16_t addr) { return RomPtr(0x990000 | addr); }
-static inline const uint8 *RomPtr_9A(uint16_t addr) { return RomPtr(0x9a0000 | addr); }
 static inline const uint8 *RomPtr_9B(uint16_t addr) { return RomPtr(0x9b0000 | addr); }
-static inline const uint8 *RomPtr_9C(uint16_t addr) { return RomPtr(0x9c0000 | addr); }
-static inline const uint8 *RomPtr_9D(uint16_t addr) { return RomPtr(0x9d0000 | addr); }
-static inline const uint8 *RomPtr_9E(uint16_t addr) { return RomPtr(0x9e0000 | addr); }
-static inline const uint8 *RomPtr_9F(uint16_t addr) { return RomPtr(0x9f0000 | addr); }
 static inline const uint8 *RomPtr_A0(uint16_t addr) { return RomPtr(0xa00000 | addr); }
 static inline const uint8 *RomPtr_A1(uint16_t addr) { return RomPtr(0xa10000 | addr); }
 static inline const uint8 *RomPtr_A2(uint16_t addr) { return RomPtr(0xa20000 | addr); }
@@ -101,20 +81,12 @@ static inline const uint8 *RomPtr_A6(uint16_t addr) { return RomPtr(0xa60000 | a
 static inline const uint8 *RomPtr_A7(uint16_t addr) { return RomPtr(0xa70000 | addr); }
 static inline const uint8 *RomPtr_A8(uint16_t addr) { return RomPtr(0xa80000 | addr); }
 static inline const uint8 *RomPtr_A9(uint16_t addr) { return RomPtr(0xa90000 | addr); }
-static inline const uint8 *RomPtr_AA(uint16_t addr) { return RomPtr(0xaa0000 | addr); }
-static inline const uint8 *RomPtr_AB(uint16_t addr) { return RomPtr(0xab0000 | addr); }
-static inline const uint8 *RomPtr_AC(uint16_t addr) { return RomPtr(0xac0000 | addr); }
 static inline const uint8 *RomPtr_AD(uint16_t addr) { return RomPtr(0xad0000 | addr); }
-static inline const uint8 *RomPtr_AE(uint16_t addr) { return RomPtr(0xae0000 | addr); }
-static inline const uint8 *RomPtr_AF(uint16_t addr) { return RomPtr(0xaf0000 | addr); }
-static inline const uint8 *RomPtr_B2(uint16_t addr) { return RomPtr(0xb20000 | addr); }
 static inline const uint8 *RomPtr_B3(uint16_t addr) { return RomPtr(0xb30000 | addr); }
 static inline const uint8 *RomPtr_B4(uint16_t addr) { return RomPtr(0xb40000 | addr); }
 static inline const uint8 *RomPtr_B7(uint16_t addr) { return RomPtr(0xb70000 | addr); }
 static inline const uint8 *RomPtrWithBank(uint8 bank, uint16_t addr) { return RomPtr((bank << 16) | addr); }
 static inline const uint8 *RomBankBase(uint8 bank) { return RomPtr((bank << 16) + 0x8000) - 0x8000; }
-
-
 
 void WriteReg(uint16 reg, uint8 value);
 void WriteRegWord(uint16 reg, uint16 value);

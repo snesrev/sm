@@ -4032,7 +4032,7 @@ void EprojPreInstr_SpikeShootingPlantSpikes_9_MoveX2Y2(uint16 k) {  // 0x86DABA
   EprojPreInstr_SpikeShootingPlantSpikes_MoveY2(k);
 }
 
-static Func_X_V *const kEprojPreInstr_SpikeShootingPlantSpikes[10] = {  // 0x86D9DB
+static Func_Y_V *const kEprojPreInstr_SpikeShootingPlantSpikes[10] = {  // 0x86D9DB
   EprojPreInstr_SpikeShootingPlantSpikes_0_MoveX1,
   EprojPreInstr_SpikeShootingPlantSpikes_1_MoveY1,
   EprojPreInstr_SpikeShootingPlantSpikes_2_MoveX2,
