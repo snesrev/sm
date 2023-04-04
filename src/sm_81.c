@@ -306,7 +306,7 @@ void DrawSpritemapWithBaseTileOffscreen(uint8 db, uint16 j, uint16 r20_x, uint16
   oam_next_ptr = idx;
 }
 
-void DrawEnemyProjectileSpritemapWithBaseTile(uint8 db, uint16 j, uint16 x_r20, uint16 y_r18, uint16 chr_r26, uint16 chr_r28) {  // 0x818C0A
+void DrawEprojSpritemapWithBaseTile(uint8 db, uint16 j, uint16 x_r20, uint16 y_r18, uint16 chr_r26, uint16 chr_r28) {  // 0x818C0A
   const uint8 *pp = RomPtrWithBank(db, j);
   int idx = oam_next_ptr;
   int n = GET_WORD(pp);
@@ -325,7 +325,7 @@ void DrawEnemyProjectileSpritemapWithBaseTile(uint8 db, uint16 j, uint16 x_r20, 
   oam_next_ptr = idx;
 }
 
-void DrawEnemyProjectileSpritemapWithBaseTileOffscreen(uint8 db, uint16 j, uint16 x_r20, uint16 y_r18, uint16 chr_r26, uint16 chr_r28) {  // 0x818C7F
+void DrawEprojSpritemapWithBaseTileOffscreen(uint8 db, uint16 j, uint16 x_r20, uint16 y_r18, uint16 chr_r26, uint16 chr_r28) {  // 0x818C7F
   const uint8 *pp = RomPtrWithBank(db, j);
   int idx = oam_next_ptr;
   int n = GET_WORD(pp);
@@ -548,8 +548,8 @@ void GameOverMenu_4_Main(void) {  // 0x81912B
   uint16 v0 = 160;
   if (file_select_map_area_index)
     v0 = 192;
-  enemy_projectile_id[5] = 40;
-  enemy_projectile_id[10] = v0;
+  eproj_id[5] = 40;
+  eproj_id[10] = v0;
 }
 
 void GameOverMenu_1_Init(void) {  // 0x8191A4
@@ -559,8 +559,8 @@ void GameOverMenu_1_Init(void) {  // 0x8191A4
   reg_COLDATA[2] = 0x80;
   QueueMusic_Delayed8(0);
   QueueMusic_Delayed8(0xFF03);
-  enemy_projectile_enable_flag = 1;
-  enemy_projectile_id[0] = 0;
+  eproj_enable_flag = 1;
+  eproj_id[0] = 0;
   int v0 = 0;
   do {
     ((uint16*)ram3000.menu.menu_tilemap)[v0] = 15;
@@ -595,8 +595,8 @@ void GameOverMenu_1_Init(void) {  // 0x8191A4
   screen_fade_delay = 0;
   screen_fade_counter = 0;
   file_select_map_area_index = 0;
-  enemy_projectile_id[5] = 40;
-  enemy_projectile_id[10] = 160;
+  eproj_id[5] = 40;
+  eproj_id[10] = 160;
 }
 
 void GameOverMenu_2_PlayMusic(void) {  // 0x8193E8
@@ -688,7 +688,7 @@ void FileSelectMenu_32_FadeOutToOptions(void) {  // 0x8194A3
     menu_index = 0;
     int v0 = 0;
     do {
-      *(uint16 *)((uint8 *)&enemy_projectile_enable_flag + v0) = 0;
+      *(uint16 *)((uint8 *)&eproj_enable_flag + v0) = 0;
       v0 += 2;
     } while ((int16)(v0 - 48) < 0);
   }
@@ -727,8 +727,8 @@ static const uint16 kMenuSelectionMissileXY[12] = {  // 0x81951E
 
 void FileSelectMenu_17_FadeInToMain(void) {
   int v0 = (uint16)(4 * selected_save_slot) >> 1;
-  enemy_projectile_id[10] = kMenuSelectionMissileXY[v0];
-  enemy_projectile_id[5] = kMenuSelectionMissileXY[v0 + 1];
+  eproj_id[10] = kMenuSelectionMissileXY[v0];
+  eproj_id[5] = kMenuSelectionMissileXY[v0 + 1];
   FileSelectMenu_7_FadeInFromMain();
 }
 
@@ -754,8 +754,8 @@ void FileSelectMenu_Func1(void) {  // 0x819566
   DrawFileCopySaveFileInfo();
   SetInitialFileCopyMenuSelection();
   SetFileCopyMenuSelectionMissilePosition();
-  enemy_projectile_id[16] = 0;
-  enemy_projectile_id[17] = 0;
+  eproj_id[16] = 0;
+  eproj_id[17] = 0;
 }
 
 void sub_819591(void) {  // 0x819591
@@ -771,7 +771,7 @@ void SetInitialFileCopyMenuSelection(void) {  // 0x819593
     v0 >>= 1;
     ++v1;
   } while ((int16)(v1 - 3) < 0);
-  enemy_projectile_id[15] = v1;
+  eproj_id[15] = v1;
 }
 
 void ClearMenuTilemap(void) {  // 0x8195A6
@@ -846,10 +846,10 @@ void FileSelectMenu_8(void) {
   DrawMenuSelectionMissile();
   if ((joypad1_newkeys & (kButton_Start | kButton_A)) != 0) {
     QueueSfx1_Max6(0x37);
-    if (enemy_projectile_id[15] == 3) {
+    if (eproj_id[15] == 3) {
       menu_index += 7;
     } else {
-      enemy_projectile_id[16] = enemy_projectile_id[15];
+      eproj_id[16] = eproj_id[15];
       ++menu_index;
     }
   } else if ((joypad1_newkeys & 0x8000) != 0) {
@@ -857,18 +857,18 @@ void FileSelectMenu_8(void) {
     QueueSfx1_Max6(0x37);
   } else {
     if ((joypad1_newkeys & kButton_Up) != 0) {
-      v0 = enemy_projectile_id[15];
+      v0 = eproj_id[15];
       while ((--v0 & 0x80) == 0) {
         if ((kBitShl[v0] & nonempty_save_slots) != 0) {
 LABEL_16:
-          LOBYTE(enemy_projectile_id[15]) = v0;
+          LOBYTE(eproj_id[15]) = v0;
           QueueSfx1_Max6(0x37);
           SetFileCopyMenuSelectionMissilePosition();
           return;
         }
       }
     } else if ((joypad1_newkeys & kButton_Down) != 0) {
-      v0 = enemy_projectile_id[15];
+      v0 = eproj_id[15];
       while ((int8)(++v0 - 4) < 0) {
         if (v0 == 3 || (kBitShl[v0] & nonempty_save_slots) != 0)
           goto LABEL_16;
@@ -880,8 +880,8 @@ LABEL_16:
 
 void SetFileCopyMenuSelectionMissilePosition(void) {  // 0x81975E
   static const uint16 kFileCopyMissileY[4] = { 72, 104, 136, 211 };
-  enemy_projectile_id[10] = kFileCopyMissileY[enemy_projectile_id[15]];
-  enemy_projectile_id[5] = 22;
+  eproj_id[10] = kFileCopyMissileY[eproj_id[15]];
+  eproj_id[5] = 22;
 }
 
 void FileSelectMenu_9_InitializeSelectDest(void) {  // 0x81977A
@@ -890,11 +890,11 @@ void FileSelectMenu_9_InitializeSelectDest(void) {  // 0x81977A
   ++menu_index;
   uint16 v0 = 0;
   do {
-    if (v0 != enemy_projectile_id[16])
+    if (v0 != eproj_id[16])
       break;
     ++v0;
   } while (sign16(v0 - 3));
-  enemy_projectile_id[15] = v0;
+  eproj_id[15] = v0;
   SetFileCopyMenuSelectionMissilePosition();
 }
 
@@ -904,23 +904,23 @@ void DrawFileCopySelectDestinationSaveFileInfo(void) {  // 0x819799
   LoadMenuTilemap(0x52, addr_kMenuTilemap_DataCopyMode);
   enemy_data[0].palette_index = 0;
   LoadMenuTilemap(0x148, addr_kMenuTilemap_CopySamusToWhere);
-  ram3000.pause_menu_map_tilemap[944] = enemy_projectile_id[16] + 8298;
+  ram3000.pause_menu_map_tilemap[944] = eproj_id[16] + 8298;
   LoadMenuExitTilemap();
   LoadFromSram_(0);
   uint16 v0 = 1024;
-  if (enemy_projectile_id[16])
+  if (eproj_id[16])
     v0 = 0;
   enemy_data[0].palette_index = v0;
   DrawFileCopySaveSlotAInfo();
   LoadFromSram_(1);
   uint16 v1 = 1024;
-  if (enemy_projectile_id[16] != 1)
+  if (eproj_id[16] != 1)
     v1 = 0;
   enemy_data[0].palette_index = v1;
   DrawFileCopySaveSlotBInfo();
   LoadFromSram_(2);
   uint16 v2 = 1024;
-  if (enemy_projectile_id[16] != 2)
+  if (eproj_id[16] != 2)
     v2 = 0;
   enemy_data[0].palette_index = v2;
   DrawFileCopySaveSlotCInfo();
@@ -935,12 +935,12 @@ void FileSelectMenu_10_FileCopySelectDest(void) {  // 0x819813
   DrawMenuSelectionMissile();
   if ((joypad1_newkeys & (kButton_Start | kButton_A)) != 0) {
     QueueSfx1_Max6(0x37);
-    if (enemy_projectile_id[15] != 3) {
-      enemy_projectile_id[17] = enemy_projectile_id[15];
+    if (eproj_id[15] != 3) {
+      eproj_id[17] = eproj_id[15];
       ++menu_index;
 LABEL_9:
-      enemy_projectile_id[10] = kFileCopySelectDest_MissileY[enemy_projectile_id[15]];
-      enemy_projectile_id[5] = 22;
+      eproj_id[10] = kFileCopySelectDest_MissileY[eproj_id[15]];
+      eproj_id[5] = 22;
       return;
     }
     menu_index += 5;
@@ -948,26 +948,26 @@ LABEL_9:
     if ((joypad1_newkeys & 0x8000) == 0) {
       if ((joypad1_newkeys & kButton_Up) != 0) {
         QueueSfx1_Max6(0x37);
-        v0 = enemy_projectile_id[15];
+        v0 = eproj_id[15];
         while ((--v0 & 0x8000) == 0) {
-          if (v0 != enemy_projectile_id[16]) {
+          if (v0 != eproj_id[16]) {
 LABEL_8:
-            enemy_projectile_id[15] = v0;
+            eproj_id[15] = v0;
             goto LABEL_9;
           }
         }
       } else if ((joypad1_newkeys & kButton_Down) != 0) {
         QueueSfx1_Max6(0x37);
-        v0 = enemy_projectile_id[15];
+        v0 = eproj_id[15];
         while (++v0 != 4) {
-          if (v0 != enemy_projectile_id[16])
+          if (v0 != eproj_id[16])
             goto LABEL_8;
         }
       }
       goto LABEL_9;
     }
     menu_index -= 2;
-    enemy_projectile_id[15] = enemy_projectile_id[16];
+    eproj_id[15] = eproj_id[16];
     QueueSfx1_Max6(0x37);
     FileSelectMenu_Func1();
   }
@@ -977,12 +977,12 @@ void FileSelectMenu_11_InitializeConfirm(void) {  // 0x8198B7
   DrawBorderAroundDataCopyMode();
   enemy_data[0].palette_index = 0;
   LoadMenuTilemap(0x144, addr_kMenuTilemap_CopySamusToSamus);
-  ram3000.pause_menu_map_tilemap[942] = enemy_projectile_id[16] + 8298;
-  ram3000.pause_menu_map_tilemap[955] = enemy_projectile_id[17] + 8298;
+  ram3000.pause_menu_map_tilemap[942] = eproj_id[16] + 8298;
+  ram3000.pause_menu_map_tilemap[955] = eproj_id[17] + 8298;
   DrawFileCopyClearConfirmation();
   ++menu_index;
-  enemy_projectile_id[15] = 0;
-  enemy_projectile_unk198F = 8;
+  eproj_id[15] = 0;
+  eproj_unk198F = 8;
 }
 
 void DrawFileCopyClearConfirmation(void) {  // 0x8198ED
@@ -1003,19 +1003,19 @@ void DrawFileCopyClearConfirmation(void) {  // 0x8198ED
 void DrawFileCopyConfirmationSaveFileInfo(void) {  // 0x819922
   LoadFromSram_(0);
   int v0 = 0;
-  if (enemy_projectile_id[16] && enemy_projectile_id[17])
+  if (eproj_id[16] && eproj_id[17])
     v0 = 1024;
   enemy_data[0].palette_index = v0;
   DrawFileCopySaveSlotAInfo();
   LoadFromSram_(1);
   int v1 = 0;
-  if (enemy_projectile_id[16] != 1 && enemy_projectile_id[17] != 1)
+  if (eproj_id[16] != 1 && eproj_id[17] != 1)
     v1 = 1024;
   enemy_data[0].palette_index = v1;
   DrawFileCopySaveSlotBInfo();
   LoadFromSram_(2);
   int v2 = 0;
-  if (enemy_projectile_id[16] != 2 && enemy_projectile_id[17] != 2)
+  if (eproj_id[16] != 2 && eproj_id[17] != 2)
     v2 = 1024;
   enemy_data[0].palette_index = v2;
   DrawFileCopySaveSlotCInfo();
@@ -1028,18 +1028,18 @@ void FileSelectMenu_12_FileCopyConfirm(void) {  // 0x819984
   HandleFileCopyArrowPalette();
   DrawFileCopyArrow();
   if ((joypad1_newkeys & (kButton_Up | kButton_Down)) != 0) {
-    enemy_projectile_id[15] ^= 1;
+    eproj_id[15] ^= 1;
     QueueSfx1_Max6(0x37);
   } else {
     if ((joypad1_newkeys & 0x8000) != 0) {
       menu_index -= 3;
-      enemy_projectile_id[15] = enemy_projectile_id[17];
+      eproj_id[15] = eproj_id[17];
       QueueSfx1_Max6(0x37);
       return;
     }
     if ((joypad1_newkeys & (kButton_Start | kButton_A)) != 0) {
       QueueSfx1_Max6(0x38);
-      if (enemy_projectile_id[15]) {
+      if (eproj_id[15]) {
         menu_index -= 4;
         FileSelectMenu_Func1();
       } else {
@@ -1049,16 +1049,16 @@ void FileSelectMenu_12_FileCopyConfirm(void) {  // 0x819984
     }
   }
   uint16 v0 = 184;
-  if (enemy_projectile_id[15])
+  if (eproj_id[15])
     v0 = 208;
-  enemy_projectile_id[10] = v0;
-  enemy_projectile_id[5] = 94;
+  eproj_id[10] = v0;
+  eproj_id[5] = 94;
 }
 
 void HandleFileCopyArrowPalette(void) {  // 0x8199FE
-  if (enemy_projectile_unk198F) {
-    if (!--enemy_projectile_unk198F) {
-      enemy_projectile_unk198F = 4;
+  if (eproj_unk198F) {
+    if (!--eproj_unk198F) {
+      eproj_unk198F = 4;
       uint16 v0 = palette_buffer[145];
       uint16 v1 = 0;
       do {
@@ -1077,14 +1077,14 @@ void FileSelectMenu_13_FileCopyDoIt(void) {  // 0x819A2C
   DrawMenuSelectionMissile();
   HandleFileCopyArrowPalette();
   DrawFileCopyArrow();
-  uint16 src_addr = kOffsetToSaveSlot[enemy_projectile_id[16]];
-  uint16 dst_addr = kOffsetToSaveSlot[enemy_projectile_id[17]];
+  uint16 src_addr = kOffsetToSaveSlot[eproj_id[16]];
+  uint16 dst_addr = kOffsetToSaveSlot[eproj_id[17]];
   memcpy(&g_sram[dst_addr], &g_sram[src_addr], 1628);
-  int v2 = enemy_projectile_id[16];
+  int v2 = eproj_id[16];
   int v10 = *(uint16 *)(&g_sram[2 * v2 + 0x1FF0]);
   int v9 = *(uint16 *)(&g_sram[2 * v2 + 0x1FF8]);
   int v8 = *(uint16 *)(&g_sram[2 * v2 + 0]);
-  int v4 = enemy_projectile_id[17];
+  int v4 = eproj_id[17];
   *(uint16 *)(&g_sram[2 * v4 + 8]) = *(uint16 *)&g_sram[2 * v2 + 8];
   *(uint16 *)(&g_sram[2 * v4]) = v8;
   *(uint16 *)(&g_sram[2 * v4 + 0x1FF8]) = v9;
@@ -1095,8 +1095,8 @@ void FileSelectMenu_13_FileCopyDoIt(void) {  // 0x819A2C
     ram3000.pause_menu_map_tilemap[v5 + 768] = 15;
     ++v5;
   } while ((int16)(v5 * 2 - 1856) < 0);
-  nonempty_save_slots |= kBitShl_16bit[enemy_projectile_id[17]];
-  int v6 = ((4 * enemy_projectile_id[17] + 9) << 6) + 24;
+  nonempty_save_slots |= kBitShl_16bit[eproj_id[17]];
+  int v6 = ((4 * eproj_id[17] + 9) << 6) + 24;
   int v7 = 0;
   do {
     *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[768] + v6) = 15;
@@ -1141,7 +1141,7 @@ void InitFileSelectMenuFileClear(void) {  // 0x819B3C
   LoadMenuTilemap(0x140, addr_kMenuTilemap_ClearWhichData);
   LoadMenuExitTilemap();
   DrawFileCopySaveFileInfo();
-  enemy_projectile_id[16] = 0;
+  eproj_id[16] = 0;
   SetInitialFileCopyMenuSelection();
   SetFileClearMenuMissilePos();
 }
@@ -1156,8 +1156,8 @@ void FileSelectMenu_22_FileClearSelectSlot(void) {  // 0x819B64
   HIBYTE(v0) = HIBYTE(joypad1_newkeys);
   if ((joypad1_newkeys & (kButton_Start | kButton_A)) != 0) {
     QueueSfx1_Max6(0x37);
-    if (enemy_projectile_id[15] != 3) {
-      enemy_projectile_id[16] = enemy_projectile_id[15];
+    if (eproj_id[15] != 3) {
+      eproj_id[16] = eproj_id[15];
       ++menu_index;
       return;
     }
@@ -1169,11 +1169,11 @@ LABEL_11:
   if ((joypad1_newkeys & 0x8000) != 0)
     goto LABEL_11;
   if ((joypad1_newkeys & kButton_Up) != 0) {
-    v1 = enemy_projectile_id[15];
+    v1 = eproj_id[15];
     while ((--v1 & 0x80) == 0) {
       if ((kBitShl_[v1] & nonempty_save_slots) != 0) {
 LABEL_16:
-        LOBYTE(enemy_projectile_id[15]) = v1;
+        LOBYTE(eproj_id[15]) = v1;
         LOBYTE(v0) = 55;
         QueueSfx1_Max6(v0);
         SetFileClearMenuMissilePos();
@@ -1181,7 +1181,7 @@ LABEL_16:
       }
     }
   } else if ((joypad1_newkeys & kButton_Down) != 0) {
-    v1 = enemy_projectile_id[15];
+    v1 = eproj_id[15];
     while ((int8)(++v1 - 4) < 0) {
       if (v1 == 3 || (kBitShl_[v1] & nonempty_save_slots) != 0)
         goto LABEL_16;
@@ -1192,19 +1192,19 @@ LABEL_16:
 
 void SetFileClearMenuMissilePos(void) {  // 0x819BEF
   static const uint16 kFileClear_MissileY[4] = { 72, 104, 136, 211 };
-  enemy_projectile_id[10] = kFileClear_MissileY[enemy_projectile_id[15]];
-  enemy_projectile_id[5] = 22;
+  eproj_id[10] = kFileClear_MissileY[eproj_id[15]];
+  eproj_id[5] = 22;
 }
 
 void FileSelectMenu_23_FileClearInitConfirm(void) {  // 0x819C0B
   DrawBorderAroundDataClearMode();
   enemy_data[0].palette_index = 0;
   LoadMenuTilemap(0x140, addr_kMenuTilemap_ClearSamusA);
-  ram3000.pause_menu_map_tilemap[949] = enemy_projectile_id[16] + 8298;
-  enemy_projectile_id[17] = 3;
+  ram3000.pause_menu_map_tilemap[949] = eproj_id[16] + 8298;
+  eproj_id[17] = 3;
   DrawFileCopyClearConfirmation();
   ++menu_index;
-  enemy_projectile_id[15] = 0;
+  eproj_id[15] = 0;
 }
 
 void FileSelectMenu_24_FileClearConfirm(void) {  // 0x819C36
@@ -1212,20 +1212,20 @@ void FileSelectMenu_24_FileClearConfirm(void) {  // 0x819C36
   DrawBorderAroundDataClearMode();
   DrawMenuSelectionMissile();
   if ((joypad1_newkeys & (kButton_Up | kButton_Down)) != 0) {
-    enemy_projectile_id[15] ^= 1;
+    eproj_id[15] ^= 1;
     QueueSfx1_Max6(0x37);
 LABEL_8:
     v0 = 184;
-    if (enemy_projectile_id[15])
+    if (eproj_id[15])
       v0 = 208;
-    enemy_projectile_id[10] = v0;
-    enemy_projectile_id[5] = 94;
+    eproj_id[10] = v0;
+    eproj_id[5] = 94;
     return;
   }
   if ((joypad1_newkeys & 0x8000) != 0) {
 LABEL_5:
     menu_index -= 2;
-    enemy_projectile_id[15] = enemy_projectile_id[16];
+    eproj_id[15] = eproj_id[16];
     QueueSfx1_Max6(0x37);
     InitFileSelectMenuFileClear();
     return;
@@ -1233,7 +1233,7 @@ LABEL_5:
   if ((joypad1_newkeys & (kButton_Start | kButton_A)) == 0)
     goto LABEL_8;
   QueueSfx1_Max6(0x38);
-  if (enemy_projectile_id[15])
+  if (eproj_id[15])
     goto LABEL_5;
   ++menu_index;
 }
@@ -1242,26 +1242,26 @@ void FileSelectMenu_25_FileClearDoClear(void) {  // 0x819C9E
   static const uint16 kBitShl_Not[3] = { 0xfffe, 0xfffd, 0xfffb };
 
   DrawBorderAroundDataClearMode();
-  int sram_addr = kOffsetToSaveSlot[enemy_projectile_id[16]];
+  int sram_addr = kOffsetToSaveSlot[eproj_id[16]];
   memset(&g_sram[sram_addr], 0, 1628);
 
-  uint16 v1 = 2 * enemy_projectile_id[16];
-  int v2 = enemy_projectile_id[16];
+  uint16 v1 = 2 * eproj_id[16];
+  int v2 = eproj_id[16];
   *(uint16 *)(&g_sram[2 * v2]) = 0;
   *(uint16 *)(&g_sram[2 * v2 + 8]) = 0;
   *(uint16 *)(&g_sram[2 * v2 + 0x1FF0]) = 0;
   *(uint16 *)(&g_sram[2 * v2 + 0x1FF8]) = 0;
   ++menu_index;
   NewSaveFile();
-  LoadFromSram(enemy_projectile_id[16]);
-  area_index = enemy_projectile_id[16];
+  LoadFromSram(eproj_id[16]);
+  area_index = eproj_id[16];
   LoadMirrorOfExploredMapTiles();
   uint16 v3 = 640;
   do {
     ram3000.pause_menu_map_tilemap[v3 + 768] = 15;
     ++v3;
   } while ((int16)(v3 * 2 - 1856) < 0);
-  nonempty_save_slots &= kBitShl_Not[enemy_projectile_id[16]];
+  nonempty_save_slots &= kBitShl_Not[eproj_id[16]];
   enemy_data[0].palette_index = 0;
   LoadMenuTilemap(0x500, addr_kMenuTilemap_DataCleared);
   DrawFileCopyConfirmationSaveFileInfo();
@@ -1300,19 +1300,19 @@ void FileSelectMenu_31_TurnSamusHelmet(void) {  // 0x819D77
   DrawFileSelectSlotSamusHelmet(6);
   DrawFileSelectSlotSamusHelmet(8);
   if ((joypad1_newkeys & (kButton_Start | kButton_A)) != 0
-      || enemy_projectile_id[2] == 7 && !enemy_projectile_index
-      || enemy_projectile_id[3] == 7 && !enemy_projectile_init_param_1
-      || enemy_projectile_id[4] == 7 && !enemy_projectile_unk1995) {
+      || eproj_id[2] == 7 && !eproj_index
+      || eproj_id[3] == 7 && !eproj_init_param_1
+      || eproj_id[4] == 7 && !eproj_unk1995) {
     ++menu_index;
   }
 }
 
 void DrawFileSelectSamusHelmets(void) {  // 0x819DC3
-  enemy_projectile_index = 0;
+  eproj_index = 0;
   DrawFileSelectSlotSamusHelmet(4);
-  enemy_projectile_init_param_1 = 0;
+  eproj_init_param_1 = 0;
   DrawFileSelectSlotSamusHelmet(6);
-  enemy_projectile_unk1995 = 0;
+  eproj_unk1995 = 0;
   DrawFileSelectSlotSamusHelmet(8);
 }
 
@@ -1320,25 +1320,25 @@ void DrawFileSelectSlotSamusHelmet(uint16 k) {  // 0x819DE4
   uint16 v0 = k;
   int16 v1;
 
-  v1 = *(uint16 *)((uint8 *)&enemy_projectile_enable_flag + v0);
+  v1 = *(uint16 *)((uint8 *)&eproj_enable_flag + v0);
   if (v1) {
     uint16 v2 = v1 - 1;
-    *(uint16 *)((uint8 *)&enemy_projectile_enable_flag + v0) = v2;
+    *(uint16 *)((uint8 *)&eproj_enable_flag + v0) = v2;
     if (!v2) {
-      *(uint16 *)((uint8 *)&enemy_projectile_enable_flag + v0) = 8;
+      *(uint16 *)((uint8 *)&eproj_enable_flag + v0) = 8;
       int v3 = v0 >> 1;
-      uint16 v4 = enemy_projectile_id[v3] + 1;
-      if (!sign16(enemy_projectile_id[v3] - 7)) {
-        *(uint16 *)((uint8 *)&enemy_projectile_enable_flag + v0) = 0;
+      uint16 v4 = eproj_id[v3] + 1;
+      if (!sign16(eproj_id[v3] - 7)) {
+        *(uint16 *)((uint8 *)&eproj_enable_flag + v0) = 0;
         v4 = 7;
       }
-      enemy_projectile_id[v3] = v4;
+      eproj_id[v3] = v4;
     }
   }
   int v5 = v0 >> 1;
-  uint16 v6 = 2 * enemy_projectile_id[v5];
+  uint16 v6 = 2 * eproj_id[v5];
   static const uint16 kDrawFileSlotHelmet_Spritemaps[9] = { 0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33, 0x33 };
-  DrawMenuSpritemap(kDrawFileSlotHelmet_Spritemaps[v6 >> 1], enemy_projectile_id[v5 + 5], enemy_projectile_id[v5 + 10], 3584);
+  DrawMenuSpritemap(kDrawFileSlotHelmet_Spritemaps[v6 >> 1], eproj_id[v5 + 5], eproj_id[v5 + 10], 3584);
 }
 static Func_V *const kFileSelectMapFuncs[23] = {  // 0x819E3E
   FileSelectMap_0,
@@ -1391,8 +1391,8 @@ void FileSelectMenu_1_LoadFileSelectMenuBG2(void) {  // 0x819E93
   v2->vram_dst = (reg_BG2SC & 0xFC) << 8;
   vram_write_queue_tail = v1 + 7;
   ++menu_index;
-  enemy_projectile_enable_flag = 1;
-  enemy_projectile_id[0] = 0;
+  eproj_enable_flag = 1;
+  eproj_id[0] = 0;
 }
 
 void FileSelectMenu_2_InitMain(void) {  // 0x819ED6
@@ -1443,33 +1443,33 @@ void FileSelectMenu_16(void) {  // 0x819EF3
   enemy_data[0].palette_index = 0;
   LoadMenuTilemap(0x688, addr_kMenuTilemap_Exit);
   QueueTransferOfMenuTilemapToVramBG1();
-  enemy_projectile_enable_flag = 1;
-  enemy_projectile_unk198F = 0;
-  enemy_projectile_index = 0;
-  enemy_projectile_init_param_1 = 0;
-  enemy_projectile_unk1995 = 0;
-  enemy_projectile_id[0] = 0;
-  enemy_projectile_id[1] = 0;
-  enemy_projectile_id[2] = 0;
-  enemy_projectile_id[3] = 0;
-  enemy_projectile_id[4] = 0;
-  enemy_projectile_id[5] = 0;
-  enemy_projectile_id[10] = 0;
-  enemy_projectile_id[6] = 0;
-  enemy_projectile_id[11] = 0;
-  enemy_projectile_id[7] = 100;
-  enemy_projectile_id[8] = 100;
-  enemy_projectile_id[9] = 100;
-  enemy_projectile_id[12] = 47;
-  enemy_projectile_id[13] = 87;
-  enemy_projectile_id[14] = 127;
+  eproj_enable_flag = 1;
+  eproj_unk198F = 0;
+  eproj_index = 0;
+  eproj_init_param_1 = 0;
+  eproj_unk1995 = 0;
+  eproj_id[0] = 0;
+  eproj_id[1] = 0;
+  eproj_id[2] = 0;
+  eproj_id[3] = 0;
+  eproj_id[4] = 0;
+  eproj_id[5] = 0;
+  eproj_id[10] = 0;
+  eproj_id[6] = 0;
+  eproj_id[11] = 0;
+  eproj_id[7] = 100;
+  eproj_id[8] = 100;
+  eproj_id[9] = 100;
+  eproj_id[12] = 47;
+  eproj_id[13] = 87;
+  eproj_id[14] = 127;
   screen_fade_delay = 1;
   screen_fade_counter = 1;
   ScreenOn();
   ++menu_index;
-  enemy_projectile_id[15] = 0;
-  enemy_projectile_id[16] = 0;
-  enemy_projectile_id[17] = 0;
+  eproj_id[15] = 0;
+  eproj_id[16] = 0;
+  eproj_id[17] = 0;
 }
 
 uint8 LoadFromSram_(uint16 a) {  // 0x81A053
@@ -1479,8 +1479,8 @@ uint8 LoadFromSram_(uint16 a) {  // 0x81A053
 void FileSelectMenu_3_FadeInToMain(void) {  // 0x81A058
   DrawFileSelectSamusHelmets();
   int v0 = (uint16)(4 * selected_save_slot) >> 1;
-  enemy_projectile_id[10] = kMenuSelectionMissileXY[v0];
-  enemy_projectile_id[5] = kMenuSelectionMissileXY[v0 + 1];
+  eproj_id[10] = kMenuSelectionMissileXY[v0];
+  eproj_id[5] = kMenuSelectionMissileXY[v0 + 1];
   DrawMenuSelectionMissile();
   DrawBorderAroundSamusData();
   HandleFadeIn();
@@ -1597,15 +1597,15 @@ void FileSelectMenu_4_Main(void) {  // 0x81A1C2
     QueueSfx1_Max6(0x37);
 LABEL_28:
     v3 = (uint16)(4 * selected_save_slot) >> 1;
-    enemy_projectile_id[10] = kMenuSelectionMissileXY[v3];
-    enemy_projectile_id[5] = kMenuSelectionMissileXY[v3 + 1];
+    eproj_id[10] = kMenuSelectionMissileXY[v3];
+    eproj_id[5] = kMenuSelectionMissileXY[v3 + 1];
     return;
   }
   v0 = selected_save_slot;
   if (sign16(selected_save_slot - 3)) {
     QueueSfx1_Max6(0x2A);
     menu_index += 27;
-    *(uint16 *)((uint8 *)&enemy_projectile_enable_flag + (uint16)(2 * (selected_save_slot + 2))) = 1;
+    *(uint16 *)((uint8 *)&eproj_enable_flag + (uint16)(2 * (selected_save_slot + 2))) = 1;
     *(uint16 *)&g_sram[0x1FEC] = selected_save_slot;
     *(uint16 *)&g_sram[0x1FEE] = ~selected_save_slot;
     RtlWriteSram();

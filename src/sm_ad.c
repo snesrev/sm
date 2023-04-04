@@ -320,9 +320,9 @@ void MotherBrain_CalcHdma_Down_DownLeft(uint16 r22, uint16 r24) {  // 0xADE314
 
 void MotherBrain_SealWall(void) {  // 0xADE396
   eproj_spawn_pt = (Point16U){ 248, 72 };
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 9);
+  SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 9);
   eproj_spawn_pt = (Point16U){ 248, 152 };
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 9);
+  SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 9);
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x0f, 0x04, 0xb673 });
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x0f, 0x09, 0xb673 });
   Get_MotherBrain(0)->mbn_var_A = FUNC16(MotherBrainBody_FakeDeath_Descent_0_Pause);

@@ -286,12 +286,12 @@ void CallEnemyGfxDrawHook(uint32 ea) {
 void DrawSamusEnemiesAndProjectiles(void) {  // 0xA0884D
   DrawSpriteObjects();
   DrawBombAndProjectileExplosions();
-  DrawLowPriorityEnemyProjectiles();
+  DrawLowPriorityEprojs();
   for (uint16 phase_varE32 = 0; phase_varE32 != 8; ++phase_varE32) {
     if (phase_varE32 == 3) {
       DrawSamusAndProjectiles();
     } else if (phase_varE32 == 6) {
-      DrawHighPriorityEnemyProjectiles();
+      DrawHighPriorityEprojs();
     }
     if (enemy_drawing_queue_sizes[phase_varE32]) {
       uint16 varE36 = enemy_drawing_queue_sizes[phase_varE32];
@@ -373,9 +373,9 @@ void InitializeEnemies(void) {  // 0xA08A9E
   num_enemies_killed_in_room = 0;
   flag_process_all_enemies = 0;
   for (int i = 286; i >= 0; i -= 2)
-    enemy_projectile_flags[i >> 1] = 0;
+    eproj_flags[i >> 1] = 0;
   for (int j = 34; j >= 0; j -= 2)
-    enemy_projectile_killed_enemy_index[j >> 1] = -1;
+    eproj_killed_enemy_index[j >> 1] = -1;
   uint16 v4 = room_enemy_population_ptr;
   if (get_EnemyPopulation(0xa1, room_enemy_population_ptr)->enemy_ptr == 0xFFFF)
     return;
@@ -1814,7 +1814,7 @@ void DecrementSamusTimers(void) {  // 0xA09169
 
 void SpawnEnemyDrops(uint16 a, uint16 k, uint16 varE20) {  // 0xA0920E
   eproj_spawn_varE24 = a;
-  SpawnEnemyProjectileWithGfx(varE20, k, addr_kEproj_Pickup);
+  SpawnEprojWithGfx(varE20, k, addr_kEproj_Pickup);
 }
 
 void DeleteEnemyAndConnectedEnemies(void) {  // 0xA0922B
@@ -2006,11 +2006,11 @@ void QueueEnemyBG2TilemapTransfers(void) {  // 0xA09726
 
 void EnemyCollisionHandler(void) {  // 0xA09758
   if ((gEnemyData(cur_enemy_index)->extra_properties & 4) != 0) {
-    EnemyProjectileCollHandler_Multibox();
+    EprojCollHandler_Multibox();
     EnemyBombCollHandler_Multibox();
     EnemySamusCollHandler_Multibox();
   } else {
-    EnemyProjectileCollHandler();
+    EprojCollHandler();
     EnemyBombCollHandler();
     EnemySamusCollHandler();
   }
@@ -2047,7 +2047,7 @@ void SamusProjectileInteractionHandler(void) {  // 0xA09785
         samus_knockback_timer = 5;
         assert(0);
         uint16 v0 = 0;
-        knockback_x_dir = (int16)(samus_x_pos - enemy_projectile_x_pos[v0 >> 1]) >= 0;
+        knockback_x_dir = (int16)(samus_x_pos - eproj_x_pos[v0 >> 1]) >= 0;
         return;
       }
       if (projectile_variables[pidx] == 8) {
@@ -2063,11 +2063,11 @@ void EprojSamusCollDetect(void) {  // 0xA09894
   if (samus_invincibility_timer || samus_contact_damage_index)
     return;
   for(int i = 17; i >= 0; i--) {
-    if (enemy_projectile_id[i] && (enemy_projectile_properties[i] & 0x2000) == 0 && enemy_projectile_radius[i]) {
-      uint16 varE20 = LOBYTE(enemy_projectile_radius[i]);
-      uint16 varE22 = HIBYTE(enemy_projectile_radius[i]);
-      if (abs16(samus_x_pos - enemy_projectile_x_pos[i]) - samus_x_radius < varE20 &&
-          abs16(samus_y_pos - enemy_projectile_y_pos[i]) - samus_y_radius < varE22) {
+    if (eproj_id[i] && (eproj_properties[i] & 0x2000) == 0 && eproj_radius[i]) {
+      uint16 varE20 = LOBYTE(eproj_radius[i]);
+      uint16 varE22 = HIBYTE(eproj_radius[i]);
+      if (abs16(samus_x_pos - eproj_x_pos[i]) - samus_x_radius < varE20 &&
+          abs16(samus_y_pos - eproj_y_pos[i]) - samus_y_radius < varE22) {
         collision_detection_index = i * 2;
         HandleEprojCollWithSamus(i * 2);
       }
@@ -2078,17 +2078,17 @@ void EprojSamusCollDetect(void) {  // 0xA09894
 void HandleEprojCollWithSamus(uint16 k) {  // 0xA09923
   samus_invincibility_timer = 96;
   samus_knockback_timer = 5;
-  uint16 v1 = *((uint16 *)RomPtr_86(*(uint16 *)((uint8 *)enemy_projectile_id + k)) + 5);
+  uint16 v1 = *((uint16 *)RomPtr_86(*(uint16 *)((uint8 *)eproj_id + k)) + 5);
   if (v1) {
     int v2 = k >> 1;
-    enemy_projectile_instr_list_ptr[v2] = v1;
-    enemy_projectile_instr_timers[v2] = 1;
+    eproj_instr_list_ptr[v2] = v1;
+    eproj_instr_timers[v2] = 1;
   }
   int v3 = k >> 1;
-  if ((enemy_projectile_properties[v3] & 0x4000) == 0)
-    *(uint16 *)((uint8 *)enemy_projectile_id + k) = 0;
-  Samus_DealDamage(SuitDamageDivision(enemy_projectile_properties[v3] & 0xFFF));
-  knockback_x_dir = (int16)(samus_x_pos - enemy_projectile_x_pos[v3]) >= 0;
+  if ((eproj_properties[v3] & 0x4000) == 0)
+    *(uint16 *)((uint8 *)eproj_id + k) = 0;
+  Samus_DealDamage(SuitDamageDivision(eproj_properties[v3] & 0xFFF));
+  knockback_x_dir = (int16)(samus_x_pos - eproj_x_pos[v3]) >= 0;
 }
 
 void EprojProjCollDet(void) {  // 0xA0996C
@@ -2096,15 +2096,15 @@ void EprojProjCollDet(void) {  // 0xA0996C
   if (!projectile_counter)
     return;
   for(int i = 17; i >= 0; i--) {
-    if (!enemy_projectile_id[i] || (enemy_projectile_properties[i] & 0x8000) == 0)
+    if (!eproj_id[i] || (eproj_properties[i] & 0x8000) == 0)
       continue;
     for(int j = 0; j < 5; j++) {
-      if (enemy_projectile_flags[i] == 2)
+      if (eproj_flags[i] == 2)
         break;
       uint16 v4 = projectile_type[j];
       if (v4 && (v4 & 0xF00) != 768 && (v4 & 0xF00) != 1280 && sign16((v4 & 0xF00) - 1792)) {
-        if ((enemy_projectile_x_pos[i] & 0xFFE0) == (projectile_x_pos[j] & 0xFFE0) && 
-            (enemy_projectile_y_pos[i] & 0xFFE0) == (projectile_y_pos[j] & 0xFFE0)) {
+        if ((eproj_x_pos[i] & 0xFFE0) == (projectile_x_pos[j] & 0xFFE0) && 
+            (eproj_y_pos[i] & 0xFFE0) == (projectile_y_pos[j] & 0xFFE0)) {
           HandleEprojCollWithProj(i * 2, j * 2);
         }
       }
@@ -2116,17 +2116,17 @@ void HandleEprojCollWithProj(uint16 k, uint16 j) {  // 0xA099F9
   int i = j >> 1;
   if ((projectile_type[i] & 8) == 0)
     projectile_dir[i] |= 0x10;
-  if (enemy_projectile_flags[k >> 1] == 1) {
+  if (eproj_flags[k >> 1] == 1) {
     int v4 = k >> 1;
     CreateSpriteAtPos(projectile_x_pos[v4], projectile_y_pos[v4], 6, 0);
     QueueSfx1_Max6(0x3D);
   } else {
     int j = k >> 1;
-    enemy_projectile_G[j] = projectile_type[i];
-    enemy_projectile_instr_list_ptr[j] = get_EnemyProjectileDef(enemy_projectile_id[j])->shot_instruction_list;
-    enemy_projectile_instr_timers[j] = 1;
-    enemy_projectile_pre_instr[j] = FUNC16(EprojPreInstr_nullsub_83);
-    enemy_projectile_properties[j] &= 0xFFF;
+    eproj_G[j] = projectile_type[i];
+    eproj_instr_list_ptr[j] = get_EprojDef(eproj_id[j])->shot_instruction_list;
+    eproj_instr_timers[j] = 1;
+    eproj_pre_instr[j] = FUNC16(EprojPreInstr_nullsub_83);
+    eproj_properties[j] &= 0xFFF;
   }
 }
 
@@ -2230,7 +2230,7 @@ void EnemySamusCollHandler_Multibox(void) {  // 0xA09A5A
   } while (--n);
 }
 
-void EnemyProjectileCollHandler_Multibox(void) {  // 0xA09B7F
+void EprojCollHandler_Multibox(void) {  // 0xA09B7F
   EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 3;
   if (!projectile_counter || !E->spritemap_pointer || E->spritemap_pointer == addr_kExtendedSpritemap_Nothing_A0)
@@ -2445,7 +2445,7 @@ void EnemySamusCollHandler(void) {  // 0xA0A07A
   }
 }
 
-void EnemyProjectileCollHandler(void) {  // 0xA0A143
+void EprojCollHandler(void) {  // 0xA0A143
   EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 7;
   if (!projectile_counter)
@@ -2522,7 +2522,7 @@ void EnemyDeathAnimation(uint16 k, uint16 a) {  // 0xA0A3AF
   if (!sign16(a - 5))
     a = 0;
 //  varE20 = a;
-  SpawnEnemyProjectileWithGfx(a, cur_enemy_index, addr_kEproj_EnemyDeathExplosion);
+  SpawnEprojWithGfx(a, cur_enemy_index, addr_kEproj_EnemyDeathExplosion);
   uint16 r18 = E->properties & 0x4000;
   memset(E, 0, 64);
   if (r18) {
@@ -2537,7 +2537,7 @@ void RinkasDeathAnimation(uint16 a) {  // 0xA0A410
   if (!sign16(a - 3))
     a = 0;
 //  varE20 = a;
-  SpawnEnemyProjectileWithGfx(a, cur_enemy_index, addr_kEproj_EnemyDeathExplosion);
+  SpawnEprojWithGfx(a, cur_enemy_index, addr_kEproj_EnemyDeathExplosion);
   uint16 r18 = E->properties & 0x4000;
   memset(E, 0, 64);
   if (r18) {
@@ -3310,7 +3310,7 @@ uint8 EnemyFunc_BF8A(uint16 k, uint16 a, int32 amt) {  // 0xA0BF8A
 
 uint16 CalculateAngleOfSamusFromEproj(uint16 k) {  // 0xA0C04E
   int j = k >> 1;
-  return CalculateAngleFromXY(samus_x_pos - enemy_projectile_x_pos[j], samus_y_pos - enemy_projectile_y_pos[j]);
+  return CalculateAngleFromXY(samus_x_pos - eproj_x_pos[j], samus_y_pos - eproj_y_pos[j]);
 }
 
 uint16 CalculateAngleOfSamusFromEnemy(uint16 k) {  // 0xA0C066

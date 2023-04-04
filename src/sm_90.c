@@ -6023,7 +6023,7 @@ void Samus_FrameHandlerBeta_Func17(void) {  // 0x90E725
 void HandleDemoRecorder_1(void) {  // 0x90E786
   if ((joypad2_new_keys & 0x8000) == 0) {
     if (!debug_flag && (joypad2_new_keys & 0x80) != 0) {
-      DisableEnemyProjectiles();
+      DisableEprojs();
       time_is_frozen_flag = 1;
       frame_handler_alfa = FUNC16(EmptyFunction);
       frame_handler_beta = FUNC16(HandleDemoRecorder_3);
@@ -6041,7 +6041,7 @@ void HandleDemoRecorder_3(void) {  // 0x90E7D2
   if ((joypad2_new_keys & 0x80) != 0) {
     frame_handler_alfa = FUNC16(Samus_FrameHandlerAlfa_Func11);
     frame_handler_beta = FUNC16(Samus_FrameHandlerBeta_Func17);
-    EnableEnemyProjectiles();
+    EnableEprojs();
     time_is_frozen_flag = 0;
   }
 }
@@ -6775,8 +6775,8 @@ uint8 SamusCode_08_SetupForCeresStart(void) {  // 0x90F1E9
   *(uint16 *)&samus_prev_pose_x_dir = *(uint16 *)&samus_pose_x_dir;
   *(uint16 *)&samus_last_different_pose_x_dir = *(uint16 *)&samus_pose_x_dir;
   samus_y_pos = 0;
-  SpawnEnemyProjectileWithGfx(0, 0, addr_kEproj_CeresElevatorPad);
-  SpawnEnemyProjectileWithGfx(0, 0, addr_kEproj_CeresElevatorPlatform);
+  SpawnEprojWithGfx(0, 0, addr_kEproj_CeresElevatorPad);
+  SpawnEprojWithGfx(0, 0, addr_kEproj_CeresElevatorPlatform);
   debug_disable_minimap = 0;
   PlayRoomMusicTrackAfterAFrames(0x20);
   return 1;

@@ -175,8 +175,8 @@ void ConfigureWindow1ForExpandingSquare(void);
 void DebugGameOverMenu(void);
 void DrawAreaSelectMapLabels(void);
 void DrawBeamGrappleSpritemap(uint16 a, uint16 x_r20, uint16 y_r18);
-void DrawEnemyProjectileSpritemapWithBaseTile(uint8 db, uint16 j, uint16 x_r20, uint16 y_r18, uint16 chr_r26, uint16 chr_r28);
-void DrawEnemyProjectileSpritemapWithBaseTileOffscreen(uint8 db, uint16 j, uint16 x_r20, uint16 y_r18, uint16 chr_r26, uint16 chr_r28);
+void DrawEprojSpritemapWithBaseTile(uint8 db, uint16 j, uint16 x_r20, uint16 y_r18, uint16 chr_r26, uint16 chr_r28);
+void DrawEprojSpritemapWithBaseTileOffscreen(uint8 db, uint16 j, uint16 x_r20, uint16 y_r18, uint16 chr_r26, uint16 chr_r28);
 void DrawFileCopyClearConfirmation(void);
 void DrawFileCopyConfirmationSaveFileInfo(void);
 void DrawFileCopySaveFileInfo(void);
@@ -689,19 +689,19 @@ uint16 sub_86E0B0(uint16 k);
 uint16 sub_86EC18(uint16 k);
 uint8 CheckForBlueRingCollisionWithRoom(uint16 k);
 uint8 CheckForCollisionWithShitroid_DoubleRet(uint16 k);
-uint8 EnemyProjectileBlockCollisition_Horiz(uint16 k);
-uint8 EnemyProjectileBlockCollisition_Vertical(uint16 k);
+uint8 EprojBlockCollisition_Horiz(uint16 k);
+uint8 EprojBlockCollisition_Vertical(uint16 k);
 uint8 EprojColl_873D(void);
 uint8 Eproj_MotherBrainRoomTurretBullets_CheckIfTurretOnScreen(uint16 k);
 uint8 MotherBrainBomb_Bomb_CollDetect_DoubleRet(uint16 k);
 uint8 MoveMotherBrainBomb(uint16 k, uint16 a);
 void BlueRingContactExplosion(uint16 k);
-void ClearEnemyProjectiles(void);
-void DisableEnemyProjectiles(void);
-void DrawEnemyProjectiles(uint16 k, Point16U pt);
-void DrawHighPriorityEnemyProjectiles(void);
-void DrawLowPriorityEnemyProjectiles(void);
-void EnableEnemyProjectiles(void);
+void ClearEprojs(void);
+void DisableEprojs(void);
+void DrawEprojs(uint16 k, Point16U pt);
+void DrawHighPriorityEprojs(void);
+void DrawLowPriorityEprojs(void);
+void EnableEprojs(void);
 
 void EprojRunAll(void);
 void Eproj_AngleToSamus(uint16 j, uint16 r18, uint16 r20);
@@ -740,8 +740,8 @@ void QueueSmallExplosionSfx(void);
 void RespawnEnemy(uint16 a);
 void SetAreaDependentEprojProperties(uint16 j);
 void SetAreaDependentEprojPropertiesEx(uint16 k, uint16 j);
-void SpawnEnemyProjectileWithGfx(uint16 a, uint16 k, uint16 j);
-void SpawnEnemyProjectileWithRoomGfx(uint16 j, uint16 a);
+void SpawnEprojWithGfx(uint16 a, uint16 k, uint16 j);
+void SpawnEprojWithRoomGfx(uint16 j, uint16 a);
 void SpawnMotherBrainDeathBeam(uint16 k);
 
 // Bank 87
@@ -1818,8 +1818,8 @@ uint32 EnemyFunc_Divide(uint32 a, uint32 b);
 void EnemyFunc_B7A1(void);
 void EnemyGrappleDeath(void);
 void EnemyMain(void);
-void EnemyProjectileCollHandler(void);
-void EnemyProjectileCollHandler_Multibox(void);
+void EprojCollHandler(void);
+void EprojCollHandler_Multibox(void);
 void EnemySamusCollHandler(void);
 void EnemySamusCollHandler_Multibox(void);
 void Enemy_GrappleReact_CancelBeam_A0(void);
@@ -4523,8 +4523,8 @@ void VerifySRAM(void);
 #define fnPlmPreInstr_Empty5 0x84BBA3
 #define fnPlmPreInstr_WakePlmIfTriggeredOrSamusAbovePlm 0x84BBA4
 #define fnPlmInstr_ClearTrigger 0x84BBDD
-#define fnPlmInstr_SpawnEnemyProjectile 0x84BBE1
-#define fnPlmInstr_WakeEnemyProjectileAtPlmPos 0x84BBF0
+#define fnPlmInstr_SpawnEproj 0x84BBE1
+#define fnPlmInstr_WakeEprojAtPlmPos 0x84BBF0
 #define fnPlmPreInstr_GoToLinkInstrIfShot 0x84BD0F
 #define fnPlmPreInstr_GoToLinkInstrIfShotWithPowerBomb 0x84BD26
 #define fnPlmPreInstr_GoToLinkInstrIfShotWithAnyMissile 0x84BD50
@@ -4588,7 +4588,7 @@ void VerifySRAM(void);
 #define fnPlmInstr_TransferWreckedShipSlopesToChozoSpikes 0x84D3F4
 #define fnPlmPreInstr_WakeOnKeyPress 0x84D4BF
 #define fnPlmInstr_EnableWaterPhysics 0x84D525
-#define fnPlmInstr_SpawnN00bTubeCrackEnemyProjectile 0x84D52C
+#define fnPlmInstr_SpawnN00bTubeCrackEproj 0x84D52C
 #define fnPlmInstr_DiagonalEarthquake 0x84D536
 #define fnPlmInstr_Spawn10shardsAnd6n00bs 0x84D543
 #define fnPlmInstr_DisableSamusControls 0x84D5E6
@@ -4605,7 +4605,7 @@ void VerifySRAM(void);
 #define fnnullsub_72 0x84D6F7
 #define fnPlmPreInstr_WakePlmIfRoomArgumentDoorIsSet 0x84D753
 #define fnPlmInstr_ShootEyeDoorProjectileWithProjectileArg 0x84D77A
-#define fnPlmInstr_SpawnEyeDoorSweatEnemyProjectile 0x84D790
+#define fnPlmInstr_SpawnEyeDoorSweatEproj 0x84D790
 #define fnPlmInstr_SpawnTwoEyeDoorSmoke 0x84D79F
 #define fnPlmInstr_SpawnEyeDoorSmokeProjectile 0x84D7B6
 #define fnPlmInstr_MoveUpAndMakeBlueDoorFacingRight 0x84D7C3
@@ -4707,13 +4707,13 @@ void VerifySRAM(void);
 #define fnEprojInstr_QueueSfx2_Max1 0x86837E
 #define fnEprojInstr_QueueSfx3_Max1 0x868387
 #define fnEprojPreInstr_nullsub_83 0x8684FB
-#define fnEnemyProj_Init_0x8aaf 0x868A39
-#define fnEnemyProj_PreInit_0x8aaf 0x868A7D
-#define fnEnemyProj_Init_0x8bc2_SkreeDownRight 0x868ACD
-#define fnEnemyProj_Init_0x8bd0_SkreeUpRight 0x868AF1
-#define fnEnemyProj_Init_0x8bde_SkreeDownLeft 0x868B15
-#define fnEnemyProj_Init_0x8bec_SkreeUpLeft 0x868B39
-#define fnEnemyProj_PreInstr_SkreeParticle 0x868B5D
+#define fnEproj_Init_0x8aaf 0x868A39
+#define fnEproj_PreInit_0x8aaf 0x868A7D
+#define fnEproj_Init_0x8bc2_SkreeDownRight 0x868ACD
+#define fnEproj_Init_0x8bd0_SkreeUpRight 0x868AF1
+#define fnEproj_Init_0x8bde_SkreeDownLeft 0x868B15
+#define fnEproj_Init_0x8bec_SkreeUpLeft 0x868B39
+#define fnEproj_PreInstr_SkreeParticle 0x868B5D
 #define fnEprojInstr_SpawnEnemyDropsWithDraygonsEyeDrops 0x868C68
 #define fnEprojInstr_SetPreInstrA 0x868CF6
 #define fnEprojInstr_SetPreInstrB 0x868CFD

@@ -88,7 +88,7 @@ typedef struct MsgBoxConfig {
 } MsgBoxConfig;
 
 /* 11 */
-typedef struct EnemyProjectileDef {
+typedef struct EprojDef {
   VoidP init_code_ptr;
   VoidP pre_instr_ptr;
   VoidP instr_list;
@@ -96,7 +96,7 @@ typedef struct EnemyProjectileDef {
   uint16 properties;
   VoidP hit_instruction_list;
   VoidP shot_instruction_list;
-} EnemyProjectileDef;
+} EprojDef;
 
 /* 12 */
 typedef struct Eproj_InitXYVelRandom_Args {
@@ -2698,7 +2698,7 @@ struct StateHeaderTiles; static inline StateHeaderTiles *get_StateHeaderTiles(ui
 struct EnemyDef_A2; static inline EnemyDef_A2 *get_EnemyDef_A2(uint16 a) { return (EnemyDef_A2 *)RomPtr(0xA00000 | a); }
 struct EnemyTileset; static inline EnemyTileset *get_EnemyTileset(uint16 a) { return (EnemyTileset *)RomPtr(0xB40000 | a); }
 struct RoomPlmEntry; static inline RoomPlmEntry *get_RoomPlmEntry(uint16 a) { return (RoomPlmEntry *)RomPtr(0x8F0000 | a); }
-struct EnemyProjectileDef; static inline EnemyProjectileDef *get_EnemyProjectileDef(uint16 a) { return (EnemyProjectileDef *)RomPtr(0x860000 | a); }
+struct EprojDef; static inline EprojDef *get_EprojDef(uint16 a) { return (EprojDef *)RomPtr(0x860000 | a); }
 struct Vulnerability; static inline Vulnerability *get_Vulnerability(uint16 a) { return (Vulnerability *)RomPtr(0xB40000 | a); }
 struct ExtendedSpriteMap; static inline ExtendedSpriteMap *get_ExtendedSpriteMap(uint8 db, uint16 a) { return (ExtendedSpriteMap *)RomPtr(db << 16 | a); }
 struct Hitbox; static inline Hitbox *get_Hitbox(uint8 db, uint16 a) { return (Hitbox *)RomPtr(db << 16 | a); }

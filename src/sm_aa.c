@@ -108,12 +108,12 @@ const uint16 *Torizo_Instr_3(uint16 k, const uint16 *jp) {  // 0xAAB09C
 const uint16 *Torizo_Instr_31(uint16 k, const uint16 *jp) {  // 0xAAB11D
   Enemy_Torizo *E = Get_Torizo(k);
   E->toriz_parameter_2 = E->toriz_parameter_2 | 0x8000;
-  SpawnEnemyProjectileWithGfx(0, k, addr_stru_86A95B);
-  SpawnEnemyProjectileWithGfx(0, k, addr_stru_86A95B);
-  SpawnEnemyProjectileWithGfx(0, k, addr_stru_86A95B);
-  SpawnEnemyProjectileWithGfx(0, k, addr_stru_86A95B);
-  SpawnEnemyProjectileWithGfx(0, k, addr_stru_86A95B);
-  SpawnEnemyProjectileWithGfx(0, k, addr_stru_86A95B);
+  SpawnEprojWithGfx(0, k, addr_stru_86A95B);
+  SpawnEprojWithGfx(0, k, addr_stru_86A95B);
+  SpawnEprojWithGfx(0, k, addr_stru_86A95B);
+  SpawnEprojWithGfx(0, k, addr_stru_86A95B);
+  SpawnEprojWithGfx(0, k, addr_stru_86A95B);
+  SpawnEprojWithGfx(0, k, addr_stru_86A95B);
   return jp;
 }
 
@@ -277,7 +277,7 @@ const uint16 *Torizo_Instr_32(uint16 k, const uint16 *jp) {  // 0xAAC2FD
 const uint16 *Torizo_Instr_30(uint16 k, const uint16 *jp) {  // 0xAAC303
   uint16 a = jp[0];
   for (int i = 5; i >= 0; --i)
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_BombTorizoLowHealthExplode, a);
+    SpawnEprojWithRoomGfx(addr_kEproj_BombTorizoLowHealthExplode, a);
   Enemy_Torizo *E = Get_Torizo(k);
   E->base.current_instruction = INSTR_ADDR_TO_PTR(k, jp + 1);
   E->base.flash_timer = 40;
@@ -286,7 +286,7 @@ const uint16 *Torizo_Instr_30(uint16 k, const uint16 *jp) {  // 0xAAC303
 }
 
 const uint16 *Torizo_Instr_34(uint16 k, const uint16 *jp) {  // 0xAAC32F
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_BombTorizoDeathExplosion, 0);
+  SpawnEprojWithRoomGfx(addr_kEproj_BombTorizoDeathExplosion, 0);
   Enemy_Torizo *E = Get_Torizo(k);
   E->base.current_instruction = INSTR_ADDR_TO_PTR(k, jp);
   E->base.flash_timer = 1;
@@ -295,15 +295,15 @@ const uint16 *Torizo_Instr_34(uint16 k, const uint16 *jp) {  // 0xAAC32F
 }
 
 const uint16 *Torizo_Instr_24(uint16 k, const uint16 *jp) {  // 0xAAC34A
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianLandingDustCloudsRightFoot, 0);
-  SpawnEnemyProjectileWithRoomGfx(addr_stru_86AFF3, 0);
+  SpawnEprojWithRoomGfx(addr_kEproj_TourianLandingDustCloudsRightFoot, 0);
+  SpawnEprojWithRoomGfx(addr_stru_86AFF3, 0);
   return jp;
 }
 
 const uint16 *Torizo_Instr_12(uint16 k, const uint16 *jp) {  // 0xAAC35B
   uint16 health = Get_Torizo(k)->base.health;
   if (health < 0x15E)
-    SpawnEnemyProjectileWithGfx(health, k, addr_kEproj_BombTorizoLowHealthInitialDrool);
+    SpawnEprojWithGfx(health, k, addr_kEproj_BombTorizoLowHealthInitialDrool);
   return jp;
 }
 
@@ -433,24 +433,24 @@ const uint16 *Torizo_Instr_26(uint16 k, const uint16 *jp) {  // 0xAAC5A4
 }
 
 const uint16 *Torizo_Instr_18(uint16 k, const uint16 *jp) {  // 0xAAC5CB
-  SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_BombTorizosChozoOrbs);
-  SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_BombTorizosChozoOrbs);
-  SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_BombTorizosChozoOrbs);
+  SpawnEprojWithGfx(0, k, addr_kEproj_BombTorizosChozoOrbs);
+  SpawnEprojWithGfx(0, k, addr_kEproj_BombTorizosChozoOrbs);
+  SpawnEprojWithGfx(0, k, addr_kEproj_BombTorizosChozoOrbs);
   return jp;
 }
 
 const uint16 *Torizo_Instr_20(uint16 k, const uint16 *jp) {  // 0xAAC5E3
-  SpawnEnemyProjectileWithGfx(jp[0], k, addr_kEproj_BombTorizoSonicBoom);
+  SpawnEprojWithGfx(jp[0], k, addr_kEproj_BombTorizoSonicBoom);
   return jp + 1;
 }
 
 const uint16 *Torizo_Instr_44(uint16 k, const uint16 *jp) {  // 0xAAC5F2
-  SpawnEnemyProjectileWithGfx(jp[0], k, addr_kEproj_GoldenTorizoSonicBoom);
+  SpawnEprojWithGfx(jp[0], k, addr_kEproj_GoldenTorizoSonicBoom);
   return jp + 1;
 }
 
 const uint16 *Torizo_Instr_21(uint16 k, const uint16 *jp) {  // 0xAAC601
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_BombTorizoExplosiveSwipe, jp[0]);
+  SpawnEprojWithRoomGfx(addr_kEproj_BombTorizoExplosiveSwipe, jp[0]);
   return jp + 1;
 }
 
@@ -468,7 +468,7 @@ void Torizo_C620(uint16 k) {  // 0xAAC620
   if (!area_index && (random_number & 0x8142) == 0) {
     uint16 health = Get_Torizo(k)->base.health;
     if (health && health < 0x15E)
-      SpawnEnemyProjectileWithGfx(health, k, addr_kEproj_BombTorizoLowHealthInitialDrool);
+      SpawnEprojWithGfx(health, k, addr_kEproj_BombTorizoLowHealthInitialDrool);
   }
 }
 
@@ -756,7 +756,7 @@ const uint16 *Torizo_Instr_48(uint16 k, const uint16 *jp) {  // 0xAACDD7
 }
 
 const uint16 *Torizo_Instr_57(uint16 k, const uint16 *jp) {  // 0xAAD0E9
-  SpawnEnemyProjectileWithRoomGfx(addr_stru_86B1C0, 0);
+  SpawnEprojWithRoomGfx(addr_stru_86B1C0, 0);
   return jp;
 }
 
@@ -764,7 +764,7 @@ const uint16 *Torizo_Instr_58(uint16 k, const uint16 *jp) {  // 0xAAD0F3
   int16 v2;
 
   v2 = 34;
-  while (*(uint16 *)((uint8 *)enemy_projectile_id + (uint16)v2) != 0xB1C0) {
+  while (*(uint16 *)((uint8 *)eproj_id + (uint16)v2) != 0xB1C0) {
     v2 -= 2;
     if (v2 < 0)
       return jp + 1;
@@ -841,7 +841,7 @@ void GoldTorizo_Hurt(void) {  // 0xAAD3BA
 }
 
 const uint16 *Torizo_Instr_47(uint16 k, const uint16 *jp) {  // 0xAAD3E0
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_GoldenTorizoSuperMissile, 0);
+  SpawnEprojWithRoomGfx(addr_kEproj_GoldenTorizoSuperMissile, 0);
   return jp;
 }
 
@@ -863,7 +863,7 @@ const uint16 *Torizo_Instr_49(uint16 k, const uint16 *jp) {  // 0xAAD3EA
 }
 
 const uint16 *Torizo_Instr_61(uint16 k, const uint16 *jp) {  // 0xAAD436
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_GoldenTorizoEyeBeam, jp[0]);
+  SpawnEprojWithRoomGfx(addr_kEproj_GoldenTorizoEyeBeam, jp[0]);
   return jp + 1;
 }
 
@@ -909,7 +909,7 @@ const uint16 *Torizo_Instr_50(uint16 k, const uint16 *jp) {  // 0xAAD4BA
 }
 
 const uint16 *Torizo_Instr_43(uint16 k, const uint16 *jp) {  // 0xAAD4F3
-  SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_GoldenTorizosChozoOrbs);
+  SpawnEprojWithGfx(0, k, addr_kEproj_GoldenTorizosChozoOrbs);
   return jp;
 }
 
@@ -1099,9 +1099,9 @@ void TourianEntranceStatue_Init(void) {  // 0xAAD7C8
   uint16 v1 = g_off_AAD810[v0->parameter_1 >> 1];
   v0->current_instruction = v1;
   if (!v0->parameter_1) {
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueBaseDecoration, 0);
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueRidley, 0);
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatuePhantoon, 0);
+    SpawnEprojWithRoomGfx(addr_kEproj_TourianStatueBaseDecoration, 0);
+    SpawnEprojWithRoomGfx(addr_kEproj_TourianStatueRidley, 0);
+    SpawnEprojWithRoomGfx(addr_kEproj_TourianStatuePhantoon, 0);
   }
   for (int i = 30; i >= 0; i -= 2) {
     int v5 = i >> 1;
@@ -1145,9 +1145,9 @@ const uint16 *Shaktool_Instr_6(uint16 k, const uint16 *jp) {  // 0xAAD99F
 }
 
 void Shaktool_Func_2(uint16 k) {  // 0xAAD9A0
-  SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_ShaktoolAttackFrontCircle);
-  SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_ShaktoolAttackMiddleCircle);
-  SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_ShaktoolAttackBackCircle);
+  SpawnEprojWithGfx(0, k, addr_kEproj_ShaktoolAttackFrontCircle);
+  SpawnEprojWithGfx(0, k, addr_kEproj_ShaktoolAttackMiddleCircle);
+  SpawnEprojWithGfx(0, k, addr_kEproj_ShaktoolAttackBackCircle);
 }
 
 const uint16 *Shaktool_Instr_1(uint16 k, const uint16 *jp) {  // 0xAAD9BA
@@ -1463,7 +1463,7 @@ const uint16 *Shaktool_Instr_12(uint16 k, const uint16 *jp) {  // 0xAAE58F
   CalculateBlockContainingPixelPos(e->base.x_pos + arg, e->base.y_pos + 28);
   if ((level_data[room_width_in_blocks + cur_block_index] & 0xF000) == 0xA000) {
     SpawnPLM(addr_kPlmHeader_D113);
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_WreckedShipChozoSpikeFootsteps_1, arg);
+    SpawnEprojWithRoomGfx(addr_kEproj_WreckedShipChozoSpikeFootsteps_1, arg);
   }
   return jp + 1;
 }

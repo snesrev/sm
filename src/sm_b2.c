@@ -174,10 +174,10 @@ const uint16 *SpacePirates_Instr_PrepareWallJumpL(uint16 k, const uint16 *jp) { 
 
 const uint16 *SpacePirates_Instr_FireLaserL(uint16 k, const uint16 *jp) {  // 0xB2EF2A
   Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
-  enemy_projectile_init_param_1 = *((uint16 *)RomPtr_A0(E->base.enemy_ptr) + 3);
+  eproj_init_param_1 = *((uint16 *)RomPtr_A0(E->base.enemy_ptr) + 3);
   eproj_spawn_pt = (Point16U){ E->base.x_pos - 24, E->base.y_pos - 16 };
   eproj_spawn_r22 = 0;
-  SpawnEnemyProjectileWithRoomGfx(addr_stru_86A17B, 0);
+  SpawnEprojWithRoomGfx(addr_stru_86A17B, 0);
   return jp;
 }
 
@@ -185,7 +185,7 @@ const uint16 *SpacePirates_Instr_FireLaserR(uint16 k, const uint16 *jp) {  // 0x
   Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
   eproj_spawn_pt = (Point16U){ E->base.x_pos + 24, E->base.y_pos - 16 };
   eproj_spawn_r22 = 1;
-  SpawnEnemyProjectileWithRoomGfx(addr_stru_86A17B, 1);
+  SpawnEprojWithRoomGfx(addr_stru_86A17B, 1);
   return jp;
 }
 
@@ -328,7 +328,7 @@ void sub_B2F554(void) {  // 0xB2F554
 const uint16 *SpacePirates_Instr_15(uint16 k, const uint16 *jp) {  // 0xB2F564
   Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
   eproj_spawn_rect = (Rect16U){ E->base.x_pos, E->base.y_pos, jp[1], jp[2] };
-  SpawnEnemyProjectileWithGfx(jp[0], cur_enemy_index, addr_kEproj_PirateClaw);
+  SpawnEprojWithGfx(jp[0], cur_enemy_index, addr_kEproj_PirateClaw);
   return jp + 3;
 }
 
@@ -655,7 +655,7 @@ const uint16 *SpacePirates_Instr_12(uint16 k, const uint16 *jp) {  // 0xB2FC68
   Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
   eproj_spawn_pt = (Point16U){ E->base.x_pos - 24, E->base.y_pos - jp[0] };
   eproj_spawn_r22 = 0;
-  SpawnEnemyProjectileWithRoomGfx(addr_stru_86A17B, 0);
+  SpawnEprojWithRoomGfx(addr_stru_86A17B, 0);
   return jp + 1;
 }
 
@@ -663,7 +663,7 @@ const uint16 *SpacePirates_Instr_14(uint16 k, const uint16 *jp) {  // 0xB2FC90
   Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
   eproj_spawn_pt = (Point16U){ E->base.x_pos + 24, E->base.y_pos - jp[0] };
   eproj_spawn_r22 = 1;
-  SpawnEnemyProjectileWithRoomGfx(addr_stru_86A17B, 1);
+  SpawnEprojWithRoomGfx(addr_stru_86A17B, 1);
   return jp + 1;
 }
 

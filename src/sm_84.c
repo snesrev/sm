@@ -759,7 +759,7 @@ const uint8 *PlmInstr_ActivateSaveStationAndGotoIfNo(const uint8 *plmp, uint16 k
     return plmp - 2; // restart plm instr
   if (r == 2)
     return INSTRB_RETURN_ADDR(GET_WORD(plmp));
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_SaveStationElectricity, 0);
+  SpawnEprojWithRoomGfx(addr_kEproj_SaveStationElectricity, 0);
   load_station_index = plm_room_arguments[plm_id >> 1] & 7;
   PrepareBitAccess(load_station_index);
   used_save_stations_and_elevators[2 * area_index] |= bitmask;
@@ -1695,7 +1695,7 @@ uint8 WakePlmIfSamusIsBelowAndRightOfTarget(uint16 k, uint16 x_r18, uint16 y_r20
 
 void PlmPreInstr_OldTourianEscapeShaftEscape(uint16 k) {  // 0x84B927
   if (!WakePlmIfSamusIsBelowAndRightOfTarget(k, 240, 2080))
-    SpawnEnemyProjectileWithRoomGfx(0xB4B1, 0);
+    SpawnEprojWithRoomGfx(0xB4B1, 0);
 }
 
 void PlmPreInstr_EscapeRoomBeforeOldTourianEscapeShaft(uint16 k) {  // 0x84B948
@@ -1813,22 +1813,22 @@ const uint8 *PlmInstr_ClearTrigger(const uint8 *plmp, uint16 k) {  // 0x84BBDD
   return plmp;
 }
 
-const uint8 *PlmInstr_SpawnEnemyProjectile(const uint8 *plmp, uint16 k) {  // 0x84BBE1
-  SpawnEnemyProjectileWithRoomGfx(GET_WORD(plmp), 0);
+const uint8 *PlmInstr_SpawnEproj(const uint8 *plmp, uint16 k) {  // 0x84BBE1
+  SpawnEprojWithRoomGfx(GET_WORD(plmp), 0);
   return plmp + 2;
 }
 
-const uint8 *PlmInstr_WakeEnemyProjectileAtPlmPos(const uint8 *plmp, uint16 k) {  // 0x84BBF0
+const uint8 *PlmInstr_WakeEprojAtPlmPos(const uint8 *plmp, uint16 k) {  // 0x84BBF0
   int i;
 
   uint16 v2 = plm_block_indices[k >> 1];
   for (i = 34; i >= 0; i -= 2) {
-    if (v2 == enemy_projectile_E[i >> 1])
+    if (v2 == eproj_E[i >> 1])
       break;
   }
   int v4 = i >> 1;
-  enemy_projectile_instr_timers[v4] = 1;
-  enemy_projectile_instr_list_ptr[v4] += 2;
+  eproj_instr_timers[v4] = 1;
+  eproj_instr_list_ptr[v4] += 2;
   return plmp + 2;
 }
 
@@ -2077,13 +2077,13 @@ uint16 SetBtsTo0x10AdvanceRowUp(uint16 k) {  // 0x84C6A9
 }
 
 uint8 PlmSetup_C82A_DownwardsClosedGate(uint16 j) {  // 0x84C6BE
-  SpawnEnemyProjectileWithRoomGfx(0xE659, 0);
+  SpawnEprojWithRoomGfx(0xE659, 0);
   SetBts0x10FiveStepsDown(j);
   return 0;
 }
 
 uint8 PlmSetup_C832_UpwardsClosedGate(uint16 j) {  // 0x84C6CB
-  SpawnEnemyProjectileWithRoomGfx(0xE675, 0);
+  SpawnEprojWithRoomGfx(0xE675, 0);
   SetBts0x10FiveStepsUp(j);
   return 0;
 }
@@ -2403,7 +2403,7 @@ const uint8 *PlmInstr_SpawnFourMotherBrainGlass(const uint8 *plmp, uint16 k) {  
 }
 
 void SpawnMotherBrainGlassShatteringShard(uint16 a) {  // 0x84D331
-  SpawnEnemyProjectileWithRoomGfx(0xCEFC, a);
+  SpawnEprojWithRoomGfx(0xCEFC, a);
 }
 
 void PlmPreInstr_WakePlmIfSamusHasBombs(uint16 k) {  // 0x84D33B
@@ -2417,7 +2417,7 @@ void PlmPreInstr_WakePlmIfSamusHasBombs(uint16 k) {  // 0x84D33B
 }
 
 const uint8 *PlmInstr_SpawnTorizoStatueBreaking(const uint8 *plmp, uint16 k) {  // 0x84D357
-  SpawnEnemyProjectileWithRoomGfx(0xA993, GET_WORD(plmp));
+  SpawnEprojWithRoomGfx(0xA993, GET_WORD(plmp));
   return plmp + 2;
 }
 
@@ -2452,8 +2452,8 @@ const uint8 *PlmInstr_EnableWaterPhysics(const uint8 *plmp, uint16 k) {  // 0x84
   return plmp;
 }
 
-const uint8 *PlmInstr_SpawnN00bTubeCrackEnemyProjectile(const uint8 *plmp, uint16 k) {  // 0x84D52C
-  SpawnEnemyProjectileWithRoomGfx(0xD904, 0);
+const uint8 *PlmInstr_SpawnN00bTubeCrackEproj(const uint8 *plmp, uint16 k) {  // 0x84D52C
+  SpawnEprojWithRoomGfx(0xD904, 0);
   return plmp;
 }
 
@@ -2464,22 +2464,22 @@ const uint8 *PlmInstr_DiagonalEarthquake(const uint8 *plmp, uint16 k) {  // 0x84
 }
 
 const uint8 *PlmInstr_Spawn10shardsAnd6n00bs(const uint8 *plmp, uint16 k) {  // 0x84D543
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 2);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 4);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 6);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 8);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xA);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xC);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0xE);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0x10);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeShards, 0x12);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 0);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 2);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 4);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 6);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 8);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 0xA);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeShards, 0);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeShards, 2);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeShards, 4);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeShards, 6);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeShards, 8);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeShards, 0xA);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeShards, 0xC);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeShards, 0xE);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeShards, 0x10);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeShards, 0x12);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 0);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 2);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 4);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 6);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 8);
+  SpawnEprojWithRoomGfx(addr_kEproj_N00bTubeReleasedAirBubbles, 0xA);
   return plmp;
 }
 
@@ -2574,24 +2574,24 @@ void PlmPreInstr_WakePlmIfRoomArgumentDoorIsSet(uint16 k) {  // 0x84D753
 }
 
 const uint8 *PlmInstr_ShootEyeDoorProjectileWithProjectileArg(const uint8 *plmp, uint16 k) {  // 0x84D77A
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorProjectile, GET_WORD(plmp));
+  SpawnEprojWithRoomGfx(addr_kEproj_EyeDoorProjectile, GET_WORD(plmp));
   QueueSfx2_Max6(0x4C);
   return plmp + 2;
 }
 
-const uint8 *PlmInstr_SpawnEyeDoorSweatEnemyProjectile(const uint8 *plmp, uint16 k) {  // 0x84D790
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorSweat, GET_WORD(plmp));
+const uint8 *PlmInstr_SpawnEyeDoorSweatEproj(const uint8 *plmp, uint16 k) {  // 0x84D790
+  SpawnEprojWithRoomGfx(addr_kEproj_EyeDoorSweat, GET_WORD(plmp));
   return plmp + 2;
 }
 
 const uint8 *PlmInstr_SpawnTwoEyeDoorSmoke(const uint8 *plmp, uint16 k) {  // 0x84D79F
-  SpawnEnemyProjectileWithRoomGfx(0xE517, 0x30A);
-  SpawnEnemyProjectileWithRoomGfx(0xE517, 0x30A);
+  SpawnEprojWithRoomGfx(0xE517, 0x30A);
+  SpawnEprojWithRoomGfx(0xE517, 0x30A);
   return plmp;
 }
 
 const uint8 *PlmInstr_SpawnEyeDoorSmokeProjectile(const uint8 *plmp, uint16 k) {  // 0x84D7B6
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_EyeDoorSmoke, 0xB);
+  SpawnEprojWithRoomGfx(addr_kEproj_EyeDoorSmoke, 0xB);
   return plmp;
 }
 
@@ -3181,8 +3181,8 @@ const uint8 *CallPlmInstr(uint32 ea, const uint8 *j, uint16 k) {
   case fnPlmInstr_JumpIfSamusHasNoBombs: return PlmInstr_JumpIfSamusHasNoBombs(j, k);
   case fnPlmInstr_MovePlmRight4Blocks: return PlmInstr_MovePlmRight4Blocks(j, k);
   case fnPlmInstr_ClearTrigger: return PlmInstr_ClearTrigger(j, k);
-  case fnPlmInstr_SpawnEnemyProjectile: return PlmInstr_SpawnEnemyProjectile(j, k);
-  case fnPlmInstr_WakeEnemyProjectileAtPlmPos: return PlmInstr_WakeEnemyProjectileAtPlmPos(j, k);
+  case fnPlmInstr_SpawnEproj: return PlmInstr_SpawnEproj(j, k);
+  case fnPlmInstr_WakeEprojAtPlmPos: return PlmInstr_WakeEprojAtPlmPos(j, k);
   case fnPlmInstr_SetGreyDoorPreInstr: return PlmInstr_SetGreyDoorPreInstr(j, k);
   case fnPlmInstr_FxBaseYPos_0x2D2: return PlmInstr_FxBaseYPos_0x2D2(j, k);
   case fnPlmInstr_GotoIfRoomArgLess: return PlmInstr_GotoIfRoomArgLess(j, k);
@@ -3192,11 +3192,11 @@ const uint8 *CallPlmInstr(uint32 ea, const uint8 *j, uint16 k) {
   case fnPlmInstr_TransferWreckedShipChozoSpikesToSlopes: return PlmInstr_TransferWreckedShipChozoSpikesToSlopes(j, k);
   case fnPlmInstr_TransferWreckedShipSlopesToChozoSpikes: return PlmInstr_TransferWreckedShipSlopesToChozoSpikes(j, k);
   case fnPlmInstr_EnableWaterPhysics: return PlmInstr_EnableWaterPhysics(j, k);
-  case fnPlmInstr_SpawnN00bTubeCrackEnemyProjectile: return PlmInstr_SpawnN00bTubeCrackEnemyProjectile(j, k);
+  case fnPlmInstr_SpawnN00bTubeCrackEproj: return PlmInstr_SpawnN00bTubeCrackEproj(j, k);
   case fnPlmInstr_DiagonalEarthquake: return PlmInstr_DiagonalEarthquake(j, k);
   case fnPlmInstr_Spawn10shardsAnd6n00bs: return PlmInstr_Spawn10shardsAnd6n00bs(j, k);
   case fnPlmInstr_ShootEyeDoorProjectileWithProjectileArg: return PlmInstr_ShootEyeDoorProjectileWithProjectileArg(j, k);
-  case fnPlmInstr_SpawnEyeDoorSweatEnemyProjectile: return PlmInstr_SpawnEyeDoorSweatEnemyProjectile(j, k);
+  case fnPlmInstr_SpawnEyeDoorSweatEproj: return PlmInstr_SpawnEyeDoorSweatEproj(j, k);
   case fnPlmInstr_SpawnTwoEyeDoorSmoke: return PlmInstr_SpawnTwoEyeDoorSmoke(j, k);
   case fnPlmInstr_SpawnEyeDoorSmokeProjectile: return PlmInstr_SpawnEyeDoorSmokeProjectile(j, k);
   case fnPlmInstr_MoveUpAndMakeBlueDoorFacingRight: return PlmInstr_MoveUpAndMakeBlueDoorFacingRight(j, k);

@@ -1607,7 +1607,7 @@ CoroutineRet StartGameplay_Async(void) {  // 0x80A07B
   WaitUntilEndOfVblankAndClearHdma();
   InitializeSpecialEffectsForNewRoom();
   ClearPLMs();
-  ClearEnemyProjectiles();
+  ClearEprojs();
   ClearPaletteFXObjects();
   UpdateBeamTilesAndPalette();
   LoadColorsForSpritesBeamsAndEnemies();

@@ -182,7 +182,7 @@ void Draygon_Func_3(void) {  // 0xA587AA
     if (!Get_Draygon(result)->draygon_var_40) {
       int v2 = (uint16)(4 * ((Random & 3) + 2)) >> 1;
       eproj_spawn_pt = (Point16U){ g_word_A587DC[v2], g_word_A587DC[v2 + 1] };
-      SpawnEnemyProjectileWithGfx(3, result, addr_stru_868E5E);
+      SpawnEprojWithGfx(3, result, addr_stru_868E5E);
     }
   }
 }
@@ -1075,16 +1075,16 @@ const uint16 *Draygon_Instr_4(uint16 k, const uint16 *jp) {  // 0xA59F6E
 const uint16 *Draygon_Instr_12(uint16 k, const uint16 *jp) {  // 0xA59F7C
   Enemy_Draygon *E = Get_Draygon(0);
   eproj_spawn_pt = (Point16U){ E->base.x_pos - 28, E->base.y_pos - 16 };
-  enemy_projectile_unk1995 = (NextRandom() & 0x3F) + 128;
-  SpawnEnemyProjectileWithGfx(2, cur_enemy_index, addr_stru_868E50);
+  eproj_unk1995 = (NextRandom() & 0x3F) + 128;
+  SpawnEprojWithGfx(2, cur_enemy_index, addr_stru_868E50);
   return jp;
 }
 
 const uint16 *Draygon_Instr_18(uint16 k, const uint16 *jp) {  // 0xA59FAE
   Enemy_Draygon *E = Get_Draygon(0);
   eproj_spawn_pt = (Point16U){ E->base.x_pos + 24, E->base.y_pos - 16 };
-  enemy_projectile_unk1995 = (NextRandom() & 0x3F) + 192;
-  SpawnEnemyProjectileWithGfx(2, cur_enemy_index, addr_stru_868E50);
+  eproj_unk1995 = (NextRandom() & 0x3F) + 192;
+  SpawnEprojWithGfx(2, cur_enemy_index, addr_stru_868E50);
   return jp;
 }
 
@@ -1178,7 +1178,7 @@ void Draygon_Func_48(uint16 k) {  // 0xA5C48D
   if ((Get_Draygon(k)->base.frame_counter & 0x7F) == 0) {
     Enemy_Draygon *E1 = Get_Draygon(0x40);
     eproj_spawn_pt = (Point16U){ E1->base.x_pos - 24, E1->base.y_pos - 32 };
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x18);
+    SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x18);
   }
   Enemy_Draygon *E0 = Get_Draygon(0);
   uint16 v4 = CalculateAngleFromXY(samus_x_pos - (E0->base.x_pos - 24), samus_y_pos - (E0->base.y_pos - 32));
@@ -1208,7 +1208,7 @@ void Draygon_Func_49(uint16 k) {  // 0xA5C513
 
   if ((Get_Draygon(k)->base.frame_counter & 0x7F) == 0) {
     eproj_spawn_pt = (Point16U){ E0->base.x_pos + 24, E0->base.y_pos - 32 };
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x18);
+    SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x18);
   }
 
   uint16 v4 = CalculateAngleFromXY(samus_x_pos - (E0->base.x_pos + 24), samus_y_pos - (E0->base.y_pos - 32));
@@ -1347,7 +1347,7 @@ const uint16 *Draygon_Instr_28(uint16 k, const uint16 *jp) {  // 0xA5E96E
   uint16 r20 = ((uint16)(random_number & 0x7F00) >> 8) - 64;
   r20 += E->base.y_pos;
   eproj_spawn_pt = (Point16U){ r18, r20 };
-  SpawnEnemyProjectileWithRoomGfx(0xE509, 0x15);
+  SpawnEprojWithRoomGfx(0xE509, 0x15);
   QueueSfx2_Max6(0x29);
   return jp;
 }
@@ -1377,10 +1377,10 @@ void SporeSpawn_Init(void) {  // 0xA5EA2A
     target_palettes[(i >> 1) + 240] = kSporeSpawn_Palette[v0 >> 1];
     v0 += 2;
   }
-  SpawnEnemyProjectileWithGfx(0, cur_enemy_index, addr_kEproj_SporeSpawnsStalk);
-  SpawnEnemyProjectileWithGfx(1, cur_enemy_index, addr_kEproj_SporeSpawnsStalk);
-  SpawnEnemyProjectileWithGfx(2, cur_enemy_index, addr_kEproj_SporeSpawnsStalk);
-  SpawnEnemyProjectileWithGfx(3, cur_enemy_index, addr_kEproj_SporeSpawnsStalk);
+  SpawnEprojWithGfx(0, cur_enemy_index, addr_kEproj_SporeSpawnsStalk);
+  SpawnEprojWithGfx(1, cur_enemy_index, addr_kEproj_SporeSpawnsStalk);
+  SpawnEprojWithGfx(2, cur_enemy_index, addr_kEproj_SporeSpawnsStalk);
+  SpawnEprojWithGfx(3, cur_enemy_index, addr_kEproj_SporeSpawnsStalk);
   Enemy_SporeSpawn *E = Get_SporeSpawn(cur_enemy_index);
   Enemy_SporeSpawn *E0 = Get_SporeSpawn(0);
   E->ssn_var_04 = E->base.x_pos;
@@ -1402,10 +1402,10 @@ void SporeSpawn_Init(void) {  // 0xA5EA2A
     E->ssn_var_A = FUNC16(nullsub_223);
     scrolling_finished_hook = FUNC16(Samus_ScrollFinishedHook_SporeSpawnFight);
     E->base.y_pos -= 128;
-    SpawnEnemyProjectileWithGfx(0, v5, addr_kEproj_SporeSpawners);
-    SpawnEnemyProjectileWithGfx(1, v5, addr_kEproj_SporeSpawners);
-    SpawnEnemyProjectileWithGfx(2, v5, addr_kEproj_SporeSpawners);
-    SpawnEnemyProjectileWithGfx(3, v5, addr_kEproj_SporeSpawners);
+    SpawnEprojWithGfx(0, v5, addr_kEproj_SporeSpawners);
+    SpawnEprojWithGfx(1, v5, addr_kEproj_SporeSpawners);
+    SpawnEprojWithGfx(2, v5, addr_kEproj_SporeSpawners);
+    SpawnEprojWithGfx(3, v5, addr_kEproj_SporeSpawners);
     SporeSpawn_Func_5();
   }
 }
@@ -1483,47 +1483,47 @@ void SporeSpawn_Func_5(void) {  // 0xA5EC49
   if ((v1 & 0x8000) == 0) {
     r18 = v1 >> 1, r20 = v1 >> 2;
     r22 = (v1 >> 1) + (v1 >> 2);
-    enemy_projectile_x_pos[14] = 128;
-    enemy_projectile_x_pos[15] = E->ssn_var_04 + (v1 >> 2);
-    E->ssn_var_20 = enemy_projectile_x_pos[15];
-    enemy_projectile_x_pos[16] = E->ssn_var_04 + r18;
-    E->ssn_var_21 = enemy_projectile_x_pos[16];
+    eproj_x_pos[14] = 128;
+    eproj_x_pos[15] = E->ssn_var_04 + (v1 >> 2);
+    E->ssn_var_20 = eproj_x_pos[15];
+    eproj_x_pos[16] = E->ssn_var_04 + r18;
+    E->ssn_var_21 = eproj_x_pos[16];
     v2 = E->ssn_var_04 + r22;
   } else {
     r18 = (uint16)(E->ssn_var_04 - E->base.x_pos) >> 1;
     r20 = (uint16)-v1 >> 2;
     r22 = r18 + r20;
-    enemy_projectile_x_pos[14] = 128;
-    enemy_projectile_x_pos[15] = E->ssn_var_04 - r20;
-    E->ssn_var_20 = enemy_projectile_x_pos[15];
-    enemy_projectile_x_pos[16] = E->ssn_var_04 - r18;
-    E->ssn_var_21 = enemy_projectile_x_pos[16];
+    eproj_x_pos[14] = 128;
+    eproj_x_pos[15] = E->ssn_var_04 - r20;
+    E->ssn_var_20 = eproj_x_pos[15];
+    eproj_x_pos[16] = E->ssn_var_04 - r18;
+    E->ssn_var_21 = eproj_x_pos[16];
     v2 = E->ssn_var_04 - r22;
   }
-  enemy_projectile_x_pos[17] = v2;
+  eproj_x_pos[17] = v2;
   E->ssn_var_22 = v2;
   uint16 v3 = E->base.y_pos - 40 - E->ssn_var_05, v4;
   if ((v3 & 0x8000) == 0) {
     r18 = v3 >> 1, r20 = v3 >> 2;
     r22 = (v3 >> 1) + (v3 >> 2);
-    enemy_projectile_y_pos[14] = 560;
-    enemy_projectile_y_pos[15] = E->ssn_var_05 + (v3 >> 2);
-    E->ssn_var_23 = enemy_projectile_y_pos[15];
-    enemy_projectile_y_pos[16] = E->ssn_var_05 + r18;
-    E->ssn_var_24 = enemy_projectile_y_pos[16];
+    eproj_y_pos[14] = 560;
+    eproj_y_pos[15] = E->ssn_var_05 + (v3 >> 2);
+    E->ssn_var_23 = eproj_y_pos[15];
+    eproj_y_pos[16] = E->ssn_var_05 + r18;
+    E->ssn_var_24 = eproj_y_pos[16];
     v4 = E->ssn_var_05 + r22;
   } else {
     r18 = (uint16)(E->ssn_var_05 - (E->base.y_pos - 40)) >> 1;
     r20 = (uint16)-v3 >> 2;
     r22 = r18 + r20;
-    enemy_projectile_y_pos[14] = 560;
-    enemy_projectile_y_pos[15] = E->ssn_var_05 - r20;
-    E->ssn_var_23 = enemy_projectile_y_pos[15];
-    enemy_projectile_y_pos[16] = E->ssn_var_05 - r18;
-    E->ssn_var_24 = enemy_projectile_y_pos[16];
+    eproj_y_pos[14] = 560;
+    eproj_y_pos[15] = E->ssn_var_05 - r20;
+    E->ssn_var_23 = eproj_y_pos[15];
+    eproj_y_pos[16] = E->ssn_var_05 - r18;
+    E->ssn_var_24 = eproj_y_pos[16];
     v4 = E->ssn_var_05 - r22;
   }
-  enemy_projectile_y_pos[17] = v4;
+  eproj_y_pos[17] = v4;
   E->ssn_var_25 = v4;
 }
 
@@ -1585,7 +1585,7 @@ void SporeSpawn_Func_6(void) {  // 0xA5EDF3
     E->base.ai_handler_bits = 0;
     E->base.properties |= kEnemyProps_Tangible;
     for (int i = 26; i >= 0; i -= 2)
-      *(uint16 *)((uint8 *)enemy_projectile_id + (uint16)i) = 0;
+      *(uint16 *)((uint8 *)eproj_id + (uint16)i) = 0;
     E0->base.current_instruction = addr_kDraygon_Ilist_E77D;
     E0->base.instruction_timer = 1;
     *(uint16 *)&boss_bits_for_area[area_index] |= 2;

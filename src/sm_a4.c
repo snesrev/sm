@@ -130,7 +130,7 @@ const uint16 *Crocomire_Func_7(uint16 k, const uint16 *jp) {  // 0xA4876C
     uint16 crocom_var_F = E->crocom_var_F;
     if (sign16(crocom_var_F - 18)) {
       E->crocom_var_F += 2;
-      SpawnEnemyProjectileWithGfx(crocom_var_F, cur_enemy_index, addr_stru_868F8F);
+      SpawnEprojWithGfx(crocom_var_F, cur_enemy_index, addr_stru_868F8F);
       QueueSfx3_Max6(0x1C);
     } else {
       jp = INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BBCA);
@@ -585,7 +585,7 @@ void Crocomire_Func_37(void) {  // 0xA48D5E
     if (!kraid_unk9000) {
       kraid_unk9000 = 1;
       eproj_spawn_pt = (Point16U){ 1536, 176 };
-      SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
+      SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
     }
   } else if (sign16(E0->base.x_pos - 1552)) {
     g_word_7E9002 = 0;
@@ -596,7 +596,7 @@ void Crocomire_Func_37(void) {  // 0xA48D5E
       g_word_7E9002 = 1;
       SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x61, 0x0b, 0xb74b });
       eproj_spawn_pt = (Point16U){ 1568, 176 };
-      SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
+      SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
     }
   } else {
     uint16 x_pos = E0->base.x_pos;
@@ -609,7 +609,7 @@ void Crocomire_Func_37(void) {  // 0xA48D5E
         SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x62, 0x0b, 0xb74b });
         SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x63, 0x0b, 0xb74b });
         eproj_spawn_pt = (Point16U){ 1584, 176 };
-        SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
+        SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
       }
     } else if ((int16)(x_pos - g_word_A486A4) >= 0) {
       Crocomire_8EE5();
@@ -660,19 +660,19 @@ void Crocomire_8EE5(void) {  // 0xA48EE5
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x69, 0x0b, 0xb74f });
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x6a, 0x0b, 0xb74f });
   eproj_spawn_pt = (Point16U){ 1536, 176 };
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
+  SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   eproj_spawn_pt = (Point16U){ 1552, 192 };
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
+  SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   eproj_spawn_pt = (Point16U){ 1568, 176 };
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
+  SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   eproj_spawn_pt = (Point16U){ 1584, 192 };
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
+  SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   eproj_spawn_pt = (Point16U){ 1600, 192 };
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
+  SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   eproj_spawn_pt = (Point16U){ 1616, 192 };
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
+  SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   eproj_spawn_pt = (Point16U){ 1632, 192 };
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
+  SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
 }
 
 const uint16 *Crocomire_Instr_2(uint16 k, const uint16 *jp) {  // 0xA48FC7
@@ -796,7 +796,7 @@ void Crocomire_Func_52(void) {  // 0xA49136
   if (sign16(*(uint16 *)((uint8 *)&g_word_7E9015 + 1) - 22)) {
     uint16 v1 = *(uint16 *)((uint8 *)&g_word_7E9015 + 1);
     *(uint16 *)((uint8 *)&g_word_7E9015 + 1) += 2;
-    SpawnEnemyProjectileWithGfx(g_word_A49156[v0 >> 1], v1, addr_stru_868F9D);
+    SpawnEprojWithGfx(g_word_A49156[v0 >> 1], v1, addr_stru_868F9D);
   }
   Crocomire_Func_54();
 }
@@ -1355,11 +1355,11 @@ void Crocomire_Func_71(void) {  // 0xA4990A
     E->base.palette_index = 0;
     for (int i = 30; i >= 0; i -= 2)
       palette_buffer[(i >> 1) + 144] = g_word_A4B8FD[i >> 1];
-    ClearEnemyProjectiles();
+    ClearEprojs();
     uint16 v8 = 8;
     int n = 8;
     do {
-      SpawnEnemyProjectileWithGfx(v8, cur_enemy_index, addr_kEproj_CrocomireSpikeWallPieces);
+      SpawnEprojWithGfx(v8, cur_enemy_index, addr_kEproj_CrocomireSpikeWallPieces);
     } while (--n);
     QueueSfx2_Max6(0x30);
     Crocomire_9BB3();
@@ -1456,7 +1456,7 @@ const uint16 *Crocomire_Instr_27(uint16 k, const uint16 *jp) {  // 0xA49AD7
 const uint16 *Crocomire_Func_87(const uint16 *jp, uint16 a) {  // 0xA49ADA
   Enemy_Crocomire *E = Get_Crocomire(0);
   eproj_spawn_pt = (Point16U){ a + E->base.x_pos + (random_number & 7), E->base.y_height + E->base.y_pos - 16 };
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
+  SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   return jp;
 }
 
@@ -1536,7 +1536,7 @@ void Crocomire_Func_94(void) {  // 0xA4B968
   int v0 = collision_detection_index;
   eproj_spawn_pt = (Point16U){ projectile_x_pos[v0], projectile_y_pos[v0] };
   uint16 v1 = ((projectile_type[v0] & 0x200) == 0) ? 6 : 29;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, v1);
+  SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, v1);
 }
 
 void Crocomire_Powerbomb(void) {  // 0xA4B992
@@ -1625,7 +1625,7 @@ void Crocomire_Func_1(void) {  // 0xA4BAB4
   int v0 = collision_detection_index;
   eproj_spawn_pt = (Point16U){ projectile_x_pos[v0], projectile_y_pos[v0] };
   uint16 v1 = ((projectile_type[v0] & 0x200) == 0) ? 6 : 29;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, v1);
+  SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, v1);
 }
 
 void CrocomireTongue_Init(void) {  // 0xA4F67A

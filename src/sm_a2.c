@@ -219,7 +219,7 @@ const uint16 *BouncingGoofball_Instr_88C6(uint16 k, const uint16 *jp) {  // 0xA2
 }
 
 const uint16 *MiniCrocomire_Instr_897E(uint16 k, const uint16 *jp) {  // 0xA2897E
-  SpawnEnemyProjectileWithGfx(*jp, cur_enemy_index, addr_Eproj_DBF2);
+  SpawnEprojWithGfx(*jp, cur_enemy_index, addr_Eproj_DBF2);
   return jp + 1;
 }
 
@@ -1189,7 +1189,7 @@ const uint16 *SpikeShootingPlant_Instr_A095(uint16 k, const uint16 *jp) {  // 0x
 }
 
 const uint16 *SpikeShootingPlant_Instr_A0A7(uint16 k, const uint16 *jp) {  // 0xA2A0A7
-  SpawnEnemyProjectileWithGfx(*jp, cur_enemy_index, addr_kEproj_SpikeShootingPlantSpikes);
+  SpawnEprojWithGfx(*jp, cur_enemy_index, addr_kEproj_SpikeShootingPlantSpikes);
   return jp + 1;
 }
 
@@ -1686,12 +1686,12 @@ void GunshipTop_18(uint16 k) {  // 0xA2AC1B
   E1->gtp_var_E = v7;
   if (sign16(v7 - 128)) {
     if (v7 == 64) {
-      SpawnEnemyProjectileWithRoomGfx(addr_stru_86A379, 0);
-      SpawnEnemyProjectileWithRoomGfx(addr_stru_86A379, 2);
-      SpawnEnemyProjectileWithRoomGfx(addr_stru_86A379, 4);
-      SpawnEnemyProjectileWithRoomGfx(addr_stru_86A379, 6);
-      SpawnEnemyProjectileWithRoomGfx(addr_stru_86A379, 8);
-      SpawnEnemyProjectileWithRoomGfx(addr_stru_86A379, 0xA);
+      SpawnEprojWithRoomGfx(addr_stru_86A379, 0);
+      SpawnEprojWithRoomGfx(addr_stru_86A379, 2);
+      SpawnEprojWithRoomGfx(addr_stru_86A379, 4);
+      SpawnEprojWithRoomGfx(addr_stru_86A379, 6);
+      SpawnEprojWithRoomGfx(addr_stru_86A379, 8);
+      SpawnEprojWithRoomGfx(addr_stru_86A379, 0xA);
     }
   } else {
     E0->gtp_var_F = FUNC16(GunshipTop_19);
@@ -1912,9 +1912,9 @@ void LavaquakeRocks_1(void) {  // 0xA2B596
 }
 
 void LavaquakeRocks_2(void) {  // 0xA2B5B2
-  enemy_projectile_unk1995 = g_word_A2B550[(NextRandom() & 0x1E) >> 1];
+  eproj_unk1995 = g_word_A2B550[(NextRandom() & 0x1E) >> 1];
   int v1 = (NextRandom() & 0x1E) >> 1;
-  SpawnEnemyProjectileWithGfx(g_word_A2B530[v1], cur_enemy_index, addr_stru_86BD5A);
+  SpawnEprojWithGfx(g_word_A2B530[v1], cur_enemy_index, addr_stru_86BD5A);
   Enemy_LavaquakeRocks *E = Get_LavaquakeRocks(cur_enemy_index);
   E->lrs_var_A = FUNC16(LavaquakeRocks_3);
   E->lrs_var_B = g_word_A2B520[(uint16)(NextRandom() & 0xE) >> 1];
@@ -2206,7 +2206,7 @@ void Rinka_B960(uint16 k) {  // 0xA2B960
     if (E->rinka_parameter_1) {
       E->base.properties |= kEnemyProps_Tangible | kEnemyProps_Invisible;
       eproj_spawn_pt = (Point16U){ E->base.x_pos, E->base.y_pos };
-      SpawnEnemyProjectileWithRoomGfx(0xE509, 3);
+      SpawnEprojWithRoomGfx(0xE509, 3);
       E->rinka_var_A = FUNC16(Rinka_4);
       E->rinka_var_F = 1;
     } else {
@@ -3377,7 +3377,7 @@ void LavaSeahorse_Func_3(uint16 k) {  // 0xA2E6F1
   if (E->lse_var_02) {
     E->lse_var_02 = 0;
     E->lse_var_01 = -1;
-    SpawnEnemyProjectileWithGfx(0xFFFF, k, addr_kEproj_LavaSeahorseFireball);
+    SpawnEprojWithGfx(0xFFFF, k, addr_kEproj_LavaSeahorseFireball);
     QueueSfx2_Max6(0x61);
     if (E->lse_var_D-- == 1) {
       E->lse_var_00 -= 4;

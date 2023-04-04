@@ -220,13 +220,13 @@ uint16 AnimtilesInstr_GotoIfBossBitSetInArea(uint16 k, uint16 j) {  // 0x878303
 
 uint16 AnimtilesInstr_SpawnTourianStatueEyeGlow(uint16 k, uint16 j) {  // 0x878320
   const uint16 *v2 = (const uint16 *)RomPtr_87(j);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueEyeGlow, *v2);
+  SpawnEprojWithRoomGfx(addr_kEproj_TourianStatueEyeGlow, *v2);
   return j + 2;
 }
 
 uint16 AnimtilesInstr_SpawnTourianStatueSoul(uint16 k, uint16 j) {  // 0x87832F
   const uint16 *v2 = (const uint16 *)RomPtr_87(j);
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueSoul, *v2);
+  SpawnEprojWithRoomGfx(addr_kEproj_TourianStatueSoul, *v2);
   return j + 2;
 }
 

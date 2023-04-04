@@ -394,7 +394,7 @@ void Kraid_GetsBig_BreakCeilingPlatforms(void) {  // 0xA7AC4D
   if ((E->base.y_pos & 3) != 0 || (kraid_var_F = E->kraid_var_F, (int16)(kraid_var_F - 18) >= 0)) {
 
   } else {
-    SpawnEnemyProjectileWithGfx(g_word_A7ACB3[kraid_var_F >> 1], cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
+    SpawnEprojWithGfx(g_word_A7ACB3[kraid_var_F >> 1], cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
     switch (E->kraid_var_F >> 1) {
     case 0:
       SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x06, 0x12, 0xb7b3 });
@@ -726,7 +726,7 @@ void Kraid_SpawnExplosionEproj(uint16 k) {  // 0xA7B0CB
   int v1 = k >> 1;
   eproj_spawn_pt = (Point16U){ projectile_x_pos[v1], projectile_y_pos[v1] };
   uint16 v2 = ((projectile_type[v1] & 0x200) == 0) ? 6 : 29;
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, v2);
+  SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, v2);
   QueueSfx1_Max6(0x3D);
 }
 
@@ -1290,7 +1290,7 @@ void Kraid_Main_AttackWithMouthOpen(void) {  // 0xA7BBEA
     }
   } else {
     if (*((uint16 *)RomPtr_A7(E->kraid_var_B - 8) + 1) == addr_kKraidTilemaps_3 && (E->kraid_var_C & 0xF) == 0) {
-      SpawnEnemyProjectileWithGfx(g_word_A7BC65[(random_number & 0xE) >> 1], random_number & 0xE, addr_kEproj_RocksKraidSpits);
+      SpawnEprojWithGfx(g_word_A7BC65[(random_number & 0xE) >> 1], random_number & 0xE, addr_kEproj_RocksKraidSpits);
       QueueSfx3_Max6(0x1E);
     }
   }
@@ -1775,32 +1775,32 @@ void Kraid_Death_SinkThroughFloor(void) {  // 0xA7C537
 }
 
 void Kraid_CrumbleLeftPlatform_Left(void) {  // 0xA7C691
-  SpawnEnemyProjectileWithGfx(0x70, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
+  SpawnEprojWithGfx(0x70, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x07, 0x12, 0xb7a7 });
 }
 
 void Kraid_CrumbleRightPlatform_Middle(void) {  // 0xA7C6A7
-  SpawnEnemyProjectileWithGfx(0xF0, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
+  SpawnEprojWithGfx(0xF0, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x0f, 0x12, 0xb7a7 });
 }
 
 void Kraid_CrumbleRightPlatform_Left(void) {  // 0xA7C6BD
-  SpawnEnemyProjectileWithGfx(0xE0, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
+  SpawnEprojWithGfx(0xE0, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x0e, 0x12, 0xb7af });
 }
 
 void Kraid_CrumbleLeftPlatform_Right(void) {  // 0xA7C6D3
-  SpawnEnemyProjectileWithGfx(0x90, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
+  SpawnEprojWithGfx(0x90, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x09, 0x12, 0xb7a7 });
 }
 
 void Kraid_CrumbleLeftPlatform_Middle(void) {  // 0xA7C6E9
-  SpawnEnemyProjectileWithGfx(0x80, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
+  SpawnEprojWithGfx(0x80, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x08, 0x12, 0xb7af });
 }
 
 void Kraid_CrumbleRightPlatform_Right(void) {  // 0xA7C6FF
-  SpawnEnemyProjectileWithGfx(0x100, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
+  SpawnEprojWithGfx(0x100, cur_enemy_index, addr_kEproj_RocksFallingKraidCeiling);
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x10, 0x12, 0xb7af });
 }
 
@@ -2027,7 +2027,7 @@ void Kraid_SpawnRandomQuakeProjs(void) {  // 0xA7C995
   uint16 y = 448 - ((uint16)(random_number & 0x3F00) >> 8);
   CreateSpriteAtPos(x, y, 21, 0);
   uint16 v1 = ((random_number & 0x10) != 0) ? addr_kEproj_RocksWhenKraidRisesRight : addr_kEproj_RocksWhenKraidRisesLeft;
-  SpawnEnemyProjectileWithGfx(random_number & 0x3F0, cur_enemy_index, v1);
+  SpawnEprojWithGfx(random_number & 0x3F0, cur_enemy_index, v1);
 }
 
 void Kraid_RestrictSamusXtoFirstScreen_2(void) {  // 0xA7C9EE
@@ -2202,13 +2202,13 @@ uint8 Phantoon_Func_3(int32 amt) {  // 0xA7CF27
 }
 
 void Phantoon_Func_4(uint16 k) {  // 0xA7CF5E
-  SpawnEnemyProjectileWithGfx(0, k, addr_kEproj_DestroyableFireballs);
+  SpawnEprojWithGfx(0, k, addr_kEproj_DestroyableFireballs);
   QueueSfx3_Max6(0x1D);
 }
 
 void Phantoon_Func_5(uint16 k) {  // 0xA7CF70
   for (int i = 7; i >= 0; --i)
-    SpawnEnemyProjectileWithGfx(i | 0x600, k, addr_kEproj_DestroyableFireballs);
+    SpawnEprojWithGfx(i | 0x600, k, addr_kEproj_DestroyableFireballs);
   QueueSfx3_Max6(0x28);
 }
 
@@ -2221,7 +2221,7 @@ void Phantoon_Func_6(uint16 k, uint16 a) {  // 0xA7CF8B
   int r20 = 16;
   do {
     v3 = v2;
-    SpawnEnemyProjectileWithGfx(r20 | v2++ | 0x400, k, addr_kEproj_DestroyableFireballs);
+    SpawnEprojWithGfx(r20 | v2++ | 0x400, k, addr_kEproj_DestroyableFireballs);
     if ((int16)(v3 - 8) >= 0)
       v2 = 0;
     r20 += 16;
@@ -2524,7 +2524,7 @@ void Phantoon_Spawn8FireballsInCircleAtStart(uint16 k) {  // 0xA7D4A9
   bool v3 = (--EK->phant_var_E & 0x8000) != 0;
   if (v2 || v3) {
     Enemy_Phantoon *E0 = Get_Phantoon(0);
-    SpawnEnemyProjectileWithGfx(E0->phant_var_A, k, addr_kEproj_StartingFireballs);
+    SpawnEprojWithGfx(E0->phant_var_A, k, addr_kEproj_StartingFireballs);
     QueueSfx3_Max6(0x1D);
     EK->phant_var_E = 30;
     uint16 v5 = E0->phant_var_A + 1;
@@ -2861,11 +2861,11 @@ void Phantoon_Enraged(uint16 k) {  // 0xA7D8AC
       v5 = 15;
       do {
         v8 = v5;
-        SpawnEnemyProjectileWithGfx(v5-- | 0x200, k, addr_kEproj_DestroyableFireballs);
+        SpawnEprojWithGfx(v5-- | 0x200, k, addr_kEproj_DestroyableFireballs);
       } while ((int16)(v8 - 9) >= 0);
     } else {
       for (int i = 6; i >= 0; --i)
-        SpawnEnemyProjectileWithGfx(i | 0x200, k, addr_kEproj_DestroyableFireballs);
+        SpawnEprojWithGfx(i | 0x200, k, addr_kEproj_DestroyableFireballs);
     }
     QueueSfx3_Max6(0x29);
     Enemy_Phantoon *E1 = Get_Phantoon(0x40);
@@ -2934,7 +2934,7 @@ void Phantoon_DyingPhantoonExplosions(uint16 k) {  // 0xA7D98B
     Enemy_Phantoon *E0 = Get_Phantoon(0);
     eproj_spawn_pt = (Point16U){ (int8)g_byte_A7DA1D[v5] + E0->base.x_pos, (int8)g_byte_A7DA1D[v5 + 1] + E0->base.y_pos };
     uint16 v11 = g_byte_A7DA1D[v5 + 2];
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, v11);
+    SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, v11);
     if (v11 == 29)
       QueueSfx2_Max6(0x24);
     else

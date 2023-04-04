@@ -2361,10 +2361,10 @@ void HdmaobjPreInstr_DC23(uint16 k) {  // 0x88DC23
   earthquake_timer |= 0x20;
   int v1 = (uint8)v0 >> 1;
   if ((--hdma_object_C[v1] & 0x8000) != 0) {
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueDustClouds, 0); // ?
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueDustClouds, 0);
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueDustClouds, 0);
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_TourianStatueDustClouds, 0);
+    SpawnEprojWithRoomGfx(addr_kEproj_TourianStatueDustClouds, 0); // ?
+    SpawnEprojWithRoomGfx(addr_kEproj_TourianStatueDustClouds, 0);
+    SpawnEprojWithRoomGfx(addr_kEproj_TourianStatueDustClouds, 0);
+    SpawnEprojWithRoomGfx(addr_kEproj_TourianStatueDustClouds, 0);
     hdma_object_instruction_timers[v1] = 1;
     hdma_object_instruction_list_pointers[v1] += 2;
   }
@@ -3153,7 +3153,7 @@ void SpawnIntroCutsceneCrossfadeHdma(void) {  // 0x88EBF0
 }
 
 void HdmaobjPreInstr_IntroCutsceneCrossfade(uint16 k) {  // 0x88EC1D
-  if (enemy_projectile_x_pos[0] == 1) {
+  if (eproj_x_pos[0] == 1) {
     int v1 = hdma_object_index >> 1;
     hdma_object_instruction_list_pointers[v1] += 2;
     hdma_object_instruction_timers[v1] = 1;

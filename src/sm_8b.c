@@ -1438,9 +1438,9 @@ void SpawnTextGlowObject(uint16 j, uint16 r18) {  // 0x8B97F7
   }
   *(uint16 *)((uint8 *)&cinematic_var21 + v1) = j;
   int v2 = v1 >> 1;
-  enemy_projectile_pre_instr[v2 + 2] = 1;
-  enemy_projectile_pre_instr[v2 + 10] = (uint8)r18;
-  *(uint16 *)((uint8 *)enemy_projectile_x_subpos + v1) = HIBYTE(r18);
+  eproj_pre_instr[v2 + 2] = 1;
+  eproj_pre_instr[v2 + 10] = (uint8)r18;
+  *(uint16 *)((uint8 *)eproj_x_subpos + v1) = HIBYTE(r18);
   *(uint16 *)((uint8 *)&cinematic_var20 + v1) = 0;
 }
 
@@ -1457,10 +1457,10 @@ void HandleTextGlowObjects(void) {  // 0x8B9828
 void ProcessTextGlowObject(void) {  // 0x8B9849
   uint16 v0 = cinematic_var19;
   int v1 = cinematic_var19 >> 1;
-  if (enemy_projectile_pre_instr[v1 + 2]-- == 1) {
+  if (eproj_pre_instr[v1 + 2]-- == 1) {
     uint16 R28 = *(uint16 *)((uint8 *)&cinematic_var20 + v0);
     uint16 v3 = *(uint16 *)((uint8 *)&cinematic_var21 + v0);
-    uint16 r22 = 2 * LOBYTE(enemy_projectile_pre_instr[v1 + 10]) + Mult8x8(*((uint8 *)enemy_projectile_x_subpos + v0), 0x40);
+    uint16 r22 = 2 * LOBYTE(eproj_pre_instr[v1 + 10]) + Mult8x8(*((uint8 *)eproj_x_subpos + v0), 0x40);
     uint16 v4 = r22;
     const uint8 *v5 = RomPtr_8C(v3);
     int n = v5[2];
@@ -1484,7 +1484,7 @@ void ProcessTextGlowObject(void) {  // 0x8B9849
       *(uint16 *)((uint8 *)&cinematic_var21 + cinematic_var19) = 0;
     } else {
       *(uint16 *)((uint8 *)&cinematic_var20 + cinematic_var19) += 1024;
-      enemy_projectile_pre_instr[(v6 >> 1) + 2] = 5;
+      eproj_pre_instr[(v6 >> 1) + 2] = 5;
     }
   }
 }
@@ -1506,7 +1506,7 @@ void CinematicFunction_Intro_Func128(uint16 a) {  // 0x8B98F9
   cinematic_var23 = 0;
   cinematic_var24 = 0;
   cinematicbg_var3 = 18432;
-  enemy_projectile_pre_instr[0] = 0;
+  eproj_pre_instr[0] = 0;
   cinematic_var7 = 0;
   cinematic_var8 = 0;
   cinematic_var9 = 0;
@@ -1535,8 +1535,8 @@ void CreditsObject_ProcessOne(void) {  // 0x8B996A
 
   CallCreditsObjectFunc(cinematic_var24 | 0x8B0000, 0);
   AddToHiLo(&cinematic_var10, &cinematic_var9, 0x8000);
-  if (!sign16(cinematic_var10 - enemy_projectile_pre_instr[0] - 8)) {
-    enemy_projectile_pre_instr[0] = cinematic_var10;
+  if (!sign16(cinematic_var10 - eproj_pre_instr[0] - 8)) {
+    eproj_pre_instr[0] = cinematic_var10;
     for (i = cinematic_var21; ; ) {
       const uint16 *v2 = (const uint16 *)RomPtr_8C(i);
       uint16 v3 = *v2;
@@ -4381,7 +4381,7 @@ void CinematicFunctionEscapeFromCebes(void) {  // 0x8BD480
   ClearPaletteFXObjects();
   EnablePaletteFx();
   EnableNMI();
-  enemy_projectile_pre_instr[1] = 0;
+  eproj_pre_instr[1] = 0;
   reg_TM = 17;
   reg_TS = 1;
   reg_CGWSEL = 2;
@@ -5321,7 +5321,7 @@ void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
   int16 v20;
   int16 v22;
 
-  if (enemy_projectile_pre_instr[1]) {
+  if (eproj_pre_instr[1]) {
     int n = 40;
     uint16 v0 = 0xe0c;
     do {
@@ -5986,7 +5986,7 @@ uint16 CinematicFunction_Intro_Func219(uint16 k, uint16 j) {  // 0x8BF6FE
   screen_fade_counter = 0;
   cinematic_var9 = 0;
   cinematic_var10 = 0;
-  enemy_projectile_pre_instr[1] = 1;
+  eproj_pre_instr[1] = 1;
   cinematic_function = FUNC16(CinematicFunction_Intro_Func129);
   cinematic_var4 = 60;
   return j;

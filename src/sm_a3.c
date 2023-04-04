@@ -235,10 +235,10 @@ void Metalee_Func_5(void) {  // 0xA38A5C
   } else {
     if (E->metalee_var_A == 8) {
       uint16 v2 = cur_enemy_index;
-      SpawnEnemyProjectileWithGfx(0, v2, addr_stru_868BFA);
-      SpawnEnemyProjectileWithGfx(0, v2, addr_stru_868C08);
-      SpawnEnemyProjectileWithGfx(0, v2, addr_stru_868C16);
-      SpawnEnemyProjectileWithGfx(0, v2, addr_stru_868C24);
+      SpawnEprojWithGfx(0, v2, addr_stru_868BFA);
+      SpawnEprojWithGfx(0, v2, addr_stru_868C08);
+      SpawnEprojWithGfx(0, v2, addr_stru_868C16);
+      SpawnEprojWithGfx(0, v2, addr_stru_868C24);
     }
     ++E->base.y_pos;
   }
@@ -264,10 +264,10 @@ void Metalee_Shot(void) {  // 0xA38B0F
     E->base.vram_tiles_index = varE2A;
     E->base.palette_index = varE2C;
     uint16 v2 = cur_enemy_index;
-    SpawnEnemyProjectileWithGfx(E->metalee_var_A, cur_enemy_index, addr_stru_868BFA);
-    SpawnEnemyProjectileWithGfx(0, v2, addr_stru_868C08);
-    SpawnEnemyProjectileWithGfx(0, v2, addr_stru_868C16);
-    SpawnEnemyProjectileWithGfx(0, v2, addr_stru_868C24);
+    SpawnEprojWithGfx(E->metalee_var_A, cur_enemy_index, addr_stru_868BFA);
+    SpawnEprojWithGfx(0, v2, addr_stru_868C08);
+    SpawnEprojWithGfx(0, v2, addr_stru_868C16);
+    SpawnEprojWithGfx(0, v2, addr_stru_868C24);
     E->base.vram_tiles_index = 0;
     E->base.palette_index = 0;
   }
@@ -1919,10 +1919,10 @@ void Skree_Func_4(void) {  // 0xA3C77F
   } else {
     if (E->skree_var_A == 8) {
       uint16 v2 = cur_enemy_index;
-      SpawnEnemyProjectileWithGfx(8, cur_enemy_index, addr_stru_868BC2);
-      SpawnEnemyProjectileWithGfx(0, v2, addr_stru_868BD0);
-      SpawnEnemyProjectileWithGfx(0, v2, addr_stru_868BDE);
-      SpawnEnemyProjectileWithGfx(0, v2, addr_stru_868BEC);
+      SpawnEprojWithGfx(8, cur_enemy_index, addr_stru_868BC2);
+      SpawnEprojWithGfx(0, v2, addr_stru_868BD0);
+      SpawnEprojWithGfx(0, v2, addr_stru_868BDE);
+      SpawnEprojWithGfx(0, v2, addr_stru_868BEC);
     }
     ++E->base.y_pos;
   }
@@ -1944,10 +1944,10 @@ void Skree_Shot(void) {  // 0xA3C7F5
   Enemy_Skree *E = Get_Skree(cur_enemy_index);
   if (!E->base.health) {
     uint16 v1 = cur_enemy_index;
-    SpawnEnemyProjectileWithGfx(E->skree_var_A, cur_enemy_index, addr_stru_868BC2);
-    SpawnEnemyProjectileWithGfx(0, v1, addr_stru_868BD0);
-    SpawnEnemyProjectileWithGfx(0, v1, addr_stru_868BDE);
-    SpawnEnemyProjectileWithGfx(0, v1, addr_stru_868BEC);
+    SpawnEprojWithGfx(E->skree_var_A, cur_enemy_index, addr_stru_868BC2);
+    SpawnEprojWithGfx(0, v1, addr_stru_868BD0);
+    SpawnEprojWithGfx(0, v1, addr_stru_868BDE);
+    SpawnEprojWithGfx(0, v1, addr_stru_868BEC);
     uint16 v5 = 2;
     if ((projectile_type[collision_detection_index] & 0xF00) != 512)
       v5 = 0;

@@ -473,7 +473,7 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
   memcpy(&b->ram[0x5e7], &a->ram[0x5e7], 14);  // bitmask, mult_tmp, mult_product_lo etc
 
   memcpy(&b->ram[0x5BC], &a->ram[0x5BC], 9);  // door_transition_vram_update etc
-  memcpy(&a->ram[0x60B], &b->ram[0x60B], 6);  // enemy_projectile_init_param_2, remaining_enemy_hitbox_entries, REMOVED_num_projectiles_to_check_enemy_coll
+  memcpy(&a->ram[0x60B], &b->ram[0x60B], 6);  // eproj_init_param_2, remaining_enemy_hitbox_entries, REMOVED_num_projectiles_to_check_enemy_coll
   memcpy(&a->ram[0x611], &b->ram[0x611], 6);  // coroutine_state (copy from mine to theirs)
   memcpy(&b->ram[0x641], &a->ram[0x641], 2);  // apu_attempts_countdown
   memcpy(&a->ram[0x77e], &b->ram[0x77e], 5);  // my counter
@@ -503,7 +503,7 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
   memcpy(&a->ram[0x18A6], &b->ram[0x18A6], 2);  // collision_detection_index
   memcpy(&a->ram[0x189A], &b->ram[0x189A], 12);  // samus_target_x_pos etc
   
-  memcpy(&b->ram[0x1993], &a->ram[0x1993], 2);  // enemy_projectile_init_param
+  memcpy(&b->ram[0x1993], &a->ram[0x1993], 2);  // eproj_init_param
   memcpy(&b->ram[0x19b3], &a->ram[0x19b3], 2);  // mode7_spawn_param
   memcpy(&b->ram[0x1a93], &a->ram[0x1a93], 2);  // cinematic_spawn_param
   memcpy(&b->ram[0x1B9D], &a->ram[0x1B9D], 2);  // cinematic_spawn_param

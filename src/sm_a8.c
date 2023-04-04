@@ -487,26 +487,26 @@ const uint16 *Fune_Instr_2(uint16 k, const uint16 *jp) {  // 0xA89625
 }
 
 const uint16 *Fune_Instr_6(uint16 k, const uint16 *jp) {  // 0xA89631
-  enemy_projectile_unk1995 = LOBYTE(Get_Fune(cur_enemy_index)->fune_parameter_2);
-  SpawnEnemyProjectileWithGfx(0, cur_enemy_index, addr_stru_86DFBC);
+  eproj_unk1995 = LOBYTE(Get_Fune(cur_enemy_index)->fune_parameter_2);
+  SpawnEprojWithGfx(0, cur_enemy_index, addr_stru_86DFBC);
   return jp;
 }
 
 const uint16 *Fune_Instr_7(uint16 k, const uint16 *jp) {  // 0xA8964A
-  enemy_projectile_unk1995 = LOBYTE(Get_Fune(cur_enemy_index)->fune_parameter_2);
-  SpawnEnemyProjectileWithGfx(1, cur_enemy_index, addr_stru_86DFBC);
+  eproj_unk1995 = LOBYTE(Get_Fune(cur_enemy_index)->fune_parameter_2);
+  SpawnEprojWithGfx(1, cur_enemy_index, addr_stru_86DFBC);
   return jp;
 }
 
 const uint16 *Fune_Instr_1(uint16 k, const uint16 *jp) {  // 0xA89663
-  enemy_projectile_unk1995 = LOBYTE(Get_Fune(cur_enemy_index)->fune_parameter_2);
-  SpawnEnemyProjectileWithGfx(0, cur_enemy_index, addr_stru_86DFCA);
+  eproj_unk1995 = LOBYTE(Get_Fune(cur_enemy_index)->fune_parameter_2);
+  SpawnEprojWithGfx(0, cur_enemy_index, addr_stru_86DFCA);
   return jp;
 }
 
 const uint16 *Fune_Instr_4(uint16 k, const uint16 *jp) {  // 0xA8967C
-  enemy_projectile_unk1995 = LOBYTE(Get_Fune(cur_enemy_index)->fune_parameter_2);
-  SpawnEnemyProjectileWithGfx(1, cur_enemy_index, addr_stru_86DFCA);
+  eproj_unk1995 = LOBYTE(Get_Fune(cur_enemy_index)->fune_parameter_2);
+  SpawnEprojWithGfx(1, cur_enemy_index, addr_stru_86DFCA);
   return jp;
 }
 
@@ -949,7 +949,7 @@ void YappingMaw_Init(void) {  // 0xA8A148
   v1 = 3;
   E->ymw_var_44 = 3;
   do {
-    SpawnEnemyProjectileWithGfx(v1, cur_enemy_index, addr_kEproj_YappingMawsBody);
+    SpawnEprojWithGfx(v1, cur_enemy_index, addr_kEproj_YappingMawsBody);
     v1 = E->ymw_var_44 - 1;
     E->ymw_var_44 = v1;
   } while (v1 >= 0);
@@ -1163,29 +1163,29 @@ void YappingMaw_Func_11(void) {  // 0xA8A68A
 void YappingMaw_Func_12(void) {  // 0xA8A6C4
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   int v1 = E->ymw_var_40 >> 1;
-  enemy_projectile_x_pos[v1] = E->ymw_var_0C;
-  enemy_projectile_y_pos[v1] = E->ymw_var_0D;
+  eproj_x_pos[v1] = E->ymw_var_0C;
+  eproj_y_pos[v1] = E->ymw_var_0D;
 }
 
 void YappingMaw_Func_13(void) {  // 0xA8A6DB
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   int v1 = E->ymw_var_41 >> 1;
-  enemy_projectile_x_pos[v1] = E->ymw_var_00 + E->ymw_var_0C;
-  enemy_projectile_y_pos[v1] = E->ymw_var_01 + E->ymw_var_0D;
+  eproj_x_pos[v1] = E->ymw_var_00 + E->ymw_var_0C;
+  eproj_y_pos[v1] = E->ymw_var_01 + E->ymw_var_0D;
 }
 
 void YappingMaw_Func_14(void) {  // 0xA8A6FC
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   int v1 = E->ymw_var_42 >> 1;
-  enemy_projectile_x_pos[v1] = E->ymw_var_02 + E->ymw_var_0C;
-  enemy_projectile_y_pos[v1] = E->ymw_var_03 + E->ymw_var_0D;
+  eproj_x_pos[v1] = E->ymw_var_02 + E->ymw_var_0C;
+  eproj_y_pos[v1] = E->ymw_var_03 + E->ymw_var_0D;
 }
 
 void YappingMaw_Func_15(void) {  // 0xA8A71D
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   int v1 = E->ymw_var_43 >> 1;
-  enemy_projectile_x_pos[v1] = E->ymw_var_04 + E->ymw_var_0C;
-  enemy_projectile_y_pos[v1] = E->ymw_var_05 + E->ymw_var_0D;
+  eproj_x_pos[v1] = E->ymw_var_04 + E->ymw_var_0C;
+  eproj_y_pos[v1] = E->ymw_var_05 + E->ymw_var_0D;
 }
 
 uint16 YappingMaw_Func_16(uint16 a, uint16 varE32) {  // 0xA8A73E
@@ -1231,10 +1231,10 @@ void YappingMaw_Shot(void) {  // 0xA8A7BD
       E->ymw_var_30 = 0;
     }
   } else {
-    *(uint16 *)((uint8 *)enemy_projectile_id + E->ymw_var_40) = 0;
-    *(uint16 *)((uint8 *)enemy_projectile_id + E->ymw_var_41) = 0;
-    *(uint16 *)((uint8 *)enemy_projectile_id + E->ymw_var_42) = 0;
-    *(uint16 *)((uint8 *)enemy_projectile_id + E->ymw_var_43) = 0;
+    *(uint16 *)((uint8 *)eproj_id + E->ymw_var_40) = 0;
+    *(uint16 *)((uint8 *)eproj_id + E->ymw_var_41) = 0;
+    *(uint16 *)((uint8 *)eproj_id + E->ymw_var_42) = 0;
+    *(uint16 *)((uint8 *)eproj_id + E->ymw_var_43) = 0;
     sprite_instr_list_ptrs[E->ymw_var_46 >> 1] = 0;
     if (samus_input_handler != FUNC16(Samus_InputHandler_E91D))
       samus_input_handler = FUNC16(Samus_InputHandler_E913);
@@ -1255,13 +1255,13 @@ void YappingMaw_Frozen(void) {  // 0xA8A835
 void YappingMaw_Func_18(uint16 j) {  // 0xA8A85D
   int v1 = j >> 1;
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
-  enemy_projectile_gfx_idx[v1] = E->ymw_var_45 | enemy_projectile_gfx_idx[v1] & 0xF1FF;
+  eproj_gfx_idx[v1] = E->ymw_var_45 | eproj_gfx_idx[v1] & 0xF1FF;
   if (E->base.frozen_timer) {
-    enemy_projectile_gfx_idx[v1] = enemy_projectile_gfx_idx[v1] & 0xF1FF | 0xC00;
+    eproj_gfx_idx[v1] = eproj_gfx_idx[v1] & 0xF1FF | 0xC00;
     uint16 frozen_timer = E->base.frozen_timer;
     if (sign16(frozen_timer - 90)) {
       if ((frozen_timer & 2) == 0)
-        enemy_projectile_gfx_idx[v1] = E->ymw_var_45 | enemy_projectile_gfx_idx[v1] & 0xF1FF;
+        eproj_gfx_idx[v1] = E->ymw_var_45 | eproj_gfx_idx[v1] & 0xF1FF;
     }
   }
 }
@@ -1328,7 +1328,7 @@ void Kago_Shot(void) {  // 0xA8AB83
     EnemyDeathAnimation(cur_enemy_index, 4);
     E->kago_var_F = 1;
   }
-  SpawnEnemyProjectileWithGfx(E->base.y_pos, cur_enemy_index, addr_loc_A8D02E);
+  SpawnEprojWithGfx(E->base.y_pos, cur_enemy_index, addr_loc_A8D02E);
 }
 
 const uint16 *NorfairLavaMan_Instr_1(uint16 k, const uint16 *jp) {  // 0xA8AE12
@@ -1412,7 +1412,7 @@ const uint16 *NorfairLavaMan_Instr_13(uint16 k, const uint16 *jp) {  // 0xA8AE96
 
 const uint16 *NorfairLavaMan_Instr_5(uint16 k, const uint16 *jp) {  // 0xA8AEBA
   Enemy_NorfairLavaMan *E = Get_NorfairLavaMan(cur_enemy_index);
-  SpawnEnemyProjectileWithGfx(E->nlmn_var_B, cur_enemy_index, addr_kEproj_LavaThrownByLavaman);
+  SpawnEprojWithGfx(E->nlmn_var_B, cur_enemy_index, addr_kEproj_LavaThrownByLavaman);
   return jp;
 }
 
@@ -2302,7 +2302,7 @@ void MaridiaFloater_Main(void) {  // 0xA8C21C
 
 void MaridiaFloater_Func_1(uint16 k) {  // 0xA8C223
   for (int i = 7; i >= 0; --i)
-    SpawnEnemyProjectileWithGfx(i, k, addr_kEproj_MaridiaFloatersSpikes);
+    SpawnEprojWithGfx(i, k, addr_kEproj_MaridiaFloatersSpikes);
 }
 
 void MaridiaFloater_Func_2(uint16 k) {  // 0xA8C234
@@ -2898,7 +2898,7 @@ const uint16 *WreckedShipRobot_CommonInstr(uint16 k, const uint16 *jp, uint16 r5
   } else {
     uint16 v3 = (random_number & 0x1F) + 16;
     E->wsrt_var_B = v3;
-    SpawnEnemyProjectileWithGfx(v3, cur_enemy_index, r48);
+    SpawnEprojWithGfx(v3, cur_enemy_index, r48);
     return INSTR_RETURN_ADDR(r50);
   }
   return jp;
@@ -2919,7 +2919,7 @@ const uint16 *WreckedShipRobot_D10C(uint16 k, const uint16 *jp, uint16 r50) {  /
   } else {
     uint16 v3 = (random_number & 0x1F) + 16;
     E->wsrt_var_B = v3;
-    SpawnEnemyProjectileWithGfx(v3, cur_enemy_index, addr_kEproj_WreckedShipRobotLaserHorizontal);
+    SpawnEprojWithGfx(v3, cur_enemy_index, addr_kEproj_WreckedShipRobotLaserHorizontal);
     return INSTR_RETURN_ADDR(r50);
   }
   return jp;
@@ -2942,7 +2942,7 @@ const uint16 *WreckedShipRobot_D147(uint16 k, const uint16 *jp, uint16 r48, uint
   } else {
     uint16 v3 = (random_number & 0x1F) + 16;
     E->wsrt_var_B = v3;
-    SpawnEnemyProjectileWithGfx(v3, cur_enemy_index, r48);
+    SpawnEprojWithGfx(v3, cur_enemy_index, r48);
     return INSTR_RETURN_ADDR(r50);
   }
   return jp;
@@ -3315,7 +3315,7 @@ const uint16 *WalkingLavaSeahorse_Instr_4(uint16 k, const uint16 *jp) {  // 0xA8
 }
 
 void WalkingLavaSeahorse_DF20(uint16 a) {  // 0xA8DF20
-  SpawnEnemyProjectileWithGfx(a, cur_enemy_index, addr_loc_A89E90);
+  SpawnEprojWithGfx(a, cur_enemy_index, addr_loc_A89E90);
   QueueSfx2_Max6(0x3F);
 }
 
@@ -3520,7 +3520,7 @@ void WreckedShipSpark_Func_3(uint16 k) {  // 0xA8E6DC
   Enemy_WreckedShipSpark *E = Get_WreckedShipSpark(k);
   if (E->wssk_var_F == 1) {
     uint16 v2 = cur_enemy_index;
-    SpawnEnemyProjectileWithGfx(0, cur_enemy_index, addr_kEproj_Sparks);
+    SpawnEprojWithGfx(0, cur_enemy_index, addr_kEproj_Sparks);
     WreckedShipSpark_Func_4(v2, 0);
   } else {
     --E->wssk_var_F;
@@ -3911,7 +3911,7 @@ const uint16 *KiHunter_Instr_5(uint16 k, const uint16 *jp) {  // 0xA8F6D8
 
 void sub_A8F6DC(uint16 k, uint16 j) {  // 0xA8F6DC
   QueueSfx2_Max6(0x4C);
-  SpawnEnemyProjectileWithGfx(0, cur_enemy_index, j);
+  SpawnEprojWithGfx(0, cur_enemy_index, j);
   Get_KiHunter(cur_enemy_index)->khr_var_0F = 24;
 }
 

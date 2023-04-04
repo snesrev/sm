@@ -382,7 +382,7 @@ void RoomCode_ScrollRightDachora(void) {  // 0x8FC1E6
 }
 
 void RoomCode_8FC8C8(void) {  // 0x8FC8C8
-  SpawnEnemyProjectileWithRoomGfx(addr_kEproj_PrePhantomRoom, 0);
+  SpawnEprojWithRoomGfx(addr_kEproj_PrePhantomRoom, 0);
 }
 
 void RoomCode_SetupShaktoolRoomPlm(void) {  // 0x8FC8D3
@@ -637,7 +637,7 @@ void RoomCode_SpawnCeresFallingDebris(void) {
     room_main_asm_variables[0] = 8;
     room_main_asm_variables[1] = 0;
     uint16 v0 = (random_number & 0x8000) ? addr_stru_869742 : addr_stru_869734;
-    SpawnEnemyProjectileWithRoomGfx(v0, kRoomCode_SpawnCeresFallingDebris_Tab[random_number & 0xF]);
+    SpawnEprojWithRoomGfx(v0, kRoomCode_SpawnCeresFallingDebris_Tab[random_number & 0xF]);
   }
 }
 

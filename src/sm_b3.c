@@ -695,7 +695,7 @@ void Botwoon_Init(void) {  // 0xB39583
     E->botwoon_var_A = 24;
     bool v5;
     do {
-      SpawnEnemyProjectileWithGfx(v3, cur_enemy_index, addr_kEproj_BotwoonsBody);
+      SpawnEprojWithGfx(v3, cur_enemy_index, addr_kEproj_BotwoonsBody);
       v5 = (int16)(--E->botwoon_var_A - 1) < 0;
       --E->botwoon_var_A;
     } while (!v5);
@@ -797,8 +797,8 @@ void Botwoon_Func_4(void) {  // 0xB396F5
 void Botwoon_Func_5(void) {  // 0xB396FF
   uint16 v0 = 34;
   do {
-    enemy_projectile_properties[v0 >> 1] |= 0x2000;
-    enemy_projectile_flags[v0 >> 1] = 2;
+    eproj_properties[v0 >> 1] |= 0x2000;
+    eproj_flags[v0 >> 1] = 2;
     v0 -= 2;
   } while ((int16)(v0 - 10) >= 0);
 }
@@ -956,7 +956,7 @@ void Botwoon_Func_15(void) {  // 0xB39A5E
     E->base.y_pos = 200;
     E->botwoon_var_D = FUNC16(Botwoon_Func_16);
     eproj_spawn_pt = (Point16U){ E->base.x_pos, E->base.y_pos };
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x1D);
+    SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x1D);
     Botwoon_QueueExplosionSfx();
     E->base.properties |= 0x500;
   }
@@ -1073,11 +1073,11 @@ void Botwoon_Func_23(void) {  // 0xB39C90
       bool v4 = ET->botwoon_var_10 == 1;
       ET->botwoon_var_10 ^= 1;
       if (v4) {
-        enemy_projectile_properties[botwoo_var_00 >> 1] &= ~0x2000;
-        enemy_projectile_flags[botwoo_var_00 >> 1] = 1;
+        eproj_properties[botwoo_var_00 >> 1] &= ~0x2000;
+        eproj_flags[botwoo_var_00 >> 1] = 1;
       } else {
-        enemy_projectile_properties[botwoo_var_00 >> 1] |= 0x2000;
-        enemy_projectile_flags[botwoo_var_00 >> 1] = 2;
+        eproj_properties[botwoo_var_00 >> 1] |= 0x2000;
+        eproj_flags[botwoo_var_00 >> 1] = 2;
       }
       if (!v2) {
         E->botwoon_var_35 = 0;
@@ -1088,8 +1088,8 @@ void Botwoon_Func_23(void) {  // 0xB39C90
       }
     }
     int v7 = botwoo_var_00 >> 1;
-    enemy_projectile_x_pos[v7] = *(uint16 *)((uint8 *)&kraid_unk9000 + r18);
-    enemy_projectile_y_pos[v7] = *(uint16 *)((uint8 *)&g_word_7E9002 + r18);
+    eproj_x_pos[v7] = *(uint16 *)((uint8 *)&kraid_unk9000 + r18);
+    eproj_y_pos[v7] = *(uint16 *)((uint8 *)&g_word_7E9002 + r18);
     r18 = (r18 - E->botwoon_var_C) & 0x3FF;
     n -= 2;
   } while ((n & 0x8000) == 0);
@@ -1112,16 +1112,16 @@ void Botwoon_Func_25(void) {  // 0xB39D4D
     uint16 x, y;
     if (n == 24) {
       int v4 = botwoo_var_00 >> 1;
-      x = E->base.x_pos - enemy_projectile_x_pos[v4];
-      y = E->base.y_pos - enemy_projectile_y_pos[v4];
+      x = E->base.x_pos - eproj_x_pos[v4];
+      y = E->base.y_pos - eproj_y_pos[v4];
     } else {
       if (!n)
         r24 += 512;
       int v2 = botwoo_var_00 >> 1;
-      x = enemy_projectile_x_pos[v2 + 1] - enemy_projectile_x_pos[v2];
-      y = enemy_projectile_y_pos[v2 + 1] - enemy_projectile_y_pos[v2];
+      x = eproj_x_pos[v2 + 1] - eproj_x_pos[v2];
+      y = eproj_y_pos[v2 + 1] - eproj_y_pos[v2];
     }
-    enemy_projectile_E[botwoo_var_00 >> 1] = 2 * ((uint16)(r24 + CalculateAngleFromXY(x, y)) >> 5);
+    eproj_E[botwoo_var_00 >> 1] = 2 * ((uint16)(r24 + CalculateAngleFromXY(x, y)) >> 5);
     n -= 2;
   } while (n >= 0);
 }
@@ -1182,12 +1182,12 @@ void Botwoon_Func_27(uint16 k) {  // 0xB39E7D
 void Botwoon_Func_28(uint16 k) {  // 0xB39EE0
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   if (E->botwoon_var_5A) {
-    enemy_projectile_init_param_3 = E->botwoon_var_3D - 32;
+    eproj_init_param_3 = E->botwoon_var_3D - 32;
     int n = 5;
     uint16 varE32 = g_word_B39E77[E->botwoon_var_3F];
     do {
-      SpawnEnemyProjectileWithGfx(varE32, cur_enemy_index, addr_kEproj_BotwoonsSpit);
-      enemy_projectile_init_param_3 += 16;
+      SpawnEprojWithGfx(varE32, cur_enemy_index, addr_kEproj_BotwoonsSpit);
+      eproj_init_param_3 += 16;
     } while (--n);
     E->botwoon_var_5A = 0;
     E->botwoon_var_F = FUNC16(Botwoon_Func_30);
@@ -1196,12 +1196,12 @@ void Botwoon_Func_28(uint16 k) {  // 0xB39EE0
 
 void Botwoon_Func_29(uint16 k) {  // 0xB39F34
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
-  enemy_projectile_init_param_3 = E->botwoon_var_3D - 16;
+  eproj_init_param_3 = E->botwoon_var_3D - 16;
   int n = 3;
   uint16 varE32 = g_word_B39E77[E->botwoon_var_3F];
   do {
-    SpawnEnemyProjectileWithGfx(varE32, cur_enemy_index, addr_kEproj_BotwoonsSpit);
-    enemy_projectile_init_param_3 += 16;
+    SpawnEprojWithGfx(varE32, cur_enemy_index, addr_kEproj_BotwoonsSpit);
+    eproj_init_param_3 += 16;
   } while (--n);
   Get_Botwoon(cur_enemy_index)->botwoon_var_F = FUNC16(Botwoon_Func_30);
 }

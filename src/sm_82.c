@@ -123,7 +123,7 @@ CoroutineRet InitAndLoadGameData_Async(void) {  // 0x828000
   screen_fade_delay = 1;
   screen_fade_counter = 1;
   EnableNMI();
-  EnableEnemyProjectiles();
+  EnableEprojs();
   EnablePLMs();
   EnablePaletteFx();
   EnableHdmaObjects();
@@ -407,7 +407,7 @@ CoroutineRet GameState_36_WhitingOutFromTimeUp(void) {  // 0x828431
       game_options_screen_index = 0;
       menu_index = 0;
       for (int i = 254; i >= 0; i -= 2)
-        enemy_projectile_y_subpos[(i >> 1) + 15] = 0;
+        eproj_y_subpos[(i >> 1) + 15] = 0;
       game_state = kGameState_25_SamusNoHealth;
     } else {
       game_state = kGameState_37_CeresGoesBoomWithSamus;
@@ -499,7 +499,7 @@ CoroutineRet GameState_43_TransitionFromDemo(void) {  // 0x828593
   DisablePaletteFx();
   ClearPaletteFXObjects();
   for (int i = 656; i >= 0; i -= 2)
-    *(uint16 *)((uint8 *)&enemy_projectile_enable_flag + i) = 0;
+    *(uint16 *)((uint8 *)&eproj_enable_flag + i) = 0;
   for (int j = 538; j >= 0; j -= 2)
     *(uint16 *)((uint8 *)&hud_item_tilemap_palette_bits + j) = 0;
   next_gameplay_CGWSEL = 0;
@@ -517,7 +517,7 @@ CoroutineRet GameState_44_TransitionFromDemo(void) {  // 0x8285FB
     game_state = kGameState_40_TransitionToDemo;
   } else if (substate) {
     LoadTitleSequenceGraphics();
-    enemy_projectile_x_pos[4] = 2;
+    eproj_x_pos[4] = 2;
     cinematic_function = FUNC16(CinematicFunctionNone);
   } else {
     QueueMusic_Delayed8(0);
@@ -894,8 +894,8 @@ CoroutineRet GameState_8_MainGameplay(void) {  // 0x828B44
 void DeleteAllOptionsMenuObjects_(void) {
   for (int i = 14; i >= 0; i -= 2) {
     int v1 = i >> 1;
-    enemy_projectile_y_pos[v1 + 5] = 0;
-    enemy_projectile_y_vel[v1 + 17] = 0;
+    eproj_y_pos[v1 + 5] = 0;
+    eproj_y_vel[v1 + 17] = 0;
   }
 }
 
@@ -3186,30 +3186,30 @@ void DrawBorderAroundDataClearMode(void) {  // 0x82BA5B
 static const uint16 kDrawMenuSelectionMissile_Enable[4] = { 8, 8, 8, 8 };
 static const uint16 kDrawMenuSelectionMissile_SpriteMap[4] = { 0x37, 0x36, 0x35, 0x34 };
 void DrawMenuSelectionMissile(void) {  // 0x82BA6E
-  if (enemy_projectile_enable_flag) {
-    if (!--enemy_projectile_enable_flag) {
-      enemy_projectile_id[0] = (LOBYTE(enemy_projectile_id[0]) + 1) & 3;
-      enemy_projectile_enable_flag = kDrawMenuSelectionMissile_Enable[enemy_projectile_id[0]];
+  if (eproj_enable_flag) {
+    if (!--eproj_enable_flag) {
+      eproj_id[0] = (LOBYTE(eproj_id[0]) + 1) & 3;
+      eproj_enable_flag = kDrawMenuSelectionMissile_Enable[eproj_id[0]];
     }
   }
-  DrawMenuSpritemap(kDrawMenuSelectionMissile_SpriteMap[enemy_projectile_id[0]],
-      enemy_projectile_id[5], enemy_projectile_id[10], 3584);
+  DrawMenuSpritemap(kDrawMenuSelectionMissile_SpriteMap[eproj_id[0]],
+      eproj_id[5], eproj_id[10], 3584);
 }
 
 void DrawFileCopyArrow(void) {  // 0x82BABA
   uint16 v0;
-  if ((int16)(enemy_projectile_id[16] - enemy_projectile_id[17]) >= 0) {
+  if ((int16)(eproj_id[16] - eproj_id[17]) >= 0) {
     v0 = 3;
-    if (sign16(enemy_projectile_id[16] - enemy_projectile_id[17] - 2)) {
+    if (sign16(eproj_id[16] - eproj_id[17] - 2)) {
       v0 = 4;
-      if (enemy_projectile_id[16] != 1)
+      if (eproj_id[16] != 1)
         v0 = 5;
     }
   } else {
     v0 = 0;
-    if (sign16(enemy_projectile_id[17] - enemy_projectile_id[16] - 2)) {
+    if (sign16(eproj_id[17] - eproj_id[16] - 2)) {
       v0 = 1;
-      if (enemy_projectile_id[16])
+      if (eproj_id[16])
         v0 = 2;
     }
   }
@@ -3538,7 +3538,7 @@ CoroutineRet GameState_20_SamusNoHealth_BlackOut(void) {  // 0x82DCE0
     screen_fade_delay = 0;
     screen_fade_counter = 0;
     for (int i = 254; i >= 0; i -= 2)
-      enemy_projectile_y_subpos[(i >> 1) + 15] = 0;
+      eproj_y_subpos[(i >> 1) + 15] = 0;
     g_word_7E0DE8 = 16;
     game_options_screen_index = 3;
     g_word_7E0DE4 = 0;
@@ -4014,7 +4014,7 @@ CoroutineRet DoorTransitionFunction_LoadMoreThings_Async(void) {
 
   LoadEnemyGfxToVram();
   LoadRoomMusic();
-  ClearEnemyProjectiles();
+  ClearEprojs();
   ClearAnimtiles();
   ClearPaletteFXObjects();
   ClearPLMs();
@@ -4927,9 +4927,9 @@ void GameOptionsMenu_A_ScrollControllerSettingsUp(void) {  // 0x82F285
 
 void sub_82F296(uint16 j) {  // 0x82F296
   int v1 = j >> 1;
-  enemy_projectile_y_pos[v1 + 13] = 24;
-  enemy_projectile_x_vel[v1 + 3] = 56;
-  enemy_projectile_x_vel[v1 + 11] = 3584;
+  eproj_y_pos[v1 + 13] = 24;
+  eproj_x_vel[v1 + 3] = 56;
+  eproj_x_vel[v1 + 11] = 3584;
 }
 void OptionsPreInstr_F2A9(uint16 v0) {  // 0x82F2A9
   if (game_state == kGameState_2_GameOptionsMenu) {
@@ -4938,49 +4938,49 @@ void OptionsPreInstr_F2A9(uint16 v0) {  // 0x82F2A9
     if (v3) {
       const uint16 *v4 = (const uint16 *)RomPtr_82(v3 + 4 * menu_option_index);
       int v5 = v0 >> 1;
-      enemy_projectile_y_pos[v5 + 13] = *v4;
-      enemy_projectile_x_vel[v5 + 3] = v4[1];
+      eproj_y_pos[v5 + 13] = *v4;
+      eproj_x_vel[v5 + 3] = v4[1];
     } else {
       int v6 = v0 >> 1;
-      enemy_projectile_y_pos[v6 + 13] = 384;
-      enemy_projectile_x_vel[v6 + 3] = 16;
+      eproj_y_pos[v6 + 13] = 384;
+      eproj_x_vel[v6 + 3] = 16;
     }
   } else {
     int v1 = v0 >> 1;
-    enemy_projectile_E[v1 + 15] = 1;
-    enemy_projectile_y_vel[v1 + 17] = addr_off_82F4B6;
+    eproj_E[v1 + 15] = 1;
+    eproj_y_vel[v1 + 17] = addr_off_82F4B6;
   }
 }
 
 void sub_82F34B(uint16 j) {  // 0x82F34B
-  enemy_projectile_y_pos[(j >> 1) + 13] = 124;
+  eproj_y_pos[(j >> 1) + 13] = 124;
   sub_82F369(j);
 }
 void sub_82F353(uint16 j) {  // 0x82F353
-  enemy_projectile_y_pos[(j >> 1) + 13] = 132;
+  eproj_y_pos[(j >> 1) + 13] = 132;
   sub_82F369(j);
 }
 void sub_82F35B(uint16 j) {  // 0x82F35B
-  enemy_projectile_y_pos[(j >> 1) + 13] = 128;
+  eproj_y_pos[(j >> 1) + 13] = 128;
   sub_82F369(j);
 }
 void sub_82F363(uint16 j) {  // 0x82F363
-  enemy_projectile_y_pos[(j >> 1) + 13] = 128;
+  eproj_y_pos[(j >> 1) + 13] = 128;
   sub_82F369(j);
 }
 
 void sub_82F369(uint16 j) {  // 0x82F369
   int v1 = j >> 1;
-  enemy_projectile_x_vel[v1 + 3] = 16;
-  enemy_projectile_x_vel[v1 + 11] = 3584;
+  eproj_x_vel[v1 + 3] = 16;
+  eproj_x_vel[v1 + 11] = 3584;
 }
 
 
 void OptionsPreInstr_F376(uint16 k) {  // 0x82F376
   if (game_state != kGameState_2_GameOptionsMenu || game_options_screen_index == 6 && reg_INIDISP == 0x80) {
     int v1 = k >> 1;
-    enemy_projectile_E[v1 + 15] = 1;
-    enemy_projectile_y_vel[v1 + 17] = addr_off_82F4B6;
+    eproj_E[v1 + 15] = 1;
+    eproj_y_vel[v1 + 17] = addr_off_82F4B6;
   }
 }
 
@@ -4989,15 +4989,15 @@ void OptionsPreInstr_F3A0(uint16 k) {  // 0x82F3A0
   case 6:
     if (reg_INIDISP == 0x80) {
       int v1 = k >> 1;
-      enemy_projectile_E[v1 + 15] = 1;
-      enemy_projectile_y_vel[v1 + 17] = -2890;
+      eproj_E[v1 + 15] = 1;
+      eproj_y_vel[v1 + 17] = -2890;
     }
     break;
   case 9:
-    enemy_projectile_x_vel[(k >> 1) + 3] -= 2;
+    eproj_x_vel[(k >> 1) + 3] -= 2;
     break;
   case 0xA:
-    enemy_projectile_x_vel[(k >> 1) + 3] += 2;
+    eproj_x_vel[(k >> 1) + 3] += 2;
     break;
   }
 }
@@ -5005,31 +5005,31 @@ void OptionsPreInstr_F3A0(uint16 k) {  // 0x82F3A0
 void OptionsPreInstr_F3E2(uint16 k) {  // 0x82F3E2
   if (game_options_screen_index == 6 && reg_INIDISP == 0x80) {
     int v1 = k >> 1;
-    enemy_projectile_E[v1 + 15] = 1;
-    enemy_projectile_y_vel[v1 + 17] = -2890;
+    eproj_E[v1 + 15] = 1;
+    eproj_y_vel[v1 + 17] = -2890;
   }
 }
 
 void sub_82F404(uint16 k) {  // 0x82F404
   if (game_options_screen_index == 1) {
     int v1 = k >> 1;
-    enemy_projectile_E[v1 + 15] = 1;
-    enemy_projectile_y_vel[v1 + 17] = -2890;
+    eproj_E[v1 + 15] = 1;
+    eproj_y_vel[v1 + 17] = -2890;
   }
 }
 
 void sub_82F419(uint16 j) {  // 0x82F419
   int v1 = j >> 1;
-  enemy_projectile_y_pos[v1 + 13] = 216;
-  enemy_projectile_x_vel[v1 + 3] = 16;
-  enemy_projectile_x_vel[v1 + 11] = 3584;
+  eproj_y_pos[v1 + 13] = 216;
+  eproj_x_vel[v1 + 3] = 16;
+  eproj_x_vel[v1 + 11] = 3584;
 }
 
 void OptionsPreInstr_F42C(uint16 k) {  // 0x82F42C
   if (game_state != 2) {
     int v1 = k >> 1;
-    enemy_projectile_E[v1 + 15] = 1;
-    enemy_projectile_y_vel[v1 + 17] = addr_off_82F4B6;
+    eproj_E[v1 + 15] = 1;
+    eproj_y_vel[v1 + 17] = addr_off_82F4B6;
   }
 }
 void LoadControllerOptionsFromControllerBindings(void) {  // 0x82F4DC
@@ -5041,23 +5041,23 @@ void LoadControllerOptionsFromControllerBindings(void) {  // 0x82F4DC
     v2 = *(uint16 *)&g_ram[off_82F54A[v1]];
     if ((v2 & kButton_X) != 0) {
 LABEL_9:
-      enemy_projectile_F[v1 + 13] = 0;
+      eproj_F[v1 + 13] = 0;
       goto LABEL_16;
     }
     if ((v2 & kButton_A) != 0) {
-      enemy_projectile_F[v1 + 13] = 1;
+      eproj_F[v1 + 13] = 1;
     } else if (v2 < 0) {
-      enemy_projectile_F[v1 + 13] = 2;
+      eproj_F[v1 + 13] = 2;
     } else if ((v2 & kButton_Select) != 0) {
-      enemy_projectile_F[v1 + 13] = 3;
+      eproj_F[v1 + 13] = 3;
     } else if ((v2 & kButton_Y) != 0) {
-      enemy_projectile_F[v1 + 13] = 4;
+      eproj_F[v1 + 13] = 4;
     } else if ((v2 & kButton_L) != 0) {
-      enemy_projectile_F[v1 + 13] = 5;
+      eproj_F[v1 + 13] = 5;
     } else {
       if ((v2 & kButton_R) == 0)
         goto LABEL_9;
-      enemy_projectile_F[v1 + 13] = 6;
+      eproj_F[v1 + 13] = 6;
     }
 LABEL_16:
     v0 += 2;
@@ -5078,7 +5078,7 @@ uint8 OptionsMenuFunc8(void) {
   int v0 = 0, v2;
   do {
     v2 = v0;
-    *(uint16 *)&g_ram[off_82F54A[v0 >> 1]] = word_82F575[enemy_projectile_F[(v0 >> 1) + 13]];
+    *(uint16 *)&g_ram[off_82F54A[v0 >> 1]] = word_82F575[eproj_F[(v0 >> 1) + 13]];
     v0 += 2;
   } while (v2 < 12);
   return 0;
@@ -5098,7 +5098,7 @@ void OptionsMenuFunc6(void) {
     v4 = v0;
     int v1 = v0 >> 1;
     uint16 v2 = g_word_82F639[v1];
-    const uint16 *v3 = (const uint16 *)RomPtr_82(g_off_82F647[enemy_projectile_F[v1 + 13]]);
+    const uint16 *v3 = (const uint16 *)RomPtr_82(g_off_82F647[eproj_F[v1 + 13]]);
     *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap + v2) = *v3;
     *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[1] + v2) = v3[1];
     *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[2] + v2) = v3[2];
@@ -5107,13 +5107,13 @@ void OptionsMenuFunc6(void) {
     *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[34] + v2) = v3[5];
     v0 = v4 + 2;
   } while ((int16)(v4 - 12) < 0);
-  if (enemy_projectile_instr_list_ptr[0] != 5 && enemy_projectile_instr_list_ptr[0] != 6) {
+  if (eproj_instr_list_ptr[0] != 5 && eproj_instr_list_ptr[0] != 6) {
     *(uint32 *)&ram3000.menu.backup_of_io_registers_in_gameover[46] = *(uint32 *)g_word_82F6AD;
     ram3000.pause_menu_map_tilemap[665] = g_word_82F6AD[2];
     *(uint32 *)&ram3000.menu.field_536[56] = *(uint32 *)&g_word_82F6AD[3];
     ram3000.pause_menu_map_tilemap[697] = g_word_82F6AD[5];
   }
-  if (enemy_projectile_instr_list_ptr[1] != 5 && enemy_projectile_instr_list_ptr[1] != 6) {
+  if (eproj_instr_list_ptr[1] != 5 && eproj_instr_list_ptr[1] != 6) {
     *(uint32 *)&ram3000.menu.field_536[184] = *(uint32 *)g_word_82F6AD;
     ram3000.pause_menu_map_tilemap[761] = g_word_82F6AD[2];
     *(uint32 *)&ram3000.menu.menu_tilemap[46] = *(uint32 *)&g_word_82F6AD[3];
@@ -5134,15 +5134,15 @@ void OptionsMenuControllerFunc_0(void) {  // 0x82F6B9
     v1 = 0;
   uint16 v2 = v1;
   for (int i = 5; i >= 0; --i) {
-    if (enemy_projectile_F[(v2 >> 1) + 13] == r18)
+    if (eproj_F[(v2 >> 1) + 13] == r18)
       break;
     v2 += 2;
     if ((int16)(v2 - 14) >= 0)
       v2 = 0;
   }
   int v4 = menu_option_index;
-  uint16 r20 = enemy_projectile_F[v4 + 13];
-  enemy_projectile_F[v4 + 13] = r18;
-  enemy_projectile_F[(v2 >> 1) + 13] = r20;
+  uint16 r20 = eproj_F[v4 + 13];
+  eproj_F[v4 + 13] = r18;
+  eproj_F[(v2 >> 1) + 13] = r20;
   OptionsMenuFunc6();
 }

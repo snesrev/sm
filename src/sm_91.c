@@ -451,7 +451,7 @@ void DemoPreInstr_864F(void) {  // 0x91864F
 }
 
 void DemoPreInstr_866A(void) {  // 0x91866A
-  if (!enemy_projectile_x_pos[0]) {
+  if (!eproj_x_pos[0]) {
     demo_input_pre_instr = FUNC16(DemoPreInstr_nullsub_162);
     demo_input_instr_ptr = addr_off_91864B;
     demo_input_instr_timer = 1;
@@ -1950,7 +1950,7 @@ uint8 Xray_Initialize(void) {  // 0x91E16D
   samus_special_transgfx_index = 5;
   for (int i = 510; i >= 0; i -= 2)
     hdma_table_1[i >> 1] = 255;
-  DisableEnemyProjectiles();
+  DisableEprojs();
   DisablePLMs();
   DisableAnimtiles();
   DisablePaletteFx();
@@ -1996,7 +1996,7 @@ void ResponsibleForXrayStandupGlitch(void) {  // 0x91E2AD
     samus_y_pos -= r18;
     samus_prev_y_pos = samus_y_pos;
   }
-  EnableEnemyProjectiles();
+  EnableEprojs();
   EnablePLMs();
   EnableAnimtiles();
   EnablePaletteFx();

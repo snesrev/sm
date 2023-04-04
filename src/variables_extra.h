@@ -32,7 +32,7 @@
 #define cinematic_var24 (*(uint16*)(g_ram+0x19FD))
 #define cinematic_var25 (*(uint16*)(g_ram+0x19FF))
 #define cinematic_var26 (*(uint16*)(g_ram+0x1A01))
-#define enemy_projectile_pre_instr ((uint16*)(g_ram+0x1A03))
+#define eproj_pre_instr ((uint16*)(g_ram+0x1A03))
 #define cinematic_var20 (*(uint16*)(g_ram+0x1A37))
 #define cinematic_var19 (*(uint16*)(g_ram+0x1A47))
 #define cinematic_var4 (*(uint16*)(g_ram+0x1A49))

@@ -270,7 +270,7 @@ void Boulder_Func_4(void) {  // 0xA6888B
     if (E->boulder_var_E == 2) {
       E->base.properties |= kEnemyProps_Deleted;
       eproj_spawn_pt = (Point16U){ E->base.x_pos, E->base.y_pos };
-      SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x11);
+      SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x11);
       QueueSfx2_Max6(0x43);
     } else {
       E->boulder_var_A = FUNC16(Boulder_Func_3);
@@ -308,7 +308,7 @@ void Boulder_Func_5(void) {  // 0xA68942
     E->boulder_var_A = FUNC16(Boulder_Func_6);
     QueueSfx2_Max6(0x42);
     eproj_spawn_pt = (Point16U){ E->base.x_pos, E->base.y_pos };
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x11);
+    SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x11);
     QueueSfx2_Max6(0x43);
   } else {
     uint16 v5 = E->boulder_var_B + 64;
@@ -733,7 +733,7 @@ void NuclearWaffle_Init(void) {  // 0xA694C4
   uint16 v8 = 8;
   E->nwe_var_2A = 8;
   do {
-    SpawnEnemyProjectileWithGfx(v8, cur_enemy_index, addr_kEproj_NuclearWaffleBody);
+    SpawnEprojWithGfx(v8, cur_enemy_index, addr_kEproj_NuclearWaffleBody);
     v8 = E->nwe_var_2A - 2;
     E->nwe_var_2A = v8;
   } while (v8);
@@ -824,16 +824,16 @@ void NuclearWaffle_Func_3(uint16 varE32) {  // 0xA69721
     uint16 v13 = pair.j;
     if (pair.j != ET->nwe_var_08) {
       int v5 = nwe_var_00 >> 1;
-      CreateSpriteAtPos(enemy_projectile_x_pos[v5], enemy_projectile_y_pos[v5], 46, E->nwe_var_34);
-      CreateSpriteAtPos(enemy_projectile_x_pos[v5], enemy_projectile_y_pos[v5], pair.k + 44, E->nwe_var_34);
+      CreateSpriteAtPos(eproj_x_pos[v5], eproj_y_pos[v5], 46, E->nwe_var_34);
+      CreateSpriteAtPos(eproj_x_pos[v5], eproj_y_pos[v5], pair.k + 44, E->nwe_var_34);
       NuclearWaffle_Func_7(pair.j);
     }
     ET->nwe_var_08 = v13;
     uint16 v7 = NuclearWaffle_Func_5(R36, &r28);
     int v10 = nwe_var_00 >> 1;
-    enemy_projectile_x_pos[v10] = E->nwe_var_26 + CosineMult8bit(v7, varE32);
+    eproj_x_pos[v10] = E->nwe_var_26 + CosineMult8bit(v7, varE32);
     uint16 v11 = NuclearWaffle_Func_5(R36, &r28);
-    enemy_projectile_y_pos[v10] = E->nwe_var_27 + SineMult8bit(v11, varE32);
+    eproj_y_pos[v10] = E->nwe_var_27 + SineMult8bit(v11, varE32);
     v12 = E->nwe_var_2A - 2;
     E->nwe_var_2A = v12;
   } while (v12);
@@ -967,7 +967,7 @@ void FakeKraid_Func_1(uint16 k, uint16 j) {  // 0xA69ADC
     int16 fkd_var_C = E->fkd_var_C;
     if (fkd_var_C >= 0)
       v6 = addr_kEproj_MiniKraidSpikesRight;
-    SpawnEnemyProjectileWithGfx(0, k, v6);
+    SpawnEprojWithGfx(0, k, v6);
     if (!CheckIfEnemyIsOnScreen())
       QueueSfx2_Max6(0x3F);
   }
@@ -1030,11 +1030,11 @@ void FakeKraid_InstrHelper_45(uint16 k, uint16 j, uint16 a) {  // 0xA69BCB
   E->fkd_var_00 = g_word_A69A48[v5];
   uint16 v6 = g_word_A69A48[v5 + 1];
   E->fkd_var_01 = v6;
-  SpawnEnemyProjectileWithGfx(v6, cur_enemy_index, addr_kEproj_MiniKraidSpit);
+  SpawnEprojWithGfx(v6, cur_enemy_index, addr_kEproj_MiniKraidSpit);
   E->fkd_var_00 = g_word_A69A48[v5 + 2];
   uint16 v8 = g_word_A69A48[v5 + 3];
   E->fkd_var_01 = v8;
-  SpawnEnemyProjectileWithGfx(v8, ka, addr_kEproj_MiniKraidSpit);
+  SpawnEprojWithGfx(v8, ka, addr_kEproj_MiniKraidSpit);
 }
 
 const uint16 *FakeKraid_Instr_5(uint16 k, const uint16 *jp) {  // 0xA69C02
@@ -2058,7 +2058,7 @@ void Ridley_Func_21(void) {  // 0xA6B70E
     E->ridley_var_C = v1;
     if (Ridley_Func_23() & 1) {
       eproj_spawn_pt = (Point16U) { tilemap_stuff[82], tilemap_stuff[83] + 12 };
-      SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 9);
+      SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 9);
       QueueSfx2_Max6(0x76);
       earthquake_type = 13;
       earthquake_timer = 4;
@@ -2925,7 +2925,7 @@ void Ridley_Func_69(void) {  // 0xA6C623
     E->ridley_var_28 = v2;
     int v3 = (uint16)(4 * v2) >> 1;
     eproj_spawn_pt = (Point16U){ E->base.x_pos + g_word_A6C66E[v3], E->base.y_pos + g_word_A6C66E[v3 + 1] };
-    SpawnEnemyProjectileWithRoomGfx(addr_kEproj_DustCloudExplosion, 3);
+    SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 3);
     QueueSfx2_Max3(0x24);
   } else {
     E->ridley_var_27 = v1;
@@ -4364,7 +4364,7 @@ void Ridley_Func_129(void) {  // 0xA6E088
       QueueSfx1_Max6(0x3D);
       v2 = 6;
     }
-    SpawnEnemyProjectileWithRoomGfx(0xE509, v2);
+    SpawnEprojWithRoomGfx(0xE509, v2);
   }
 }
 
@@ -4447,7 +4447,7 @@ void Ridley_Func_131(uint16 k) {  // 0xA6E828
 
 void Ridley_Func_132(uint16 k, uint16 a) {  // 0xA6E840
   Get_Ridley(0)->ridley_parameter_1 = a;
-  SpawnEnemyProjectileWithGfx(a, k, addr_stru_869634);
+  SpawnEprojWithGfx(a, k, addr_stru_869634);
 }
 
 const uint16 *Ridley_Instr_11(uint16 k, const uint16 *jp) {  // 0xA6E84D
@@ -4496,9 +4496,9 @@ const uint16 *Ridley_Instr_13(uint16 k, const uint16 *jp) {  // 0xA6E909
 }
 
 const uint16 *Ridley_E90C(uint16 k, const uint16 *jp, uint16 a) {  // 0xA6E90C
-  enemy_projectile_unk1995 = a;
+  eproj_unk1995 = a;
   Enemy_Ridley *E = Get_Ridley(0);
-  SpawnEnemyProjectileWithRoomGfx(0x9642, E->ridley_var_10);
+  SpawnEprojWithRoomGfx(0x9642, E->ridley_var_10);
   return jp;
 }
 
@@ -4761,7 +4761,7 @@ void CeresDoor_Func_6(uint16 k) {  // 0xA6F7DC
       uint16 v6 = 3;
       if (NextRandom() < 0x4000)
         v6 = 12;
-      SpawnEnemyProjectileWithRoomGfx(0xE509, v6);
+      SpawnEprojWithRoomGfx(0xE509, v6);
       QueueSfx2_Max6(0x25);
     }
   }
