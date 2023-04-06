@@ -1,6 +1,7 @@
 # Requirements
   * A Super Metroid rom (Make sure to rename it to `sm.smc`)
   * libsdl2-dev
+  * Super Metroid repo `git clone --recursive https://github.com/snesrev/sm`
   
  For Linux/MacOS you must install these for your desired OS:
  * Ubuntu/Debian: `sudo apt install libsdl2-dev`
@@ -14,18 +15,26 @@
 
 Dependencies and requirements:
 
-Note: *Make sure you're using MINGW64, otherwise it won't work.*
   * The `libsdl2-dev` library
   * [MSYS2](https://www.msys2.org)
+  
+Note: *Make sure you're using MINGW64 and you're in `sm` folder in the terminal.*
 
 1. Install MSYS2 on your machine.
-2. Clone the SM repository. `git clone https://github.com/snesrev/sm`
-3. Place the copy of your rom in the main directory.
-4. Install `libsdl2-dev` with `sdl2-config --cflags`
-5. After that it outputs `-IC:/msys64/mingw64/include/SDL2 -Dmain=SDL_main`, type `sdl2-config --libs`, it should output `-LC:/msys64/mingw64/lib -lmingw32 -mwindows -lSDL2main -lSDL2`
-6. Now install Make and GCC, type `pacman -S make && pacman -S mingw-w64-x86_64-gcc`
+2. Place the copy of your rom in the main directory.
+3. Install the necessary dependencies by inputting this command in the terminal.
 
-NOTE: *Make sure you're in the `sm` directory.*
+```sh
+pacman -S mingw-w64-x86_64-SDL2 && pacman -S make && pacman -S mingw-w64-x86_64-gcc
+```
+4. Type `sdl2-config --cflags`, it should output:
+```sh
+-IC:/msys64/mingw64/include/SDL2 -Dmain=SDL_main
+```
+5. After that type `sdl2-config --libs`, should output:
+```sh
+-LC:/msys64/mingw64/lib -lmingw32 -mwindows -lSDL2main -lSDL2
+```
 
 After you've done installing everything, cd to `sm` folder. Type `make`
 In order to speed up the compilation, type `make -j16`
@@ -53,7 +62,7 @@ Download VS installer. On installer prompt, make sure you're on "Workloads" and 
 
 # Linux/MacOS
 
-Cd to your SM root folder and open the terminal and type:
+CD to your SM root folder and open the terminal and type:
 ```sh
 make
 ```
@@ -70,21 +79,19 @@ CC=clang make   # specify compiler
 Dependencies and requirements:
 
   * The `switch-sdl2` library
-  * MSYS2
-  * [DevKitPro](https://devkitpro.org/wiki/Getting_Started)
+  * [DevKitPro](https://github.com/devkitPro/installer)
   * [Atmosphere](https://github.com/Atmosphere-NX/Atmosphere)
   
- Note: *You must have MINGW64 open and affirm you're in the `sm` root folder.*
+1. Make sure you've installed Atmosphere on your Switch.
+2. Please download the DevKitPro version of MSYS2 through their installer, as the default MSYS2 causes issues with windows compiling.
+3. Now that you've installed DevKitPro, open up the location you've installed DevKitPro to, then find `mingw64.exe` inside `msys2` located in `devkitPro` folder.
+4. Type `pacman -S git switch-dev switch-sdl2 switch-tools` in the terminal to install the `switch-sdl2` library.
+5. CD to `switch` folder by typing `cd src/platfrom/switch` in the terminal on the `sm` root folder.
+6. type `make` to compile the Switch Port.
+7. Transfer the `.ini`, `nro`, `ncap` and your rom file to the Switch.
 
-1. Make sure you've installed DevKitPro and Atmosphere.
-2. Type `(dkp-)pacman -S git switch-dev switch-sdl2 switch-tools` to install the Switch SDL2 deps.
-3. Now go to the `switch` folder inside MSYS2 `cd platform/switch/` 
-4. Type `make` to build the game.
-5. Copy the `.ini`, `nro` and the `smc` file and put them in your Switch.
-
-**OPTIONAL STEPS**
+**OPTIONAL STEP**
 
 ```sh
 make -j$(nproc) # To build using all cores
-nxlink -s zelda3.nro # To test the build directly onto the Switch
 ```
