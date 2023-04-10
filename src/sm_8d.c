@@ -57,48 +57,44 @@ void PaletteFxHandler(void) {  // 0x8DC527
 }
 
 void PalFx_ProcessOne(uint16 k) {  // 0x8DC54A
-  PairU16 v7;
-  int16 v11;
-  PairU16 v12;
-
   CallPalFxPreInstr(palettefx_pre_instr[k >> 1] | 0x8D0000, k);
   uint16 v1 = palettefx_index;
-  int v2 = palettefx_index >> 1;
-  if (palettefx_instr_timers[v2]-- == 1) {
-    uint16 j = palettefx_instr_list_ptrs[v2], v6;
-    while (1) {
-      const uint16 *v5 = (const uint16 *)RomPtr_8D(j);
-      v6 = *v5;
-      if ((*v5 & 0x8000) == 0)
-        break;
-      v7 = CallPalInstr(v6 | 0x8D0000, v1, j + 2);
-      v1 = v7.k;
-      j = v7.j;
-      if (!v7.j)
-        return;
-    }
-    int v8 = v1 >> 1;
-    palettefx_instr_timers[v8] = v6;
-    uint16 v9 = palettefx_color_indexes[v8];
-    const uint8 *v10;
-    do {
-      while (1) {
-        v10 = RomPtr_8D(j);
-        v11 = GET_WORD(v10 + 2);
-        if (v11 & 0x8000)
-          break;
-        palette_buffer[v9 >> 1] = v11;
-        v9 += 2;
-        j += 2;
-      }
-      v12 = CallPalInstr((uint16)v11 | 0x8D0000, v9, j);
-      v9 = v12.k;
-      j = v12.j;
-    } while (v12.j);
+  if (palettefx_instr_timers[v1 >> 1]-- != 1)
+    return;
+  uint16 j = palettefx_instr_list_ptrs[v1 >> 1], v6;
+  while (1) {
+    const uint16 *p = (const uint16 *)RomPtr_8D(j);
+    v6 = *p;
+    if ((*p & 0x8000) == 0)
+      break;
+    PairU16 v7 = CallPalInstr(v6 | 0x8D0000, v1, j + 2);
+    v1 = v7.k;
+    j = v7.j;
+    if (!v7.j)
+      return;
   }
+  int v8 = v1 >> 1;
+  palettefx_instr_timers[v8] = v6;
+  uint16 color_idx = palettefx_color_indexes[v8];
+  const uint8 *v10;
+  uint16 v11;
+  do {
+    while (1) {
+      v10 = RomPtr_8D(j);
+      v11 = GET_WORD(v10 + 2);
+      if (v11 & 0x8000)
+        break;
+      palette_buffer[color_idx >> 1] = v11;
+      color_idx += 2;
+      j += 2;
+    }
+    PairU16 v12 = CallPalInstr((uint16)v11 | 0x8D0000, color_idx, j);
+    color_idx = v12.k;
+    j = v12.j;
+  } while (j);
 }
 
-PairU16 PalInstr_Finish(uint16 k, uint16 j) {  // 0x8DC595
+PairU16 PalInstr_Wait(uint16 k, uint16 j) {  // 0x8DC595
   palettefx_instr_list_ptrs[palettefx_index >> 1] = j + 4;
   return MakePairU16(0, 0);
 }
@@ -147,10 +143,6 @@ PairU16 PalInstr_Goto(uint16 k, uint16 j) {  // 0x8DC61E
   return MakePairU16(k, v2);
 }
 
-PairU16 PalInstr_GotoRel(uint16 k, uint16 j) {  // 0x8DC623
-  return MakePairU16(k, j + (int8)*RomPtr_8D(j));
-}
-
 PairU16 PalInstr_DecTimerGoto(uint16 k, uint16 j) {  // 0x8DC639
   PairU16 v4;
 
@@ -158,16 +150,6 @@ PairU16 PalInstr_DecTimerGoto(uint16 k, uint16 j) {  // 0x8DC639
   if (palettefx_timers[v2]-- == 1)
     return MakePairU16(k, j + 2);
   v4 = PalInstr_Goto(k, j);
-  return MakePairU16(v4.k, v4.j);
-}
-
-PairU16 PalInstr_DecTimerGotoRel(uint16 k, uint16 j) {  // 0x8DC641
-  PairU16 v4;
-
-  int v2 = k >> 1;
-  if (palettefx_timers[v2]-- == 1)
-    return MakePairU16(k, j + 1);
-  v4 = PalInstr_GotoRel(k, j);
   return MakePairU16(v4.k, v4.j);
 }
 
@@ -256,14 +238,6 @@ void PalInit_F761_Norfair1(uint16 k, uint16 j) {  // 0x8DE440
   palettefx_instr_list_ptrs[j >> 1] = v2;
 }
 
-PairU16 PalInstr_SetTimerIfBossBit(uint16 k, uint16 j) {  // 0x8DEB2A
-  if (!(CheckBossBitForCurArea(1) & 1)) {
-    palettefx_instr_timers[k >> 1] = 1;
-    return MakePairU16(k, 0);
-  }
-  return MakePairU16(k, j);
-}
-
 void PalPreInstr_SwitchIfYpos(uint16 k) {  // 0x8DEC59
   if (samus_y_pos < 0x380) {
     int v2 = k >> 1;
@@ -316,7 +290,7 @@ void CallPalFxPreInstr(uint32 ea, uint16 k) {
 
 PairU16 CallPalInstr(uint32 ea, uint16 k, uint16 j) {
   switch (ea) {
-  case fnPalInstr_Finish: return PalInstr_Finish(k, j);
+  case fnPalInstr_Wait: return PalInstr_Wait(k, j);
   case fnPalInstr_ColorPlus2: return PalInstr_ColorPlus2(k, j);
   case fnPalInstr_ColorPlus3: return PalInstr_ColorPlus3(k, j);
   case fnPalInstr_ColorPlus4: return PalInstr_ColorPlus4(k, j);
@@ -327,16 +301,13 @@ PairU16 CallPalInstr(uint32 ea, uint16 k, uint16 j) {
   case fnPalInstr_SetPreInstr: return PalInstr_SetPreInstr(k, j);
   case fnPalInstr_ClearPreInstr: return PalInstr_ClearPreInstr(k, j);
   case fnPalInstr_Goto: return PalInstr_Goto(k, j);
-  case fnPalInstr_GotoRel: return PalInstr_GotoRel(k, j);
   case fnPalInstr_DecTimerGoto: return PalInstr_DecTimerGoto(k, j);
-  case fnPalInstr_DecTimerGotoRel: return PalInstr_DecTimerGotoRel(k, j);
   case fnPalInstr_SetTimer: return PalInstr_SetTimer(k, j);
   case fnPalInstr_SetColorIndex: return PalInstr_SetColorIndex(k, j);
   case fnPalInstr_QueueMusic: return PalInstr_QueueMusic(k, j);
   case fnPalInstr_QueueSfx1: return PalInstr_QueueSfx1(k, j);
   case fnPalInstr_QueueSfx2: return PalInstr_QueueSfx2(k, j);
   case fnPalInstr_QueueSfx3: return PalInstr_QueueSfx3(k, j);
-  case fnPalInstr_SetTimerIfBossBit: return PalInstr_SetTimerIfBossBit(k, j);
   case fnPalInstr_SetPalfxIndex: return PalInstr_SetPalfxIndex(k, j);
   default: Unreachable(); return (PairU16) { 0, 0 };
   }

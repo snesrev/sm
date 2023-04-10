@@ -83,8 +83,8 @@ static uint16 WriteMessageTilemap(void) {  // 0x8582B8
   message_box_animation_y_radius = 0;
   for (int i = 0; i != 112; ++i)
     ram3000.pause_menu_map_tilemap[i] = 0;
-  uint16 r0 = *(VoidP *)((uint8 *)&kMessageBoxDefs[0].message_tilemap + (6 * (message_box_index - 1)));
-  uint16 r9 = *(VoidP *)((uint8 *)&kMessageBoxDefs[1].message_tilemap + (6 * (message_box_index - 1))) - r0;
+  uint16 r0 = *(VoidP *)((uint8 *)&kMessageBoxDefs[6 * (message_box_index - 1)].message_tilemap);
+  uint16 r9 = *(VoidP *)((uint8 *)&kMessageBoxDefs[6 * (message_box_index - 1) + 1].message_tilemap) - r0;
   int n = r9 >> 1;
   r9 += 128;
   message_box_das0l_value = r9;

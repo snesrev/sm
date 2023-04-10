@@ -469,7 +469,7 @@ bool HookedFunctionRts(int is_long) {
 static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
   memcpy(&b->ram[0x0], &a->ram[0x0], 0x51);  // r18, r20, R22 etc
   memcpy(&b->ram[0x1f5b], &a->ram[0x1f5b], 0x100 - 0x5b);  // stacck
-  memcpy(&b->ram[0xad], &a->ram[0xad], 2);  // ptr_to_retaddr_parameters
+  memcpy(&b->ram[0xad], &a->ram[0xad], 4);  // ptr_to_retaddr_parameters etc 
   memcpy(&b->ram[0x5e7], &a->ram[0x5e7], 14);  // bitmask, mult_tmp, mult_product_lo etc
 
   memcpy(&b->ram[0x5BC], &a->ram[0x5BC], 9);  // door_transition_vram_update etc
@@ -477,8 +477,12 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
   memcpy(&a->ram[0x611], &b->ram[0x611], 6);  // coroutine_state (copy from mine to theirs)
   memcpy(&b->ram[0x641], &a->ram[0x641], 2);  // apu_attempts_countdown
   memcpy(&a->ram[0x77e], &b->ram[0x77e], 5);  // my counter
+  memcpy(&a->ram[0x78F], &b->ram[0x78F], 2);  // door_bts
+  
+  memcpy(&a->ram[0x7b7], &b->ram[0x7b7], 2);  // event_pointer
   memcpy(&a->ram[0x933], &b->ram[0x933], 10);  // var933 etc
   memcpy(&b->ram[0xA82], &a->ram[0xA82], 2);  // xray_angle
+  memcpy(&b->ram[0xB24], &a->ram[0xB24], 4);  // xray_angle
   memcpy(&a->ram[0xd1e], &b->ram[0xd1e], 2);  // grapple_beam_unkD1E
   memcpy(&a->ram[0xd82], &b->ram[0xd82], 8);  // grapple_beam_tmpD82
 
@@ -503,6 +507,7 @@ static void VerifySnapshotsEq(Snapshot *b, Snapshot *a, Snapshot *prev) {
   memcpy(&a->ram[0x18A6], &b->ram[0x18A6], 2);  // collision_detection_index
   memcpy(&a->ram[0x189A], &b->ram[0x189A], 12);  // samus_target_x_pos etc
   
+  memcpy(&b->ram[0x1966], &a->ram[0x1966], 6);  // current_fx_entry_offset etc
   memcpy(&b->ram[0x1993], &a->ram[0x1993], 2);  // eproj_init_param
   memcpy(&b->ram[0x19b3], &a->ram[0x19b3], 2);  // mode7_spawn_param
   memcpy(&b->ram[0x1a93], &a->ram[0x1a93], 2);  // cinematic_spawn_param

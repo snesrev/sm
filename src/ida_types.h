@@ -34,7 +34,7 @@ typedef struct FxDef {
 
 /* 4 */
 typedef struct LoadStationList {
-  VoidP room_ptr;
+  VoidP room_ptr_;
   VoidP door_ptr;
   uint16 door_bts;
   uint16 screen_x_pos;
@@ -106,9 +106,6 @@ typedef struct Eproj_InitXYVelRandom_Args {
   uint16 field_6;
   uint16 field_8;
 } Eproj_InitXYVelRandom_Args;
-
-/* 84 */
-typedef uint16 uint16;
 
 /* 13 */
 typedef struct EnemyData {
@@ -615,9 +612,8 @@ typedef struct SamusTileAnimationDefs {
 } SamusTileAnimationDefs;
 
 /* 43 */
-typedef struct  SamusTileAnimationTileDefs {
-  uint16 src;
-  uint8 gap2;
+typedef struct SamusTileAnimationTileDefs {
+  LongPtr src;
   uint16 part1_size;
   uint16 part2_size;
 }SamusTileAnimationTileDefs;
@@ -625,16 +621,7 @@ typedef struct  SamusTileAnimationTileDefs {
 /* 44 */
 typedef struct ProjectileDataTable {
   uint16 damage;
-  VoidP field_2;
-  VoidP field_4;
-  VoidP field_6;
-  VoidP field_8;
-  VoidP field_A;
-  VoidP field_C;
-  VoidP field_E;
-  VoidP field_10;
-  VoidP field_12;
-  VoidP field_14;
+  uint16 instr_ptrs[10];
 } ProjectileDataTable;
 
 /* 45 */
@@ -986,11 +973,11 @@ typedef enum Buttons {
 } Buttons;
 
 /* 96 */
-typedef struct StateHeaderTiles {
+typedef struct TileSet {
   LongPtr tile_table_ptr;
   LongPtr tiles_ptr;
   LongPtr palette_ptr;
-} StateHeaderTiles;
+} TileSet;
 
 /* 97 */
 typedef struct RoomDefRoomstate {
@@ -1077,13 +1064,6 @@ typedef struct  VramReadQueueEnt {
   LongPtr src;
   uint16 size;
 } VramReadQueueEnt;
-
-/* 107 */
-typedef struct  SpriteDrawEnt {
-  uint16 x_and_flags;
-  uint8 xcoord;
-  uint16 char_flags;
-} SpriteDrawEnt;
 
 /* 108 */
 typedef struct  EnemyTileLoadData {
@@ -1197,15 +1177,8 @@ typedef struct FileCopyArrowStuff {
   uint16 ypos;
 } FileCopyArrowStuff;
 
-/* 120 */
-typedef struct GameOverBabyMetroidInstruction {
-  VoidP field_0;
-  VoidP field_2;
-  VoidP field_4;
-} GameOverBabyMetroidInstruction;
-
 /* 122 */
-typedef struct EnemyDef_A2 {
+typedef struct EnemyDef {
   uint16 tile_data_size;
   VoidP palette_ptr;
   uint16 health;
@@ -1239,21 +1212,9 @@ typedef struct EnemyDef_A2 {
   VoidP item_drop_chances_ptr;
   VoidP vulnerability_ptr;
   VoidP name_ptr;
-} EnemyDef_A2;
+} EnemyDef;
 
-typedef EnemyDef_A2 EnemyDef_A3;
-typedef EnemyDef_A2 EnemyDef_A4;
-typedef EnemyDef_A2 EnemyDef_A5;
-typedef EnemyDef_A2 EnemyDef_A6;
-typedef EnemyDef_A2 EnemyDef_A7;
-typedef EnemyDef_A2 EnemyDef_A8;
-typedef EnemyDef_A2 EnemyDef_AA;
-
-typedef EnemyDef_A2 EnemyDef_B2;
-typedef EnemyDef_A2 EnemyDef_B3;
-/* 133 */
-
-typedef struct  Ram3000_MsgBox {
+typedef struct Ram3000_MsgBox {
   uint8 pad[188];
   uint16 msg_box_anim_y_radius_neg[30];
   uint16 msg_box_anim_y_radius[30];
@@ -1315,106 +1276,6 @@ typedef struct  Mode7CgvmWriteQueue {
   uint16 vram_addr;
   uint8 vmain;
 } Mode7CgvmWriteQueue;
-
-/* 140 */
-typedef struct  RoomDefStateSelect_29E6_BossBitFlags {
-  VoidP code_ptr;
-  uint8 bb;
-  VoidP ssss;
-} RoomDefStateSelect_29E6_BossBitFlags;
-
-/* 141 */
-typedef struct  RoomDefStateSelect_12E6_EventBitArray {
-  VoidP code_ptr;
-  uint8 rr;
-  VoidP ssss;
-} RoomDefStateSelect_12E6_EventBitArray;
-
-/* 142 */
-typedef struct RoomDefStateSelect_52E6_MorphMissile {
-  VoidP code_ptr;
-  uint16 ssss;
-} RoomDefStateSelect_52E6_MorphMissile;
-
-/* 143 */
-typedef struct RoomDefStateSelect_69E6_PowerBombs {
-  VoidP code_ptr;
-  VoidP ssss;
-} RoomDefStateSelect_69E6_PowerBombs;
-
-/* 144 */
-typedef struct RoomDefStateSelect_78E6_SpeedBooster {
-  VoidP code_ptr;
-  uint16 ssss;
-} RoomDefStateSelect_78E6_SpeedBooster;
-
-/* 151 */
-typedef struct Ram7800_SpikeShootingPlant {
-  uint16 var_a;
-  uint16 var_b;
-}Ram7800_SpikeShootingPlant;
-
-/* 152 */
-typedef struct Ram7800_MaridiaSpikeyShell {
-  uint16 field_0;
-  uint16 field_2;
-  uint16 field_4;
-}Ram7800_MaridiaSpikeyShell;
-
-/* 153 */
-typedef struct Ram7800_MiniMaridiaTurtle {
-  uint16 var_a;
-  uint16 var_b;
-  uint16 var_c;
-  uint16 var_d;
-  uint16 var_e;
-  uint16 var_f;
-  uint16 var_g;
-  uint16 var_h;
-}Ram7800_MiniMaridiaTurtle;
-
-/* 154 */
-typedef struct Ram7800_ThinHoppingBlobs {
-  uint16 var_a;
-  uint16 var_b;
-  uint16 var_c;
-  uint16 var_d;
-  uint16 var_e;
-  uint16 var_f;
-  uint16 var_g;
-  uint16 var_h;
-}Ram7800_ThinHoppingBlobs;
-
-/* 155 */
-typedef struct Ram7800_NorfairLavajumpingEnemy {
-  uint16 var_a;
-  uint16 var_b;
-  uint16 var_c;
-  uint16 var_d;
-  uint16 var_e;
-  uint16 var_f;
-  uint16 var_g;
-  uint16 var_h;
-}Ram7800_NorfairLavajumpingEnemy;
-
-/* 156 */
-typedef struct Ram7800_NorfairRio {
-  uint16 var_a;
-  uint16 var_b;
-  uint16 var_c;
-  uint16 var_d;
-  uint16 var_e;
-  uint16 var_f;
-  uint16 var_g;
-  uint16 var_h;
-}Ram7800_NorfairRio;
-
-/* 157 */
-typedef struct Ram7800_FireFlea {
-  uint16 var_a;
-  uint16 var_b;
-  uint16 var_c;
-}Ram7800_FireFlea;
 
 /* 145 */
 typedef union ExtraEnemyRam7800 {
@@ -2694,8 +2555,8 @@ static inline VramWriteEntry *gVramWriteEntry(int a) { return (VramWriteEntry *)
 struct DoorDef; static inline DoorDef *get_DoorDef(uint16 a) { return (DoorDef *)RomPtr(0x830000 | a); }
 struct RoomDefHeader; static inline RoomDefHeader *get_RoomDefHeader(uint16 a) { return (RoomDefHeader *)RomPtr(0x8F0000 | a); }
 struct RoomDefRoomstate; static inline RoomDefRoomstate *get_RoomDefRoomstate(uint16 a) { return (RoomDefRoomstate *)RomPtr(0x8F0000 | a); }
-struct StateHeaderTiles; static inline StateHeaderTiles *get_StateHeaderTiles(uint16 a) { return (StateHeaderTiles *)RomPtr(0x8F0000 | a); }
-struct EnemyDef_A2; static inline EnemyDef_A2 *get_EnemyDef_A2(uint16 a) { return (EnemyDef_A2 *)RomPtr(0xA00000 | a); }
+struct TileSet; static inline TileSet *get_TileSet(uint16 a) { return (TileSet *)RomPtr(0x8F0000 | a); }
+struct EnemyDef; static inline EnemyDef *get_EnemyDef_A2(uint16 a) { return (EnemyDef *)RomPtr(0xA00000 | a); }
 struct EnemyTileset; static inline EnemyTileset *get_EnemyTileset(uint16 a) { return (EnemyTileset *)RomPtr(0xB40000 | a); }
 struct RoomPlmEntry; static inline RoomPlmEntry *get_RoomPlmEntry(uint16 a) { return (RoomPlmEntry *)RomPtr(0x8F0000 | a); }
 struct EprojDef; static inline EprojDef *get_EprojDef(uint16 a) { return (EprojDef *)RomPtr(0x860000 | a); }
@@ -2717,7 +2578,6 @@ struct PlmHeader_Size4; static inline PlmHeader_Size4 *get_PlmHeader_Size4(uint1
 struct PlmHeader_Size6; static inline PlmHeader_Size6 *get_PlmHeader_Size6(uint16 a) { return (PlmHeader_Size6 *)RomPtr(0x840000 | a); }
 struct RoomDefStateSelect_E6E5_Finish; static inline RoomDefStateSelect_E6E5_Finish *get_RoomDefStateSelect_E6E5_Finish(uint16 a) { return (RoomDefStateSelect_E6E5_Finish *)RomPtr(0x8F0000 | a); }
 struct SamusSpeedTableEntry; static inline SamusSpeedTableEntry *get_SamusSpeedTableEntry(uint16 a) { return (SamusSpeedTableEntry *)RomPtr(0x900000 | a); }
-struct SpriteDrawEnt; static inline SpriteDrawEnt *get_SpriteDrawEnt(uint16 a) { return (SpriteDrawEnt *)RomPtr(0xA60000 | a); }
 struct SamusTileAnimationDefs; static inline SamusTileAnimationDefs *get_SamusTileAnimationDefs(uint16 a) { return (SamusTileAnimationDefs *)RomPtr(0x920000 | a); }
 struct PalFxDef; static inline PalFxDef *get_PalFxDef(uint16 a) { return (PalFxDef *)RomPtr(0x8D0000 | a); }
 struct Mode7ObjectDef; static inline Mode7ObjectDef *get_Mode7ObjectDef(uint16 a) { return (Mode7ObjectDef *)RomPtr(0x8B0000 | a); }

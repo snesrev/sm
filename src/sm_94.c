@@ -857,7 +857,7 @@ static uint8 BlockColl_Vert_BombBlock(CollInfo *ci) {  // 0x94934C
 
 uint8 BlockColl_Horiz_Door(CollInfo *ci) {  // 0x94938B
   door_transition_function = FUNC16(DoorTransitionFunction_HandleElevator);
-  door_bts = BTS[cur_block_index];
+  uint8 door_bts = BTS[cur_block_index];
   uint16 v0 = *(uint16 *)RomPtr_8F(door_list_pointer + 2 * (door_bts & 0x7F));
   if ((get_DoorDef(v0)->room_definition_ptr & 0x8000) == 0) {
     if (samus_pose < kGameState_9_HitDoorBlock)
@@ -872,7 +872,7 @@ uint8 BlockColl_Horiz_Door(CollInfo *ci) {  // 0x94938B
 
 uint8 BlockColl_Vert_Door(CollInfo *ci) {  // 0x9493CE
   door_transition_function = FUNC16(DoorTransitionFunction_HandleElevator);
-  door_bts = BTS[cur_block_index];
+  uint8 door_bts = BTS[cur_block_index];
   uint16 v0 = *(uint16 *)RomPtr_8F(door_list_pointer + 2 * (door_bts & 0x7F));
   if ((get_DoorDef(v0)->room_definition_ptr & 0x8000) == 0) {
     if (samus_pose < kPose_09_MoveR_NoAim)

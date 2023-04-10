@@ -695,7 +695,7 @@ uint16 CallRoomDefStateSelect(uint32 ea, uint16 k) {
 void HandleRoomDefStateSelect(uint16 k) {  // 0x8FE5D2
   uint16 v1 = k + 11;
   do {
-    event_pointer = get_RoomDefStateSelect_E6E5_Finish(v1)->code_ptr;
+    uint16 event_pointer = get_RoomDefStateSelect_E6E5_Finish(v1)->code_ptr;
     v1 = CallRoomDefStateSelect(event_pointer | 0x8F0000, v1 + 2);
   } while (v1);
 }
@@ -703,14 +703,6 @@ void HandleRoomDefStateSelect(uint16 k) {  // 0x8FE5D2
 uint16 RoomDefStateSelect_Finish(uint16 k) {  // 0x8FE5E6
   roomdefroomstate_ptr = k;
   return 0;
-}
-
-uint16 RoomDefStateSelect_Door(uint16 k) {  // 0x8FE5EB
-  const uint8 *v1 = RomPtr_8F(k);
-  if (GET_WORD(v1) == door_def_ptr)
-    return RoomDefStateSelect_Finish(GET_WORD(v1 + 2));
-  else
-    return k + 4;
 }
 
 uint16 RoomDefStateSelect_TourianBoss01(uint16 k) {  // 0x8FE5FF

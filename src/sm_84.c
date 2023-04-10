@@ -94,10 +94,6 @@ void WriteRowOfLevelDataBlockAndBTS(uint16 k, uint16 arg0, uint16 arg1, uint16 a
 }
 
 void LoadXrayBlocks(void) {  // 0x84831A
-  RoomDefRoomstate *RoomDefRoomstate;
-  uint16 j;
-  int16 v7;
-
   for (int i = 78; i >= 0; i -= 2) {
     int v1 = i >> 1;
     if (plm_header_ptr[v1] >= FUNC16(PlmPreInstr_GotoLinkIfTriggered)) {
@@ -112,15 +108,11 @@ void LoadXrayBlocks(void) {  // 0x84831A
       }
     }
   }
-  RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
-  if (RoomDefRoomstate->xray_special_casing_ptr) {
-    for (j = RoomDefRoomstate->xray_special_casing_ptr; ; j += 4) {
-      const uint8 *v6 = RomPtr_8F(j);
-      v7 = GET_WORD(v6);
-      if (!v7)
-        break;
-      LoadBlockToXrayTilemap(GET_WORD(v6 + 2), (uint8)v7, v6[1]);
-    }
+  RoomDefRoomstate *RS = get_RoomDefRoomstate(roomdefroomstate_ptr);
+  if (RS->xray_special_casing_ptr) {
+    const XraySpecialCasing *p = (const XraySpecialCasing *)RomPtr_8F(RS->xray_special_casing_ptr);
+    for (; p->x_block || p->y_block; p++)
+      LoadBlockToXrayTilemap(p->level_data_block, p->x_block, p->y_block);
   }
 }
 
@@ -140,9 +132,7 @@ void ClearPLMs(void) {  // 0x8483C3
 
 void SpawnHardcodedPlm(SpawnHardcodedPlmArgs p) {  // 0x8483D7
   SpawnHardcodedPlmArgs *pp = &p;
-  int16 v2;
-  PlmHeader_Size4 *PlmHeader_Size4;
-
+  
   uint16 v1 = 78;
   while (plm_header_ptr[v1 >> 1]) {
     v1 -= 2;
@@ -151,27 +141,25 @@ void SpawnHardcodedPlm(SpawnHardcodedPlmArgs p) {  // 0x8483D7
     }
   }
   uint16 prod = Mult8x8(pp->field_1, room_width_in_blocks);
-  v2 = pp->field_0;
-  plm_block_indices[v1 >> 1] = 2 * (prod + v2);
+  plm_block_indices[v1 >> 1] = 2 * (prod + pp->field_0);
   uint16 v3 = pp->field_2;
   plm_header_ptr[v1 >> 1] = v3;
   int v4 = v1 >> 1;
   plm_room_arguments[v4] = 0;
   plm_variables[v4] = 0;
   plm_pre_instrs[v4] = 0x8469;
-  plm_instr_list_ptrs[v4] = get_PlmHeader_Size4(v3)->instr_list_ptr;
+  PlmHeader_Size4 *PH = get_PlmHeader_Size4(v3);
+  plm_instr_list_ptrs[v4] = PH->instr_list_ptr;
   plm_instruction_timer[v4] = 1;
   plm_instruction_draw_ptr[v4] = addr_kDefaultPlmDrawInstruction;
   plm_timers[v4] = 0;
   plm_id = v1;
-  PlmHeader_Size4 = get_PlmHeader_Size4(v3);
-  CallPlmHeaderFunc(PlmHeader_Size4->func_ptr | 0x840000, v1);
+  CallPlmHeaderFunc(PH->func_ptr | 0x840000, v1);
 }
 
 void SpawnRoomPLM(uint16 k) {  // 0x84846A
   RoomPlmEntry *rpe;
   int16 x_block;
-  PlmHeader_Size4 *PH;
 
   uint16 v1 = 78;
   while (plm_header_ptr[v1 >> 1]) {
@@ -189,7 +177,7 @@ void SpawnRoomPLM(uint16 k) {  // 0x84846A
   plm_header_ptr[v4] = rpe->plm_header_ptr_;
   plm_variables[v4] = 0;
   plm_pre_instrs[v4] = FUNC16(PlmPreInstr_Empty2);
-  PH = get_PlmHeader_Size4(pp);
+  PlmHeader_Size4 *PH = get_PlmHeader_Size4(pp);
   plm_instr_list_ptrs[v4] = PH->instr_list_ptr;
   plm_instruction_timer[v4] = 1;
   plm_instruction_draw_ptr[v4] = addr_kDefaultPlmDrawInstruction;
@@ -205,8 +193,6 @@ void PlmPreInstr_Empty2(void) {  // 0x8484E6
 
 // returns bit 0 set if carry, 0x40 if ovf
 uint8 SpawnPLM(uint16 a) {  // 0x8484E7
-  PlmHeader_Size4 *PlmHeader_Size4;
-
   uint16 v1 = 78;
   while (plm_header_ptr[v1 >> 1]) {
     v1 -= 2;
@@ -217,15 +203,15 @@ uint8 SpawnPLM(uint16 a) {  // 0x8484E7
   plm_block_indices[v3] = 2 * cur_block_index;
   plm_header_ptr[v3] = a;
   plm_pre_instrs[v3] = FUNC16(PlmPreInstr_Empty3);
-  plm_instr_list_ptrs[v3] = get_PlmHeader_Size4(a)->instr_list_ptr;
+  PlmHeader_Size4 *PH = get_PlmHeader_Size4(a);
+  plm_instr_list_ptrs[v3] = PH->instr_list_ptr;
   plm_instruction_timer[v3] = 1;
   plm_instruction_draw_ptr[v3] = addr_kDefaultPlmDrawInstruction;
   plm_timers[v3] = 0;
   plm_room_arguments[v3] = 0;
   plm_variables[v3] = 0;
   plm_id = v1;
-  PlmHeader_Size4 = get_PlmHeader_Size4(a);
-  return CallPlmHeaderFunc(PlmHeader_Size4->func_ptr | 0x840000, v1);
+  return CallPlmHeaderFunc(PH->func_ptr | 0x840000, v1);
 }
 
 CoroutineRet PlmHandler_Async(void) {  // 0x8485B4
@@ -1756,13 +1742,6 @@ const uint8 *PlmInstr_JumpIfSamusHasNoBombs(const uint8 *plmp, uint16 k) {  // 0
     return INSTRB_RETURN_ADDR(GET_WORD(plmp));
 }
 
-void UNUSED_sub_84BAD1(uint16 j) {  // 0x84BAD1
-  int v1 = j >> 1;
-  plm_variable[v1] = 4;
-  plm_room_arguments[v1] = plm_room_arguments[v1] & 0x3FF | 0x8000;
-  WriteLevelDataBlockTypeAndBts(plm_block_indices[v1], 0xC044);
-}
-
 uint8 PlmSetup_BB30_CrateriaMainstreetEscape(uint16 j) {  // 0x84BB09
   if (!CheckEventHappened(0xF))
     plm_header_ptr[j >> 1] = 0;
@@ -2410,8 +2389,7 @@ void PlmPreInstr_WakePlmIfSamusHasBombs(uint16 k) {  // 0x84D33B
   if ((collected_items & 0x1000) != 0) {
     int v1 = k >> 1;
     plm_instruction_timer[v1] = 1;
-    ++plm_instr_list_ptrs[v1];
-    ++plm_instr_list_ptrs[v1];
+    plm_instr_list_ptrs[v1] += 2;
     plm_pre_instrs[v1] = FUNC16(nullsub_351);
   }
 }

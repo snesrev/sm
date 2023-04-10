@@ -1,11 +1,9 @@
 // Top level main game routines
-
 #include "sm_rtl.h"
 #include "ida_types.h"
 #include "variables.h"
 #include "funcs.h"
 #include "enemy_types.h"
-
 
 #define kDemoRoomData ((uint16*)RomFixedPtr(0x82876c))
 #define kPauseScreenSpriteAnimationData_0 (*(PauseScreenSpriteAnimationData*)RomFixedPtr(0x82c0b2))
@@ -53,7 +51,7 @@
 #define g_stru_82B9BE (*(MapScrollArrowData*)RomFixedPtr(0x82b9be))
 #define file_copy_arrow_stuff ((FileCopyArrowStuff*)RomFixedPtr(0x82bb0c))
 #define kMapElevatorDests ((uint16*)RomFixedPtr(0x82c74d))
-#define kStateHeaderGraphicsSets ((uint16*)RomFixedPtr(0x8fe7a7))
+#define kStateHeaderTileSets ((uint16*)RomFixedPtr(0x8fe7a7))
 #define kCommonSpritesPalette1 ((uint16*)RomFixedPtr(0x9afc00))
 #define kMenuPalettes ((uint16*)RomFixedPtr(0x8ee400))
 #define kOptionsMenuSpecialPtrs ((uint16*)RomFixedPtr(0x82f0ae))
@@ -61,9 +59,6 @@
 #define off_82F54A ((uint16*)RomFixedPtr(0x82f54a))
 #define g_word_82F639 ((uint16*)RomFixedPtr(0x82f639))
 #define g_off_82F647 ((uint16*)RomFixedPtr(0x82f647))
-
-
-
 
 void CallDemoRoomDataFunc(uint32 ea) {
   switch (ea) {
@@ -548,7 +543,7 @@ void LoadDemoRoomData(void) {  // 0x828679
   drd = get_DemoRoomData(18 * demo_scene + kDemoRoomData[demo_set]);
   room_ptr = drd->room_ptr_;
   door_def_ptr = drd->door_ptr;
-  door_bts = drd->door_slot;
+//  door_bts = drd->door_slot;
   layer1_x_pos = drd->screen_x_pos;
   bg1_x_offset = layer1_x_pos;
   layer1_y_pos = drd->screen_y_pos;
@@ -3653,10 +3648,10 @@ void LoadRoomHeader(void) {  // 0x82DE6F
 
 void LoadStateHeader(void) {  // 0x82DEF2
   RoomDefRoomstate *RD = get_RoomDefRoomstate(roomdefroomstate_ptr);
-  StateHeaderTiles *SH = get_StateHeaderTiles(kStateHeaderGraphicsSets[RD->graphics_set]);
-  tileset_tile_table_pointer = SH->tile_table_ptr;
-  tileset_tiles_pointer = SH->tiles_ptr;
-  tileset_compr_palette_ptr = SH->palette_ptr;
+  TileSet *TS = get_TileSet(kStateHeaderTileSets[RD->graphics_set]);
+  tileset_tile_table_pointer = TS->tile_table_ptr;
+  tileset_tiles_pointer = TS->tiles_ptr;
+  tileset_compr_palette_ptr = TS->palette_ptr;
   room_compr_level_data_ptr = RD->compressed_room_map_ptr;
   room_music_data_index = RD->music_track;
   room_music_track_index = RD->music_control;
@@ -3693,7 +3688,7 @@ void EnsureSamusDrawnEachFrame(void) {  // 0x82DFC7
 }
 
 void LoadEnemyGfxToVram(void) {  // 0x82DFD1
-  EnemyDef_A2 *ED;
+  EnemyDef *ED;
 
   uint16 dst = 0x7000;
   uint16 v0 = room_enemy_tilesets_ptr;
@@ -4205,45 +4200,30 @@ void LoadCRETilesTilesetTilesAndPalette(void) {  // 0x82E783
 }
 
 void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
-  uint16 j;
-  int16 v3;
-  uint16 k;
-  RoomDefRoomstate *v12;
-  RoomDefRoomstate *RoomDefRoomstate;
   int16 rdf_scroll_ptr;
   uint16 m;
   int8 v10;
   int8 v11;
   uint16 n;
-  int8 v14;
 
   for (int i = 25598; i >= 0; i -= 2)
     level_data[i >> 1] = 0x8000;
-  DecompressToMem(Load24(&room_compr_level_data_ptr), g_ram + 0x10000);
-  uint16 v1 = ram7F_start;
-  for (j = ram7F_start + ram7F_start + (ram7F_start >> 1); ; custom_background[v1 >> 1] = level_data[j >> 1]) {
-    j -= 2;
-    v1 -= 2;
-    if ((v1 & 0x8000) != 0)
-      break;
-  }
-  v3 = ram7F_start >> 1;
-  for (k = ram7F_start + (ram7F_start >> 1); ; *(uint16 *)&BTS[(uint16)v3] = level_data[k >> 1]) {
-    k -= 2;
-    v3 -= 2;
-    if (v3 < 0)
-      break;
-  }
+  DecompressToMem(Load24(&room_compr_level_data_ptr), (uint8 *)&ram7F_start);
+
+  uint16 size = ram7F_start;
+  memcpy(custom_background, (uint8 *)level_data + size + (size >> 1), size);
+  memcpy(BTS, (uint8 *)level_data + size, size >> 1);
+
   if (area_index == 6) {
     DecompressToMem(Load24(&tileset_tile_table_pointer), g_ram + 0xa000);
   } else {
     DecompressToMem(0xb9a09d, g_ram + 0xa000);
     DecompressToMem(Load24(&tileset_tile_table_pointer), g_ram + 0xa800);
   }
-  RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
-  rdf_scroll_ptr = RoomDefRoomstate->rdf_scroll_ptr;
+  RoomDefRoomstate *RD = get_RoomDefRoomstate(roomdefroomstate_ptr);
+  rdf_scroll_ptr = RD->rdf_scroll_ptr;
   if (rdf_scroll_ptr >= 0) {
-    uint16 scrollval = RoomDefRoomstate->rdf_scroll_ptr;
+    uint16 scrollval = RD->rdf_scroll_ptr;
     uint8 r20 = room_height_in_scrolls - 1;
     uint8 v8 = 2;
     uint8 v9 = 0;
@@ -4251,23 +4231,21 @@ void LoadLevelDataAndOtherThings(void) {  // 0x82E7D3
     do {
       if (v10 == r20)
         v8 = scrollval + 1;
-      v14 = v10;
       v11 = 0;
       do {
         scrolls[v9++] = v8;
         ++v11;
       } while (v11 != (uint8)room_width_in_scrolls);
-      v10 = v14 + 1;
-    } while (v14 + 1 != (uint8)room_height_in_scrolls);
+      v10++;
+    } while (v10 != (uint8)room_height_in_scrolls);
   } else {
     for (m = 0; m != 50; m += 2) {
       *(uint16 *)&scrolls[m] = *(uint16 *)RomPtr_8F(rdf_scroll_ptr);
       rdf_scroll_ptr += 2;
     }
   }
-  v12 = get_RoomDefRoomstate(roomdefroomstate_ptr);
-  if (v12->room_plm_header_ptr) {
-    for (n = v12->room_plm_header_ptr; get_RoomPlmEntry(n)->plm_header_ptr_; n += 6)
+  if (RD->room_plm_header_ptr) {
+    for (n = RD->room_plm_header_ptr; get_RoomPlmEntry(n)->plm_header_ptr_; n += 6)
       SpawnRoomPLM(n);
   }
   RunDoorSetupCode();
@@ -4291,8 +4269,7 @@ void SpawnDoorClosingPLM(void) {  // 0x82E8EB
 
 uint8 CheckIfColoredDoorCapSpawned(void) {  // 0x82E91C
   DoorDef *DD = get_DoorDef(door_def_ptr);
-  uint16 prod = Mult8x8(DD->y_pos_plm, room_width_in_blocks);
-  uint16 v2 = 2 * (prod + DD->x_pos_plm);
+  uint16 v2 = 2 * (Mult8x8(DD->y_pos_plm, room_width_in_blocks) + DD->x_pos_plm);
   uint16 v3 = 78;
   while (v2 != plm_block_indices[v3 >> 1]) {
     v3 -= 2;
@@ -4344,8 +4321,7 @@ void LoadLibraryBackground(void) {
   if (bg_data_ptr & 0x8000) {
     do {
       uint16 v1 = *(uint16 *)RomPtr_8F(bg_data_ptr);
-      bg_data_ptr += 2;
-      bg_data_ptr = kLoadLibraryBackgroundFuncs[v1 >> 1](bg_data_ptr);
+      bg_data_ptr = kLoadLibraryBackgroundFuncs[v1 >> 1](bg_data_ptr + 2);
     } while (bg_data_ptr);
   }
 }
@@ -4401,16 +4377,11 @@ uint16 LoadLibraryBackgroundFunc_8_TransferToVramAndSetBg3(uint16 j) {  // 0x82E
 }
 
 void LoadLevelScrollAndCre(void) {  // 0x82EA73
-  uint16 j;
-  int16 v3;
-  uint16 k;
-  RoomDefRoomstate *RoomDefRoomstate;
   int16 rdf_scroll_ptr;
   uint16 m;
   int8 v10;
   int8 v11;
   int8 v12;
-
 
   for (int i = 6398; i >= 0; i -= 2) {
     level_data[i >> 1] = 0x8000;
@@ -4418,23 +4389,12 @@ void LoadLevelScrollAndCre(void) {  // 0x82EA73
     level_data[(i >> 1) + 3200 * 2] = 0x8000;
     level_data[(i >> 1) + 3200 * 3] = 0x8000;
   }
-  DecompressToMem(Load24(&room_compr_level_data_ptr), g_ram + 0x10000);
-  uint16 v1 = ram7F_start;
-  for (j = ram7F_start + ram7F_start + (ram7F_start >> 1); ; custom_background[v1 >> 1] = level_data[j >> 1]) {
-    j -= 2;
-    v1 -= 2;
-    if ((v1 & 0x8000) != 0)
-      break;
-  }
-  v3 = ram7F_start >> 1;
-  for (k = ram7F_start + (ram7F_start & 1) + (ram7F_start >> 1);
-       ;
-       *(uint16 *)&BTS[(uint16)v3] = level_data[k >> 1]) {
-    k -= 2;
-    v3 -= 2;
-    if (v3 < 0)
-      break;
-  }
+  DecompressToMem(Load24(&room_compr_level_data_ptr), (uint8 *)&ram7F_start);
+
+  uint16 size = ram7F_start;
+  memcpy(custom_background, (uint8*)level_data + size + (size >> 1), size);
+  memcpy(BTS, (uint8 *)level_data + size, size >> 1);
+
   if (area_index == 6) {
     DecompressToMem(Load24(&tileset_tile_table_pointer), g_ram + 0xa000);
   } else {
@@ -4443,10 +4403,10 @@ void LoadLevelScrollAndCre(void) {  // 0x82EA73
     }
     DecompressToMem(Load24(&tileset_tile_table_pointer), g_ram + 0xa800);
   }
-  RoomDefRoomstate = get_RoomDefRoomstate(roomdefroomstate_ptr);
-  rdf_scroll_ptr = RoomDefRoomstate->rdf_scroll_ptr;
+  RoomDefRoomstate *RD = get_RoomDefRoomstate(roomdefroomstate_ptr);
+  rdf_scroll_ptr = RD->rdf_scroll_ptr;
   if (rdf_scroll_ptr >= 0) {
-    uint16 r18 = RoomDefRoomstate->rdf_scroll_ptr;
+    uint16 r18 = RD->rdf_scroll_ptr;
     uint8 r20 = room_height_in_scrolls - 1;
     uint8 v8 = 2;
     uint8 v9 = 0;

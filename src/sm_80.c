@@ -921,36 +921,32 @@ void NmiUpdatePalettesAndOam(void) {  // 0x80933A
 void NmiTransferSamusToVram(void) {  // 0x809376
   WriteReg(VMAIN, 0x80);
   if ((uint8)nmi_copy_samus_halves) {
-    const uint8 *rp = RomPtr_92(nmi_copy_samus_top_half_src);
+    SamusTileAnimationTileDefs *td = (SamusTileAnimationTileDefs *)RomPtr_92(nmi_copy_samus_top_half_src);
     WriteRegWord(VMADDL, 0x6000);
     WriteRegWord(DMAP1, 0x1801);
-    uint16 v0 = GET_WORD(rp + 0);
-    WriteRegWord(A1T1L, v0);
-    WriteRegWord(A1B1, GET_WORD(rp + 2));
-    uint16 v2 = GET_WORD(rp + 3);
-    WriteRegWord(DAS1L, v2);
+    WriteRegWord(A1T1L, td->src.addr);
+    WriteReg(A1B1, td->src.bank);
+    WriteRegWord(DAS1L, td->part1_size);
     WriteReg(MDMAEN, 2);
     WriteRegWord(VMADDL, 0x6100);
-    WriteRegWord(A1T1L, v0 + v2);
-    if (GET_WORD(rp + 5)) {
-      WriteRegWord(DAS1L, GET_WORD(rp + 5));
+    WriteRegWord(A1T1L, td->src.addr + td->part1_size);
+    if (td->part2_size) {
+      WriteRegWord(DAS1L, td->part2_size);
       WriteReg(MDMAEN, 2);
     }
   }
   if (HIBYTE(nmi_copy_samus_halves)) {
-    const uint8 *rp = RomPtr_92(nmi_copy_samus_bottom_half_src);
+    SamusTileAnimationTileDefs *td = (SamusTileAnimationTileDefs *)RomPtr_92(nmi_copy_samus_bottom_half_src);
     WriteRegWord(VMADDL, 0x6080);
     WriteRegWord(DMAP1, 0x1801);
-    uint16 v4 = GET_WORD(rp + 0);
-    WriteRegWord(A1T1L, v4);
-    WriteRegWord(A1B1, GET_WORD(rp + 2));
-    uint16 v6 = GET_WORD(rp + 3);
-    WriteRegWord(DAS1L, v6);
+    WriteRegWord(A1T1L, td->src.addr);
+    WriteReg(A1B1, td->src.bank);
+    WriteRegWord(DAS1L, td->part1_size);
     WriteReg(MDMAEN, 2);
     WriteRegWord(VMADDL, 0x6180);
-    WriteRegWord(A1T1L, v4 + v6);
-    if (GET_WORD(rp + 5)) {
-      WriteRegWord(DAS1L, GET_WORD(rp + 5));
+    WriteRegWord(A1T1L, td->src.addr + td->part1_size);
+    if (td->part2_size) {
+      WriteRegWord(DAS1L, td->part2_size);
       WriteReg(MDMAEN, 2);
     }
   }
@@ -2629,17 +2625,16 @@ void DecompressToVRAM(uint32 src, uint16 dst_addr) {  // 0x80B271
 
 void LoadFromLoadStation(void) {  // 0x80C437
   save_station_lockout_flag = 1;
-  const uint16 *v0 = (const uint16 *)RomPtr_80(kLoadStationLists[area_index] + 14 * load_station_index);
-  room_ptr = *v0;
-  door_def_ptr = v0[1];
-  door_bts = v0[2];
-  layer1_x_pos = v0[3];
-  bg1_x_offset = layer1_x_pos;
-  layer1_y_pos = v0[4];
-  bg1_y_offset = layer1_y_pos;
-  samus_y_pos = layer1_y_pos + v0[5];
+  const LoadStationList *L = (LoadStationList *)RomPtr_80(kLoadStationLists[area_index] + 14 * load_station_index);
+
+  room_ptr = L->room_ptr_;
+  door_def_ptr = L->door_ptr;
+//  door_bts = v0[2];
+  bg1_x_offset = layer1_x_pos = L->screen_x_pos;
+  bg1_y_offset = layer1_y_pos = L->screen_y_pos;
+  samus_y_pos = layer1_y_pos + L->samus_y_offset;
   samus_prev_y_pos = samus_y_pos;
-  samus_x_pos = v0[6] + layer1_x_pos + 128;
+  samus_x_pos = layer1_x_pos + 128 + L->samus_x_offset;
   samus_prev_x_pos = samus_x_pos;
   reg_BG1HOFS = 0;
   reg_BG1VOFS = 0;

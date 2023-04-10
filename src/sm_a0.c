@@ -384,7 +384,7 @@ void InitializeEnemies(void) {  // 0xA08A9E
   do {
     LoadEnemyGfxIndexes(v4, v5);
     EnemyPopulation *EP = get_EnemyPopulation(0xa1, v4);
-    EnemyDef_A2 *ED = get_EnemyDef_A2(EP->enemy_ptr);
+    EnemyDef *ED = get_EnemyDef_A2(EP->enemy_ptr);
     EnemyData *E = gEnemyData(v5);
     E->x_width = ED->x_radius;
     E->y_height = ED->y_radius;
@@ -517,7 +517,7 @@ void ProcessEnemyTilesets(void) {  // 0xA08D64
   EnemyTileset *ET = get_EnemyTileset(room_enemy_tilesets_ptr);
   EnemyTileLoadData *LD = enemy_tile_load_data;
   for (; ET->enemy_def != 0xffff; ET++) {
-    EnemyDef_A2 *ED = get_EnemyDef_A2(ET->enemy_def);
+    EnemyDef *ED = get_EnemyDef_A2(ET->enemy_def);
     memcpy(&target_palettes[(LOBYTE(ET->vram_dst) + 8) * 16], 
            RomPtrWithBank(ED->bank, ED->palette_ptr), 32);
     LD->tile_data_size = ED->tile_data_size & 0x7FFF;
@@ -1722,7 +1722,7 @@ const uint16 *CallEnemyInstr(uint32 ea, uint16 k, const uint16 *j) {
 }
 
 void EnemyMain(void) {  // 0xA08FD4
-  EnemyDef_A2 *ED;
+  EnemyDef *ED;
   int16 v6;
   int8 v8; // cf
 
@@ -1869,7 +1869,7 @@ add_enemy:
       E->vram_tiles_index = 0;
       E->palette_index = 0;
     }
-    EnemyDef_A2 *ED = get_EnemyDef_A2(EP->enemy_ptr);
+    EnemyDef *ED = get_EnemyDef_A2(EP->enemy_ptr);
     E->x_width = ED->x_radius;
     E->y_height = ED->y_radius;
     E->health = ED->health;
@@ -2380,7 +2380,7 @@ void SamusLatchesOnWithGrapple(void) {  // 0xA09F7D
   if (E->frozen_timer) {
     E->ai_handler_bits = 4;
   } else {
-    EnemyDef_A2 *ED = get_EnemyDef_A2(E->enemy_ptr);
+    EnemyDef *ED = get_EnemyDef_A2(E->enemy_ptr);
     E->flash_timer = ED->hurt_ai_time ? ED->hurt_ai_time : 4;
     E->ai_handler_bits = 0;
   }
@@ -2410,7 +2410,7 @@ void SamusLatchesOnWithGrappleNoInvinc(void) {  // 0xA09FE9
 
 void SamusLatchesOnWithGrappleParalyze(void) {  // 0xA0A03E
   EnemyData *E = gEnemyData(cur_enemy_index);
-  EnemyDef_A2 *ED = get_EnemyDef_A2(E->enemy_ptr);
+  EnemyDef *ED = get_EnemyDef_A2(E->enemy_ptr);
   E->flash_timer = ED->hurt_ai_time ? ED->hurt_ai_time : 4;
   E->ai_handler_bits = 0;
   E->extra_properties |= 1;
@@ -2434,7 +2434,7 @@ void EnemySamusCollHandler(void) {  // 0xA0A07A
     if (some_flag == 0 || some_flag == 8)
       return;
   }
-  EnemyDef_A2 *ED = get_EnemyDef_A2(E->enemy_ptr);
+  EnemyDef *ED = get_EnemyDef_A2(E->enemy_ptr);
   if (ED->touch_ai == FUNC16(nullsub_170) || ED->touch_ai == FUNC16(nullsub_169))
     return;
   if (abs16(samus_x_pos - E->x_pos) - samus_x_radius < E->x_width &&
@@ -2503,7 +2503,7 @@ void ProcessEnemyPowerBombInteraction(void) {  // 0xA0A306
     EnemyData *E = gEnemyData(i);
     if (E->invincibility_timer || !E->enemy_ptr || E->enemy_ptr == addr_kEnemyDef_DAFF)
       continue;
-    EnemyDef_A2 *ED = get_EnemyDef_A2(E->enemy_ptr);
+    EnemyDef *ED = get_EnemyDef_A2(E->enemy_ptr);
     if ((get_Vulnerability(ED->vulnerability_ptr ? ED->vulnerability_ptr : addr_stru_B4EC1C)->power_bomb & 0x7F) == 0)
       continue;
     if (abs16(power_bomb_explosion_x_pos - E->x_pos) < rx && abs16(power_bomb_explosion_y_pos - E->y_pos) < ry) {
@@ -2568,7 +2568,7 @@ void NormalEnemyTouchAiSkipDeathAnim_CurEnemy(void) {  // 0xA0A497
 
 void NormalEnemyTouchAiSkipDeathAnim(void) {  // 0xA0A4A1
   EnemyData *E = gEnemyData(cur_enemy_index);
-  EnemyDef_A2 *ED = get_EnemyDef_A2(E->enemy_ptr);
+  EnemyDef *ED = get_EnemyDef_A2(E->enemy_ptr);
   if (samus_contact_damage_index == 0) {
     Samus_DealDamage(SuitDamageDivision(ED->damage));
     samus_invincibility_timer = 96;
@@ -2619,7 +2619,7 @@ void NormalEnemyPowerBombAiSkipDeathAnim_CurEnemy(void) {  // 0xA0A5B7
 }
 
 void NormalEnemyPowerBombAiSkipDeathAnim(void) {  // 0xA0A5C1
-  EnemyDef_A2 *EnemyDef_A2;
+  EnemyDef *EnemyDef_A2;
   int16 hurt_ai_time;
 
   EnemyData *v0 = gEnemyData(cur_enemy_index);
@@ -2664,7 +2664,7 @@ void NormalEnemyShotAi(void) {  // 0xA0A63D
     gEnemySpawnData(cur_enemy_index)->cause_of_death = j;
     uint16 death_anim = 2;
     if (j == 2) {
-      EnemyDef_A2 *ED = get_EnemyDef_A2(E->enemy_ptr);
+      EnemyDef *ED = get_EnemyDef_A2(E->enemy_ptr);
       if (!sign16(ED->death_anim - 3))
         death_anim = ED->death_anim;
     } else {
@@ -2691,7 +2691,7 @@ uint16 NormalEnemyShotAiSkipDeathAnim(void) {  // 0xA0A6DE
   int16 v5;
   int16 v6;
   int16 v9;
-  EnemyDef_A2 *EnemyDef_A2;
+  EnemyDef *EnemyDef_A2;
   int16 hurt_ai_time;
   int16 v20;
   uint16 varE32;

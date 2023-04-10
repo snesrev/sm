@@ -10,15 +10,11 @@
 
 void SetSamusTilesDefsForCurAnim(void) {  // 0x928000
   uint16 v0 = 4 * samus_anim_frame + kSamus_AnimationDefinitionPtrs[samus_pose];
-  uint16 r22 = get_SamusTileAnimationDefs(v0)->top_half_idx;
-  tempB24 = get_SamusTileAnimationDefs(v0 + 1)->top_half_idx;
-  nmi_copy_samus_top_half_src = 7 * tempB24 + kSamus_TileDefs_TopHalf[r22];
+  SamusTileAnimationDefs *AD = get_SamusTileAnimationDefs(v0);
+  nmi_copy_samus_top_half_src = 7 * AD->top_half_pos + kSamus_TileDefs_TopHalf[AD->top_half_idx];
   LOBYTE(nmi_copy_samus_halves) = 1;
-  uint16 v1 = kSamus_AnimationDefinitionPtrs[samus_pose] + 4 * samus_anim_frame + 2;
-  uint8 v2 = *RomPtr_92(v1);
-  if (v2 != 255) {
-    tempB26 = *RomPtr_92(v1 + 1);
-    nmi_copy_samus_bottom_half_src = 7 * tempB26 + kSamus_TileDefs_BottomHalf[v2];
+  if (AD->bottom_half_idx != 255) {
+    nmi_copy_samus_bottom_half_src = 7 * AD->bottom_half_pos + kSamus_TileDefs_BottomHalf[AD->bottom_half_idx];
     HIBYTE(nmi_copy_samus_halves) = 1;
   }
 }

@@ -834,29 +834,29 @@ void Roach_Func_3(uint16 k) {  // 0xA3A1B0
 
 void Roach_Func_4(uint16 k) {  // 0xA3A1F3
   Enemy_Roach *E = Get_Roach(k);
-  SetHiLo(&E->roach_var_05, &E->roach_var_04, CosineMult8bitFull((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 32), LOBYTE(E->roach_parameter_1)));
-  SetHiLo(&E->roach_var_07, &E->roach_var_06, SineMult8bitFull((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 32), LOBYTE(E->roach_parameter_1)));
+  SetHiLo(&E->roach_var_05, &E->roach_var_04, CosineMult8bitFull((uint8)(HIBYTE(E->roach_parameter_1) - 32), LOBYTE(E->roach_parameter_1)));
+  SetHiLo(&E->roach_var_07, &E->roach_var_06, SineMult8bitFull((uint8)(HIBYTE(E->roach_parameter_1) - 32), LOBYTE(E->roach_parameter_1)));
 }
 
 void Roach_Func_5(uint16 k) {  // 0xA3A23E
   Enemy_Roach *E = Get_Roach(k);
-  SetHiLo(&E->roach_var_09, &E->roach_var_08, CosineMult8bitFull((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) + 32), LOBYTE(E->roach_parameter_1)));
-  SetHiLo(&E->roach_var_0B, &E->roach_var_0A, SineMult8bitFull((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) + 32), LOBYTE(E->roach_parameter_1)));
+  SetHiLo(&E->roach_var_09, &E->roach_var_08, CosineMult8bitFull((uint8)(HIBYTE(E->roach_parameter_1) + 32), LOBYTE(E->roach_parameter_1)));
+  SetHiLo(&E->roach_var_0B, &E->roach_var_0A, SineMult8bitFull((uint8)(HIBYTE(E->roach_parameter_1) + 32), LOBYTE(E->roach_parameter_1)));
 }
 
 void Roach_Func_6(uint16 k) {  // 0xA3A289
   Enemy_Roach *E = Get_Roach(k);
-  E->roach_var_20 = 2 * ((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 48) >> 5);
+  E->roach_var_20 = 2 * ((uint8)(HIBYTE(E->roach_parameter_1) - 48) >> 5);
 }
 
 void Roach_Func_7(uint16 k) {  // 0xA3A29E
   Enemy_Roach *E = Get_Roach(k);
-  E->roach_var_21 = 2 * ((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 80) >> 5);
+  E->roach_var_21 = 2 * ((uint8)(HIBYTE(E->roach_parameter_1) - 80) >> 5);
 }
 
 void Roach_Func_8(uint16 k) {  // 0xA3A2B7
   Enemy_Roach *E = Get_Roach(k);
-  E->roach_var_22 = 2 * ((uint8)(*(uint16 *)((uint8 *)&E->roach_parameter_1 + 1) - 48 + 32) >> 5);
+  E->roach_var_22 = 2 * ((uint8)(HIBYTE(E->roach_parameter_1) - 48 + 32) >> 5);
 }
 void CallRoachFunc(uint32 ea) {
   switch (ea) {

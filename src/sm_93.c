@@ -15,10 +15,8 @@
 #define g_off_938413 ((uint16*)RomFixedPtr(0x938413))
 
 void InitializeProjectile(uint16 k) {  // 0x938000
-  ProjectileDataTable *ProjectileDataTable;
-
   int v1 = k >> 1;
-  int r18 = 2 * (projectile_dir[v1] & 0xF);
+  int r18 = (projectile_dir[v1] & 0xF);
   uint16 v2 = projectile_type[v1], v3;
   if ((v2 & 0xF00) != 0) {
     v3 = kProjectileData_NonBeams[HIBYTE(v2) & 0xF];
@@ -27,11 +25,11 @@ void InitializeProjectile(uint16 k) {  // 0x938000
   } else {
     v3 = kProjectileData_UnchargedBeams[projectile_type[v1] & 0xF];
   }
-  ProjectileDataTable = get_ProjectileDataTable(v3);
-  if (sign16(ProjectileDataTable->damage))
+  ProjectileDataTable *PD = get_ProjectileDataTable(v3);
+  if (sign16(PD->damage))
     InvalidInterrupt_Crash();
-  projectile_damage[v1] = ProjectileDataTable->damage;
-  uint16 v7 = GET_WORD(RomPtr_93(v3 + r18 + 2));
+  projectile_damage[v1] = PD->damage;
+  uint16 v7 = PD->instr_ptrs[r18];
   projectile_bomb_instruction_ptr[v1] = v7;
   const uint8 *v8 = RomPtr_93(v7);
   projectile_x_radius[v1] = v8[4];
@@ -94,13 +92,12 @@ void InitializeBombExplosion(uint16 k) {  // 0x93814E
 
 void InitializeShinesparkEchoOrSpazerSba(uint16 k) {  // 0x938163
   int v1 = k >> 1;
-  int r18 = 2 * (projectile_dir[v1] & 0xF);
-  const uint8 *v3 = RomPtr_93(kShinesparkEchoSpazer_ProjectileData[LOBYTE(projectile_type[v1]) - 34]);
-  uint16 v4 = GET_WORD(v3);
-  projectile_damage[v1] = GET_WORD(v3);
-  if (sign16(v4))
+  int r18 = projectile_dir[v1] & 0xF;
+  ProjectileDataTable *PD = get_ProjectileDataTable(kShinesparkEchoSpazer_ProjectileData[LOBYTE(projectile_type[v1]) - 34]);
+  projectile_damage[v1] = PD->damage;
+  if (sign16(PD->damage))
     InvalidInterrupt_Crash();
-  projectile_bomb_instruction_ptr[v1] = GET_WORD(v3 + 2 + r18);
+  projectile_bomb_instruction_ptr[v1] = PD->instr_ptrs[r18];
   projectile_bomb_instruction_timers[v1] = 1;
 }
 
@@ -108,7 +105,7 @@ void InitializeSbaProjectile(uint16 k) {  // 0x9381A4
   int v1 = k >> 1;
   const uint8 *v2 = RomPtr_93(g_off_938413[projectile_type[v1] & 0xF]);
   uint16 v3 = GET_WORD(v2);
-  projectile_damage[v1] = GET_WORD(v2);
+  projectile_damage[v1] = v3;
   if (sign16(v3))
     InvalidInterrupt_Crash();
   projectile_bomb_instruction_ptr[v1] = GET_WORD(v2 + 2);
@@ -125,7 +122,6 @@ uint16 CallProj93Instr(uint32 ea, uint16 j, uint16 k) {
   switch (ea) {
   case fnProj93Instr_Delete: return Proj93Instr_Delete(j, k);
   case fnProj93Instr_Goto: return Proj93Instr_Goto(j, k);
-  case fnProj93Instr_GotoIfLess: return Proj93Instr_GotoIfLess(j, k);
   default: return Unreachable();
   }
 }
@@ -160,14 +156,6 @@ uint16 Proj93Instr_Delete(uint16 k, uint16 j) {  // 0x93822F
 
 uint16 Proj93Instr_Goto(uint16 k, uint16 j) {  // 0x938239
   return *(uint16 *)RomPtr_93(j);
-}
-
-uint16 Proj93Instr_GotoIfLess(uint16 k, uint16 j) {  // 0x938240
-  const uint8 *v2 = RomPtr_93(j);
-  if ((int16)(GET_WORD(v2) - projectile_variables[k >> 1]) >= 0)
-    return GET_WORD(v2 + 2);
-  else
-    return GET_WORD(v2 + 4);
 }
 
 void DrawPlayerExplosions2(void) {  // 0x938254

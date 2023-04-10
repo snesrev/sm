@@ -999,7 +999,6 @@ void PaletteFxHandler(void);
 void SpawnPalfxObject(uint16 j);
 
 // Bank 8F
-uint16 RoomDefStateSelect_Door(uint16 k);
 uint16 RoomDefStateSelect_Finish(uint16 k);
 uint16 RoomDefStateSelect_IsBossDead(uint16 k);
 uint16 RoomDefStateSelect_IsEventSet(uint16 k);
@@ -1663,7 +1662,6 @@ void Unused_SamusTileViewer(void);
 // Bank 93
 uint16 Proj93Instr_Delete(uint16 k, uint16 j);
 uint16 Proj93Instr_Goto(uint16 k, uint16 j);
-uint16 Proj93Instr_GotoIfLess(uint16 k, uint16 j);
 void DrawBombAndProjectileExplosions(void);
 void DrawPlayerExplosions2(void);
 void InitializeBombExplosion(uint16 k);
@@ -4862,7 +4860,6 @@ void VerifySRAM(void);
 #define fnEprojPreInstr_TourianStatueSoul 0x86B9FD
 #define fnEprojPreInstr_TourianStatueStuff 0x86BA37
 #define fnEprojPreInstr_BA42 0x86BA42
-#define fnEprojInstr_BB24 0x86BB24
 #define fnsub_86BB30 0x86BB30
 #define fnnullsub_91 0x86BB4F
 #define fnEprojInit_NuclearWaffleBody 0x86BB92
@@ -5500,7 +5497,7 @@ void VerifySRAM(void);
 #define fnCinematicSprInstr_Func218 0x8BF651
 #define fnCinematicFunction_Intro_Func219 0x8BF6FE
 #define fnPalPreInstr_nullsub_129 0x8DC526
-#define fnPalInstr_Finish 0x8DC595
+#define fnPalInstr_Wait 0x8DC595
 #define fnPalInstr_ColorPlus2 0x8DC599
 #define fnPalInstr_ColorPlus3 0x8DC5A2
 #define fnPalInstr_ColorPlus4 0x8DC5AB
@@ -5511,9 +5508,7 @@ void VerifySRAM(void);
 #define fnPalInstr_SetPreInstr 0x8DC5D4
 #define fnPalInstr_ClearPreInstr 0x8DC5DD
 #define fnPalInstr_Goto 0x8DC61E
-#define fnPalInstr_GotoRel 0x8DC623
 #define fnPalInstr_DecTimerGoto 0x8DC639
-#define fnPalInstr_DecTimerGotoRel 0x8DC641
 #define fnPalInstr_SetTimer 0x8DC648
 #define fnPalInstr_SetColorIndex 0x8DC655
 #define fnPalInstr_QueueMusic 0x8DC65E
@@ -5526,7 +5521,6 @@ void VerifySRAM(void);
 #define fnPalPreInstr_CheckEnemy0Health 0x8DE2E0
 #define fnPalPreInstr_SamusInHeat 0x8DE379
 #define fnPalInit_F761_Norfair1 0x8DE440
-#define fnPalInstr_SetTimerIfBossBit 0x8DEB2A
 #define fnPalPreInstr_SwitchIfYpos 0x8DEC59
 #define fnPalPreInstr_SwitchIfYpos2 0x8DED84
 #define fnPalPreInstr_DeletePalfxIfMinibossDead 0x8DEEC5
@@ -5832,7 +5826,6 @@ void VerifySRAM(void);
 #define fnSamus_Func20 0x91FCAF
 #define fnProj93Instr_Delete 0x93822F
 #define fnProj93Instr_Goto 0x938239
-#define fnProj93Instr_GotoIfLess 0x938240
 #define fnGrappleInstr_Goto 0x94B0F4
 #define fnnullsub_6 0x9BB8D4
 #define fnGrappleNext_SwingClockwise 0x9BB9D9

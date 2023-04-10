@@ -538,8 +538,7 @@ void Torizo_Func_4(uint16 k) {  // 0xAAC6C6
     if ((v2 & 0x8000) != 0) {
       QueueMusic_Delayed8(g_word_AAB096);
       E->base.properties &= ~kEnemyProps_Tangible;
-      ++E->base.current_instruction;
-      ++E->base.current_instruction;
+      E->base.current_instruction += 2;
       E->base.instruction_timer = 1;
       return;
     }

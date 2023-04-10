@@ -365,6 +365,7 @@ static void Samus_HandleAnimDelay(void) {
   const uint8 *p = RomPtr_91(kSamusAnimationDelayData[samus_pose]);
   if ((p[samus_anim_frame] & 0x80) != 0) {
     uint8 v1 = Samus_HandleSpeedBoosterAnimDelay(p + samus_anim_frame);
+    printf("v1=%x\n", v1);
     if (kAnimDelayFuncs[v1 & 0xF](p + samus_anim_frame))
       samus_anim_frame_timer = samus_anim_frame_buffer + p[samus_anim_frame];
   } else {
@@ -4218,14 +4219,11 @@ void Samus_ArmCannon_Draw(void) {  // 0x90C663
       }
     }
     const uint8 *v11 = RomPtr_90(kPlayerPoseToPtr[samus_pose]);
-    int16 v12 = *v11;
+    uint8 v12 = *v11;
     if ((v12 & 0x80) != 0) {
-      if (samus_anim_frame)
-        v12 = *RomPtr_90(kPlayerPoseToPtr[samus_pose] + 2) & 0x7F;
-      else
-        v12 = *v11 & 0x7F;
+      v12 = samus_anim_frame ? v11[2] : v11[0];
     }
-    uint16 v13 = kDrawArmCannon_Tab2[v12] + 2 * arm_cannon_frame;
+    uint16 v13 = kDrawArmCannon_Tab2[v12 & 0x7F] + 2 * arm_cannon_frame;
     uint16 v14 = vram_write_queue_tail;
     gVramWriteEntry(vram_write_queue_tail)->size = 32;
     v14 += 2;

@@ -16,7 +16,6 @@ uint16 eproj_spawn_varE24;
 #define off_868A75 ((uint16*)RomFixedPtr(0x868a75))
 #define word_869105 ((uint16*)RomFixedPtr(0x869105))
 #define off_86A64D ((uint16*)RomFixedPtr(0x86a64d))
-#define stru_86BB50 (*(EprojDef*)RomFixedPtr(0x86bb50))
 #define off_86BB1E ((uint16*)RomFixedPtr(0x86bb1e))
 #define kCommonEnemySpeeds_Quadratic_Copy ((uint16*)RomFixedPtr(0xa0cbc7))
 #define kCommonEnemySpeeds_Quadratic32 ((uint32*)RomFixedPtr(0xa0cbc7))
@@ -2751,11 +2750,6 @@ void EprojPreInstr_TourianStatueStuff(uint16 k) {  // 0x86BA37
   EprojPreInstr_BA42(k);
 }
 
-const uint8 *EprojInstr_BB24(uint16 k, const uint8 *epjp) {  // 0x86BB24
-  eproj_instr_list_ptr[stru_86BB50.init_code_ptr >> 1] = 0;
-  return epjp;
-}
-
 void sub_86BB30(uint16 j) {  // 0x86BB30
   ExtraEnemyRam8000 *v1 = gExtraEnemyRam8000(cur_enemy_index);
   int v2 = j >> 1;
@@ -4766,7 +4760,7 @@ uint16 RandomDropRoutine(uint16 k) {  // 0x86F106
   if (varE28 == 0)
     goto LABEL_30;
   uint16 v2;
-  v2 = *((uint16 *)RomPtr_A0(varE28) + 29);
+  v2 = get_EnemyDef_A2(varE28)->item_drop_chances_ptr;
   if (!v2)
     goto LABEL_30;
   uint8 Random;
@@ -4875,7 +4869,7 @@ void RespawnEnemy(uint16 v0) {  // 0x86F264
   E->ai_var_E = 0;
   E->ai_preinstr = 0;
   E->instruction_timer = 1;
-  EnemyDef_A2 *Edef = get_EnemyDef_A2(E->enemy_ptr);
+  EnemyDef *Edef = get_EnemyDef_A2(E->enemy_ptr);
   E->x_width = Edef->x_radius;
   E->y_height = Edef->y_radius;
   E->health = Edef->health;
@@ -5262,7 +5256,6 @@ static const uint8 *CallEprojInstr(uint32 ea, uint16 k, const uint8 *j) {
   case fnEprojInstr_Earthquake: return EprojInstr_Earthquake(k, j);
   case fnEprojInstr_SpawnTourianStatueUnlockingParticleTail: return EprojInstr_SpawnTourianStatueUnlockingParticleTail(k, j);
   case fnEprojInstr_AddToYpos: return EprojInstr_AddToYpos(k, j);
-  case fnEprojInstr_BB24: return EprojInstr_BB24(k, j);
   case fnEprojInstr_SwitchJump: return EprojInstr_SwitchJump(k, j);
   case fnEprojInstr_UserPalette0: return EprojInstr_UserPalette0(k, j);
   case fnEprojInstr_Add12ToY: return EprojInstr_Add12ToY(k, j);

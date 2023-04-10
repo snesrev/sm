@@ -176,7 +176,7 @@ void QueueTransferOfSamusDeathSequence(uint16 v0) {  // 0x9BB6D8
   int v2 = v0 >> 1;
   gVramWriteEntry(v1)->size = g_word_9BB7BF[v2];
   v1 += 2;
-  LOBYTE(gVramWriteEntry(v1++)->size) = -101;
+  LOBYTE(gVramWriteEntry(v1++)->size) = 0x9B;
   gVramWriteEntry(v1)->size = g_word_9BB7C9[v2];
   vram_write_queue_tail = v1 + 2;
 }

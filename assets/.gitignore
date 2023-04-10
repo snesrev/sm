@@ -1,0 +1,4 @@
+/__pycache__/
+/defs/*
+/out.bin
+/out_is_set.bin

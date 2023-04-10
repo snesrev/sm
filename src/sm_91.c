@@ -206,41 +206,24 @@ void Samus_Input_1B_ShinesparkEtc(void) {  // 0x9181A1
 }
 
 void Samus_LookupTransitionTable(void) {  // 0x9181A9
-  PoseEntry *pe;
-  int16 v2;
-  PoseEntry *v5;
-  PoseEntry *v6;
-
   if (joypad1_lastkeys) {
     Pair_R18_R20 pair = TranslateCustomControllerBindingsToDefault();
-    uint16 v0 = kPoseTransitionTable[samus_pose];
-    pe = get_PoseEntry(v0);
-    v2 = pe->new_input + 1;
-    if (pe->new_input != 0xFFFF) {
-      while (1) {
-        uint16 v3 = v2 - 1;
-        if (!v3 || (pair.r18 & v3) == 0) {
-          uint16 cur_input = get_PoseEntry(v0)->cur_input;
-          if (!cur_input || (pair.r20 & cur_input) == 0)
-            break;
+    PoseEntry *pe = get_PoseEntry(kPoseTransitionTable[samus_pose]);
+    if (pe->new_input == 0xFFFF)
+      return;
+    do {
+      if ((pair.r18 & pe->new_input) == 0 && (pair.r20 & pe->cur_input) == 0) {
+        if (pe->new_pose != samus_pose) {
+          samus_new_pose = pe->new_pose;
+          bomb_jump_dir = 0;
         }
-        v0 += 6;
-        v5 = get_PoseEntry(v0);
-        v2 = v5->new_input + 1;
-        if (v5->new_input == 0xFFFF)
-          goto LABEL_8;
+        return;
       }
-      v6 = get_PoseEntry(v0);
-      if (v6->new_pose != samus_pose) {
-        samus_new_pose = v6->new_pose;
-        bomb_jump_dir = 0;
-      }
-    }
-  } else {
-LABEL_8:
-    UNUSED_word_7E0A18 = 0;
-    Samus_Pose_CancelGrapple();
+      pe++;
+    } while (pe->new_input != 0xFFFF);
   }
+  UNUSED_word_7E0A18 = 0;
+  Samus_Pose_CancelGrapple();
 }
 
 Pair_R18_R20 TranslateCustomControllerBindingsToDefault(void) {  // 0x9181F4
