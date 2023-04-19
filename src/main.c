@@ -32,6 +32,8 @@ static void SDLCALL AudioCallback(void *userdata, Uint8 *stream, int len);
 static void SwitchDirectory();
 static void RenderNumber(uint8 *dst, size_t pitch, int n, uint8 big);
 static void OpenOneGamepad(int i);
+static void SetVolumeLevel(int new_volume);
+static int GetVolumeLevel();
 static void HandleVolumeAdjustment(int volume_adjustment);
 static void HandleGamepadAxisInput(int gamepad_id, int axis, int value);
 static int RemapSdlButton(int button);
@@ -76,7 +78,8 @@ static bool g_display_perf;
 static int g_curr_fps;
 static int g_ppu_render_flags = 0;
 static int g_snes_width, g_snes_height;
-static int g_sdl_audio_mixer_volume = SDL_MIX_MAXVOLUME;
+static const int MIX_MAXVOLUME = 100;
+static int g_audio_mixer_volume = MIX_MAXVOLUME;
 static struct RendererFuncs g_renderer_funcs;
 static uint32 g_gamepad_modifiers;
 static uint16 g_gamepad_last_cmd[kGamepadBtn_Count];
@@ -222,11 +225,12 @@ static void SDLCALL AudioCallback(void *userdata, Uint8 *stream, int len) {
       g_audiobuffer_end = g_audiobuffer + g_frames_per_block * g_audio_channels * sizeof(int16);
     }
     int n = IntMin(len, g_audiobuffer_end - g_audiobuffer_cur);
-    if (g_sdl_audio_mixer_volume == SDL_MIX_MAXVOLUME) {
+    if (g_audio_mixer_volume == MIX_MAXVOLUME) {
       memcpy(stream, g_audiobuffer_cur, n);
     } else {
       SDL_memset(stream, 0, n);
-      SDL_MixAudioFormat(stream, g_audiobuffer_cur, AUDIO_S16, n, g_sdl_audio_mixer_volume);
+      const int current_volume = IntMin(IntMax(0, (SDL_MIX_MAXVOLUME*g_audio_mixer_volume)/MIX_MAXVOLUME), SDL_MIX_MAXVOLUME);
+      SDL_MixAudioFormat(stream, g_audiobuffer_cur, AUDIO_S16, n, current_volume);
     }
     g_audiobuffer_cur += n;
     stream += n;
@@ -356,6 +360,9 @@ int main(int argc, char** argv) {
   // audio_samples: power of 2
   if (g_config.audio_samples <= 0 || ((g_config.audio_samples & (g_config.audio_samples - 1)) != 0))
     g_config.audio_samples = kDefaultSamples;
+
+  // Load the volume level from the config file
+  SetVolumeLevel(g_config.volume);
 
   // set up SDL
   if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0) {
@@ -733,16 +740,26 @@ static void HandleGamepadInput(int button, bool pressed) {
     HandleCommand(g_gamepad_last_cmd[button], pressed);
 }
 
-static void HandleVolumeAdjustment(int volume_adjustment) {
+static int GetVolumeLevel() {
 #if SYSTEM_VOLUME_MIXER_AVAILABLE
-  int current_volume = GetApplicationVolume();
-  int new_volume = IntMin(IntMax(0, current_volume + volume_adjustment * 5), 100);
-  SetApplicationVolume(new_volume);
-  printf("[System Volume]=%i\n", new_volume);
+  return GetApplicationVolume();
 #else
-  g_sdl_audio_mixer_volume = IntMin(IntMax(0, g_sdl_audio_mixer_volume + volume_adjustment * (SDL_MIX_MAXVOLUME >> 4)), SDL_MIX_MAXVOLUME);
-  printf("[SDL mixer volume]=%i\n", g_sdl_audio_mixer_volume);
+  return g_audio_mixer_volume;
 #endif
+}
+
+static void SetVolumeLevel(int new_volume) {
+  g_audio_mixer_volume = IntMin(IntMax(0, new_volume), MIX_MAXVOLUME);
+#if SYSTEM_VOLUME_MIXER_AVAILABLE
+  SetApplicationVolume(g_audio_mixer_volume);
+#endif
+  printf("[Mixer Volume]=%i\n", g_audio_mixer_volume);
+}
+
+static void HandleVolumeAdjustment(int volume_adjustment) {
+  int current_volume = GetVolumeLevel();
+  int new_volume = current_volume + volume_adjustment * 5;
+  SetVolumeLevel(new_volume);
 }
 
 // Approximates atan2(y, x) normalized to the [0,4) range
