@@ -1,10 +1,22 @@
 # sm
 
-Our discord server is: https://discord.gg/AJJbJAzNNJ
+Sm is a PC port of Super Metroid compatible with Windows and Linux systems.
 
-Early version. It has bugs and the code is messy.
+Currently, it's in an early version.
 
-For building instructions, see: https://github.com/snesrev/sm/blob/main/BUILDING.md
+## Usage
 
-Put sm.smc (sha1 hash da957f0d63d14cb441d215462904c4fa8519c613) in the root folder. When running, it will run both versions and compare frame by frame. If it detects a mismatch, it saves a snapshot in saves/ and displays a counter on screen counting down from 300.
+To build:
+> Note that the name of the SDL2 package varies between Linux distros. Th below exmaple is for Debian.
+```bash
+apt install libsdl2-dev
+git clone --recursive https://github.com/snesrev/sm
+cd sm
+make
+```
+Once done, place a Super Metroid ROM into the `sm` folder and rename it to "sm.smc".
 
+If building on another Linux distro, macOS or Windows, see [BUILDING.md](BUILDING.md).
+
+#
+Consider joining the Discord server: https://discord.gg/AJJbJAzNNJ
