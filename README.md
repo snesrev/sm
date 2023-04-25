@@ -7,7 +7,7 @@ Currently, it's in an early version.
 ## Usage
 
 To build:
-> Note that the name of the SDL2 package varies between Linux distros. Th below exmaple is for Debian.
+> Note that the name of the SDL2 package varies between Linux distros. The below exmaple is for Debian.
 ```bash
 apt install libsdl2-dev
 git clone --recursive https://github.com/snesrev/sm
