@@ -1,12 +1,8 @@
 .DS_Store
 *.dSYM
 /.vs/
-/packages/
 /saves/
-*.o
-/sm
-/build/
+/build*/
 /sm.smc
-SDL2.dll
-/sm.exe
 /glsl-shaders/
+CMakeUserPresets.json
