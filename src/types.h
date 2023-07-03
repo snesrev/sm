@@ -1,7 +1,9 @@
 #ifndef SM_TYPES_H_
 #define SM_TYPES_H_
 
+#ifdef _MSC_VER
 #pragma warning(disable: 4244)
+#endif
 
 #include <stdint.h>
 #include <stdlib.h>
