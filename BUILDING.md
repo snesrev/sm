@@ -1,97 +1,86 @@
 # Requirements
-  * A Super Metroid rom (Make sure to rename it to `sm.smc`)
+  * cmake (and also ninja, for better compiling speed)
+  * A Super Metroid rom (Make sure to rename it to `sm.smc`) which **must be in
+    the same folder as `sm`/`sm.exe`**
   * libsdl2-dev
   * Super Metroid repo `git clone --recursive https://github.com/snesrev/sm`
   
  For Linux/MacOS you must install these for your desired OS:
- * Ubuntu/Debian: `sudo apt install libsdl2-dev`
- * Fedora Linux: `sudo dnf in sdl2-devel`
- * Arch Linux: `sudo pacman -S sdl2`
- * macOS: `brew install sdl2`
+ * Ubuntu/Debian: `sudo apt install libsdl2-dev cmake ninja-build`
+ * Fedora Linux: `sudo dnf in sdl2-devel cmake ninja-build`
+ * Arch Linux: `sudo pacman -S sdl2 cmake ninja`
+ * macOS: `brew install sdl2 cmake ninja`
 
 # Windows
-
 ## Building with MSYS2
-
-Dependencies and requirements:
-
-  * The `libsdl2-dev` library
-  * [MSYS2](https://www.msys2.org)
+First, install [MSYS2](https://www.msys2.org/). After following the instructions,
+install the following packages.
   
 Note: *Make sure you're using MINGW64 and you're in `sm` folder in the terminal.*
 
-1. Install MSYS2 on your machine.
-2. Place the copy of your rom in the main directory.
-3. Install the necessary dependencies by inputting this command in the terminal.
-
 ```sh
-pacman -S mingw-w64-x86_64-SDL2 && pacman -S make && pacman -S mingw-w64-x86_64-gcc
-```
-4. Type `sdl2-config --cflags`, it should output:
-```sh
--IC:/msys64/mingw64/include/SDL2 -Dmain=SDL_main
-```
-5. After that type `sdl2-config --libs`, should output:
-```sh
--LC:/msys64/mingw64/lib -lmingw32 -mwindows -lSDL2main -lSDL2
+pacman -S mingw-w64-x86_64-{gcc,cmake,SDL2,ninja}
 ```
 
-After you've done installing everything, cd to `sm` folder. Type `make`
-In order to speed up the compilation, type `make -j16`
+Once installed, building can be done with:
+```sh
+cmake -B build -G Ninja && cmake --build build
+```
+`sm.exe` will be at `./build/sm.exe`.
 
 ## Building with Visual Studio
-
 Dependencies and requirements:
  * The `libsdl2-dev` library, which is automatically installed with NuGet.
  * [Visual Studio Community 2022](https://visualstudio.microsoft.com)
 
-Download VS installer. On installer prompt, make sure you're on "Workloads" and check `Desktop Development with C++` this will install the necessary deps for compilation.
+Download VS installer. On installer prompt, make sure you're on "Workloads" 
+and check **both** `Desktop Development with C++` **and** `C++ CMake Tools for Windows`.
+This will install the necessary deps for compilation.
 
-1. Open `sm.sln` solution.
-2. Change the build target from `Debug` to `Release`
-3. Build the solution.
+Visual Studio should automatically detect the CMake project and let you configure and build it. If not,
+follow the [general instructions](https://learn.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-170)
+from Microsoft.
+
+Make sure to switch the build type from `Debug` to `Release`.
 
 ## Building with Tiny C Compiler
-
  Dependencies and requirements:
- * You'll need [TCC](https://github.com/FitzRoyX/tinycc/releases/download/tcc_20221020/tcc_20221020.zip) and [SDL2](https://github.com/libsdl-org/SDL/releases/download/release-2.24.1/SDL2-devel-2.24.1-VC.zip) in order to compile using TCC.
+ * You'll need [TCC](https://github.com/FitzRoyX/tinycc/releases/download/tcc_20221020/tcc_20221020.zip) and
+   [SDL2](https://github.com/libsdl-org/SDL/releases/download/release-2.24.1/SDL2-devel-2.24.1-VC.zip) in order to compile using TCC.
 
 1. Unzip both TCC and SDL and place them in `third_party` folder.
 2. Double click `run_with_tcc.bat`
 3. Wait for it to compile and the game will automatically boot-up.
 
 # Linux/MacOS
-
 CD to your SM root folder and open the terminal and type:
 ```sh
-make
+cmake -B build && cmake --build build --parallel
 ```
 
-For more advanced usage:
-```sh
-make -j$(nproc) # run on all core
-make clean all  # clear gen+obj and rebuild
-CC=clang make   # specify compiler
-```
+The resulting binary will be `build/sm`.
 
 # Nintendo Switch
-
-Dependencies and requirements:
-
-  * The `switch-sdl2` library
+## Getting Dependencies
+You will need:
   * [DevKitPro](https://github.com/devkitPro/installer)
   * [Atmosphere](https://github.com/Atmosphere-NX/Atmosphere)
   
-1. Make sure you've installed Atmosphere on your Switch.
-2. Please download the DevKitPro version of MSYS2 through their installer, as the default MSYS2 causes issues with windows compiling.
-3. Now that you've installed DevKitPro, open up the location you've installed DevKitPro to, then find `mingw64.exe` inside `msys2` located in `devkitPro` folder.
-4. Type `pacman -S git switch-dev switch-sdl2 switch-tools` in the terminal to install the `switch-sdl2` library.
-5. CD to `switch` folder by typing `cd src/platfrom/switch` in the terminal on the `sm` root folder.
-6. type `make` to compile the Switch Port.
-7. Transfer the `.ini`, `nro`, `ncap` and your rom file to the Switch.
+First, follow the [installation instructions on devkitPro's website](https://devkitpro.org/wiki/Getting_Started).
 
-**OPTIONAL STEP**
-
-```sh
-make -j$(nproc) # To build using all cores
+Second, once you have pacman set up and synced, do:
+```shell
+pacman -S switch-dev switch-tools switch-sdl2
 ```
+
+## Building
+In the top level directory, you can use the cmake preset for running a build for the switch:
+```shell
+cmake --preset nintendo-switch
+cmake --build build-switch --parallel
+```
+
+## Getting SM on to your Switch
+First, make sure you've installed [Atmosphere](https://github.com/Atmosphere-NX/Atmosphere) on your Switch.
+Next, go into the `build-switch` directory and copy `sm.ini`, `sm.nro`, and `sm.ncap` and the sm rom
+file to your Switch.
