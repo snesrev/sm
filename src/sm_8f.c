@@ -497,8 +497,8 @@ void DoorCode_SetupElevatubeFromSouth(void) {  // 0x8FE26C
 
 void DoorCode_SetupElevatubeFromNorth(void) {  // 0x8FE291
   *(uint16 *)&room_main_asm_variables[4] = 256;
-  strcpy((uint8 *)&room_main_asm_variables[2], "@");
-  strcpy((uint8 *)&room_main_asm_variables[6], " ");
+  strcpy((char *)&room_main_asm_variables[2], "@");
+  strcpy((char *)&room_main_asm_variables[6], " ");
   CallSomeSamusCode(0);
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x01, 0x00, 0xb8f9 });
 }
@@ -612,8 +612,8 @@ void DoorCode_CeresElevatorShaft(void) {  // 0x8FE4E0
   reg_M7X = 128;
   reg_M7Y = 1008;
   irq_enable_mode7 = 1;
-  strcpy((uint8 *)room_main_asm_variables, "\"");
-  strcpy((uint8 *)&room_main_asm_variables[2], "<");
+  strcpy((char *)room_main_asm_variables, "\"");
+  strcpy((char *)&room_main_asm_variables[2], "<");
 }
 
 void DoorCode_CeresElevatorShaft_2(void) {  // 0x8FE513
@@ -655,7 +655,7 @@ LABEL_6:
       earthquake_type = v0;
     }
   } else if (NextRandom() < 0x200) {
-    strcpy((uint8 *)room_main_asm_variables, "*");
+    strcpy((char *)room_main_asm_variables, "*");
     v0 = 23;
     goto LABEL_6;
   }
@@ -672,7 +672,7 @@ LABEL_6:
       *(uint16 *)&room_main_asm_variables[2] = v0;
     }
   } else if (NextRandom() < 0x180) {
-    strcpy((uint8 *)room_main_asm_variables, "*");
+    strcpy((char *)room_main_asm_variables, "*");
     v0 = 26;
     goto LABEL_6;
   }

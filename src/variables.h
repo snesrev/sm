@@ -5,7 +5,7 @@
 extern uint8 g_ram[0x20000];
 
 #define INT16_SHL8(x) ((int16)(x) << 8)
-#define INT16_SHL16(x) ((int16)(x) << 16)
+#define INT16_SHL16(x) ((int32)(uint16)(int16)(x) << 16)
 
 static inline void AddToHiLo(uint16 *hi, uint16 *lo, uint32 v) {
   uint32 t = *lo + (*hi << 16) + v;
