@@ -724,6 +724,8 @@ LABEL_14:
 
 void Kraid_SpawnExplosionEproj(uint16 k) {  // 0xA7B0CB
   int v1 = k >> 1;
+  REMOVED_R18 = projectile_x_pos[v1];
+  REMOVED_R20 = projectile_y_pos[v1];
   eproj_spawn_pt = (Point16U){ projectile_x_pos[v1], projectile_y_pos[v1] };
   uint16 v2 = ((projectile_type[v1] & 0x200) == 0) ? 6 : 29;
   SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, v2);
@@ -774,25 +776,28 @@ void Kraid_Shot_Body(void) {  // 0xA7B181
     uint16 r22 = E->base.x_pos + GET_WORD(v3);
     uint16 r20 = E->base.y_pos + GET_WORD(v3 + 2);
     uint16 r18 = E->base.y_pos + GET_WORD(v3 + 6);
+    REMOVED_R18 = r18;
+    REMOVED_R20 = r20;
+    REMOVED_R22 = r22;
     if (projectile_counter) {
       for (int i = 2 * projectile_counter; i >= 0; i -= 2) {
         int v5 = i >> 1;
-        if (sign16(projectile_y_pos[v5] - projectile_y_radius[v5] - 1 - r18)) {
-          if (!sign16(projectile_y_radius[v5] + projectile_y_pos[v5] - r20)
-              && !sign16(projectile_x_radius[v5] + projectile_x_pos[v5] - r22)) {
+        if (sign16(projectile_y_pos[v5] - projectile_y_radius[v5] - 1 - REMOVED_R18)) {
+          if (!sign16(projectile_y_radius[v5] + projectile_y_pos[v5] - REMOVED_R20)
+              && !sign16(projectile_x_radius[v5] + projectile_x_pos[v5] - REMOVED_R22)) {
             goto LABEL_7;
           }
         } else {
           int v10;
           v10 = i >> 1;
-          r18 = projectile_x_radius[v10] + projectile_x_pos[v10];
+          REMOVED_R18 = projectile_x_radius[v10] + projectile_x_pos[v10];
           v11 = projectile_y_pos[v10] - E->base.y_pos;
           for (j = 0; ; j += 4) {
             int v13 = j >> 1;
             if ((int16)(v11 - g_word_A7B161[v13]) >= 0 || (int16)(v11 - g_word_A7B161[v13 + 2]) >= 0)
               break;
           }
-          if ((int16)(E->base.x_pos + g_word_A7B161[(j >> 1) + 1] - r18) < 0) {
+          if ((int16)(E->base.x_pos + g_word_A7B161[(j >> 1) + 1] - REMOVED_R18) < 0) {
 LABEL_7:
             Kraid_SpawnExplosionEproj(i);
             int v6 = i >> 1;
