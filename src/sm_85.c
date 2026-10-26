@@ -190,7 +190,19 @@ static void SetupPpuForActiveMessageBox(uint16 r52) {  // 0x85831E
   WriteReg(MDMAEN, 2);
 }
 
+#if SM_GBA
+bool GbaWriteMessageBoxText(uint16 index, uint16 *tilemap);
+#endif
+
 static void DrawSpecialButtonAndSetupPpuForLargeMessageBox(uint16 a) {
+#if SM_GBA
+  // Most of the boxes that name buttons name the GBA's instead: see
+  // gba/message_boxes.c.
+  if (GbaWriteMessageBoxText(message_box_index, &ram3000.pause_menu_map_tilemap[256 + 32])) {
+    SetupPpuForActiveMessageBox(416);
+    return;
+  }
+#endif
   uint16 v1 = 0;
   if ((a & kButton_A) == 0) {
     v1 = 2;
@@ -217,7 +229,13 @@ static void DrawSpecialButtonAndSetupPpuForLargeMessageBox(uint16 a) {
 }
 
 static void DrawShootButtonAndSetupPpuForLargeMessageBox(void) {  // 0x8583C5
+#if SM_GBA
+  // The GBA's B shoots (and the bomb's box, unlike the others, is left as
+  // the SNES's but for this).
+  DrawSpecialButtonAndSetupPpuForLargeMessageBox(kButton_B);
+#else
   DrawSpecialButtonAndSetupPpuForLargeMessageBox(button_config_shoot_x);
+#endif
 }
 
 static void DrawRunButtonAndSetupPpuForLargeMessageBox(void) {  // 0x8583CC

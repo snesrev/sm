@@ -32,7 +32,7 @@ uint16 CreateSpriteAtPos(uint16 x_r18, uint16 y_r20, uint16 ilist_r22, uint16 pa
   return v0;
 }
 
-void CallSpriteObjectInstr(uint32 ea) {
+static void CallSpriteObjectInstr(uint32 ea) {
   switch (ea) {
   case fnSpriteObject_Instr_RepeatLast: SpriteObject_Instr_RepeatLast(); return;  // 0xb4bcf0
   case fnSpriteObject_Instr_Terminate: SpriteObject_Instr_Terminate(); return;  // 0xb4bd07

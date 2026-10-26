@@ -6,6 +6,121 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+// Used only in this file.
+static void UnpackMapFromSave(void);
+static void PackMapToSave(void);
+static void DrawGrappleOrProjectileSpritemap(const uint8 *pp, uint16 x_r20, uint16 y_r18);
+static void GameOverMenu_0_FadeOutConfigGfx(void);
+static void GameOverMenu_24_FadeIn(void);
+static void MapVramForMenu(void);
+static void LoadInitialMenuTiles(void);
+static void LoadMenuPalettes(void);
+static void GameOverMenu_3_Main(void);
+static void RestorePalettesAndIoAfterDebugGameover(void);
+static void GameOverMenu_5_Continue(void);
+static void GameOverMenu_3_FadeIn(void);
+static void GameOverMenu_5_FadeOutToGameMap(void);
+static void GameOverMenu_7_FadeOutToSoftReset(void);
+static void GameOverMenu_6_LoadGameMapView(void);
+static void GameOverMenu_4_Main(void);
+static void GameOverMenu_1_Init(void);
+static void GameOverMenu_2_PlayMusic(void);
+static void FileSelectMenu_0_FadeOutConfigGfx(void);
+static void LoadFileSelectPalettes(void);
+static void FileSelectMenu_32_FadeOutToOptions(void);
+static void FileSelectMenu_33_FadeOutToTitle(void);
+static void FileSelectMenu_5_FadeOutFromMain(void);
+static void FileSelectMenu_15_FadeOutToMain(void);
+static void FileSelectMenu_17_FadeInToMain(void);
+static void FileSelectMenu_7_FadeInFromMain(void);
+static void FileSelectMenu_6_FileCopyInit(void);
+static void FileSelectMenu_Func1(void);
+static void sub_819591(void);
+static void SetInitialFileCopyMenuSelection(void);
+static void ClearMenuTilemap(void);
+static void LoadMenuExitTilemap(void);
+static void DrawFileCopySaveFileInfo(void);
+static void DrawFileCopySaveSlotAInfo(void);
+static void DrawFileCopySaveSlotBInfo(void);
+static void DrawFileCopySaveSlotCInfo(void);
+static void QueueTransferOfMenuTilemapToVramBG1(void);
+static void FileSelectMenu_8(void);
+static void SetFileCopyMenuSelectionMissilePosition(void);
+static void FileSelectMenu_9_InitializeSelectDest(void);
+static void DrawFileCopySelectDestinationSaveFileInfo(void);
+static void FileSelectMenu_10_FileCopySelectDest(void);
+static void FileSelectMenu_11_InitializeConfirm(void);
+static void DrawFileCopyClearConfirmation(void);
+static void DrawFileCopyConfirmationSaveFileInfo(void);
+static void FileSelectMenu_12_FileCopyConfirm(void);
+static void HandleFileCopyArrowPalette(void);
+static void FileSelectMenu_13_FileCopyDoIt(void);
+static void FileSelectMenu_14_CopyCompleted(void);
+static void FileSelectMenu_18(void);
+static void FileSelectMenu_20_FileClearInit(void);
+static void InitFileSelectMenuFileClear(void);
+static void FileSelectMenu_22_FileClearSelectSlot(void);
+static void SetFileClearMenuMissilePos(void);
+static void FileSelectMenu_23_FileClearInitConfirm(void);
+static void FileSelectMenu_24_FileClearConfirm(void);
+static void FileSelectMenu_25_FileClearDoClear(void);
+static void FileSelectMenu_26_ClearCompleted(void);
+static void FileSelectMenu_30(void);
+static void FileSelectMenu_31_TurnSamusHelmet(void);
+static void DrawFileSelectSamusHelmets(void);
+static void DrawFileSelectSlotSamusHelmet(uint16 k);
+static void FileSelectMap_22(void);
+static void FileSelectMenu_1_LoadFileSelectMenuBG2(void);
+static void FileSelectMenu_2_InitMain(void);
+static void FileSelectMenu_16(void);
+static uint8 LoadFromSram_(uint16 a);
+static void FileSelectMenu_3_FadeInToMain(void);
+static void DrawFileSelectionHealth(uint16 a, uint16 k);
+static void DrawFileSelectionTime(uint16 a, uint16 k);
+static void FileSelectMenu_4_Main(void);
+static void FileSelectMap_0(void);
+static void FileSelectMap_1(void);
+static void sub_81A3D1(uint16 k);
+static void LoadActiveAreaMapForegroundColors(uint16 k);
+static void LoadInactiveAreaMapForegroundColors(uint16 k);
+static void LoadAreaMapForegroundColors(uint16 j);
+static void FileSelectMap_2_LoadAreaSelectForegroundTilemap(void);
+static void FileSelectMap_18(void);
+static void FileSelectMap_3_LoadAreaSelectBackgroundTilemap(void);
+static void LoadAreaSelectBackgroundTilemap(uint16 j);
+static void FileSelectMap_4_SetupExpandingSquareTransition(void);
+static void ConfigureWindow1ForExpandingSquare(void);
+static void SetupInitialExpandingSquareHDMA(void);
+static void FileSelectMap_5_ExpandingSquare(void);
+static void FileSelectMap_6_AreaSelectMap(void);
+static uint16 DecAndWraparoundTo5(uint16 a);
+static uint16 WraparoundFrom6to0(uint16 a);
+static void SelectFileSelectMapArea(void);
+static uint16 CheckIfFileSelectMapAreaCanBeSelected(uint16 a);
+static void SwitchActiveFileSelectMapArea(uint16 R28);
+static void DrawAreaSelectMapLabels(void);
+static void FileSelectMap_7_PrepExpandSquareTransToRoomMap(void);
+static void SetupRoomSelectMapExpandingSquareTransHDMA(void);
+static void AddExpandingSqTransLeftIndirHDMA(uint16 a, uint16 k, uint16 j);
+static uint16 AddExpandingSqTransRightIndirHDMA(uint16 a, uint16 k, uint16 j);
+static void FileSelectMap_8_ExpandSquareTransToRoomSelectMap(void);
+static uint16 HandleRoomSelectMapExpandingSquareTrans(void);
+static void FileSelectMap_9_InitRoomSelectMap(void);
+static void FileSelectMap_10_RoomSelectMap(void);
+static void sub_81AEC8(void);
+static void HandleFileSelectMapScrollArrows(void);
+static void FileSelectMap_11(void);
+static void FileSelectMap_13(void);
+static void FileSelectMap_14(void);
+static void FileSelectMap_15_ClearTileMap(void);
+static void FileSelectMap_16_LoadPalettes(void);
+static void FileSelectMap_20_SetupExpandingSquare(void);
+static void FileSelectMap_21_MoveExpandingSquare(void);
+static void NewSaveFile(void);
+static void FileSelectClearRestOfMenuTilemapRow(uint16 k);
+static void LoadMenuTilemap(uint16 k, uint16 j);
+
+
 
 #define kOffsetToSaveSlot ((uint16*)RomFixedPtr(0x81812b))
 #define kPackedBytesPerArea_Count ((uint8*)RomFixedPtr(0x818131))
@@ -37,7 +152,16 @@ void SoftReset(void) {
   game_state = 0xffff;
 }
 
+#if SM_GBA
+bool Dev_SaveBlocked(void);
+#endif
+
 void SaveToSram(uint16 a) {  // 0x818000
+#if SM_GBA
+  // A spawn of the developer tools with a loadout isn't the player's file.
+  if (Dev_SaveBlocked())
+    return;
+#endif
   uint16 v7;
   uint16 v11;
 
@@ -113,7 +237,7 @@ uint8 LoadFromSram(uint16 a) {  // 0x818085
   }
 }
 
-void UnpackMapFromSave(void) {  // 0x8182E4
+static void UnpackMapFromSave(void) {  // 0x8182E4
   for (int i = 1792; i >= 0; i -= 2)
     explored_map_tiles_saved[i >> 1] = 0;
   for(int i = 0; i < 6; i++) {
@@ -128,7 +252,7 @@ void UnpackMapFromSave(void) {  // 0x8182E4
   }
 }
 
-void PackMapToSave(void) {  // 0x81834B
+static void PackMapToSave(void) {  // 0x81834B
   for (int i = 0; i < 6; i++) {
     int n = kPackedBytesPerArea_Count[i];
     const uint8 *r0 = RomPtr_81(kPackedBytesPerArea_UnpackedOffs[i]);
@@ -231,7 +355,7 @@ void DrawProjectileSpritemap(uint16 k, uint16 x_r20, uint16 y_r18) {  // 0x818A4
   DrawGrappleOrProjectileSpritemap(RomPtr_93(projectile_spritemap_pointers[k >> 1]), x_r20, y_r18);
 }
 
-void DrawGrappleOrProjectileSpritemap(const uint8 *pp, uint16 x_r20, uint16 y_r18) {  // 0x818A5F
+static void DrawGrappleOrProjectileSpritemap(const uint8 *pp, uint16 x_r20, uint16 y_r18) {  // 0x818A5F
   int idx = oam_next_ptr;
   int n = GET_WORD(pp);
   pp += 2;
@@ -248,7 +372,7 @@ void DrawGrappleOrProjectileSpritemap(const uint8 *pp, uint16 x_r20, uint16 y_r1
   oam_next_ptr = idx;
 }
 
-void DrawSpritemapWithBaseTile(uint8 db, uint16 j, uint16 r20_x, uint16 r18_y, uint16 r3, uint16 r0) {  // 0x818AB8
+GBA_IWRAM_CODE void DrawSpritemapWithBaseTile(uint8 db, uint16 j, uint16 r20_x, uint16 r18_y, uint16 r3, uint16 r0) {  // 0x818AB8
   if (j == 0)
     return; // bug fix
   uint8 *pp = (uint8 *)RomPtrWithBank(db, j);
@@ -268,7 +392,7 @@ void DrawSpritemapWithBaseTile(uint8 db, uint16 j, uint16 r20_x, uint16 r18_y, u
   oam_next_ptr = idx;
 }
 
-void DrawSpritemapWithBaseTile2(uint8 db, uint16 j, uint16 r20_x, uint16 r18_y, uint16 r3, uint16 r0) {  // 0x818B22
+GBA_IWRAM_CODE void DrawSpritemapWithBaseTile2(uint8 db, uint16 j, uint16 r20_x, uint16 r18_y, uint16 r3, uint16 r0) {  // 0x818B22
   const uint8 *pp = RomPtrWithBank(db, j);
   int idx = oam_next_ptr;
   int n = GET_WORD(pp);
@@ -287,7 +411,7 @@ void DrawSpritemapWithBaseTile2(uint8 db, uint16 j, uint16 r20_x, uint16 r18_y, 
   oam_next_ptr = idx;
 }
 
-void DrawSpritemapWithBaseTileOffscreen(uint8 db, uint16 j, uint16 r20_x, uint16 r18_y, uint16 r3, uint16 r0) {  // 0x818B96
+GBA_IWRAM_CODE void DrawSpritemapWithBaseTileOffscreen(uint8 db, uint16 j, uint16 r20_x, uint16 r18_y, uint16 r3, uint16 r0) {  // 0x818B96
   const uint8 *pp = RomPtrWithBank(db, j);
   int idx = oam_next_ptr;
   int n = GET_WORD(pp);
@@ -344,7 +468,7 @@ void DrawEprojSpritemapWithBaseTileOffscreen(uint8 db, uint16 j, uint16 x_r20, u
   oam_next_ptr = idx;
 }
 
-void GameOverMenu_0_FadeOutConfigGfx(void) {  // 0x818D0F
+static void GameOverMenu_0_FadeOutConfigGfx(void) {  // 0x818D0F
   HandleFadeOut();
   if ((reg_INIDISP & 0xF) == 0) {
     ScreenOff();
@@ -374,13 +498,13 @@ void GameOverMenu_0_FadeOutConfigGfx(void) {  // 0x818D0F
   }
 }
 
-void GameOverMenu_24_FadeIn(void) {  // 0x818DA6
+static void GameOverMenu_24_FadeIn(void) {  // 0x818DA6
   HandleFadeIn();
   if ((reg_INIDISP & 0xF) == 15)
     ++menu_index;
 }
 
-void MapVramForMenu(void) {  // 0x818DBA
+static void MapVramForMenu(void) {  // 0x818DBA
   reg_TS = 0;
   reg_OBSEL = 3;
   reg_BG1SC = 81;
@@ -391,7 +515,7 @@ void MapVramForMenu(void) {  // 0x818DBA
   reg_TM = 19;
 }
 
-void LoadInitialMenuTiles(void) {  // 0x818DDB
+static void LoadInitialMenuTiles(void) {  // 0x818DDB
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0);
   WriteReg(VMAIN, 0x80);
@@ -418,7 +542,7 @@ void LoadInitialMenuTiles(void) {  // 0x818DDB
   WriteReg(MDMAEN, 2);
 }
 
-void LoadMenuPalettes(void) {  // 0x818E60
+static void LoadMenuPalettes(void) {  // 0x818E60
   uint16 v0 = 0;
   do {
     int v1 = v0 >> 1;
@@ -428,7 +552,7 @@ void LoadMenuPalettes(void) {  // 0x818E60
   } while ((int16)(v0 - 512) < 0);
 }
 
-void GameOverMenu_3_Main(void) {  // 0x819003
+static void GameOverMenu_3_Main(void) {  // 0x819003
   int16 v0;
   int16 v1;
 
@@ -455,7 +579,7 @@ void GameOverMenu_3_Main(void) {  // 0x819003
   oam_next_ptr += 4;
 }
 
-void RestorePalettesAndIoAfterDebugGameover(void) {  // 0x81905B
+static void RestorePalettesAndIoAfterDebugGameover(void) {  // 0x81905B
   int v0 = 0;
   do {
     palette_buffer[v0] = ram3000.pause_menu_map_tilemap[v0 + 384];
@@ -468,7 +592,7 @@ void RestorePalettesAndIoAfterDebugGameover(void) {  // 0x81905B
   } while ((int16)(v1 * 2 - 54) < 0);
 }
 
-void GameOverMenu_5_Continue(void) {  // 0x81907E
+static void GameOverMenu_5_Continue(void) {  // 0x81907E
   WriteReg(VMADDL, 0);
   WriteReg(VMADDH, 0x40);
   WriteReg(VMAIN, 0x80);
@@ -493,7 +617,7 @@ void GameOverMenu(void) {
   kGameOverMenuFuncs[menu_index]();
 }
 
-void GameOverMenu_3_FadeIn(void) {  // 0x8190CD
+static void GameOverMenu_3_FadeIn(void) {  // 0x8190CD
   HandleGameOverBabyMetroid();
   DrawMenuSelectionMissile();
   HandleFadeIn();
@@ -501,7 +625,7 @@ void GameOverMenu_3_FadeIn(void) {  // 0x8190CD
     ++menu_index;
 }
 
-void GameOverMenu_5_FadeOutToGameMap(void) {  // 0x8190E7
+static void GameOverMenu_5_FadeOutToGameMap(void) {  // 0x8190E7
   HandleGameOverBabyMetroid();
   DrawMenuSelectionMissile();
   HandleFadeOut();
@@ -509,7 +633,7 @@ void GameOverMenu_5_FadeOutToGameMap(void) {  // 0x8190E7
     ++menu_index;
 }
 
-void GameOverMenu_7_FadeOutToSoftReset(void) {  // 0x8190FE
+static void GameOverMenu_7_FadeOutToSoftReset(void) {  // 0x8190FE
   DrawMenuSelectionMissile();
   HandleGameOverBabyMetroid();
   HandleFadeOut();
@@ -517,14 +641,14 @@ void GameOverMenu_7_FadeOutToSoftReset(void) {  // 0x8190FE
     SoftReset();
 }
 
-void GameOverMenu_6_LoadGameMapView(void) {  // 0x819116
+static void GameOverMenu_6_LoadGameMapView(void) {  // 0x819116
   DisableHdmaObjects();
   WaitUntilEndOfVblankAndClearHdma();
   game_state = kGameState_5_FileSelectMap;
   menu_index = 0;
 }
 
-void GameOverMenu_4_Main(void) {  // 0x81912B
+static void GameOverMenu_4_Main(void) {  // 0x81912B
   HandleGameOverBabyMetroid();
   DrawMenuSelectionMissile();
   if ((joypad1_newkeys & kButton_Select) != 0
@@ -552,7 +676,7 @@ void GameOverMenu_4_Main(void) {  // 0x81912B
   eproj_id[10] = v0;
 }
 
-void GameOverMenu_1_Init(void) {  // 0x8191A4
+static void GameOverMenu_1_Init(void) {  // 0x8191A4
   reg_TM = 17;
   reg_COLDATA[0] = 32;
   reg_COLDATA[1] = 64;
@@ -599,7 +723,7 @@ void GameOverMenu_1_Init(void) {  // 0x8191A4
   eproj_id[10] = 160;
 }
 
-void GameOverMenu_2_PlayMusic(void) {  // 0x8193E8
+static void GameOverMenu_2_PlayMusic(void) {  // 0x8193E8
   if (!(HasQueuedMusic())) {
     ++menu_index;
     QueueMusic_Delayed8(4);
@@ -647,7 +771,7 @@ void FileSelectMenu(void) {
   kFileSelectMenuFuncs[menu_index]();
 }
 
-void FileSelectMenu_0_FadeOutConfigGfx(void) {  // 0x81944E
+static void FileSelectMenu_0_FadeOutConfigGfx(void) {  // 0x81944E
   HandleFadeOut();
   if ((reg_INIDISP & 0xF) != 0)
     return;
@@ -667,7 +791,7 @@ void FileSelectMenu_0_FadeOutConfigGfx(void) {  // 0x81944E
   LoadFileSelectPalettes();
 }
 
-void LoadFileSelectPalettes(void) {  // 0x819486
+static void LoadFileSelectPalettes(void) {  // 0x819486
   int v0 = 0;
   do {
     int v1 = v0 >> 1;
@@ -678,7 +802,7 @@ void LoadFileSelectPalettes(void) {  // 0x819486
 
 }
 
-void FileSelectMenu_32_FadeOutToOptions(void) {  // 0x8194A3
+static void FileSelectMenu_32_FadeOutToOptions(void) {  // 0x8194A3
   DrawMenuSelectionMissile();
   DrawBorderAroundSamusData();
   DrawFileSelectSamusHelmets();
@@ -694,7 +818,7 @@ void FileSelectMenu_32_FadeOutToOptions(void) {  // 0x8194A3
   }
 }
 
-void FileSelectMenu_33_FadeOutToTitle(void) {  // 0x8194D5
+static void FileSelectMenu_33_FadeOutToTitle(void) {  // 0x8194D5
   DrawBorderAroundSamusData();
   DrawFileSelectSamusHelmets();
   HandleFadeOut();
@@ -702,12 +826,12 @@ void FileSelectMenu_33_FadeOutToTitle(void) {  // 0x8194D5
     SoftReset();
 }
 
-void FileSelectMenu_5_FadeOutFromMain(void) {  // 0x8194EE
+static void FileSelectMenu_5_FadeOutFromMain(void) {  // 0x8194EE
   DrawMenuSelectionMissile();
   FileSelectMenu_15_FadeOutToMain();
 }
 
-void FileSelectMenu_15_FadeOutToMain(void) {  // 0x8194F4
+static void FileSelectMenu_15_FadeOutToMain(void) {  // 0x8194F4
   HandleFadeOut();
   reg_MOSAIC = reg_MOSAIC & 0x0F | (16 * (reg_INIDISP & 0xF)) ^ 0xF0;
   if ((reg_INIDISP & 0xF) == 0) {
@@ -725,14 +849,14 @@ static const uint16 kMenuSelectionMissileXY[12] = {  // 0x81951E
   0xd3, 0xe,
 };
 
-void FileSelectMenu_17_FadeInToMain(void) {
+static void FileSelectMenu_17_FadeInToMain(void) {
   int v0 = (uint16)(4 * selected_save_slot) >> 1;
   eproj_id[10] = kMenuSelectionMissileXY[v0];
   eproj_id[5] = kMenuSelectionMissileXY[v0 + 1];
   FileSelectMenu_7_FadeInFromMain();
 }
 
-void FileSelectMenu_7_FadeInFromMain(void) {  // 0x819532
+static void FileSelectMenu_7_FadeInFromMain(void) {  // 0x819532
   DrawMenuSelectionMissile();
   HandleFadeIn();
   reg_MOSAIC = reg_MOSAIC & 0x0F | (16 * (reg_INIDISP & 0xF)) ^ 0xF0;
@@ -740,12 +864,12 @@ void FileSelectMenu_7_FadeInFromMain(void) {  // 0x819532
     ++menu_index;
 }
 
-void FileSelectMenu_6_FileCopyInit(void) {  // 0x819561
+static void FileSelectMenu_6_FileCopyInit(void) {  // 0x819561
   ++menu_index;
   FileSelectMenu_Func1();
 }
 
-void FileSelectMenu_Func1(void) {  // 0x819566
+static void FileSelectMenu_Func1(void) {  // 0x819566
   ClearMenuTilemap();
   enemy_data[0].palette_index = 0;
   LoadMenuTilemap(0x52, addr_kMenuTilemap_DataCopyMode);
@@ -758,11 +882,11 @@ void FileSelectMenu_Func1(void) {  // 0x819566
   eproj_id[17] = 0;
 }
 
-void sub_819591(void) {  // 0x819591
+static void sub_819591(void) {  // 0x819591
   SetInitialFileCopyMenuSelection();
 }
 
-void SetInitialFileCopyMenuSelection(void) {  // 0x819593
+static void SetInitialFileCopyMenuSelection(void) {  // 0x819593
   int v0 = nonempty_save_slots;
   int v1 = 0;
   do {
@@ -774,16 +898,16 @@ void SetInitialFileCopyMenuSelection(void) {  // 0x819593
   eproj_id[15] = v1;
 }
 
-void ClearMenuTilemap(void) {  // 0x8195A6
+static void ClearMenuTilemap(void) {  // 0x8195A6
   for (int i = 2046; i >= 0; i -= 2)
     *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[768] + (uint16)i) = 15;
 }
 
-void LoadMenuExitTilemap(void) {  // 0x8195B5
+static void LoadMenuExitTilemap(void) {  // 0x8195B5
   LoadMenuTilemap(0x688, addr_kMenuTilemap_Exit);
 }
 
-void DrawFileCopySaveFileInfo(void) {  // 0x8195BE
+static void DrawFileCopySaveFileInfo(void) {  // 0x8195BE
   LoadFromSram_(0);
   enemy_data[0].palette_index = 0;
   if ((nonempty_save_slots & 1) == 0)
@@ -802,28 +926,28 @@ void DrawFileCopySaveFileInfo(void) {  // 0x8195BE
   QueueTransferOfMenuTilemapToVramBG1();
 }
 
-void DrawFileCopySaveSlotAInfo(void) {  // 0x81960F
+static void DrawFileCopySaveSlotAInfo(void) {  // 0x81960F
   DrawFileSelectionHealth((nonempty_save_slots & 1) == 0, 0x218);
   DrawFileSelectionTime((nonempty_save_slots & 1) == 0, 0x272);
   LoadMenuTilemap(0x234, addr_kMenuTilemap_TIME);
   LoadMenuTilemap(0x208, addr_kMenuTilemap_SamusA);
 }
 
-void DrawFileCopySaveSlotBInfo(void) {  // 0x81963F
+static void DrawFileCopySaveSlotBInfo(void) {  // 0x81963F
   DrawFileSelectionHealth(~nonempty_save_slots & 2, 0x318);
   DrawFileSelectionTime(~nonempty_save_slots & 2, 0x372);
   LoadMenuTilemap(0x334, addr_kMenuTilemap_TIME);
   LoadMenuTilemap(0x308, addr_kMenuTilemap_SamusB);
 }
 
-void DrawFileCopySaveSlotCInfo(void) {  // 0x81966F
+static void DrawFileCopySaveSlotCInfo(void) {  // 0x81966F
   DrawFileSelectionHealth(~nonempty_save_slots & 4, 0x418);
   DrawFileSelectionTime(~nonempty_save_slots & 4, 0x472);
   LoadMenuTilemap(0x434, addr_kMenuTilemap_TIME);
   LoadMenuTilemap(0x408, addr_kMenuTilemap_SamusC);
 }
 
-void QueueTransferOfMenuTilemapToVramBG1(void) {  // 0x81969F
+static void QueueTransferOfMenuTilemapToVramBG1(void) {  // 0x81969F
   uint16 v0 = vram_write_queue_tail;
   VramWriteEntry *v1 = gVramWriteEntry(vram_write_queue_tail);
   v1->size = 2048;
@@ -839,7 +963,7 @@ static const uint8 kBitShl[3] = {  // 0x8196C2
   4,
 };
 
-void FileSelectMenu_8(void) {
+static void FileSelectMenu_8(void) {
   uint8 v0;
 
   DrawBorderAroundDataCopyMode();
@@ -878,13 +1002,13 @@ LABEL_16:
   }
 }
 
-void SetFileCopyMenuSelectionMissilePosition(void) {  // 0x81975E
+static void SetFileCopyMenuSelectionMissilePosition(void) {  // 0x81975E
   static const uint16 kFileCopyMissileY[4] = { 72, 104, 136, 211 };
   eproj_id[10] = kFileCopyMissileY[eproj_id[15]];
   eproj_id[5] = 22;
 }
 
-void FileSelectMenu_9_InitializeSelectDest(void) {  // 0x81977A
+static void FileSelectMenu_9_InitializeSelectDest(void) {  // 0x81977A
   DrawBorderAroundDataCopyMode();
   DrawFileCopySelectDestinationSaveFileInfo();
   ++menu_index;
@@ -898,7 +1022,7 @@ void FileSelectMenu_9_InitializeSelectDest(void) {  // 0x81977A
   SetFileCopyMenuSelectionMissilePosition();
 }
 
-void DrawFileCopySelectDestinationSaveFileInfo(void) {  // 0x819799
+static void DrawFileCopySelectDestinationSaveFileInfo(void) {  // 0x819799
   ClearMenuTilemap();
   enemy_data[0].palette_index = 0;
   LoadMenuTilemap(0x52, addr_kMenuTilemap_DataCopyMode);
@@ -927,7 +1051,7 @@ void DrawFileCopySelectDestinationSaveFileInfo(void) {  // 0x819799
   QueueTransferOfMenuTilemapToVramBG1();
 }
 
-void FileSelectMenu_10_FileCopySelectDest(void) {  // 0x819813
+static void FileSelectMenu_10_FileCopySelectDest(void) {  // 0x819813
   static const uint16 kFileCopySelectDest_MissileY[4] = { 72, 104, 136, 212 };
   uint16 v0;
 
@@ -973,7 +1097,7 @@ LABEL_8:
   }
 }
 
-void FileSelectMenu_11_InitializeConfirm(void) {  // 0x8198B7
+static void FileSelectMenu_11_InitializeConfirm(void) {  // 0x8198B7
   DrawBorderAroundDataCopyMode();
   enemy_data[0].palette_index = 0;
   LoadMenuTilemap(0x144, addr_kMenuTilemap_CopySamusToSamus);
@@ -985,7 +1109,7 @@ void FileSelectMenu_11_InitializeConfirm(void) {  // 0x8198B7
   eproj_unk198F = 8;
 }
 
-void DrawFileCopyClearConfirmation(void) {  // 0x8198ED
+static void DrawFileCopyClearConfirmation(void) {  // 0x8198ED
   enemy_data[0].palette_index = 0;
   LoadMenuTilemap(0x514, addr_kMenuTilemap_IsThisOk);
   enemy_data[0].palette_index = 0;
@@ -1000,7 +1124,7 @@ void DrawFileCopyClearConfirmation(void) {  // 0x8198ED
   DrawFileCopyConfirmationSaveFileInfo();
 }
 
-void DrawFileCopyConfirmationSaveFileInfo(void) {  // 0x819922
+static void DrawFileCopyConfirmationSaveFileInfo(void) {  // 0x819922
   LoadFromSram_(0);
   int v0 = 0;
   if (eproj_id[16] && eproj_id[17])
@@ -1022,7 +1146,7 @@ void DrawFileCopyConfirmationSaveFileInfo(void) {  // 0x819922
   QueueTransferOfMenuTilemapToVramBG1();
 }
 
-void FileSelectMenu_12_FileCopyConfirm(void) {  // 0x819984
+static void FileSelectMenu_12_FileCopyConfirm(void) {  // 0x819984
   DrawBorderAroundDataCopyMode();
   DrawMenuSelectionMissile();
   HandleFileCopyArrowPalette();
@@ -1055,7 +1179,7 @@ void FileSelectMenu_12_FileCopyConfirm(void) {  // 0x819984
   eproj_id[5] = 94;
 }
 
-void HandleFileCopyArrowPalette(void) {  // 0x8199FE
+static void HandleFileCopyArrowPalette(void) {  // 0x8199FE
   if (eproj_unk198F) {
     if (!--eproj_unk198F) {
       eproj_unk198F = 4;
@@ -1070,7 +1194,7 @@ void HandleFileCopyArrowPalette(void) {  // 0x8199FE
   }
 }
 
-void FileSelectMenu_13_FileCopyDoIt(void) {  // 0x819A2C
+static void FileSelectMenu_13_FileCopyDoIt(void) {  // 0x819A2C
   static const uint16 kBitShl_16bit[3] = { 1, 2, 4 };
 
   DrawBorderAroundDataCopyMode();
@@ -1110,7 +1234,7 @@ void FileSelectMenu_13_FileCopyDoIt(void) {  // 0x819A2C
   RtlWriteSram();
 }
 
-void FileSelectMenu_14_CopyCompleted(void) {  // 0x819AFA
+static void FileSelectMenu_14_CopyCompleted(void) {  // 0x819AFA
   DrawBorderAroundDataCopyMode();
   if (joypad1_newkeys) {
     QueueSfx1_Max6(0x37);
@@ -1124,17 +1248,17 @@ void FileSelectMenu_14_CopyCompleted(void) {  // 0x819AFA
   }
 }
 
-void FileSelectMenu_18(void) {  // 0x819B28
+static void FileSelectMenu_18(void) {  // 0x819B28
   menu_index -= 14;
 }
 
-void FileSelectMenu_20_FileClearInit(void) {  // 0x819B33
+static void FileSelectMenu_20_FileClearInit(void) {  // 0x819B33
   DrawBorderAroundDataClearMode();
   ++menu_index;
   InitFileSelectMenuFileClear();
 }
 
-void InitFileSelectMenuFileClear(void) {  // 0x819B3C
+static void InitFileSelectMenuFileClear(void) {  // 0x819B3C
   ClearMenuTilemap();
   enemy_data[0].palette_index = 0;
   LoadMenuTilemap(0x50, addr_kMenuTilemap_DataClearMode);
@@ -1146,7 +1270,7 @@ void InitFileSelectMenuFileClear(void) {  // 0x819B3C
   SetFileClearMenuMissilePos();
 }
 
-void FileSelectMenu_22_FileClearSelectSlot(void) {  // 0x819B64
+static void FileSelectMenu_22_FileClearSelectSlot(void) {  // 0x819B64
   static const uint8 kBitShl_[3] = { 1, 2, 4 };
   uint16 v0;
   uint8 v1;
@@ -1190,13 +1314,13 @@ LABEL_16:
   SetFileClearMenuMissilePos();
 }
 
-void SetFileClearMenuMissilePos(void) {  // 0x819BEF
+static void SetFileClearMenuMissilePos(void) {  // 0x819BEF
   static const uint16 kFileClear_MissileY[4] = { 72, 104, 136, 211 };
   eproj_id[10] = kFileClear_MissileY[eproj_id[15]];
   eproj_id[5] = 22;
 }
 
-void FileSelectMenu_23_FileClearInitConfirm(void) {  // 0x819C0B
+static void FileSelectMenu_23_FileClearInitConfirm(void) {  // 0x819C0B
   DrawBorderAroundDataClearMode();
   enemy_data[0].palette_index = 0;
   LoadMenuTilemap(0x140, addr_kMenuTilemap_ClearSamusA);
@@ -1207,7 +1331,7 @@ void FileSelectMenu_23_FileClearInitConfirm(void) {  // 0x819C0B
   eproj_id[15] = 0;
 }
 
-void FileSelectMenu_24_FileClearConfirm(void) {  // 0x819C36
+static void FileSelectMenu_24_FileClearConfirm(void) {  // 0x819C36
   uint16 v0;
   DrawBorderAroundDataClearMode();
   DrawMenuSelectionMissile();
@@ -1238,7 +1362,7 @@ LABEL_5:
   ++menu_index;
 }
 
-void FileSelectMenu_25_FileClearDoClear(void) {  // 0x819C9E
+static void FileSelectMenu_25_FileClearDoClear(void) {  // 0x819C9E
   static const uint16 kBitShl_Not[3] = { 0xfffe, 0xfffd, 0xfffb };
 
   DrawBorderAroundDataClearMode();
@@ -1268,7 +1392,7 @@ void FileSelectMenu_25_FileClearDoClear(void) {  // 0x819C9E
   RtlWriteSram();
 }
 
-void FileSelectMenu_26_ClearCompleted(void) {  // 0x819D26
+static void FileSelectMenu_26_ClearCompleted(void) {  // 0x819D26
   DrawBorderAroundDataClearMode();
   if (joypad1_newkeys) {
     QueueSfx1_Max6(0x37);
@@ -1288,12 +1412,12 @@ LABEL_3:
   }
 }
 
-void FileSelectMenu_30(void) {  // 0x819D68
+static void FileSelectMenu_30(void) {  // 0x819D68
   DrawBorderAroundSamusData();
   menu_index -= 26;
 }
 
-void FileSelectMenu_31_TurnSamusHelmet(void) {  // 0x819D77
+static void FileSelectMenu_31_TurnSamusHelmet(void) {  // 0x819D77
   DrawMenuSelectionMissile();
   DrawBorderAroundSamusData();
   DrawFileSelectSlotSamusHelmet(4);
@@ -1307,7 +1431,7 @@ void FileSelectMenu_31_TurnSamusHelmet(void) {  // 0x819D77
   }
 }
 
-void DrawFileSelectSamusHelmets(void) {  // 0x819DC3
+static void DrawFileSelectSamusHelmets(void) {  // 0x819DC3
   eproj_index = 0;
   DrawFileSelectSlotSamusHelmet(4);
   eproj_init_param_1 = 0;
@@ -1316,7 +1440,7 @@ void DrawFileSelectSamusHelmets(void) {  // 0x819DC3
   DrawFileSelectSlotSamusHelmet(8);
 }
 
-void DrawFileSelectSlotSamusHelmet(uint16 k) {  // 0x819DE4
+static void DrawFileSelectSlotSamusHelmet(uint16 k) {  // 0x819DE4
   uint16 v0 = k;
   int16 v1;
 
@@ -1369,7 +1493,7 @@ void FileSelectMap(void) {
   kFileSelectMapFuncs[menu_index]();
 }
 
-void FileSelectMap_22(void) {  // 0x819E7B
+static void FileSelectMap_22(void) {  // 0x819E7B
   DrawAreaSelectMapLabels();
   HandleFadeOut();
   if ((reg_INIDISP & 0xF) == 0) {
@@ -1378,11 +1502,11 @@ void FileSelectMap_22(void) {  // 0x819E7B
   }
 }
 
-void FileSelectMenu_1_LoadFileSelectMenuBG2(void) {  // 0x819E93
+static void FileSelectMenu_1_LoadFileSelectMenuBG2(void) {  // 0x819E93
   VramWriteEntry *v2;
 
   for (int i = 1023; i >= 0; --i)
-    ram3000.pause_menu_map_tilemap[i + 768] = kZebesAndStarsTilemap[i];
+    ((uint16 *)ram3000.menu.menu_tilemap)[i] = kZebesAndStarsTilemap[i];
   uint16 v1 = vram_write_queue_tail;
   v2 = gVramWriteEntry(vram_write_queue_tail);
   v2->size = 2048;
@@ -1395,7 +1519,7 @@ void FileSelectMenu_1_LoadFileSelectMenuBG2(void) {  // 0x819E93
   eproj_id[0] = 0;
 }
 
-void FileSelectMenu_2_InitMain(void) {  // 0x819ED6
+static void FileSelectMenu_2_InitMain(void) {  // 0x819ED6
   uint16 v0;
 
   if (sign16(sram_save_slot_selected)
@@ -1407,7 +1531,7 @@ void FileSelectMenu_2_InitMain(void) {  // 0x819ED6
   FileSelectMenu_16();
 }
 
-void FileSelectMenu_16(void) {  // 0x819EF3
+static void FileSelectMenu_16(void) {  // 0x819EF3
   for (int i = 2046; i >= 0; i -= 2)
     *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[768] + (uint16)i) = 15;
   nonempty_save_slots = -1;
@@ -1472,11 +1596,11 @@ void FileSelectMenu_16(void) {  // 0x819EF3
   eproj_id[17] = 0;
 }
 
-uint8 LoadFromSram_(uint16 a) {  // 0x81A053
+static uint8 LoadFromSram_(uint16 a) {  // 0x81A053
   return LoadFromSram(a);
 }
 
-void FileSelectMenu_3_FadeInToMain(void) {  // 0x81A058
+static void FileSelectMenu_3_FadeInToMain(void) {  // 0x81A058
   DrawFileSelectSamusHelmets();
   int v0 = (uint16)(4 * selected_save_slot) >> 1;
   eproj_id[10] = kMenuSelectionMissileXY[v0];
@@ -1488,7 +1612,7 @@ void FileSelectMenu_3_FadeInToMain(void) {  // 0x81A058
     ++menu_index;
 }
 
-void DrawFileSelectionHealth(uint16 a, uint16 k) {  // 0x81A087
+static void DrawFileSelectionHealth(uint16 a, uint16 k) {  // 0x81A087
   int16 v2;
   int16 v4;
 
@@ -1524,7 +1648,7 @@ void DrawFileSelectionHealth(uint16 a, uint16 k) {  // 0x81A087
   }
 }
 
-void DrawFileSelectionTime(uint16 a, uint16 k) {  // 0x81A14E
+static void DrawFileSelectionTime(uint16 a, uint16 k) {  // 0x81A14E
   if (!a) {
     uint16 r26 = k;
     int div_val = game_time_hours / 10;
@@ -1544,7 +1668,7 @@ void DrawFileSelectionTime(uint16 a, uint16 k) {  // 0x81A14E
   }
 }
 
-void FileSelectMenu_4_Main(void) {  // 0x81A1C2
+static void FileSelectMenu_4_Main(void) {  // 0x81A1C2
   int16 v0;
   uint16 v1, v2;
   int v3;
@@ -1633,7 +1757,7 @@ LABEL_28:
   }
 }
 
-void FileSelectMap_0(void) {  // 0x81A32A
+static void FileSelectMap_0(void) {  // 0x81A32A
   VramWriteEntry *v1;
 
   ClearMenuTilemap();
@@ -1656,7 +1780,7 @@ void FileSelectMap_0(void) {  // 0x81A32A
   ++menu_index;
 }
 
-void FileSelectMap_1(void) {  // 0x81A37C
+static void FileSelectMap_1(void) {  // 0x81A37C
   int16 v1;
   int16 v2;
 
@@ -1690,7 +1814,7 @@ void FileSelectMap_1(void) {  // 0x81A37C
   }
 }
 
-void sub_81A3D1(uint16 k) {  // 0x81A3D1
+static void sub_81A3D1(uint16 k) {  // 0x81A3D1
   LoadActiveAreaMapForegroundColors(k);
 }
 
@@ -1701,15 +1825,15 @@ static const uint16 kInactiveAreaMapForegroundColors[6] = {  // 0x81A3D3
   0x54, 0x5a,
 };
 
-void LoadActiveAreaMapForegroundColors(uint16 v0) {
+static void LoadActiveAreaMapForegroundColors(uint16 v0) {
   LoadAreaMapForegroundColors(kActiveAreaMapForegroundColors[v0]);
 }
 
-void LoadInactiveAreaMapForegroundColors(uint16 v0) {  // 0x81A3DC
+static void LoadInactiveAreaMapForegroundColors(uint16 v0) {  // 0x81A3DC
   LoadAreaMapForegroundColors(kInactiveAreaMapForegroundColors[v0]);
 }
 
-void LoadAreaMapForegroundColors(uint16 j) {  // 0x81A3E3
+static void LoadAreaMapForegroundColors(uint16 j) {  // 0x81A3E3
   while (1) {
     int v1 = j >> 1;
     if (kAreaMapForegroundSetDefs[v1] == 0xFFFF)
@@ -1727,7 +1851,7 @@ void LoadAreaMapForegroundColors(uint16 j) {  // 0x81A3E3
   }
 }
 
-void FileSelectMap_2_LoadAreaSelectForegroundTilemap(void) {  // 0x81A546
+static void FileSelectMap_2_LoadAreaSelectForegroundTilemap(void) {  // 0x81A546
   VramWriteEntry *v1;
 
   uint16 v0 = vram_write_queue_tail;
@@ -1741,17 +1865,17 @@ void FileSelectMap_2_LoadAreaSelectForegroundTilemap(void) {  // 0x81A546
   ++menu_index;
 }
 
-void FileSelectMap_18(void) {  // 0x81A578
+static void FileSelectMap_18(void) {  // 0x81A578
   ++menu_index;
   LoadAreaSelectBackgroundTilemap(area_index);
 }
 
-void FileSelectMap_3_LoadAreaSelectBackgroundTilemap(void) {  // 0x81A582
+static void FileSelectMap_3_LoadAreaSelectBackgroundTilemap(void) {  // 0x81A582
   ++menu_index;
   LoadAreaSelectBackgroundTilemap(area_index);
 }
 
-void LoadAreaSelectBackgroundTilemap(uint16 j) {  // 0x81A58A
+static void LoadAreaSelectBackgroundTilemap(uint16 j) {  // 0x81A58A
   uint16 v1 = vram_write_queue_tail;
   VramWriteEntry *v2 = gVramWriteEntry(vram_write_queue_tail);
   v2->size = 2048;
@@ -1761,7 +1885,7 @@ void LoadAreaSelectBackgroundTilemap(uint16 j) {  // 0x81A58A
   vram_write_queue_tail = v1 + 7;
 }
 
-void FileSelectMap_4_SetupExpandingSquareTransition(void) {  // 0x81A5B3
+static void FileSelectMap_4_SetupExpandingSquareTransition(void) {  // 0x81A5B3
   reg_TS = 4;
   WriteReg(TS, 4);
   reg_TSW = 4;
@@ -1781,7 +1905,7 @@ void FileSelectMap_4_SetupExpandingSquareTransition(void) {  // 0x81A5B3
   LOBYTE(menu_index) = menu_index + 1;
 }
 
-void ConfigureWindow1ForExpandingSquare(void) {  // 0x81A5F6
+static void ConfigureWindow1ForExpandingSquare(void) {  // 0x81A5F6
   reg_TM = 19;
   WriteReg(TM, 0x13);
   reg_TMW = 19;
@@ -1794,7 +1918,7 @@ void ConfigureWindow1ForExpandingSquare(void) {  // 0x81A5F6
   WriteReg(WOBJSEL, 0x23);
 }
 
-void SetupInitialExpandingSquareHDMA(void) {  // 0x81A61C
+static void SetupInitialExpandingSquareHDMA(void) {  // 0x81A61C
   expand_sq_topbottom_margin_right_pos = 0;
   expand_sq_topbottom_margin_left_pos = -1;
   LOBYTE(expand_sq_left_pos) = 127;
@@ -1849,7 +1973,7 @@ void SetupInitialExpandingSquareHDMA(void) {  // 0x81A61C
 static const uint8 kExpandingSquareTransitionSpeed = 4;
 
 
-void FileSelectMap_5_ExpandingSquare(void) {  // 0x81A725
+static void FileSelectMap_5_ExpandingSquare(void) {  // 0x81A725
   VramWriteEntry *v5;
 
   DrawAreaSelectMapLabels();
@@ -1897,7 +2021,7 @@ void FileSelectMap_5_ExpandingSquare(void) {  // 0x81A725
   }
 }
 
-void FileSelectMap_6_AreaSelectMap(void) {  // 0x81A800
+static void FileSelectMap_6_AreaSelectMap(void) {  // 0x81A800
   int16 v0;
 
   v0 = joypad1_newkeys;
@@ -1950,21 +2074,21 @@ LABEL_18:
   DrawAreaSelectMapLabels();
 }
 
-uint16 DecAndWraparoundTo5(uint16 a) {  // 0x81A898
+static uint16 DecAndWraparoundTo5(uint16 a) {  // 0x81A898
   uint16 result = a - 1;
   if ((result & 0x8000) != 0)
     return 5;
   return result;
 }
 
-uint16 WraparoundFrom6to0(uint16 a) {  // 0x81A89F
+static uint16 WraparoundFrom6to0(uint16 a) {  // 0x81A89F
   uint16 result = a + 1;
   if (!sign16(result - 6))
     return 0;
   return result;
 }
 
-void SelectFileSelectMapArea(void) {  // 0x81A8A9
+static void SelectFileSelectMapArea(void) {  // 0x81A8A9
   int8 v2; // cf
   int16 v3;
   int16 v4;
@@ -2014,7 +2138,7 @@ LABEL_16:
   DrawAreaSelectMapLabels();
 }
 
-uint16 CheckIfFileSelectMapAreaCanBeSelected(uint16 a) {  // 0x81A931
+static uint16 CheckIfFileSelectMapAreaCanBeSelected(uint16 a) {  // 0x81A931
   int v1 = 2 * kFileSelectMap_AreaIndexes[a];
   if (*(uint16 *)&used_save_stations_and_elevators[v1])
     return true;
@@ -2022,7 +2146,7 @@ uint16 CheckIfFileSelectMapAreaCanBeSelected(uint16 a) {  // 0x81A931
   return t != 0xffff;
 }
 
-void SwitchActiveFileSelectMapArea(uint16 R28) {  // 0x81A958
+static void SwitchActiveFileSelectMapArea(uint16 R28) {  // 0x81A958
   LoadInactiveAreaMapForegroundColors(kFileSelectMap_AreaIndexes[file_select_map_area_index]);
   file_select_map_area_index = R28;
   LoadActiveAreaMapForegroundColors(kFileSelectMap_AreaIndexes[R28]);
@@ -2036,7 +2160,7 @@ static const uint16 kAreaSelectMapLabelPositions[12] = {  // 0x81A97E
   0xce, 0x9f,
   0x87, 0x8b,
 };
-void DrawAreaSelectMapLabels(void) {
+static void DrawAreaSelectMapLabels(void) {
   uint16 r3 = 0;
   DrawMenuSpritemap(g_word_82C749[0], 0x80, 0x10, r3);
   for(int i = 0; i < 6; i++) {
@@ -2070,7 +2194,7 @@ LABEL_11:;
 
 static const uint16 kRoomSelectMapExpandingSquareTimers[6] = { 0x33, 0x35, 0x2d, 0x33, 0x33, 0x22 };
 
-void FileSelectMap_7_PrepExpandSquareTransToRoomMap(void) {  // 0x81AAAC
+static void FileSelectMap_7_PrepExpandSquareTransToRoomMap(void) {  // 0x81AAAC
   DrawAreaSelectMapLabels();
   SetupInitialExpandingSquareHDMA();
   reg_TM = 19;
@@ -2122,7 +2246,7 @@ void FileSelectMap_7_PrepExpandSquareTransToRoomMap(void) {  // 0x81AAAC
   QueueSfx1_Max6(0x3B);
 }
 
-void SetupRoomSelectMapExpandingSquareTransHDMA(void) {  // 0x81ABA7
+static void SetupRoomSelectMapExpandingSquareTransHDMA(void) {  // 0x81ABA7
   uint16 k = 0;
   uint16 v0 = expand_sq_top_pos;
   AddExpandingSqTransLeftIndirHDMA(v0, k, 0x9E22);
@@ -2141,7 +2265,7 @@ void SetupRoomSelectMapExpandingSquareTransHDMA(void) {  // 0x81ABA7
   *(&hdma_window_1_right_pos[0].field_0 + k) = 0;
 }
 
-void AddExpandingSqTransLeftIndirHDMA(uint16 a, uint16 k, uint16 j) {  // 0x81ABF7
+static void AddExpandingSqTransLeftIndirHDMA(uint16 a, uint16 k, uint16 j) {  // 0x81ABF7
   if ((a & 0x80) != 0) {
     *(&hdma_window_1_left_pos[0].field_0 + k) = a - 127;
     *(&hdma_window_1_left_pos[1].field_0 + k) = 127;
@@ -2153,7 +2277,7 @@ void AddExpandingSqTransLeftIndirHDMA(uint16 a, uint16 k, uint16 j) {  // 0x81AB
   }
 }
 
-uint16 AddExpandingSqTransRightIndirHDMA(uint16 a, uint16 k, uint16 j) {  // 0x81AC2D
+static uint16 AddExpandingSqTransRightIndirHDMA(uint16 a, uint16 k, uint16 j) {  // 0x81AC2D
   if ((a & 0x80) != 0) {
     *(&hdma_window_1_right_pos[0].field_0 + k) = a - 127;
     *(&hdma_window_1_right_pos[1].field_0 + k) = 127;
@@ -2167,7 +2291,7 @@ uint16 AddExpandingSqTransRightIndirHDMA(uint16 a, uint16 k, uint16 j) {  // 0x8
   }
 }
 
-void FileSelectMap_8_ExpandSquareTransToRoomSelectMap(void) {  // 0x81AC66
+static void FileSelectMap_8_ExpandSquareTransToRoomSelectMap(void) {  // 0x81AC66
   if ((HandleRoomSelectMapExpandingSquareTrans() & 0x8000) != 0) {
     ++menu_index;
     reg_TM = 2;
@@ -2178,7 +2302,7 @@ void FileSelectMap_8_ExpandSquareTransToRoomSelectMap(void) {  // 0x81AC66
   DrawAreaSelectMapLabels();
 }
 
-uint16 HandleRoomSelectMapExpandingSquareTrans(void) {  // 0x81AC84
+static uint16 HandleRoomSelectMapExpandingSquareTrans(void) {  // 0x81AC84
   AddToHiLo(&expand_sq_left_pos, &expand_sq_left_subpos, __PAIR32__(expand_sq_left_vel, expand_sq_left_subvel));
   if (sign16(expand_sq_left_pos - 1))
     expand_sq_left_pos = 1;
@@ -2195,7 +2319,7 @@ uint16 HandleRoomSelectMapExpandingSquareTrans(void) {  // 0x81AC84
   return --expand_sq_timer;
 }
 
-void FileSelectMap_9_InitRoomSelectMap(void) {  // 0x81AD17
+static void FileSelectMap_9_InitRoomSelectMap(void) {  // 0x81AD17
   LoadMirrorOfExploredMapTiles();
   DrawRoomSelectMap();
   LoadFromLoadStation();
@@ -2217,7 +2341,7 @@ void FileSelectMap_9_InitRoomSelectMap(void) {  // 0x81AD17
   samus_position_indicator_animation_loop_counter = 0;
 }
 
-void FileSelectMap_10_RoomSelectMap(void) {  // 0x81AD7F
+static void FileSelectMap_10_RoomSelectMap(void) {  // 0x81AD7F
   int16 v1;
   int16 v3;
   int8 v4; // cf
@@ -2300,11 +2424,11 @@ LABEL_25:;
   }
 }
 
-void sub_81AEC8(void) {  // 0x81AEC8
+static void sub_81AEC8(void) {  // 0x81AEC8
   HandleFileSelectMapScrollArrows();
 }
 
-void HandleFileSelectMapScrollArrows(void) {  // 0x81AECA
+static void HandleFileSelectMapScrollArrows(void) {  // 0x81AECA
   if (sign16(map_min_x_scroll - 24 - reg_BG1HOFS))
     DrawMapScrollArrowAndCheckToScroll(0x81, addr_kLeftMapScrollArrowData);
   if (!sign16(map_max_x_scroll - 232 - reg_BG1HOFS))
@@ -2322,13 +2446,13 @@ void HandleFileSelectMapScrollArrows(void) {  // 0x81AECA
   }
 }
 
-void FileSelectMap_11(void) {  // 0x81AF5A
+static void FileSelectMap_11(void) {  // 0x81AF5A
   DrawFileSelectMapIcons();
   DisplayMapElevatorDestinations();
   ++menu_index;
 }
 
-void FileSelectMap_13(void) {  // 0x81AF66
+static void FileSelectMap_13(void) {  // 0x81AF66
   DrawFileSelectMapIcons();
   DisplayMapElevatorDestinations();
   HandleFadeOut();
@@ -2338,7 +2462,7 @@ void FileSelectMap_13(void) {  // 0x81AF66
   }
 }
 
-void FileSelectMap_14(void) {  // 0x81AF83
+static void FileSelectMap_14(void) {  // 0x81AF83
   if (!--enemy_data[0].x_pos) {
     ScreenOff();
     ++game_state;
@@ -2346,7 +2470,7 @@ void FileSelectMap_14(void) {  // 0x81AF83
   }
 }
 
-void FileSelectMap_15_ClearTileMap(void) {  // 0x81AF97
+static void FileSelectMap_15_ClearTileMap(void) {  // 0x81AF97
   reg_TM = 18;
   for (int i = 2046; i >= 0; i -= 2)
     *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap + (uint16)i) = 15;
@@ -2360,7 +2484,7 @@ void FileSelectMap_15_ClearTileMap(void) {  // 0x81AF97
   ++menu_index;
 }
 
-void FileSelectMap_16_LoadPalettes(void) {  // 0x81AFD3
+static void FileSelectMap_16_LoadPalettes(void) {  // 0x81AFD3
   int16 v0;
   int16 v1;
 
@@ -2375,7 +2499,7 @@ void FileSelectMap_16_LoadPalettes(void) {  // 0x81AFD3
   ++menu_index;
 }
 
-void FileSelectMap_20_SetupExpandingSquare(void) {  // 0x81AFF6
+static void FileSelectMap_20_SetupExpandingSquare(void) {  // 0x81AFF6
   reg_HDMAEN = 0;
   QueueSfx1_Max6(0x3C);
   expand_sq_timer = kRoomSelectMapExpandingSquareTimers[area_index] - 12;
@@ -2417,7 +2541,7 @@ void FileSelectMap_20_SetupExpandingSquare(void) {  // 0x81AFF6
   reg_BG1HOFS = 0;
 }
 
-void FileSelectMap_21_MoveExpandingSquare(void) {  // 0x81B0BB
+static void FileSelectMap_21_MoveExpandingSquare(void) {  // 0x81B0BB
   AddToHiLo(&expand_sq_left_pos, &expand_sq_left_subpos, -IPAIR32(expand_sq_left_vel, expand_sq_left_subvel));
   AddToHiLo(&expand_sq_right_pos, &expand_sq_right_subpos, -IPAIR32(expand_sq_right_vel, expand_sq_right_subvel));
   AddToHiLo(&expand_sq_top_pos, &expand_sq_top_subpos, -IPAIR32(expand_sq_top_vel, expand_sq_top_subvel));
@@ -2432,7 +2556,7 @@ void FileSelectMap_21_MoveExpandingSquare(void) {  // 0x81B0BB
   }
 }
 
-void NewSaveFile(void) {  // 0x81B2CB
+static void NewSaveFile(void) {  // 0x81B2CB
   samus_max_health = 99;
   samus_health = 99;
   samus_max_missiles = 0;
@@ -2498,7 +2622,7 @@ void NewSaveFile(void) {  // 0x81B2CB
   } while ((int16)(v3 - 1792) < 0);
 }
 
-void FileSelectClearRestOfMenuTilemapRow(uint16 v0) {  // 0x81B3C5
+static void FileSelectClearRestOfMenuTilemapRow(uint16 v0) {  // 0x81B3C5
   int n = 32 - ((v0 & 0x3F) >> 1);
   do {
     *(uint16 *)((uint8 *)&ram3000.pause_menu_map_tilemap[768] + v0) = 15;
@@ -2506,7 +2630,7 @@ void FileSelectClearRestOfMenuTilemapRow(uint16 v0) {  // 0x81B3C5
   } while (--n);
 }
 
-void LoadMenuTilemap(uint16 k, uint16 j) {  // 0x81B3E2
+static void LoadMenuTilemap(uint16 k, uint16 j) {  // 0x81B3E2
   int16 v2;
   int k_bak = k;
 

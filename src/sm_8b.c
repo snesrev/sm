@@ -4,6 +4,78 @@
 #include "funcs.h"
 #include "variables.h"
 
+// Used only in this file.
+static void SetupPpuForTitleSequence(void);
+static void SetupPpu_Intro(void);
+static void SetupPpu_3_Mode7(void);
+static void SetupPpu_4_Mode1(void);
+static void SetupPpu_5_Mode7(void);
+static void SetupPpu_6_Mode1(void);
+static void SetupPpu_7_Mode1(void);
+static void HandleMode7TransformationNoRotation(void);
+static void HandleMode7TransformationMatrix(void);
+static void SetPpuBackdropSomeColor(void);
+static void SetPpuBackdropBlack(void);
+static void UpdateCinematicBgTilemap(void);
+static void UpdateSamusEyesTilemap(void);
+static void CinematicUpdateSomeBg(void);
+static uint16 CinematicGetTilemapOffsetForTile(uint16 r18);
+static uint16 Mult0x80Add(uint16 r18);
+static void CopyPalettesToFadingPalettes(void);
+static void DecomposePaletteDataForFading(void);
+static void ClearYColorsFromIndexX(uint16 k, uint16 j);
+static void FadeOutYColorsFromIndexX(uint16 k, uint16 j);
+static void FadeInYColorsFromIndexX(uint16 k, uint16 j);
+static void ComposeFadingPalettes(void);
+static void TransferJapaneseTextTilesToVram(void);
+static void HandleSamusDuringIntro(void);
+static void DrawIntroSprites(void);
+static uint16 CalcSinMult(uint16 k, uint16 r24);
+static uint8 AdvanceFastScreenFadeOut(void);
+static uint8 AdvanceSlowScreenFadeOut(void);
+static uint8 AdvanceFastScreenFadeIn(void);
+static uint8 AdvanceSlowScreenFadeIn(void);
+static void AddNintentoLogoToOam(void);
+static uint8 SpawnCinematicSpriteObject(uint16 j, uint16 a);
+static uint8 SpawnCinematicSpriteObjectToR18(uint16 j, uint16 r18);
+static uint8 SpawnCimenaticSpriteObjectInner(uint16 k, uint16 j);
+static void ClearCinematicSprites(void);
+static void HandleCinematicSprites(void);
+static void ProcessCinematicSpriteInstructionList(uint16 k);
+static void sub_8B94E1(void);
+static uint8 SpawnMode7Object(uint16 j, uint16 a);
+static void HandleMode7Objects(void);
+static void ProcessMode7ObjectInstructions(uint16 k);
+static void EnableCinematicBgObjects(void);
+static void DisableCinematicBgObjects(void);
+static void DisableCinematicBgTilemapUpdates(void);
+static void ClearCinematicBgObjects(uint16 a);
+static uint8 SpawnCinematicBgObject(uint16 j, uint16 a);
+static void HandleCinematicBgObjects(void);
+static void ProcessCinematicBgObjectsInstrs(uint16 k);
+static void sub_8B9743(void);
+static void DrawCinematicSpriteObjects_Intro(void);
+static void DrawCinematicSpriteObjects_Ending(void);
+static void SpawnTextGlowObject(uint16 j, uint16 r18);
+static void HandleTextGlowObjects(void);
+static void ProcessTextGlowObject(void);
+static void EnableTextGlowObjects_(void);
+static void DisableTextGlowObjects_(void);
+static void CreditsObject_Init(uint16 j);
+static void CreditsObject_Process(void);
+static void CreditsObject_ProcessOne(void);
+static void CreditsObject_Func1(uint16 j);
+static void MaybeSkipCinematics(void);
+static void HandleCinematicsTransitions(void);
+static void sub_8B9CDE(void);
+static void ClearEnglishTextTilemap(void);
+static void ClearJapaneseTextTiles(void);
+static void Instr_StartIntroPage_Common(void);
+static void ResetButtonAssignmentsToDefault(void);
+static void RevertButtonConfig(void);
+static void MaybeHandleCinematicBgObjects(void);
+
+
 
 #define kPalettes_Intro ((uint16*)RomFixedPtr(0x8ce3e9))
 #define kPalettes_Intro2 ((uint16*)RomFixedPtr(0x8ce5e9))
@@ -33,37 +105,37 @@
 #define g_word_8CE1E9 ((uint16*)RomFixedPtr(0x8ce1e9))
 #define g_off_8CBC5D ((uint16*)RomFixedPtr(0x8cbc5d))
 
-void CallCinematicFunction(uint32 ea);
-void CallCinematicSprPreInstr(uint32 ea, uint16 j);
-uint16 CallCinematicSprInstr(uint32 ea, uint16 k, uint16 j);
-void CallCinematicBgPreInstr(uint32 ea, uint16 j);
-uint16 CallCinematicBgInstr(uint32 ea, uint16 k, uint16 j);
-void CallCinematicSpriteObjectSetup(uint32 ea, uint16 j);
-uint16 CallIntroObjectInstr(uint32 ea, uint16 k, uint16 j);
-void CallMode7PreInstr(uint32 ea, uint16 k);
-uint16 CallMode7Instr(uint32 ea, uint16 k, uint16 j);
-void CallCinematicSpriteInit(uint32 ea, uint16 j);
-void CallCreditsObjectFunc(uint32 ea, uint16 k);
+static void CallCinematicFunction(uint32 ea);
+static void CallCinematicSprPreInstr(uint32 ea, uint16 j);
+static uint16 CallCinematicSprInstr(uint32 ea, uint16 k, uint16 j);
+static void CallCinematicBgPreInstr(uint32 ea, uint16 j);
+static uint16 CallCinematicBgInstr(uint32 ea, uint16 k, uint16 j);
+static void CallCinematicSpriteObjectSetup(uint32 ea, uint16 j);
+static uint16 CallIntroObjectInstr(uint32 ea, uint16 k, uint16 j);
+static void CallMode7PreInstr(uint32 ea, uint16 k);
+static uint16 CallMode7Instr(uint32 ea, uint16 k, uint16 j);
+static void CallCinematicSpriteInit(uint32 ea, uint16 j);
+static void CallCreditsObjectFunc(uint32 ea, uint16 k);
 
 // Misc forwards
-void SetSomeStuffForSpriteObject_16(void);
-void CinematicFunction_Intro_SetupTransitionToGameplay(void);
+static void SetSomeStuffForSpriteObject_16(void);
+static void CinematicFunction_Intro_SetupTransitionToGameplay(void);
 void CinematicFunction_Intro_Func13(void);
-void CinematicFunction_Intro_Func40(void);
+static void CinematicFunction_Intro_Func40(void);
 void CinematicFunction_Intro_Func135(void);
 void CinematicFunction_Intro_Func145(void);
-void CinematicFunction_Intro_Func37(uint16 k);
+static void CinematicFunction_Intro_Func37(uint16 k);
 void CinematicFunction_Intro_Func111(void);
 void CinematicFunction_Intro_Func117(void);
-void CinematicFunction_Intro_Func127(void);
-void CinematicFunction_Intro_Func149(void);
-void CinematicFunction_Intro_Func160(uint16 j, uint16 a);
-void CinematicFunction_F0B8(uint16 j);
+static void CinematicFunction_Intro_Func127(void);
+static void CinematicFunction_Intro_Func149(void);
+static void CinematicFunction_Intro_Func160(uint16 j, uint16 a);
+static void CinematicFunction_F0B8(uint16 j);
 void CinematicFunction_Intro_Func189b(uint16 k);
-void CinematicFunction_Intro_Func210_EndingSamusFall(uint16 k);
-void CinematicFunction_Intro_Func216(void);
+static void CinematicFunction_Intro_Func210_EndingSamusFall(uint16 k);
+static void CinematicFunction_Intro_Func216(void);
 
-void SetupPpuForTitleSequence(void) {  // 0x8B8000
+static void SetupPpuForTitleSequence(void) {  // 0x8B8000
   WriteReg(INIDISP, 0x80);
   reg_INIDISP = 0x80;
   WriteReg(OBSEL, 3);
@@ -132,7 +204,7 @@ void SetupPpuForTitleSequence(void) {  // 0x8B8000
   g_word_7E199F = 0;
 }
 
-void SetupPpu_Intro(void) {  // 0x8B80DA
+static void SetupPpu_Intro(void) {  // 0x8B80DA
   WriteReg(INIDISP, 0x80);
   reg_INIDISP = 0x80;
   WriteReg(OBSEL, 3);
@@ -192,7 +264,7 @@ void SetupPpu_Intro(void) {  // 0x8B80DA
   reg_BG3VOFS = 0;
 }
 
-void SetupPpu_3_Mode7(void) {  // 0x8B819B
+static void SetupPpu_3_Mode7(void) {  // 0x8B819B
   WriteReg(INIDISP, 0x80);
   reg_INIDISP = 0x80;
   WriteReg(OBSEL, 3);
@@ -242,7 +314,7 @@ void SetupPpu_3_Mode7(void) {  // 0x8B819B
   fx_layer_blending_config_a = 0;
 }
 
-void SetupPpu_4_Mode1(void) {  // 0x8B8230
+static void SetupPpu_4_Mode1(void) {  // 0x8B8230
   WriteReg(INIDISP, 0x80);
   reg_INIDISP = 0x80;
   WriteReg(OBSEL, 3);
@@ -278,7 +350,7 @@ void SetupPpu_4_Mode1(void) {  // 0x8B8230
   reg_BG1VOFS = 0;
 }
 
-void SetupPpu_5_Mode7(void) {  // 0x8B8293
+static void SetupPpu_5_Mode7(void) {  // 0x8B8293
   WriteReg(INIDISP, 0x80);
   reg_INIDISP = 0x80;
   WriteReg(OBSEL, 0xA3);
@@ -333,7 +405,7 @@ void SetupPpu_5_Mode7(void) {  // 0x8B8293
   g_word_7E199F = 0;
 }
 
-void SetupPpu_6_Mode1(void) {  // 0x8B833A
+static void SetupPpu_6_Mode1(void) {  // 0x8B833A
   WriteReg(INIDISP, 0x80);
   reg_INIDISP = 0x80;
   WriteReg(OBSEL, 2);
@@ -385,7 +457,7 @@ void SetupPpu_6_Mode1(void) {  // 0x8B833A
   reg_BG2VOFS = 0;
 }
 
-void SetupPpu_7_Mode1(void) {  // 0x8B83D3
+static void SetupPpu_7_Mode1(void) {  // 0x8B83D3
   WriteReg(INIDISP, 0x80);
   reg_INIDISP = 0x80;
   WriteReg(OBSEL, 0);
@@ -445,7 +517,7 @@ void SetupPpu_7_Mode1(void) {  // 0x8B83D3
   cinematic_var10 = 0;
 }
 
-void HandleMode7TransformationNoRotation(void) {  // 0x8B8518
+static void HandleMode7TransformationNoRotation(void) {  // 0x8B8518
   reg_M7A = cinematic_var6;
   reg_M7D = cinematic_var6;
   reg_M7B = 0;
@@ -459,7 +531,7 @@ static uint32 Smult16x16(uint16 r38, uint16 r40) {  // 0x8B858F
   return t;
 }
 
-void HandleMode7TransformationMatrix(void) {  // 0x8B8532
+static void HandleMode7TransformationMatrix(void) {  // 0x8B8532
   reg_M7D = reg_M7A = Smult16x16(kSinCosTable8bit_Sext[((uint8)(cinematic_var5 + 64)) + 64], cinematic_var6) >> 8;
   uint16 v1 = Smult16x16(kSinCosTable8bit_Sext[((uint8)cinematic_var5) + 64], cinematic_var6) >> 8;
   reg_M7B = v1;
@@ -468,7 +540,7 @@ void HandleMode7TransformationMatrix(void) {  // 0x8B8532
   reg_BG1VOFS = cinematic_var10;
 }
 
-void SetPpuBackdropSomeColor(void) {  // 0x8B866B
+static void SetPpuBackdropSomeColor(void) {  // 0x8B866B
   reg_CGWSEL = 0;
   reg_CGADSUB = -127;
   reg_COLDATA[0] = 56;
@@ -476,7 +548,7 @@ void SetPpuBackdropSomeColor(void) {  // 0x8B866B
   reg_COLDATA[2] = 0x80;
 }
 
-void SetPpuBackdropBlack(void) {  // 0x8B8682
+static void SetPpuBackdropBlack(void) {  // 0x8B8682
   reg_CGWSEL = 0;
   reg_CGADSUB = 0;
   reg_COLDATA[0] = 32;
@@ -484,7 +556,7 @@ void SetPpuBackdropBlack(void) {  // 0x8B8682
   reg_COLDATA[2] = 0x80;
 }
 
-void UpdateCinematicBgTilemap(void) {  // 0x8B87A0
+static void UpdateCinematicBgTilemap(void) {  // 0x8B87A0
   if (reg_BGMODE != 7) {
     uint16 v0 = vram_write_queue_tail;
     gVramWriteEntry(vram_write_queue_tail)->size = 1920;
@@ -497,7 +569,7 @@ void UpdateCinematicBgTilemap(void) {  // 0x8B87A0
   }
 }
 
-void UpdateSamusEyesTilemap(void) {  // 0x8B87D3
+static void UpdateSamusEyesTilemap(void) {  // 0x8B87D3
   if (reg_BGMODE != 7) {
     uint16 v0 = vram_write_queue_tail;
     gVramWriteEntry(vram_write_queue_tail)->size = 128;
@@ -510,7 +582,7 @@ void UpdateSamusEyesTilemap(void) {  // 0x8B87D3
   }
 }
 
-void CinematicUpdateSomeBg(void) {  // 0x8B8806
+static void CinematicUpdateSomeBg(void) {  // 0x8B8806
   if (reg_BGMODE != 7) {
     uint16 v0 = vram_write_queue_tail;
     gVramWriteEntry(vram_write_queue_tail)->size = 2048;
@@ -523,7 +595,7 @@ void CinematicUpdateSomeBg(void) {  // 0x8B8806
   }
 }
 
-void CallProcessCinematicBgObject(uint32 ea, uint16 k, uint16 j, uint16 r18) {
+static void CallProcessCinematicBgObject(uint32 ea, uint16 k, uint16 j, uint16 r18) {
   switch (ea) {
   case fnProcessCinematicBgObject_Nothing: ProcessCinematicBgObject_Nothing(k, j, r18); return;
   case fnProcessCinematicBgObject_DrawChar: ProcessCinematicBgObject_DrawChar(k, j, r18); return;
@@ -610,7 +682,7 @@ void ProcessCinematicBgObject_DrawToBgTilemap(uint16 k, uint16 j, uint16 r18) { 
   }
 }
 
-uint16 CinematicGetTilemapOffsetForTile(uint16 r18) {  // 0x8B8943
+static uint16 CinematicGetTilemapOffsetForTile(uint16 r18) {  // 0x8B8943
   return 2 * (uint8)r18 + HIBYTE(r18) * 0x40;
 }
 
@@ -656,7 +728,7 @@ void ProcessCinematicBgObject_Unk2(uint16 k, uint16 j, uint16 r18) {  // 0x8B89C
   mode7_vram_write_queue_tail = v4;
 }
 
-uint16 Mult0x80Add(uint16 r18) {  // 0x8B8A2C
+static uint16 Mult0x80Add(uint16 r18) {  // 0x8B8A2C
   return (uint8)r18 + (0x80 * HIBYTE(r18));
 }
 
@@ -697,7 +769,7 @@ Point16U CalcCeresSteamPos_Mode7(Point16U pt) {  // 0x8B8B66
   return pt;
 }
 
-void CopyPalettesToFadingPalettes(void) {  // 0x8B8BE9
+static void CopyPalettesToFadingPalettes(void) {  // 0x8B8BE9
   int v0 = 256;
   uint16 v1 = 0;
   do {
@@ -707,7 +779,7 @@ void CopyPalettesToFadingPalettes(void) {  // 0x8B8BE9
   } while (v0);
 }
 
-void DecomposePaletteDataForFading(void) {  // 0x8B8C09
+static void DecomposePaletteDataForFading(void) {  // 0x8B8C09
   uint16 v0 = 0;
   int v1 = 256;
   do {
@@ -726,7 +798,7 @@ void DecomposePaletteDataForFading(void) {  // 0x8B8C09
   } while (--v1);
 }
 
-void ClearYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C5E
+static void ClearYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C5E
   do {
     int v2 = k >> 1;
     tilemap_stuff[v2 + 256] = 0;
@@ -737,7 +809,7 @@ void ClearYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C5E
   } while (--j);
 }
 
-void FadeOutYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C83
+static void FadeOutYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C83
   do {
     int v2 = k >> 1;
     tilemap_stuff[v2 + 512] -= tilemap_stuff[v2 + 1280];
@@ -747,7 +819,7 @@ void FadeOutYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8C83
   } while (--j);
 }
 
-void FadeInYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8CB2
+static void FadeInYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8CB2
   do {
     int v2 = k >> 1;
     tilemap_stuff[v2 + 512] = (tilemap_stuff[v2 + 1280] + tilemap_stuff[v2 + 512]) & 0x1FFF;
@@ -757,7 +829,7 @@ void FadeInYColorsFromIndexX(uint16 k, uint16 j) {  // 0x8B8CB2
   } while (--j);
 }
 
-void ComposeFadingPalettes(void) {  // 0x8B8CEA
+static void ComposeFadingPalettes(void) {  // 0x8B8CEA
   uint16 v0 = 0;
   int v1 = 256;
   do {
@@ -784,7 +856,7 @@ void CinematicFunction_Intro_Func20(uint16 j) {  // 0x8B8D23
   } while (--r18);
 }
 
-void TransferJapaneseTextTilesToVram(void) {  // 0x8B8DE6
+static void TransferJapaneseTextTilesToVram(void) {  // 0x8B8DE6
   uint16 v0 = vram_write_queue_tail;
   gVramWriteEntry(vram_write_queue_tail)->size = 1536;
   v0 += 2;
@@ -795,7 +867,7 @@ void TransferJapaneseTextTilesToVram(void) {  // 0x8B8DE6
   vram_write_queue_tail = v0 + 2;
 }
 
-void HandleSamusDuringIntro(void) {  // 0x8B8E0D
+static void HandleSamusDuringIntro(void) {  // 0x8B8E0D
   if (cinematic_var15) {
     HandleControllerInputForGamePhysics();
     HandleSamusMovementAndPause();
@@ -806,7 +878,7 @@ void HandleSamusDuringIntro(void) {  // 0x8B8E0D
   }
 }
 
-void DrawIntroSprites(void) {  // 0x8B8E2D
+static void DrawIntroSprites(void) {  // 0x8B8E2D
   if (cinematic_var15) {
     if ((cinematic_var15 & 0x8000) != 0) {
       DrawSamusAndProjectiles();
@@ -822,14 +894,14 @@ void DrawIntroSprites(void) {  // 0x8B8E2D
   }
 }
 
-uint16 CalcSinMult(uint16 k, uint16 r24) {  // 0x8B8EA3
+static uint16 CalcSinMult(uint16 k, uint16 r24) {  // 0x8B8EA3
   uint16 r18 = Mult8x8(*((uint8 *)&kSinCosTable8bit_Sext[64] + k), r24) >> 8;
   return r18 + *((uint8 *)&kSinCosTable8bit_Sext[64] + k + 1) * (uint8)r24;
 }
 
 static const uint16 kMoveUnusedSpritesMasks[8] = { 0x5555, 0x5554, 0x5550, 0x5540, 0x5500, 0x5400, 0x5000, 0x4000 };
 
-void MoveUnusedSpritesOffScreen(void) {
+static void MoveUnusedSpritesOffScreen(void) {
   if (oam_next_ptr >= 0x200)
     return;
   int j = oam_next_ptr >> 2;
@@ -841,7 +913,7 @@ void MoveUnusedSpritesOffScreen(void) {
     *(uint16 *)&oam_ent[i].xcoord = 0x80;
 }
 
-uint8 AdvanceFastScreenFadeOut(void) {  // 0x8B90B8
+static uint8 AdvanceFastScreenFadeOut(void) {  // 0x8B90B8
   if ((reg_INIDISP & 0xF) != 0) {
     if ((int8)((reg_INIDISP & 0xF) - screen_fade_counter) > 0) {
       reg_INIDISP = (reg_INIDISP & 0xF) - screen_fade_counter;
@@ -852,7 +924,7 @@ uint8 AdvanceFastScreenFadeOut(void) {  // 0x8B90B8
   return 1;
 }
 
-uint8 AdvanceSlowScreenFadeOut(void) {  // 0x8B90D5
+static uint8 AdvanceSlowScreenFadeOut(void) {  // 0x8B90D5
   bool v0 = (int8)(screen_fade_delay - 1) < 0;
   LOBYTE(screen_fade_delay) = screen_fade_delay - 1;
   if ((uint8)screen_fade_delay && !v0)
@@ -870,7 +942,7 @@ uint8 AdvanceSlowScreenFadeOut(void) {  // 0x8B90D5
   return 1;
 }
 
-uint8 AdvanceFastScreenFadeIn(void) {  // 0x8B9100
+static uint8 AdvanceFastScreenFadeIn(void) {  // 0x8B9100
   if (sign8(((screen_fade_counter + reg_INIDISP) & 0x1F) - 15)) {
     reg_INIDISP = (screen_fade_counter + reg_INIDISP) & 0x1F;
     return 0;
@@ -880,7 +952,7 @@ uint8 AdvanceFastScreenFadeIn(void) {  // 0x8B9100
   }
 }
 
-uint8 AdvanceSlowScreenFadeIn(void) {  // 0x8B911B
+static uint8 AdvanceSlowScreenFadeIn(void) {  // 0x8B911B
   bool v0 = (int8)(screen_fade_delay - 1) < 0;
   LOBYTE(screen_fade_delay) = screen_fade_delay - 1;
   if ((uint8)screen_fade_delay && !v0)
@@ -1070,11 +1142,11 @@ CoroutineRet InitializeIoDisplayLogo_Async(void) {  // 0x8B9146
   COROUTINE_END(0);
 }
 
-void AddNintentoLogoToOam(void) {  // 0x8B936B
+static void AddNintentoLogoToOam(void) {  // 0x8B936B
   DrawSpritemap(0x8C, addr_kSpriteMap_NintendoLogo, 128, 112, 0);
 }
 
-uint8 SpawnCinematicSpriteObject(uint16 j, uint16 a) {  // 0x8B938A
+static uint8 SpawnCinematicSpriteObject(uint16 j, uint16 a) {  // 0x8B938A
   cinematic_spawn_param = a;
   for (int i = 30; i >= 0; i -= 2) {
     if (!cinematicspr_instr_ptr[i >> 1])
@@ -1083,12 +1155,12 @@ uint8 SpawnCinematicSpriteObject(uint16 j, uint16 a) {  // 0x8B938A
   return 1;
 }
 
-uint8 SpawnCinematicSpriteObjectToR18(uint16 j, uint16 r18) {  // 0x8B93A2
+static uint8 SpawnCinematicSpriteObjectToR18(uint16 j, uint16 r18) {  // 0x8B93A2
   cinematic_spawn_param = 0;
   return SpawnCimenaticSpriteObjectInner(j, r18);
 }
 
-uint8 SpawnCimenaticSpriteObjectInner(uint16 k, uint16 j) {  // 0x8B93AC
+static uint8 SpawnCimenaticSpriteObjectInner(uint16 k, uint16 j) {  // 0x8B93AC
   const uint8 *v2 = RomPtr_8B(k);
   int v3 = j >> 1;
   cinematicspr_preinstr_func[v3] = GET_WORD(v2 + 2);
@@ -1102,7 +1174,7 @@ uint8 SpawnCimenaticSpriteObjectInner(uint16 k, uint16 j) {  // 0x8B93AC
   return 0;
 }
 
-void ClearCinematicSprites(void) {  // 0x8B93DA
+static void ClearCinematicSprites(void) {  // 0x8B93DA
   for (int i = 30; i >= 0; i -= 2) {
     int v1 = i >> 1;
     cinematicspr_instr_ptr[v1] = 0;
@@ -1110,7 +1182,7 @@ void ClearCinematicSprites(void) {  // 0x8B93DA
   }
 }
 
-void HandleCinematicSprites(void) {  // 0x8B93EF
+static void HandleCinematicSprites(void) {  // 0x8B93EF
   for (int i = 30; i >= 0; i -= 2) {
     cinematic_obj_index = i;
     if (cinematicspr_instr_ptr[i >> 1]) {
@@ -1120,7 +1192,7 @@ void HandleCinematicSprites(void) {  // 0x8B93EF
   }
 }
 
-void ProcessCinematicSpriteInstructionList(uint16 k) {  // 0x8B9409
+static void ProcessCinematicSpriteInstructionList(uint16 k) {  // 0x8B9409
   CallCinematicSprPreInstr(cinematicspr_preinstr_func[k >> 1] | 0x8B0000, k);
   uint16 v1 = cinematic_obj_index;
   int v2 = cinematic_obj_index >> 1;
@@ -1194,11 +1266,11 @@ uint16 CinematicSprInstr_SetTimer(uint16 k, uint16 j) {  // 0x8B94D6
   return j + 2;
 }
 
-void sub_8B94E1(void) {  // 0x8B94E1
+static void sub_8B94E1(void) {  // 0x8B94E1
   ;
 }
 
-uint8 SpawnMode7Object(uint16 j, uint16 a) {  // 0x8B94E4
+static uint8 SpawnMode7Object(uint16 j, uint16 a) {  // 0x8B94E4
   Mode7ObjectDef *Mode7ObjectDef;
 
   mode7_spawn_param = a;
@@ -1218,7 +1290,7 @@ uint8 SpawnMode7Object(uint16 j, uint16 a) {  // 0x8B94E4
   return 0;
 }
 
-void HandleMode7Objects(void) {  // 0x8B951D
+static void HandleMode7Objects(void) {  // 0x8B951D
   for (int i = 2; i >= 0; i -= 2) {
     mode7_cur_index = i;
     if (mode7_obj_instr_ptr[i >> 1]) {
@@ -1228,7 +1300,7 @@ void HandleMode7Objects(void) {  // 0x8B951D
   }
 }
 
-void ProcessMode7ObjectInstructions(uint16 k) {  // 0x8B9537
+static void ProcessMode7ObjectInstructions(uint16 k) {  // 0x8B9537
   CallMode7PreInstr(mode7_obj_preinstr_func[k >> 1] | 0x8B0000, k);
   uint16 v1 = mode7_cur_index;
   int v2 = mode7_cur_index >> 1;
@@ -1282,11 +1354,11 @@ uint16 Mode7Instr_SetTimer(uint16 k, uint16 j) {  // 0x8B9597
   return j + 2;
 }
 
-void EnableCinematicBgObjects(void) {  // 0x8B95A2
+static void EnableCinematicBgObjects(void) {  // 0x8B95A2
   cinematic_enable_objs |= 0x8000;
 }
 
-void DisableCinematicBgObjects(void) {  // 0x8B95AD
+static void DisableCinematicBgObjects(void) {  // 0x8B95AD
   cinematic_enable_objs &= ~0x8000;
 }
 
@@ -1294,11 +1366,11 @@ void EnableCinematicBgTilemapUpdates(void) {  // 0x8B95B8
   cinematic_enable_bg_tilemap |= 0x8000;
 }
 
-void DisableCinematicBgTilemapUpdates(void) {  // 0x8B95C3
+static void DisableCinematicBgTilemapUpdates(void) {  // 0x8B95C3
   cinematic_enable_bg_tilemap &= ~0x8000;
 }
 
-void ClearCinematicBgObjects(uint16 a) {  // 0x8B95CE
+static void ClearCinematicBgObjects(uint16 a) {  // 0x8B95CE
   uint16 j;
 
   for (int i = 2046; i >= 0; i -= 2)
@@ -1312,13 +1384,13 @@ void ClearCinematicBgObjects(uint16 a) {  // 0x8B95CE
 }
 
 
-void CallCinematicBgObjectSetup(uint32 ea, uint16 j) {
+static void CallCinematicBgObjectSetup(uint32 ea, uint16 j) {
   switch (ea) {
   case fnCinematicFunction_nullsub_116: return;
   default: Unreachable();
   }
 }
-uint8 SpawnCinematicBgObject(uint16 j, uint16 a) {  // 0x8B95F0
+static uint8 SpawnCinematicBgObject(uint16 j, uint16 a) {  // 0x8B95F0
   cinematicbg_var3 = a;
   uint16 v3 = 6;
   while (cinematicbg_instr_ptr[v3 >> 1]) {
@@ -1337,7 +1409,7 @@ uint8 SpawnCinematicBgObject(uint16 j, uint16 a) {  // 0x8B95F0
   return 0;
 }
 
-void HandleCinematicBgObjects(void) {  // 0x8B962F
+static void HandleCinematicBgObjects(void) {  // 0x8B962F
   if ((cinematic_enable_objs & 0x8000) != 0) {
     for (int i = 6; i >= 0; i -= 2) {
       cinematicbg_var2 = i;
@@ -1352,7 +1424,7 @@ void HandleCinematicBgObjects(void) {  // 0x8B962F
   }
 }
 
-void ProcessCinematicBgObjectsInstrs(uint16 k) {  // 0x8B9659
+static void ProcessCinematicBgObjectsInstrs(uint16 k) {  // 0x8B9659
   CallCinematicBgPreInstr(cinematicbg_preinstr[k >> 1] | 0x8B0000, k);
   uint16 v1 = cinematicbg_var2;
   int v2 = cinematicbg_var2 >> 1;
@@ -1387,11 +1459,11 @@ uint16 CinematicBgInstr_Goto(uint16 k, uint16 j) {  // 0x8B971E
   return *(uint16 *)RomPtr_8C(j);
 }
 
-void sub_8B9743(void) {  // 0x8B9743
+static void sub_8B9743(void) {  // 0x8B9743
   ;
 }
 
-void DrawCinematicSpriteObjects_Intro(void) {  // 0x8B9746
+static void DrawCinematicSpriteObjects_Intro(void) {  // 0x8B9746
   for (int i = 30; i >= 0; i -= 2) {
     int v1 = i >> 1;
     if (cinematicspr_whattodraw[v1]) {
@@ -1409,7 +1481,7 @@ void DrawCinematicSpriteObjects_Intro(void) {  // 0x8B9746
   }
 }
 
-void DrawCinematicSpriteObjects_Ending(void) {  // 0x8B9799
+static void DrawCinematicSpriteObjects_Ending(void) {  // 0x8B9799
   for (int i = 30; i >= 0; i -= 2) {
     int v1 = i >> 1;
     if (cinematicspr_whattodraw[v1]) {
@@ -1429,7 +1501,7 @@ void DrawCinematicSpriteObjects_Ending(void) {  // 0x8B9799
     MoveUnusedSpritesOffScreen();
 }
 
-void SpawnTextGlowObject(uint16 j, uint16 r18) {  // 0x8B97F7
+static void SpawnTextGlowObject(uint16 j, uint16 r18) {  // 0x8B97F7
   uint16 v1 = 14;
   while (*(uint16 *)((uint8 *)&cinematic_var21 + v1)) {
     v1 -= 2;
@@ -1444,7 +1516,7 @@ void SpawnTextGlowObject(uint16 j, uint16 r18) {  // 0x8B97F7
   *(uint16 *)((uint8 *)&cinematic_var20 + v1) = 0;
 }
 
-void HandleTextGlowObjects(void) {  // 0x8B9828
+static void HandleTextGlowObjects(void) {  // 0x8B9828
   for (int i = 14; i >= 0; i -= 2) {
     cinematic_var19 = i;
     if (*(uint16 *)((uint8 *)&cinematic_var21 + (uint16)i)) {
@@ -1454,7 +1526,7 @@ void HandleTextGlowObjects(void) {  // 0x8B9828
   }
 }
 
-void ProcessTextGlowObject(void) {  // 0x8B9849
+static void ProcessTextGlowObject(void) {  // 0x8B9849
   uint16 v0 = cinematic_var19;
   int v1 = cinematic_var19 >> 1;
   if (eproj_pre_instr[v1 + 2]-- == 1) {
@@ -1489,15 +1561,15 @@ void ProcessTextGlowObject(void) {  // 0x8B9849
   }
 }
 
-void EnableTextGlowObjects_(void) {
+static void EnableTextGlowObjects_(void) {
   cinematic_var25 |= 0x8000;
 }
 
-void DisableTextGlowObjects_(void) {
+static void DisableTextGlowObjects_(void) {
   cinematic_var25 &= ~0x8000;
 }
 
-void CinematicFunction_Intro_Func128(uint16 a) {  // 0x8B98F9
+static void CinematicFunction_Intro_Func128(uint16 a) {  // 0x8B98F9
   for (int i = 2046; i >= 0; i -= 2)
     *(uint16 *)((uint8 *)ram3000.pause_menu_map_tilemap + (uint16)i) = a;
   cinematic_var26 = 0;
@@ -1513,7 +1585,7 @@ void CinematicFunction_Intro_Func128(uint16 a) {  // 0x8B98F9
   cinematic_var10 = 0;
 }
 
-void CreditsObject_Init(uint16 j) {  // 0x8B9932
+static void CreditsObject_Init(uint16 j) {  // 0x8B9932
   const uint8 *v1 = RomPtr_8B(j);
   cinematic_var24 = GET_WORD(v1 + 2);
   cinematic_var21 = GET_WORD(v1 + 4);
@@ -1522,7 +1594,7 @@ void CreditsObject_Init(uint16 j) {  // 0x8B9932
   CallCreditsObjectFunc(GET_WORD(v1) | 0x8B0000, 0);
 }
 
-void CreditsObject_Process(void) {  // 0x8B9955
+static void CreditsObject_Process(void) {  // 0x8B9955
   if ((cinematic_var25 & 0x8000) != 0) {
     if (cinematic_var21)
       CreditsObject_ProcessOne();
@@ -1530,7 +1602,7 @@ void CreditsObject_Process(void) {  // 0x8B9955
   }
 }
 
-void CreditsObject_ProcessOne(void) {  // 0x8B996A
+static void CreditsObject_ProcessOne(void) {  // 0x8B996A
   int i;
 
   CallCreditsObjectFunc(cinematic_var24 | 0x8B0000, 0);
@@ -1552,7 +1624,7 @@ void CreditsObject_ProcessOne(void) {  // 0x8B996A
   }
 }
 
-void CreditsObject_Func1(uint16 j) {  // 0x8B99C1
+static void CreditsObject_Func1(uint16 j) {  // 0x8B99C1
   uint16 RegWord = Mult8x8(cinematic_var26, 0x40);
   int n = 31;
   const uint16 *src = (const uint16*)(g_ram + 0x10000 + *((uint16 *)RomPtr_8C(j) + 1));
@@ -1599,7 +1671,7 @@ void CinematicFunctionNone(void) {  // 0x8B9A47
   ;
 }
 
-void MaybeSkipCinematics(void) {  // 0x8B9A48
+static void MaybeSkipCinematics(void) {  // 0x8B9A48
   if (sign16(cinematic_function + 0x60D8)
       && (joypad1_newkeys & (uint16)(kButton_B | kButton_Start | kButton_A)) != 0
       && !cinematic_var18) {
@@ -1609,7 +1681,7 @@ void MaybeSkipCinematics(void) {  // 0x8B9A48
   }
 }
 
-void HandleCinematicsTransitions_1(void) {  // 0x8B9A83
+static void HandleCinematicsTransitions_1(void) {  // 0x8B9A83
   if (AdvanceFastScreenFadeOut() & 1) {
     cinematic_var18 = 2;
     cinematic_function = FUNC16(nullsub_117);
@@ -1617,7 +1689,7 @@ void HandleCinematicsTransitions_1(void) {  // 0x8B9A83
   }
 }
 
-void HandleCinematicsTransitions_2(void) {  // 0x8B9A9C
+static void HandleCinematicsTransitions_2(void) {  // 0x8B9A9C
   ClearCinematicSprites();
   SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BA119, 0);
   SpawnCinematicSpriteObject(addr_kCinematicSpriteObjectDef_8BA125, 0);
@@ -1669,7 +1741,7 @@ void CinematicSpriteInit_9(uint16 j) {  // 0x8B9B40
   cinematicbg_arr9[v1] = 2048;
 }
 
-void HandleCinematicsTransitions_3(void) {  // 0x8B9B53
+static void HandleCinematicsTransitions_3(void) {  // 0x8B9B53
   if (AdvanceFastScreenFadeIn() & 1) {
     cinematic_var18 = 0;
     demo_timer = 900;
@@ -1684,7 +1756,7 @@ static Func_V *const off_8B9A7B[4] = {  // 0x8B9A6C
   HandleCinematicsTransitions_3,
 };
 
-void HandleCinematicsTransitions(void) {
+static void HandleCinematicsTransitions(void) {
   if (cinematic_var18)
     off_8B9A7B[cinematic_var18]();
 }
@@ -1774,7 +1846,7 @@ void sub_8B9CCF(uint16 k) {  // 0x8B9CCF
   cinematicspr_preinstr_func[k >> 1] = FUNC16(CinematicFunction_nullsub_116);
 }
 
-void sub_8B9CDE(void) {  // 0x8B9CDE
+static void sub_8B9CDE(void) {  // 0x8B9CDE
   ;
 }
 
@@ -2299,14 +2371,14 @@ void CinematicFunc_Intro_WaitForFadeinSleep(void) {  // 0x8BA84A
     cinematic_function = FUNC16(CinematicFunc_Nothing);
 }
 
-void ClearEnglishTextTilemap(void) {  // 0x8BA856
+static void ClearEnglishTextTilemap(void) {  // 0x8BA856
   uint16 v0 = 128;
   do
     ram3000.pause_menu_map_tilemap[v0++] = 47;
   while ((int16)(v0 * 2 - 1536) < 0);
 }
 
-void ClearJapaneseTextTiles(void) {  // 0x8BA86A
+static void ClearJapaneseTextTiles(void) {  // 0x8BA86A
   uint16 v0 = 0;
   do {
     ram4000.xray_tilemaps[v0] = *(uint16 *)&BTS[7822];
@@ -2509,12 +2581,12 @@ uint16 CinematicBgInstr_SetSomeStuffForSpriteObject_14(uint16 k, uint16 j) {  //
   return j;
 }
 
-void SetSomeStuffForSpriteObject_15(void) {  // 0x8BADE1
+static void SetSomeStuffForSpriteObject_15(void) {  // 0x8BADE1
   cinematicbg_arr7[15] = 8;
   cinematicbg_arr8[15] = 248;
 }
 
-void SetSomeStuffForSpriteObject_16(void) {  // 0x8BADEE
+static void SetSomeStuffForSpriteObject_16(void) {  // 0x8BADEE
   cinematicbg_arr7[15] = 8;
   cinematicbg_arr8[15] = 24;
   cinematicspr_instr_ptr[15] = addr_word_8BCBFB;
@@ -2654,7 +2726,7 @@ void CinematicFunction_Intro_WaitInputSetupBabyMetroid(void) {  // 0x8BAF6C
   }
 }
 
-void CinematicFunction_Intro_SetupTransitionToGameplay(void) {  // 0x8BB018
+static void CinematicFunction_Intro_SetupTransitionToGameplay(void) {  // 0x8BB018
   reg_TM = 6;
   reg_TS = 17;
   reg_CGWSEL = 2;
@@ -2885,13 +2957,13 @@ uint16 CinematicSprInstr_StartIntroPage5(uint16 k, uint16 j) {  // 0x8BB34E
   return j;
 }
 
-void Instr_StartIntroPage_Common(void) {  // 0x8BB354
+static void Instr_StartIntroPage_Common(void) {  // 0x8BB354
   DisableCinematicBgTilemapUpdates();
   ClearJapaneseTextTiles();
   TransferJapaneseTextTilesToVram();
 }
 
-void CinematicFunction_Intro_SetupStuff(void) {  // 0x8BB3A1
+static void CinematicFunction_Intro_SetupStuff(void) {  // 0x8BB3A1
   reg_TM = 6;
   reg_TS = 17;
   reg_CGWSEL = 2;
@@ -2988,7 +3060,7 @@ void CinematicBgPreInstr_SamusBlink(uint16 k) {  // 0x8BB4BC
   }
 }
 
-void CallCreditsObjectFunc(uint32 ea, uint16 k) {
+static void CallCreditsObjectFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnCinematicFunction_nullsub_116: return;
   case fnCinematicBgPreInstr_SamusBlink: CinematicBgPreInstr_SamusBlink(k); return;
@@ -3170,7 +3242,7 @@ uint16 EnableCinematicBgTilemapUpdates__(uint16 k, uint16 j) {  // 0x8BB70B
   return j;
 }
 
-void CinematicFunction_Intro_Func33(void) {  // 0x8BB711
+static void CinematicFunction_Intro_Func33(void) {  // 0x8BB711
   if ((nmi_frame_counter_word & 1) != 0)
     reg_TM &= ~2;
   else
@@ -3255,7 +3327,7 @@ void CinematicSprPreInstr_B82E(uint16 k) {  // 0x8BB82E
   }
 }
 
-void CinematicFunction_Intro_Func37(uint16 k) {  // 0x8BB846
+static void CinematicFunction_Intro_Func37(uint16 k) {  // 0x8BB846
   uint16 j, v3;
   uint16 v1 = cinematicspr_arr6[k >> 1];
   if (v1) {
@@ -3272,7 +3344,7 @@ void CinematicFunction_Intro_Func37(uint16 k) {  // 0x8BB846
   }
 }
 
-void CinematicFunction_Intro_Func40(void) {  // 0x8BB877
+static void CinematicFunction_Intro_Func40(void) {  // 0x8BB877
   if ((cinematic_var12 & 1) != 0)
     cinematic_var10 -= 4;
   else
@@ -3455,7 +3527,7 @@ void CinematicFunction_Intro_Func53(uint16 k) {  // 0x8BBB24
   }
 }
 
-void ResetButtonAssignmentsToDefault(void) {  // 0x8BBC08
+static void ResetButtonAssignmentsToDefault(void) {  // 0x8BBC08
   button_config_shoot_x_saved = button_config_shoot_x;
   button_config_jump_a_saved = button_config_jump_a;
   button_config_run_b_saved = button_config_run_b;
@@ -3476,7 +3548,7 @@ void ResetButtonAssignmentsToDefault(void) {  // 0x8BBC08
   button_config_aim_up_R = kButton_R;
 }
 
-void RevertButtonConfig(void) {  // 0x8BBC75
+static void RevertButtonConfig(void) {  // 0x8BBC75
   button_config_shoot_x = button_config_shoot_x_saved;
   button_config_jump_a = button_config_jump_a_saved;
   button_config_run_b = button_config_run_b_saved;
@@ -4299,7 +4371,7 @@ CoroutineRet GameState_39_EndingAndCredits_(void) {  // 0x8BD443
   return kCoroutineNone;
 }
 
-void MaybeHandleCinematicBgObjects(void) {  // 0x8BD474
+static void MaybeHandleCinematicBgObjects(void) {  // 0x8BD474
   if (!sign16(cinematic_function + 0x1AFC))
     HandleCinematicBgObjects();
 }
@@ -4709,7 +4781,7 @@ void CinematicFunction_Intro_Func120(void) {  // 0x8BDBC4
   }
 }
 
-void CinematicFunction_Intro_Func122(void) {  // 0x8BDC4C
+static void CinematicFunction_Intro_Func122(void) {  // 0x8BDC4C
   bool v0 = (--cinematic_var4 & 0x8000) != 0;
   if (!cinematic_var4 || v0) {
     if (sign8(--reg_COLDATA[0] - 32))
@@ -5082,7 +5154,7 @@ void CinematicFunction_Intro_Func145(void) {  // 0x8BE342
   }
 }
 
-void CinematicFunction_Intro_Func140(void) {  // 0x8BE409
+static void CinematicFunction_Intro_Func140(void) {  // 0x8BE409
   if (cinematic_var17) {
     --cinematic_var17;
     FadeOutYColorsFromIndexX(0x1E0, 0x10);
@@ -5111,7 +5183,7 @@ void CinematicFunction_Intro_Func139(void) {  // 0x8BE3AE
   }
 }
 
-void CinematicFunction_Intro_Func142(void) {  // 0x8BE41F
+static void CinematicFunction_Intro_Func142(void) {  // 0x8BE41F
   if (!cinematic_var17) {
     if (sign16(cinematic_var14 - 6)) {
       uint16 v0 = 4 * cinematic_var14;
@@ -5281,7 +5353,7 @@ void CinematicFunction_Intro_Func148(void) {  // 0x8BE797
   }
 }
 
-void CinematicFunction_Intro_Func127(void) {  // 0x8BE7BB
+static void CinematicFunction_Intro_Func127(void) {  // 0x8BE7BB
   int16 v1;
   int16 v4;
 
@@ -5310,7 +5382,7 @@ void CinematicFunction_Intro_Func127(void) {  // 0x8BE7BB
   } while ((int16)(v4 - 39) < 0);
 }
 
-void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
+static void CinematicFunction_Intro_Func149(void) {  // 0x8BE812
   int16 v2;
   int16 v5;
   int16 v8;
@@ -5463,7 +5535,7 @@ void CinematicFunction_Intro_Func157(uint16 j) {  // 0x8BF03E
   cinematicbg_arr9[v1] = 512;
 }
 
-void CinematicFunction_Intro_Func158(uint16 j) {  // 0x8BF051
+static void CinematicFunction_Intro_Func158(uint16 j) {  // 0x8BF051
   int v1 = j >> 1;
   cinematicbg_arr8[v1] = 160;
   cinematicbg_arr9[v1] = 0;
@@ -5498,7 +5570,7 @@ void CinematicFunction_Intro_Func164(uint16 j) {  // 0x8BF094
   CinematicFunction_Intro_Func158(j);
 }
 
-void CinematicFunction_Intro_Func160(uint16 j, uint16 a) {  // 0x8BF0A3
+static void CinematicFunction_Intro_Func160(uint16 j, uint16 a) {  // 0x8BF0A3
   cinematicspr_instr_ptr[j >> 1] += 8 * a;
 }
 
@@ -5507,7 +5579,7 @@ void CinematicFunction_Intro_Func165(uint16 j) {  // 0x8BF0B2
   CinematicFunction_F0B8(j);
 }
 
-void CinematicFunction_F0B8(uint16 j) {  // 0x8BF0B8
+static void CinematicFunction_F0B8(uint16 j) {  // 0x8BF0B8
   int v1 = j >> 1;
   if (cinematic_spawn_param) {
     cinematicbg_arr7[v1] = 384;
@@ -5951,13 +6023,13 @@ uint16 CinematicSprInstr_Func218(uint16 k, uint16 j) {  // 0x8BF651
   return j;
 }
 
-void CinematicFunction_Intro_Func210_EndingSamusFall(uint16 k) {  // 0x8BF65B
+static void CinematicFunction_Intro_Func210_EndingSamusFall(uint16 k) {  // 0x8BF65B
   AddToHiLo(&samus_y_speed, &samus_y_subspeed, 0x3800);
   int v1 = k >> 1;
   AddToHiLo(&cinematicbg_arr8[v1], &cinematicspr_arr7[v1], __PAIR32__(samus_y_speed, samus_y_subspeed));
 }
 
-void CinematicFunction_Intro_Func216(void) {  // 0x8BF682
+static void CinematicFunction_Intro_Func216(void) {  // 0x8BF682
   if (sign16(cinematic_var14 - 16)) {
     uint16 v0 = 2 * cinematic_var14;
     uint16 v1 = vram_write_queue_tail;
@@ -5992,7 +6064,7 @@ uint16 CinematicFunction_Intro_Func219(uint16 k, uint16 j) {  // 0x8BF6FE
   return j;
 }
 
-void CallCinematicFunction(uint32 ea) {
+static void CallCinematicFunction(uint32 ea) {
   switch (ea) {
   case fnCinematicFunctionNone: CinematicFunctionNone(); return;
   case fnCinematicFunctionOpening: CinematicFunctionOpening(); return;
@@ -6095,7 +6167,7 @@ void CallCinematicFunction(uint32 ea) {
   }
 }
 
-uint16 CallCinematicSprInstr(uint32 ea, uint16 k, uint16 j) {
+static uint16 CallCinematicSprInstr(uint32 ea, uint16 k, uint16 j) {
   switch (ea) {
   case fnCinematicSprInstr_Delete: return CinematicSprInstr_Delete(k, j);
   case fnCinematicSprInstr_Sleep: return CinematicSprInstr_Sleep(k, j);
@@ -6153,7 +6225,7 @@ uint16 CallCinematicSprInstr(uint32 ea, uint16 k, uint16 j) {
   }
 }
 
-void CallCinematicSprPreInstr(uint32 ea, uint16 j) {
+static void CallCinematicSprPreInstr(uint32 ea, uint16 j) {
   switch (ea) {
   case fnCinematicSprPreInstr_nullsub_300: return;
   case fnCinematicFunction_nullsub_116: return;
@@ -6215,7 +6287,7 @@ void CallCinematicSprPreInstr(uint32 ea, uint16 j) {
   }
 }
 
-void CallCinematicBgPreInstr(uint32 ea, uint16 j) {
+static void CallCinematicBgPreInstr(uint32 ea, uint16 j) {
   switch (ea) {
   case fnCinematicFunction_nullsub_116: return;
   case fnCinematicBgPreInstr_SamusBlink: CinematicBgPreInstr_SamusBlink(j); return;
@@ -6223,7 +6295,7 @@ void CallCinematicBgPreInstr(uint32 ea, uint16 j) {
   }
 }
 
-uint16 CallCinematicBgInstr(uint32 ea, uint16 k, uint16 j) {
+static uint16 CallCinematicBgInstr(uint32 ea, uint16 k, uint16 j) {
   switch (ea) {
   case fnCinematicBgInstr_Delete: return CinematicBgInstr_Delete(k, j);
   case fnCinematicBgInstr_Goto: return CinematicBgInstr_Goto(k, j);
@@ -6250,7 +6322,7 @@ uint16 CallCinematicBgInstr(uint32 ea, uint16 k, uint16 j) {
   }
 }
 
-void CallCinematicSpriteObjectSetup(uint32 ea, uint16 j) {
+static void CallCinematicSpriteObjectSetup(uint32 ea, uint16 j) {
   switch (ea) {
   case fnCinematicFunction_nullsub_116: return;
   case fnCinematicSpriteInit_7: CinematicSpriteInit_7(j); return;
@@ -6324,7 +6396,7 @@ void CallCinematicSpriteObjectSetup(uint32 ea, uint16 j) {
   }
 }
 
-uint16 CallIntroObjectInstr(uint32 ea, uint16 k, uint16 j) {
+static uint16 CallIntroObjectInstr(uint32 ea, uint16 k, uint16 j) {
   switch (ea) {
   case fnIntroObject_Delete: return IntroObject_Delete(k, j);
   case fnIntroObject_Goto: return IntroObject_Goto(k, j);
@@ -6335,7 +6407,7 @@ uint16 CallIntroObjectInstr(uint32 ea, uint16 k, uint16 j) {
   }
 }
 
-void CallCinematicSpriteInit(uint32 ea, uint16 j) {
+static void CallCinematicSpriteInit(uint32 ea, uint16 j) {
   switch (ea) {
   case fnCinematicSpriteInit_7: CinematicSpriteInit_7(j); return;
   case fnCinematicSpriteInit_8: CinematicSpriteInit_8(j); return;
@@ -6352,7 +6424,7 @@ void CallCinematicSpriteInit(uint32 ea, uint16 j) {
   }
 }
 
-uint16 CallMode7Instr(uint32 ea, uint16 k, uint16 j) {
+static uint16 CallMode7Instr(uint32 ea, uint16 k, uint16 j) {
   switch (ea) {
   case fnMode7Instr_Delete: return Mode7Instr_Delete(k, j);
   case fnMode7Instr_SetPreInstr: return Mode7Instr_SetPreInstr(k, j);
@@ -6383,7 +6455,7 @@ uint16 CallMode7Instr(uint32 ea, uint16 k, uint16 j) {
   }
 }
 
-void CallMode7PreInstr(uint32 ea, uint16 k) {
+static void CallMode7PreInstr(uint32 ea, uint16 k) {
   switch (ea) {
   case fnCinematicFunction_nullsub_116: return;
   case fnCinematicFunction_Intro_Func22: CinematicFunction_Intro_Func22(k); return;

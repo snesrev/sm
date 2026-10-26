@@ -5,6 +5,104 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+// Used only in this file.
+static void Enemy_NormalShotAI_SkipSomeParts_A3(void);
+static void Waver_Func_1(void);
+static void Metalee_Func_2(uint16 k);
+static void Metalee_Func_6(void);
+static void Fireflea_Func_1(uint16 k);
+static void Fireflea_Func_2(uint16 k);
+static void Fireflea_Func_3(uint16 k);
+static void Fireflea_Func_4(uint16 k);
+static void Fireflea_Func_5(uint16 k);
+static void Fireflea_Func_6(uint16 k);
+static void Fireflea_Common(void);
+static void Elevator_Func_1(void);
+static void Elevator_Func_2(void);
+static void Elevator_Func_3(void);
+static void Elevator_Func3b(void);
+static void Elevator_Func_4(void);
+static void Crab_Func_1(void);
+static void Slug_Func_1(void);
+static void PlatformThatFalls_Init(uint16 k, uint16 j);
+static void PlatformThatFallsWithSamus_Func_1(void);
+static void PlatformThatFallsWithSamus_Func_2(void);
+static void PlatformThatFallsWithSamus_Func_3(void);
+static void PlatformThatFallsWithSamus_Func_4(void);
+static void PlatformThatFallsWithSamus_Func_5(void);
+static void PlatformThatFallsWithSamus_Func_6(void);
+static void PlatformThatFallsWithSamus_Func_7(void);
+static void PlatformThatFallsWithSamus_Func_8(void);
+static void PlatformThatFallsWithSamus_Func_9(void);
+static void PlatformThatFallsWithSamus_Func_10(void);
+static void Roach_Func_3(uint16 k);
+static void Roach_Func_4(uint16 k);
+static void Roach_Func_5(uint16 k);
+static void Roach_Func_6(uint16 k);
+static void Roach_Func_7(uint16 k);
+static void Roach_Func_8(uint16 k);
+static void Roach_Func_17(uint16 k);
+static void Roach_Func_18(uint16 k);
+static void Roach_Func_28(void);
+static void Roach_Func_29(uint16 k);
+static void Roach_Func_30(uint16 k);
+static void Roach_Func_31(uint16 k);
+static void Roach_Func_32(uint16 k);
+static void Roach_Func_33(uint16 k);
+static void Mochtroid_Func_1(void);
+static void Mochtroid_Func_2(void);
+static void Mochtroid_Func_3(void);
+static void Mochtroid_Func_4(uint16 k, uint16 a);
+static uint16 Sidehopper_Func_2(uint16 r22, uint16 r24);
+static void Sidehopper_Func_3(void);
+static void Sidehopper_Func_19(void);
+static void Sidehopper_Func_20(void);
+static void Sidehopper_Func_21(void);
+static void Sidehopper_Func_22(void);
+static void MaridiaRefillCandy_Func_4(void);
+static void MaridiaRefillCandy_Func_5(void);
+static void MaridiaRefillCandy_Func_6(void);
+static void NorfairSlowFireball_Func_1(void);
+static void Bang_Func_2(void);
+static void Bang_Func_3(void);
+static uint16 Bang_Func_4(uint16 a);
+static void Bang_Func_5(void);
+static void Bang_Func_9(void);
+static void Bang_Func_12(void);
+static void Bang_Func_13(void);
+static void Bang_Func_14(void);
+static void Bang_Func_15(void);
+static void Bang_Func_18(void);
+static void Skree_Func_5(void);
+static void MaridiaSnail_Func_2(uint16 k, uint16 j);
+static void MaridiaSnail_Func_3(uint16 k);
+static void MaridiaSnail_Func_4(uint16 k);
+static void MaridiaSnail_Func_5(uint16 k);
+static void MaridiaSnail_Func_6(uint16 k);
+static void MaridiaSnail_D002(uint16 k, const uint8 *j);
+static void MaridiaSnail_D07E(uint16 k, const uint8 *j);
+static void MaridiaSnail_Func_10(uint16 k, const uint8 *j);
+static void MaridiaSnail_Func_11(uint16 k, const uint8 *j);
+static void MaridiaSnail_Func_12(uint16 k, uint16 a);
+static void MaridiaSnail_Func_13(uint16 k, uint16 a);
+static void MaridiaSnail_Func_14(uint16 k);
+static void MaridiaSnail_Func_16(uint16 k);
+static uint8 MaridiaSnail_Func_17(uint16 k);
+static uint8 MaridiaSnail_Func_18(uint16 k);
+static uint8 MaridiaSnail_Func_19(uint16 k);
+static uint8 MaridiaSnail_Func_20(uint16 k);
+static uint8 MaridiaSnail_Func_21(uint16 k);
+static void MaridiaSnail_Func_22(uint16 k);
+static void MaridiaSnail_Func_23(uint16 k);
+static void StoneZoomer_E67A(uint16 k);
+static int32 FireZoomer_E8A5(uint16 k);
+static void Metroid_Func_1(uint16 varE32);
+static void Metroid_Func_2(uint16 varE32);
+static void Metroid_Func_3(uint16 varE32);
+static void Metroid_Func_4(uint16 varE32);
+static void Metroid_Func_5(uint16 k);
+
+
 #define g_off_A386DB ((uint16*)RomFixedPtr(0xa386db))
 #define g_off_A3894E ((uint16*)RomFixedPtr(0xa3894e))
 #define g_word_A38D1D ((uint16*)RomFixedPtr(0xa38d1d))
@@ -83,7 +181,7 @@ void Enemy_NormalShotAI_A3(void) {  // 0xA3802D
   NormalEnemyShotAi();
 }
 
-void Enemy_NormalShotAI_SkipSomeParts_A3(void) {  // 0xA38032
+static void Enemy_NormalShotAI_SkipSomeParts_A3(void) {  // 0xA38032
   NormalEnemyShotAiSkipDeathAnim_CurEnemy();
 }
 
@@ -142,7 +240,7 @@ void Waver_Main(void) {  // 0xA3874C
   }
 }
 
-void Waver_Func_1(void) {  // 0xA387FE
+static void Waver_Func_1(void) {  // 0xA387FE
   Enemy_Waver *E = Get_Waver(cur_enemy_index);
   uint16 waver_var_F = E->waver_var_F;
   if (waver_var_F != E->waver_var_C) {
@@ -167,7 +265,7 @@ void Metalee_Init(void) {  // 0xA38960
   E->metalee_var_B = FUNC16(Metalee_Func_1);
 }
 
-void CallMetaleeFunc(uint32 ea) {
+static void CallMetaleeFunc(uint32 ea) {
   switch (ea) {
   case fnMetalee_Func_1: Metalee_Func_1(); return;
   case fnMetalee_Func_3: Metalee_Func_3(cur_enemy_index); return;
@@ -192,7 +290,7 @@ void Metalee_Func_1(void) {  // 0xA38987
   }
 }
 
-void Metalee_Func_2(uint16 k) {  // 0xA389AC
+static void Metalee_Func_2(uint16 k) {  // 0xA389AC
   Enemy_Metalee *E = Get_Metalee(k);
   uint16 div = (uint8)SnesDivide(samus_y_pos - E->base.y_pos, 24);
   E->metalee_var_F = div + 4;
@@ -244,7 +342,7 @@ void Metalee_Func_5(void) {  // 0xA38A5C
   }
 }
 
-void Metalee_Func_6(void) {  // 0xA38AB2
+static void Metalee_Func_6(void) {  // 0xA38AB2
   Enemy_Metalee *E = Get_Metalee(cur_enemy_index);
   uint16 metalee_var_C = E->metalee_var_C;
   if (metalee_var_C != E->metalee_var_D) {
@@ -289,18 +387,18 @@ void Fireflea_Init(void) {  // 0xA38D2D
   }
 }
 
-void Fireflea_Func_1(uint16 k) {  // 0xA38D5D
+static void Fireflea_Func_1(uint16 k) {  // 0xA38D5D
   Enemy_FireFlea *E = Get_FireFlea(k);
   E->ffa_var_E = E->base.x_pos;
   E->ffa_var_F = E->base.y_pos;
 }
 
-void Fireflea_Func_2(uint16 k) {  // 0xA38D6A
+static void Fireflea_Func_2(uint16 k) {  // 0xA38D6A
   Enemy_FireFlea *E = Get_FireFlea(k);
   E->ffa_var_D = HIBYTE(E->ffa_parameter_1) << 8;
 }
 
-void Fireflea_Func_3(uint16 k) {  // 0xA38D75
+static void Fireflea_Func_3(uint16 k) {  // 0xA38D75
   Enemy_FireFlea *E = Get_FireFlea(k);
   uint16 v2 = 8 * LOBYTE(E->ffa_parameter_2);
   if ((E->ffa_parameter_1 & 1) == 0)
@@ -311,18 +409,18 @@ void Fireflea_Func_3(uint16 k) {  // 0xA38D75
   E->ffa_var_A = kCommonEnemySpeeds_Linear[v3 + 1];
 }
 
-void Fireflea_Func_4(uint16 k) {  // 0xA38D9C
+static void Fireflea_Func_4(uint16 k) {  // 0xA38D9C
   Enemy_FireFlea *E = Get_FireFlea(k);
   E->ffa_var_C = LOBYTE(g_word_A38D1D[HIBYTE(E->ffa_parameter_2)]);
 }
 
-void Fireflea_Func_5(uint16 k) {  // 0xA38DAE
+static void Fireflea_Func_5(uint16 k) {  // 0xA38DAE
   Enemy_FireFlea *E = Get_FireFlea(k);
   E->base.x_pos = E->ffa_var_E + CosineMult8bit(E->ffa_var_D, E->ffa_var_C);
   E->base.y_pos = E->ffa_var_F + SineMult8bit(E->ffa_var_D, E->ffa_var_C);
 }
 
-void Fireflea_Func_6(uint16 k) {  // 0xA38DD7
+static void Fireflea_Func_6(uint16 k) {  // 0xA38DD7
   Enemy_FireFlea *E = Get_FireFlea(k);
   E->ffa_var_00 = E->base.y_pos - E->ffa_var_C;
   E->ffa_var_01 = E->ffa_var_C + E->base.y_pos;
@@ -363,7 +461,7 @@ void Fireflea_Shot(void) {  // 0xA38E89
   Fireflea_Common();
 }
 
-void Fireflea_Common(void) {  // 0xA38E8D
+static void Fireflea_Common(void) {  // 0xA38E8D
   if (!Get_FireFlea(cur_enemy_index)->base.health) {
     if (sign16(fireflea_darkness_level - 12))
       fireflea_darkness_level += 2;
@@ -473,7 +571,7 @@ void MaridiaFish_Func_4(void) {  // 0xA39256
   }
 }
 
-void CallMaridiaFishFunc(uint32 ea) {
+static void CallMaridiaFishFunc(uint32 ea) {
   switch (ea) {
   case fnMaridiaFish_Func_1: MaridiaFish_Func_1(); return;
   case fnMaridiaFish_Func_2: MaridiaFish_Func_2(); return;
@@ -511,7 +609,7 @@ void Elevator_Frozen(void) {  // 0xA3952A
   }
 }
 
-void Elevator_Func_1(void) {  // 0xA39548
+static void Elevator_Func_1(void) {  // 0xA39548
   if ((g_word_A394E2[Get_Elevator(cur_enemy_index)->elevat_parameter_1 >> 1] & joypad1_newkeys) != 0) {
     QueueSfx3_Max6(0xB);
     QueueSfx1_Max6(0x32);
@@ -524,7 +622,7 @@ void Elevator_Func_1(void) {  // 0xA39548
   }
 }
 
-void Elevator_Func_2(void) {  // 0xA39579
+static void Elevator_Func_2(void) {  // 0xA39579
   Enemy_Elevator *E = Get_Elevator(cur_enemy_index);
   if (E->elevat_parameter_1) {
     elevator_direction = 0x8000;
@@ -536,12 +634,12 @@ void Elevator_Func_2(void) {  // 0xA39579
   Elevator_Func_4();
 }
 
-void Elevator_Func_3(void) {  // 0xA395B9
+static void Elevator_Func_3(void) {  // 0xA395B9
   ++elevator_status;
   Elevator_Func3b();
 }
 
-void Elevator_Func3b(void) {  // 0xA395BC
+static void Elevator_Func3b(void) {  // 0xA395BC
   Enemy_Elevator *E = Get_Elevator(cur_enemy_index);
   if (E->elevat_parameter_1) {
     AddToHiLo(&E->base.y_pos, &E->base.y_subpos, 0x18000);
@@ -564,7 +662,7 @@ void Elevator_Func3b(void) {  // 0xA395BC
   Elevator_Func_4();
 }
 
-void Elevator_Func_4(void) {  // 0xA39612
+static void Elevator_Func_4(void) {  // 0xA39612
   Enemy_Elevator *E = Get_Elevator(cur_enemy_index);
   samus_y_pos = E->base.y_pos - 26;
   samus_y_subpos = 0;
@@ -580,7 +678,7 @@ void Crab_Init(void) {  // 0xA396E3
   StoneZoomer_E67A(cur_enemy_index);
 }
 
-void Crab_Func_1(void) {  // 0xA396FD
+static void Crab_Func_1(void) {  // 0xA396FD
   ;
 }
 
@@ -591,7 +689,7 @@ void Slug_Init(void) {  // 0xA3993B
   StoneZoomer_E67A(cur_enemy_index);
 }
 
-void Slug_Func_1(void) {  // 0xA39955
+static void Slug_Func_1(void) {  // 0xA39955
   ;
 }
 
@@ -636,7 +734,7 @@ void FastMovingSlowSinkingPlatform_Init(void) {  // 0xA39CBA
     PlatformThatFalls_Init(cur_enemy_index, addr_kPlatformThatFallsWithSamus_Ilist_9C3F);
 }
 
-void PlatformThatFalls_Init(uint16 k, uint16 j) {  // 0xA39CCC
+static void PlatformThatFalls_Init(uint16 k, uint16 j) {  // 0xA39CCC
   Enemy_PlatformThatFallsWithSamus *E = Get_PlatformThatFallsWithSamus(k);
   E->base.current_instruction = j;
   int v3 = (8 * LOBYTE(E->ptfwss_parameter_2)) >> 1;
@@ -666,7 +764,7 @@ void PlatformThatFallsWithSamus_Main(void) {  // 0xA39D16
   E->ptfwss_var_06 = E->ptfwss_var_00;
 }
 
-void PlatformThatFallsWithSamus_Func_1(void) {  // 0xA39D5E
+static void PlatformThatFallsWithSamus_Func_1(void) {  // 0xA39D5E
   Enemy_PlatformThatFallsWithSamus *E = Get_PlatformThatFallsWithSamus(cur_enemy_index);
   E->ptfwss_var_01 = E->base.x_pos;
   if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->ptfwss_var_E, E->ptfwss_var_D))) {
@@ -675,7 +773,7 @@ void PlatformThatFallsWithSamus_Func_1(void) {  // 0xA39D5E
   }
 }
 
-void PlatformThatFallsWithSamus_Func_2(void) {  // 0xA39D83
+static void PlatformThatFallsWithSamus_Func_2(void) {  // 0xA39D83
   Enemy_PlatformThatFallsWithSamus *E = Get_PlatformThatFallsWithSamus(cur_enemy_index);
   E->ptfwss_var_01 = E->base.x_pos;
   if (Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, __PAIR32__(E->ptfwss_var_C, E->ptfwss_var_B))) {
@@ -684,7 +782,7 @@ void PlatformThatFallsWithSamus_Func_2(void) {  // 0xA39D83
   }
 }
 
-void PlatformThatFallsWithSamus_Func_3(void) {  // 0xA39DA8
+static void PlatformThatFallsWithSamus_Func_3(void) {  // 0xA39DA8
   Enemy_PlatformThatFallsWithSamus *E = Get_PlatformThatFallsWithSamus(cur_enemy_index);
   if ((int16)(E->base.y_pos - E->ptfwss_var_A) < 0)
     goto LABEL_5;
@@ -704,7 +802,7 @@ LABEL_5:
   }
 }
 
-void PlatformThatFallsWithSamus_Func_4(void) {  // 0xA39DE4
+static void PlatformThatFallsWithSamus_Func_4(void) {  // 0xA39DE4
   Enemy_PlatformThatFallsWithSamus *E = Get_PlatformThatFallsWithSamus(cur_enemy_index);
   if ((int16)(++E->ptfwss_var_F - E->ptfwss_var_05) >= 0)
     E->ptfwss_var_F = E->ptfwss_var_05;
@@ -718,7 +816,7 @@ void PlatformThatFallsWithSamus_Func_4(void) {  // 0xA39DE4
   extra_samus_y_displacement += E->base.y_pos - E->ptfwss_var_01;
 }
 
-void PlatformThatFallsWithSamus_Func_5(void) {  // 0xA39E47
+static void PlatformThatFallsWithSamus_Func_5(void) {  // 0xA39E47
   Enemy_PlatformThatFallsWithSamus *E = Get_PlatformThatFallsWithSamus(cur_enemy_index);
   uint16 v0 = addr_kPlatformThatFallsWithSamus_Ilist_9C13;
   if ((E->ptfwss_var_1F & 0x8000) != 0)
@@ -728,7 +826,7 @@ void PlatformThatFallsWithSamus_Func_5(void) {  // 0xA39E47
   E->base.timer = 0;
 }
 
-void PlatformThatFallsWithSamus_Func_6(void) {  // 0xA39E64
+static void PlatformThatFallsWithSamus_Func_6(void) {  // 0xA39E64
   Enemy_PlatformThatFallsWithSamus *E = Get_PlatformThatFallsWithSamus(cur_enemy_index);
   uint16 v0 = addr_kPlatformThatFallsWithSamus_Ilist_9C29;
   if ((E->ptfwss_var_1F & 0x8000) != 0)
@@ -738,7 +836,7 @@ void PlatformThatFallsWithSamus_Func_6(void) {  // 0xA39E64
   E->base.timer = 0;
 }
 
-void PlatformThatFallsWithSamus_Func_7(void) {  // 0xA39E81
+static void PlatformThatFallsWithSamus_Func_7(void) {  // 0xA39E81
   Enemy_PlatformThatFallsWithSamus *E = Get_PlatformThatFallsWithSamus(cur_enemy_index);
   uint16 v0 = addr_kPlatformThatFallsWithSamus_Ilist_9C3F;
   if ((E->ptfwss_var_1F & 0x8000) != 0)
@@ -748,7 +846,7 @@ void PlatformThatFallsWithSamus_Func_7(void) {  // 0xA39E81
   E->base.timer = 0;
 }
 
-void PlatformThatFallsWithSamus_Func_8(void) {  // 0xA39E9E
+static void PlatformThatFallsWithSamus_Func_8(void) {  // 0xA39E9E
   Enemy_PlatformThatFallsWithSamus *E = Get_PlatformThatFallsWithSamus(cur_enemy_index);
   uint16 v0 = addr_kPlatformThatFallsWithSamus_Ilist_9C55;
   if ((E->ptfwss_var_1F & 0x8000) != 0)
@@ -758,7 +856,7 @@ void PlatformThatFallsWithSamus_Func_8(void) {  // 0xA39E9E
   E->base.timer = 0;
 }
 
-void PlatformThatFallsWithSamus_Func_9(void) {  // 0xA39EBB
+static void PlatformThatFallsWithSamus_Func_9(void) {  // 0xA39EBB
   Enemy_PlatformThatFallsWithSamus *E = Get_PlatformThatFallsWithSamus(cur_enemy_index);
   if (!E->ptfwss_var_03) {
     E->ptfwss_var_03 = 1;
@@ -770,7 +868,7 @@ void PlatformThatFallsWithSamus_Func_9(void) {  // 0xA39EBB
   E->ptfwss_var_04 = 0;
 }
 
-void PlatformThatFallsWithSamus_Func_10(void) {  // 0xA39EE1
+static void PlatformThatFallsWithSamus_Func_10(void) {  // 0xA39EE1
   Enemy_PlatformThatFallsWithSamus *E = Get_PlatformThatFallsWithSamus(cur_enemy_index);
   if (!E->ptfwss_var_04) {
     E->ptfwss_var_04 = 1;
@@ -826,39 +924,39 @@ void Roach_Func_2(uint16 k) {  // 0xA3A183
   SetHiLo(&E->roach_var_03, &E->roach_var_02, pt.y);
 }
 
-void Roach_Func_3(uint16 k) {  // 0xA3A1B0
+static void Roach_Func_3(uint16 k) {  // 0xA3A1B0
   Enemy_Roach *E = Get_Roach(k);
   SetHiLo(&E->roach_var_01, &E->roach_var_00, CosineMult8bitFull(HIBYTE(E->roach_parameter_1), LOBYTE(E->roach_parameter_1)));
   SetHiLo(&E->roach_var_03, &E->roach_var_02, SineMult8bitFull(HIBYTE(E->roach_parameter_1), LOBYTE(E->roach_parameter_1)));
 }
 
-void Roach_Func_4(uint16 k) {  // 0xA3A1F3
+static void Roach_Func_4(uint16 k) {  // 0xA3A1F3
   Enemy_Roach *E = Get_Roach(k);
   SetHiLo(&E->roach_var_05, &E->roach_var_04, CosineMult8bitFull((uint8)(HIBYTE(E->roach_parameter_1) - 32), LOBYTE(E->roach_parameter_1)));
   SetHiLo(&E->roach_var_07, &E->roach_var_06, SineMult8bitFull((uint8)(HIBYTE(E->roach_parameter_1) - 32), LOBYTE(E->roach_parameter_1)));
 }
 
-void Roach_Func_5(uint16 k) {  // 0xA3A23E
+static void Roach_Func_5(uint16 k) {  // 0xA3A23E
   Enemy_Roach *E = Get_Roach(k);
   SetHiLo(&E->roach_var_09, &E->roach_var_08, CosineMult8bitFull((uint8)(HIBYTE(E->roach_parameter_1) + 32), LOBYTE(E->roach_parameter_1)));
   SetHiLo(&E->roach_var_0B, &E->roach_var_0A, SineMult8bitFull((uint8)(HIBYTE(E->roach_parameter_1) + 32), LOBYTE(E->roach_parameter_1)));
 }
 
-void Roach_Func_6(uint16 k) {  // 0xA3A289
+static void Roach_Func_6(uint16 k) {  // 0xA3A289
   Enemy_Roach *E = Get_Roach(k);
   E->roach_var_20 = 2 * ((uint8)(HIBYTE(E->roach_parameter_1) - 48) >> 5);
 }
 
-void Roach_Func_7(uint16 k) {  // 0xA3A29E
+static void Roach_Func_7(uint16 k) {  // 0xA3A29E
   Enemy_Roach *E = Get_Roach(k);
   E->roach_var_21 = 2 * ((uint8)(HIBYTE(E->roach_parameter_1) - 80) >> 5);
 }
 
-void Roach_Func_8(uint16 k) {  // 0xA3A2B7
+static void Roach_Func_8(uint16 k) {  // 0xA3A2B7
   Enemy_Roach *E = Get_Roach(k);
   E->roach_var_22 = 2 * ((uint8)(HIBYTE(E->roach_parameter_1) - 48 + 32) >> 5);
 }
-void CallRoachFunc(uint32 ea) {
+static void CallRoachFunc(uint32 ea) {
   switch (ea) {
   case fnRoach_Func_9: Roach_Func_9(); return;  // 0xa3a2d7
   case fnRoach_Func_10: Roach_Func_10(); return;  // 0xa3a301
@@ -943,12 +1041,12 @@ void Roach_Func_16(void) {  // 0xA3A380
   E->roach_var_B = FUNC16(Roach_Func_22);
 }
 
-void Roach_Func_17(uint16 k) {  // 0xA3A3B5
+static void Roach_Func_17(uint16 k) {  // 0xA3A3B5
   Enemy_Roach *E = Get_Roach(k);
   E->roach_var_23 = 2 * ((uint8)(E->roach_var_C - 48) >> 5);
 }
 
-void Roach_Func_18(uint16 k) {  // 0xA3A3CA
+static void Roach_Func_18(uint16 k) {  // 0xA3A3CA
   Enemy_Roach *E = Get_Roach(k);
   SetHiLo(&E->roach_var_0D, &E->roach_var_0C, CosineMult8bitFull(E->roach_var_C, LOBYTE(E->roach_parameter_1)));
   SetHiLo(&E->roach_var_0F, &E->roach_var_0E, SineMult8bitFull(E->roach_var_C, LOBYTE(E->roach_parameter_1)));
@@ -1040,7 +1138,7 @@ void Roach_Func_27(void) {  // 0xA3A4F0
   E->roach_var_B = FUNC16(Roach_Func_24);
 }
 
-void Roach_Func_28(void) {  // 0xA3A52A
+static void Roach_Func_28(void) {  // 0xA3A52A
   Enemy_Roach *E = Get_Roach(cur_enemy_index);
   E->roach_var_0D = -E->roach_var_0D;
   E->roach_var_0C = -E->roach_var_0C;
@@ -1052,31 +1150,31 @@ void Roach_Func_28(void) {  // 0xA3A52A
   Roach_Func_1();
 }
 
-void Roach_Func_29(uint16 k) {  // 0xA3A578
+static void Roach_Func_29(uint16 k) {  // 0xA3A578
   Enemy_Roach *E = Get_Roach(k);
   uint16 varE20 = HIBYTE(E->roach_parameter_1);
   EnemyFunc_B691(varE20, (Point32) { __PAIR32__(E->roach_var_01, E->roach_var_00), __PAIR32__(E->roach_var_03, E->roach_var_02) });
 }
 
-void Roach_Func_30(uint16 k) {  // 0xA3A5A3
+static void Roach_Func_30(uint16 k) {  // 0xA3A5A3
   Enemy_Roach *E = Get_Roach(k);
   AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->roach_var_05, E->roach_var_04));
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->roach_var_07, E->roach_var_06));
 }
 
-void Roach_Func_31(uint16 k) {  // 0xA3A5DA
+static void Roach_Func_31(uint16 k) {  // 0xA3A5DA
   Enemy_Roach *E = Get_Roach(k);
   AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->roach_var_09, E->roach_var_08));
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->roach_var_0B, E->roach_var_0A));
 }
 
-void Roach_Func_32(uint16 k) {  // 0xA3A611
+static void Roach_Func_32(uint16 k) {  // 0xA3A611
   Enemy_Roach *E = Get_Roach(k);
   AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->roach_var_0D, E->roach_var_0C));
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->roach_var_0F, E->roach_var_0E));
 }
 
-void Roach_Func_33(uint16 k) {  // 0xA3A648
+static void Roach_Func_33(uint16 k) {  // 0xA3A648
   Enemy_Roach *E = Get_Roach(k);
   if (Enemy_MoveRight_IgnoreSlopes(k, __PAIR32__(E->roach_var_0D, E->roach_var_0C))) {
     E->roach_var_B = FUNC16(Roach_Func_9);
@@ -1099,7 +1197,7 @@ void Mochtroid_Main(void) {  // 0xA3A790
   off_A3A7A4[v0 >> 1]();
 }
 
-void Mochtroid_Func_1(void) {  // 0xA3A7AA
+static void Mochtroid_Func_1(void) {  // 0xA3A7AA
   int16 v5, v10;
 
   Enemy_Mochtroid *E = Get_Mochtroid(cur_enemy_index);
@@ -1140,7 +1238,7 @@ LABEL_21:
   Mochtroid_Func_4(cur_enemy_index, addr_kMochtroid_Ilist_A745);
 }
 
-void Mochtroid_Func_2(void) {  // 0xA3A88F
+static void Mochtroid_Func_2(void) {  // 0xA3A88F
   Enemy_Mochtroid *E = Get_Mochtroid(cur_enemy_index);
   int v2 = (E->mochtr_var_E & 6) >> 1;
   E->base.x_pos += g_word_A3A76D[v2];
@@ -1154,7 +1252,7 @@ void Mochtroid_Func_2(void) {  // 0xA3A88F
   Mochtroid_Func_4(cur_enemy_index, addr_kMochtroid_Ilist_A745);
 }
 
-void Mochtroid_Func_3(void) {  // 0xA3A8C8
+static void Mochtroid_Func_3(void) {  // 0xA3A8C8
   Enemy_Mochtroid *E = Get_Mochtroid(cur_enemy_index);
   uint16 x_pos = E->base.x_pos;
   if (x_pos == samus_x_pos) {
@@ -1182,7 +1280,7 @@ void Mochtroid_Func_3(void) {  // 0xA3A8C8
   Enemy_MoveDown(cur_enemy_index, __PAIR32__(E->mochtr_var_D, E->mochtr_var_C));
 }
 
-void Mochtroid_Func_4(uint16 k, uint16 a) {  // 0xA3A93C
+static void Mochtroid_Func_4(uint16 k, uint16 a) {  // 0xA3A93C
   Enemy_Mochtroid *E = Get_Mochtroid(k);
   if (a != E->mochtr_var_01) {
     E->mochtr_var_01 = a;
@@ -1249,7 +1347,7 @@ void Sidehopper_Init(void) {  // 0xA3AB09
   E->sideh_var_B = FUNC16(Sidehopper_Func_4);
 }
 
-uint16 Sidehopper_Func_2(uint16 r22, uint16 r24) {  // 0xA3AB9D
+static uint16 Sidehopper_Func_2(uint16 r22, uint16 r24) {  // 0xA3AB9D
   uint16 r18 = 0, r20 = 0;
   do {
     r18 += r24;
@@ -1258,7 +1356,7 @@ uint16 Sidehopper_Func_2(uint16 r22, uint16 r24) {  // 0xA3AB9D
   return r18;
 }
 
-void Sidehopper_Func_3(void) {  // 0xA3ABBB
+static void Sidehopper_Func_3(void) {  // 0xA3ABBB
   Enemy_Sidehopper *E = Get_Sidehopper(cur_enemy_index);
   E->base.current_instruction = E->sideh_var_00;
   E->base.instruction_timer = 1;
@@ -1407,7 +1505,7 @@ static void CallSidehopperFunc(uint32 ea) {
   }
 }
 
-void Sidehopper_Func_19(void) {  // 0xA3AD6D
+static void Sidehopper_Func_19(void) {  // 0xA3AD6D
   Enemy_Sidehopper *E = Get_Sidehopper(cur_enemy_index);
   int v2 = (8 * E->sideh_var_C) >> 1;
   if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 3], kCommonEnemySpeeds_Quadratic[v2 + 2]))) {
@@ -1428,7 +1526,7 @@ void Sidehopper_Func_19(void) {  // 0xA3AD6D
   }
 }
 
-void Sidehopper_Func_20(void) {  // 0xA3ADD4
+static void Sidehopper_Func_20(void) {  // 0xA3ADD4
   Enemy_Sidehopper *E = Get_Sidehopper(cur_enemy_index);
   int v2 = (8 * E->sideh_var_C) >> 1;
   if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 1], kCommonEnemySpeeds_Quadratic[v2]))) {
@@ -1444,7 +1542,7 @@ void Sidehopper_Func_20(void) {  // 0xA3ADD4
   }
 }
 
-void Sidehopper_Func_21(void) {  // 0xA3AE27
+static void Sidehopper_Func_21(void) {  // 0xA3AE27
   Enemy_Sidehopper *E = Get_Sidehopper(cur_enemy_index);
   int v2 = (8 * E->sideh_var_C) >> 1;
   if (Enemy_MoveDown(cur_enemy_index, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 1], kCommonEnemySpeeds_Quadratic[v2]))) {
@@ -1465,7 +1563,7 @@ void Sidehopper_Func_21(void) {  // 0xA3AE27
   }
 }
 
-void Sidehopper_Func_22(void) {  // 0xA3AE8E
+static void Sidehopper_Func_22(void) {  // 0xA3AE8E
   int16 v3;
 
   Enemy_Sidehopper *E = Get_Sidehopper(cur_enemy_index);
@@ -1510,7 +1608,7 @@ void MaridiaRefillCandy_Init(void) {  // 0xA3B44A
   E->mrcy_var_C = E->base.y_pos;
 }
 
-void CallMaridiaRefillCandyFunc(uint32 ea, uint16 k) {
+static void CallMaridiaRefillCandyFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnMaridiaRefillCandy_Func_1: MaridiaRefillCandy_Func_1(); return;
   case fnMaridiaRefillCandy_Func_2: MaridiaRefillCandy_Func_2(k); return;
@@ -1568,7 +1666,7 @@ void MaridiaRefillCandy_Func_3(uint16 k) {  // 0xA3B4D6
   E->mrcy_parameter_1 = FUNC16(MaridiaRefillCandy_Func_1);
 }
 
-void MaridiaRefillCandy_Func_4(void) {  // 0xA3B537
+static void MaridiaRefillCandy_Func_4(void) {  // 0xA3B537
   Enemy_MaridiaRefillCandy *E = Get_MaridiaRefillCandy(cur_enemy_index);
   uint16 mrcy_var_D = E->mrcy_var_D;
   if (mrcy_var_D != E->mrcy_var_E) {
@@ -1579,11 +1677,11 @@ void MaridiaRefillCandy_Func_4(void) {  // 0xA3B537
   }
 }
 
-void MaridiaRefillCandy_Func_5(void) {  // 0xA3B557
+static void MaridiaRefillCandy_Func_5(void) {  // 0xA3B557
   ;
 }
 
-void MaridiaRefillCandy_Func_6(void) {  // 0xA3B55B
+static void MaridiaRefillCandy_Func_6(void) {  // 0xA3B55B
   ;
 }
 
@@ -1594,7 +1692,7 @@ void NorfairSlowFireball_Init(void) {  // 0xA3B66F
   StoneZoomer_E67A(cur_enemy_index);
 }
 
-void NorfairSlowFireball_Func_1(void) {  // 0xA3B6F9
+static void NorfairSlowFireball_Func_1(void) {  // 0xA3B6F9
   uint16 current_instruction = gEnemyData(cur_enemy_index)->current_instruction;
   if (current_instruction)
     Unreachable();
@@ -1645,7 +1743,7 @@ void Bang_Func_1(void) {  // 0xA3BB2B
   E->base.properties |= kEnemyProps_Tangible;
 }
 
-void Bang_Func_2(void) {  // 0xA3BB4A
+static void Bang_Func_2(void) {  // 0xA3BB4A
   uint16 v0 = Get_Bang(cur_enemy_index + 1984)->bang_var_00 + 20;
   Enemy_Bang *E = Get_Bang(cur_enemy_index);
   E->bang_var_20 = v0;
@@ -1653,7 +1751,7 @@ void Bang_Func_2(void) {  // 0xA3BB4A
   E->base.properties |= kEnemyProps_Tangible;
 }
 
-void Bang_Func_3(void) {  // 0xA3BB66
+static void Bang_Func_3(void) {  // 0xA3BB66
   int16 bang_var_B;
 
   Bang_Func_5();
@@ -1690,7 +1788,7 @@ void Bang_Func_3(void) {  // 0xA3BB66
   }
 }
 
-uint16 Bang_Func_4(uint16 a) {  // 0xA3BBEB
+static uint16 Bang_Func_4(uint16 a) {  // 0xA3BBEB
   int i;
 
   if (!sign16(projectile_counter - 5))
@@ -1710,7 +1808,7 @@ uint16 Bang_Func_4(uint16 a) {  // 0xA3BBEB
   return 0;
 }
 
-void Bang_Func_5(void) {  // 0xA3BC9E
+static void Bang_Func_5(void) {  // 0xA3BC9E
   Enemy_Bang *E = Get_Bang(cur_enemy_index);
   CallEnemyPreInstr(E->bang_var_F | 0xA30000);
 }
@@ -1739,7 +1837,7 @@ void Bang_Func_8(uint16 k) {  // 0xA3BCC5
   E->bang_var_0A = 0;
 }
 
-void Bang_Func_9(void) {  // 0xA3BCF1
+static void Bang_Func_9(void) {  // 0xA3BCF1
   uint8 v1 = CalculateAngleOfSamusFromEnemy(cur_enemy_index) - 64;
   Enemy_Bang *E = Get_Bang(cur_enemy_index);
   E->bang_var_02 = v1;
@@ -1765,7 +1863,7 @@ void Bang_Func_11(uint16 k) {  // 0xA3BD2C
     E->bang_var_F = FUNC16(Bang_Func_6);
 }
 
-void Bang_Func_12(void) {  // 0xA3BD4F
+static void Bang_Func_12(void) {  // 0xA3BD4F
   Enemy_Bang *E = Get_Bang(cur_enemy_index);
   int16 v1 = E->bang_var_0C - 1;
   E->bang_var_0C = v1;
@@ -1778,7 +1876,7 @@ void Bang_Func_12(void) {  // 0xA3BD4F
   }
 }
 
-void Bang_Func_13(void) {  // 0xA3BD89
+static void Bang_Func_13(void) {  // 0xA3BD89
   Enemy_Bang *E = Get_Bang(cur_enemy_index);
   int16 v1 = E->bang_var_0C - 1;
   E->bang_var_0C = v1;
@@ -1789,7 +1887,7 @@ void Bang_Func_13(void) {  // 0xA3BD89
   }
 }
 
-void Bang_Func_14(void) {  // 0xA3BDB9
+static void Bang_Func_14(void) {  // 0xA3BDB9
   Enemy_Bang *E = Get_Bang(cur_enemy_index);
   uint16 r18 = kSine16bit[(uint8)(E->bang_var_01 + 64)];
   if ((r18 & 0x8000) != 0)
@@ -1801,7 +1899,7 @@ void Bang_Func_14(void) {  // 0xA3BDB9
   E->base.x_subpos = t, E->base.x_pos = t >> 16;
 }
 
-void Bang_Func_15(void) {  // 0xA3BE1C
+static void Bang_Func_15(void) {  // 0xA3BE1C
   Enemy_Bang *E = Get_Bang(cur_enemy_index);
   uint16 r18 = kSine16bit[(uint8)E->bang_var_01];
   if ((r18 & 0x8000) != 0)
@@ -1813,7 +1911,7 @@ void Bang_Func_15(void) {  // 0xA3BE1C
   E->base.y_subpos = t, E->base.y_pos = t >> 16;
 }
 
-void Bang_Func_18(void) {  // 0xA3BEDA
+static void Bang_Func_18(void) {  // 0xA3BEDA
   Enemy_Bang *E = Get_Bang(cur_enemy_index);
   uint16 bang_var_20 = E->bang_var_20;
   if (bang_var_20 != E->bang_var_21) {
@@ -1859,7 +1957,7 @@ void Skree_Init(void) {  // 0xA3C6AE
   E->skree_var_B = FUNC16(Skree_Func_1);
 }
 
-void CallSkreeFunc(uint32 ea) {
+static void CallSkreeFunc(uint32 ea) {
   switch (ea) {
   case fnSkree_Func_1: Skree_Func_1(); return;
   case fnSkree_Func_2: Skree_Func_2(cur_enemy_index); return;
@@ -1928,7 +2026,7 @@ void Skree_Func_4(void) {  // 0xA3C77F
   }
 }
 
-void Skree_Func_5(void) {  // 0xA3C7D5
+static void Skree_Func_5(void) {  // 0xA3C7D5
   Enemy_Skree *E = Get_Skree(cur_enemy_index);
   uint16 skree_var_C = E->skree_var_C;
   if (skree_var_C != E->skree_var_D) {
@@ -2004,7 +2102,7 @@ void MaridiaSnail_Init(void) {  // 0xA3CDE2
   MaridiaSnail_Func_2(cur_enemy_index, current_instruction * 8);
 }
 
-void MaridiaSnail_Func_2(uint16 k, uint16 j) {  // 0xA3CE27
+static void MaridiaSnail_Func_2(uint16 k, uint16 j) {  // 0xA3CE27
   int v2 = j >> 1;
   uint16 r18 = g_word_A3CD82[v2];
   uint16 r20 = g_word_A3CD82[v2 + 1];
@@ -2015,7 +2113,7 @@ void MaridiaSnail_Func_2(uint16 k, uint16 j) {  // 0xA3CE27
   E->msl_var_B = r24 + (r22 ^ g_word_A3CCA2[E->msl_parameter_1]);
 }
 
-void MaridiaSnail_Func_3(uint16 k) {  // 0xA3CE57
+static void MaridiaSnail_Func_3(uint16 k) {  // 0xA3CE57
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   E->msl_var_F = g_off_A3CDD2[E->msl_var_07];
 }
@@ -2028,13 +2126,13 @@ void MaridiaSnail_Main(void) {  // 0xA3CE64
   CallEnemyPreInstr(E->msl_var_F | 0xA30000);
 }
 
-void MaridiaSnail_Func_4(uint16 k) {  // 0xA3CE73
+static void MaridiaSnail_Func_4(uint16 k) {  // 0xA3CE73
   uint16 msl_var_08 = Get_MaridiaSnail(k)->msl_var_08;
   if (msl_var_08 != 3 && msl_var_08 != 4 && msl_var_08 != 5 && earthquake_timer == 30 && earthquake_type == 20)
     MaridiaSnail_Func_14(k);
 }
 
-void MaridiaSnail_Func_5(uint16 k) {  // 0xA3CE9A
+static void MaridiaSnail_Func_5(uint16 k) {  // 0xA3CE9A
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   uint16 msl_var_08 = E->msl_var_08;
   if (msl_var_08 != 1 && msl_var_08 != 3 && msl_var_08 != 4 && msl_var_08 != 5) {
@@ -2061,7 +2159,7 @@ LABEL_14:
   }
 }
 
-void MaridiaSnail_Func_6(uint16 k) {  // 0xA3CF11
+static void MaridiaSnail_Func_6(uint16 k) {  // 0xA3CF11
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   if (E->msl_var_F == FUNC16(MaridiaSnail_Func_15))
     goto LABEL_11;
@@ -2139,7 +2237,7 @@ void MaridiaSnail_CFFC(uint16 k) {  // 0xA3CFFC
   MaridiaSnail_D002(k, RomPtr_A3(addr_stru_A3CD1A));
 }
 
-void MaridiaSnail_D002(uint16 k, const uint8 *j) {  // 0xA3D002
+static void MaridiaSnail_D002(uint16 k, const uint8 *j) {  // 0xA3D002
   MaridiaSnail_Func_10(k, j);
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   uint8 rv = Enemy_MoveRight_ProcessSlopes(k, Shift8AddMagn(E->msl_var_A, 1));
@@ -2164,7 +2262,7 @@ void MaridiaSnail_D002(uint16 k, const uint8 *j) {  // 0xA3D002
   }
 }
 
-void MaridiaSnail_D07E(uint16 k, const uint8 *j) {  // 0xA3D07E
+static void MaridiaSnail_D07E(uint16 k, const uint8 *j) {  // 0xA3D07E
   MaridiaSnail_Func_10(k, j);
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   uint8 rv = Enemy_MoveDown(k, Shift8AddMagn(E->msl_var_B, 1));
@@ -2190,19 +2288,19 @@ void MaridiaSnail_D07E(uint16 k, const uint8 *j) {  // 0xA3D07E
   }
 }
 
-void MaridiaSnail_Func_10(uint16 k, const uint8 *j) {  // 0xA3D0F8
+static void MaridiaSnail_Func_10(uint16 k, const uint8 *j) {  // 0xA3D0F8
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   E->base.x_pos += GET_WORD(j);
   E->base.y_pos += GET_WORD(j + 2);
 }
 
-void MaridiaSnail_Func_11(uint16 k, const uint8 *j) {  // 0xA3D10D
+static void MaridiaSnail_Func_11(uint16 k, const uint8 *j) {  // 0xA3D10D
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   E->base.x_pos -= GET_WORD(j);
   E->base.y_pos -= GET_WORD(j + 2);
 }
 
-void MaridiaSnail_Func_12(uint16 k, uint16 carry) {  // 0xA3D124
+static void MaridiaSnail_Func_12(uint16 k, uint16 carry) {  // 0xA3D124
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   if (!carry) {
     if ((uint16)(E->msl_var_04 + 1) >= 0x10)
@@ -2215,7 +2313,7 @@ void MaridiaSnail_Func_12(uint16 k, uint16 carry) {  // 0xA3D124
   }
 }
 
-void MaridiaSnail_Func_13(uint16 k, uint16 a) {  // 0xA3D14C
+static void MaridiaSnail_Func_13(uint16 k, uint16 a) {  // 0xA3D14C
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   E->base.current_instruction = a;
   E->base.instruction_timer = 1;
@@ -2223,7 +2321,7 @@ void MaridiaSnail_Func_13(uint16 k, uint16 a) {  // 0xA3D14C
   E->msl_var_04 = 0;
 }
 
-void MaridiaSnail_Func_14(uint16 k) {  // 0xA3D164
+static void MaridiaSnail_Func_14(uint16 k) {  // 0xA3D164
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   if (E->msl_var_08 != 3) {
     E->msl_var_08 = 3;
@@ -2297,14 +2395,14 @@ void MaridiaSnail_Func_15(uint16 k) {  // 0xA3D1B3
   }
 }
 
-void MaridiaSnail_Func_16(uint16 k) {  // 0xA3D2FA
+static void MaridiaSnail_Func_16(uint16 k) {  // 0xA3D2FA
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   int v2 = (uint16)(4 * E->msl_var_C) >> 1;
   E->base.current_instruction = g_off_A3D30D[v2];
   E->msl_var_D = g_off_A3D30D[v2 + 1];
 }
 
-uint8 MaridiaSnail_Func_17(uint16 k) {  // 0xA3D315
+static uint8 MaridiaSnail_Func_17(uint16 k) {  // 0xA3D315
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   if (E->msl_var_05)
     return 0;
@@ -2317,7 +2415,7 @@ uint8 MaridiaSnail_Func_17(uint16 k) {  // 0xA3D315
   }
 }
 
-uint8 MaridiaSnail_Func_18(uint16 k) {  // 0xA3D33E
+static uint8 MaridiaSnail_Func_18(uint16 k) {  // 0xA3D33E
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   if (E->msl_var_C) {
     return (E->base.x_pos >= samus_x_pos) ? MaridiaSnail_Func_19(k) : 0;
@@ -2326,7 +2424,7 @@ uint8 MaridiaSnail_Func_18(uint16 k) {  // 0xA3D33E
   }
 }
 
-uint8 MaridiaSnail_Func_19(uint16 k) {  // 0xA3D356
+static uint8 MaridiaSnail_Func_19(uint16 k) {  // 0xA3D356
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   if (E->msl_var_08 == 2 || E->msl_var_F == 0xCF5F)
     return 0;
@@ -2361,7 +2459,7 @@ void MaridiaSnail_Touch(void) {  // 0xA3D3B0
   }
 }
 
-uint8 MaridiaSnail_Func_20(uint16 k) {  // 0xA3D421
+static uint8 MaridiaSnail_Func_20(uint16 k) {  // 0xA3D421
   uint16 r20 = Get_MaridiaSnail(k)->msl_var_C & 1;
   if ((uint16)(joypad1_lastkeys & 0x300) >> 8 == 1) {
     if (r20)
@@ -2372,7 +2470,7 @@ uint8 MaridiaSnail_Func_20(uint16 k) {  // 0xA3D421
   return 1;
 }
 
-uint8 MaridiaSnail_Func_21(uint16 k) {  // 0xA3D446
+static uint8 MaridiaSnail_Func_21(uint16 k) {  // 0xA3D446
   if ((Get_MaridiaSnail(k)->msl_var_A & 0x8000) != 0)
     return samus_pose_x_dir == 8;
   return samus_pose_x_dir == 4;
@@ -2390,7 +2488,7 @@ void MaridiaSnail_Shot(void) {  // 0xA3D469
   }
 }
 
-void MaridiaSnail_Func_22(uint16 k) {  // 0xA3D49F
+static void MaridiaSnail_Func_22(uint16 k) {  // 0xA3D49F
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   E->msl_var_08 = 4;
   E->msl_var_F = FUNC16(MaridiaSnail_Func_15);
@@ -2413,7 +2511,7 @@ void MaridiaSnail_Func_22(uint16 k) {  // 0xA3D49F
   }
 }
 
-void MaridiaSnail_Func_23(uint16 k) {  // 0xA3D557
+static void MaridiaSnail_Func_23(uint16 k) {  // 0xA3D557
   Enemy_MaridiaSnail *E = Get_MaridiaSnail(k);
   E->msl_var_08 = 5;
   E->msl_var_F = FUNC16(MaridiaSnail_Func_15);
@@ -2634,7 +2732,7 @@ void StoneZoomer_Init(void) {  // 0xA3E669
   StoneZoomer_E67A(cur_enemy_index);
 }
 
-void StoneZoomer_E67A(uint16 k) {  // 0xA3E67A
+static void StoneZoomer_E67A(uint16 k) {  // 0xA3E67A
   Enemy_StoneZoomer *E = Get_StoneZoomer(k);
   E->base.spritemap_pointer = addr_kSpritemap_Nothing_A3;
   E->base.instruction_timer = 1;
@@ -2755,7 +2853,7 @@ void FireZoomer_Func_3(uint16 k) {  // 0xA3E7F2
   }
 }
 
-int32 FireZoomer_E8A5(uint16 k) {  // 0xA3E8A5
+static int32 FireZoomer_E8A5(uint16 k) {  // 0xA3E8A5
   Enemy_FireZoomer *E = Get_FireZoomer(cur_enemy_index);
 
   uint16 xpos = E->base.x_pos;
@@ -2764,8 +2862,8 @@ int32 FireZoomer_E8A5(uint16 k) {  // 0xA3E8A5
     E->base.y_pos + E->base.y_height - 1;
   CalculateBlockContainingPixelPos(xpos, ypos);
 
-  if ((level_data[cur_block_index] & 0xF000) == 4096 && (BTS[cur_block_index] & 0x1F) >= 5) {
-    uint16 v1 = g_word_A3E931[(uint16)(4 * (BTS[cur_block_index] & 0x1F)) >> 1];
+  if ((LevelDataAt(cur_block_index) & 0xF000) == 4096 && (BtsAt(cur_block_index) & 0x1F) >= 5) {
+    uint16 v1 = g_word_A3E931[(uint16)(4 * (BtsAt(cur_block_index) & 0x1F)) >> 1];
     if ((int16)E->fzr_var_A >= 0)
       return Multiply16x16(E->fzr_var_A, v1);
     else
@@ -2845,7 +2943,7 @@ void Metroid_Main(void) {  // 0xA3EB98
   sprite_disable_flag[v4] = 0;
 }
 
-void Metroid_Func_1(uint16 varE32) {  // 0xA3EC11
+static void Metroid_Func_1(uint16 varE32) {  // 0xA3EC11
   int16 v3;
   int16 v4;
   int16 v8;
@@ -2900,7 +2998,7 @@ LABEL_19:
   }
 }
 
-void Metroid_Func_2(uint16 varE32) {  // 0xA3ECDC
+static void Metroid_Func_2(uint16 varE32) {  // 0xA3ECDC
   int16 v1;
   int16 v5;
   uint16 v2, v6;
@@ -2955,7 +3053,7 @@ LABEL_19:
   }
 }
 
-void Metroid_Func_3(uint16 varE32) {  // 0xA3ED8F
+static void Metroid_Func_3(uint16 varE32) {  // 0xA3ED8F
   Enemy_Metroid *E = Get_Metroid(cur_enemy_index);
   E->base.x_pos = samus_x_pos;
   E->base.y_pos = varE32;
@@ -2965,7 +3063,7 @@ void Metroid_Func_3(uint16 varE32) {  // 0xA3ED8F
   E->metroid_var_D = 0;
 }
 
-void Metroid_Func_4(uint16 varE32) {  // 0xA3EDAB
+static void Metroid_Func_4(uint16 varE32) {  // 0xA3EDAB
   Enemy_Metroid *E = Get_Metroid(cur_enemy_index);
   int v1 = E->metroid_var_E & 3;
   E->base.x_pos += g_word_A3EA3F[v1];
@@ -3020,7 +3118,7 @@ void Metroid_Touch(void) {  // 0xA3EDEB
   }
 }
 
-void Metroid_Func_5(uint16 k) {  // 0xA3EECE
+static void Metroid_Func_5(uint16 k) {  // 0xA3EECE
   uint16 v1;
   uint16 varE32 = samus_y_pos - 8;
   if ((equipped_items & 0x20) != 0) {

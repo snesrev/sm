@@ -4,8 +4,8 @@
 #include "sm_rtl.h"
 #include "funcs.h"
 
-void CallDoorDefSetupCode(uint32 ea);
-void CallRoomSetupCode(uint32 ea);
+static void CallDoorDefSetupCode(uint32 ea);
+static void CallRoomSetupCode(uint32 ea);
 void RoomCode_GenRandomExplodes(uint16 x_r18, uint16 y_r20);
 
 void RoomSetup_AfterSavingAnimals(void) {  // 0x8F9194
@@ -241,7 +241,7 @@ void DoorCode_SetScroll_26(void) {  // 0x8FBFFA
   scrolls[10] = 2;
 }
 
-void DoorCode_SetScroll_27(void) {  // 0x8FC005
+static void DoorCode_SetScroll_27(void) {  // 0x8FC005
   scrolls[0] = 1;
   scrolls[2] = 0;
 }
@@ -333,7 +333,7 @@ void RoomCode_ScrollingSkyOcean_(void) {  // 0x8FC11B
   RoomMainAsm_ScrollingSkyOcean();
 }
 
-void RoomCode_GenRandomExplodes_Nonblank(void) {  // 0x8FC131
+static void RoomCode_GenRandomExplodes_Nonblank(void) {  // 0x8FC131
   if (!time_is_frozen_flag && (nmi_frame_counter_word & 1) == 0) {
     uint16 Random = NextRandom();
     uint16 x = layer1_x_pos + (uint8)Random;
@@ -531,12 +531,12 @@ void DoorCode_SetScroll_50(void) {  // 0x8FE318
   scrolls[11] = 1;
 }
 
-void UNUSED_DoorCode_SetScroll_51(void) {  // 0x8FE329
+static void UNUSED_DoorCode_SetScroll_51(void) {  // 0x8FE329
   scrolls[17] = 0;
   scrolls[16] = 1;
 }
 
-void UNUSED_DoorCode_SetScroll_52(void) {  // 0x8FE33A
+static void UNUSED_DoorCode_SetScroll_52(void) {  // 0x8FE33A
   scrolls[4] = 2;
 }
 
@@ -573,7 +573,7 @@ void DoorCode_SetScroll_59(void) {  // 0x8FE3A3
   scrolls[4] = 0;
 }
 
-void DoorCode_SetScroll_60(void) {  // 0x8FE3AE
+static void DoorCode_SetScroll_60(void) {  // 0x8FE3AE
   scrolls[1] = 0;
 }
 
@@ -680,7 +680,7 @@ LABEL_6:
   RoomCode_GenRandomExplodes_4th();
 }
 
-uint16 CallRoomDefStateSelect(uint32 ea, uint16 k) {
+static uint16 CallRoomDefStateSelect(uint32 ea, uint16 k) {
   switch (ea) {
   case fnRoomDefStateSelect_Finish: return RoomDefStateSelect_Finish(k);
   case fnRoomDefStateSelect_TourianBoss01: return RoomDefStateSelect_TourianBoss01(k);
@@ -742,7 +742,7 @@ uint16 RoomDefStateSelect_PowerBombs(uint16 k) {  // 0x8FE669
   return RoomDefStateSelect_Finish(*v1);
 }
 
-void CallRoomSetupCode(uint32 ea) {
+static void CallRoomSetupCode(uint32 ea) {
   switch (ea) {
   case fnRoomSetup_AfterSavingAnimals: RoomSetup_AfterSavingAnimals(); return;
   case fnRoomSetup_AutoDestroyWallAfterEscape: RoomSetup_AutoDestroyWallAfterEscape(); return;
@@ -790,7 +790,7 @@ void RunRoomSetupCode(void) {  // 0x8FE88F
     CallRoomSetupCode(RoomDefRoomstate->room_setup_code | 0x8F0000);
 }
 
-void CallDoorDefSetupCode(uint32 ea) {
+static void CallDoorDefSetupCode(uint32 ea) {
   switch (ea) {
   case fnDoorCode_StartWreckedShipTreadmillWest: DoorCode_StartWreckedShipTreadmillWest(); return;
   case fnDoorCode_Scroll6_Green: DoorCode_Scroll6_Green(); return;
@@ -923,7 +923,7 @@ void RoomCode_RidleyRoomShaking(void) {  // 0x8FE950
   }
 }
 
-void CallRoomCode(uint32 ea) {
+static void CallRoomCode(uint32 ea) {
   switch (ea) {
   case fnRoomCode_ScrollingSkyLand_: RoomCode_ScrollingSkyLand_(); return;
   case fnRoomCode_ScrollingSkyOcean_: RoomCode_ScrollingSkyOcean_(); return;

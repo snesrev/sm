@@ -3,10 +3,14 @@
 #include "variables.h"
 #include "funcs.h"
 
+// Used only in this file.
+static void PalFx_ProcessOne(uint16 k);
 
-void CallPalfxFunc(uint32 ea, uint16 k, uint16 j);
-PairU16 CallPalInstr(uint32 ea, uint16 k, uint16 j);
-void CallPalFxPreInstr(uint32 ea, uint16 k);
+
+
+static void CallPalfxFunc(uint32 ea, uint16 k, uint16 j);
+static PairU16 CallPalInstr(uint32 ea, uint16 k, uint16 j);
+static void CallPalFxPreInstr(uint32 ea, uint16 k);
 
 void EnablePaletteFx(void) {  // 0x8DC4C2
   flag_for_palette_fx_objects |= 0x8000;
@@ -56,7 +60,7 @@ void PaletteFxHandler(void) {  // 0x8DC527
   }
 }
 
-void PalFx_ProcessOne(uint16 k) {  // 0x8DC54A
+static void PalFx_ProcessOne(uint16 k) {  // 0x8DC54A
   CallPalFxPreInstr(palettefx_pre_instr[k >> 1] | 0x8D0000, k);
   uint16 v1 = palettefx_index;
   if (palettefx_instr_timers[v1 >> 1]-- != 1)
@@ -274,7 +278,7 @@ void PalInit_F779_Brinstar8(uint16 k, uint16 j) {  // 0x8DF730
     palettefx_ids[j >> 1] = 0;
 }
 
-void CallPalFxPreInstr(uint32 ea, uint16 k) {
+static void CallPalFxPreInstr(uint32 ea, uint16 k) {
   switch (ea) {
   case fnPalPreInstr_nullsub_129: PalPreInstr_nullsub_129(k); return;
   case fnPalPreInstr_E1BC: PalPreInstr_E1BC(k); return;
@@ -288,7 +292,7 @@ void CallPalFxPreInstr(uint32 ea, uint16 k) {
   }
 }
 
-PairU16 CallPalInstr(uint32 ea, uint16 k, uint16 j) {
+static PairU16 CallPalInstr(uint32 ea, uint16 k, uint16 j) {
   switch (ea) {
   case fnPalInstr_Wait: return PalInstr_Wait(k, j);
   case fnPalInstr_ColorPlus2: return PalInstr_ColorPlus2(k, j);
@@ -313,7 +317,7 @@ PairU16 CallPalInstr(uint32 ea, uint16 k, uint16 j) {
   }
 }
 
-void CallPalfxFunc(uint32 ea, uint16 k, uint16 j) {
+static void CallPalfxFunc(uint32 ea, uint16 k, uint16 j) {
   switch (ea) {
   case fnnullsub_131: return;
   case fnPalInit_E1BC: PalInit_E1BC(k, j); return;

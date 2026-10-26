@@ -3,12 +3,20 @@
 #include <string.h>
 #include <stdio.h>
 
-extern uint8 g_ram[0x20000];
+#ifndef G_RAM_IS_CONSTANT
+extern uint8 g_ram[0x20000] RAM_ALIGNED;
+#endif
 extern void RtlApuWrite(uint32 adr, uint8 val);
 extern int snes_frame_counter;
 
 extern uint8 *g_sram;
+#if SM_GBA
+// The ROM is in the cartridge, at an address the linker knows.
+extern const uint8 snes_rom[];
+#define g_rom snes_rom
+#else
 extern const uint8 *g_rom;
+#endif
 extern bool g_use_my_apu_code;
 #define LONGPTR(t) {(t) & 0xffff, (t) >> 16}
 extern bool g_debug_flag;
@@ -42,12 +50,19 @@ static inline uint16 GET_WORD(const uint8 *p) { return *(uint16 *)(p); }
 static inline const uint8 *RomFixedPtr(uint32_t addr) { return &g_rom[(((addr >> 16) << 15) | (addr & 0x7fff)) & 0x3fffff]; }
 #else
 #define GET_WORD(p) (*(uint16*)(p))
-#define RomFixedPtr(addr) (&g_rom[(((addr >> 16) << 15) | (addr & 0x7fff)) & 0x3fffff])
+#define RomFixedPtr(addr) (&g_rom[((((addr) >> 16) << 15) | ((addr) & 0x7fff)) & 0x3fffff])
 #endif
 
 #define GET_BYTE(p) (*(uint8*)(p))
 
+#if SM_GBA
+// The ROM is flat, so a pointer into it is arithmetic. These are macros rather than inline
+// functions because ARM code (GBA_IWRAM_CODE) can't inline Thumb functions, and would call a thunk.
+#define RomPtr(addr) ({ uint32_t addr_ = (addr); RomFixedPtr(addr_); })
+#define RomPtrWithBank(bank, addr) RomPtr((uint32_t)(uint8)(bank) << 16 | (uint16_t)(addr))
+#else
 const uint8 *RomPtr(uint32_t addr);
+#endif
 static inline uint8 *RomPtr_RAM(uint16_t addr) { assert(addr < 0x2000); return g_ram + addr; }
 static inline const uint8 *RomPtr_80(uint16_t addr) { return RomPtr(0x800000 | addr); }
 static inline const uint8 *RomPtr_81(uint16_t addr) { return RomPtr(0x810000 | addr); }
@@ -85,8 +100,18 @@ static inline const uint8 *RomPtr_AD(uint16_t addr) { return RomPtr(0xad0000 | a
 static inline const uint8 *RomPtr_B3(uint16_t addr) { return RomPtr(0xb30000 | addr); }
 static inline const uint8 *RomPtr_B4(uint16_t addr) { return RomPtr(0xb40000 | addr); }
 static inline const uint8 *RomPtr_B7(uint16_t addr) { return RomPtr(0xb70000 | addr); }
+#if !SM_GBA
 static inline const uint8 *RomPtrWithBank(uint8 bank, uint16_t addr) { return RomPtr((bank << 16) | addr); }
+#endif
 static inline const uint8 *RomBankBase(uint8 bank) { return RomPtr((bank << 16) + 0x8000) - 0x8000; }
+
+#if SM_GBA
+// For the room loads, faster than the game's own code (gba/decompress.S, rtl.c):
+// DecompressToMem's work, on the ROM's bytes (returns the end of the output),
+uint8 *Decompress(const uint8 *src, uint8 *dst);
+// and a fill of halfwords.
+void Fill16(uint16 *dst, uint16 value, int count);
+#endif
 
 void WriteReg(uint16 reg, uint8 value);
 void WriteRegWord(uint16 reg, uint16 value);

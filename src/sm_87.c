@@ -3,6 +3,10 @@
 #include "funcs.h"
 #include "variables.h"
 
+// Used only in this file.
+static void ProcessAnimtilesObject(void);
+
+
 
 
 
@@ -52,7 +56,7 @@ void AnimtilesHandler(void) {  // 0x878064
   }
 }
 
-uint16 CallAnimtilesInstr(uint32 ea, uint16 j, uint16 k) {
+static uint16 CallAnimtilesInstr(uint32 ea, uint16 j, uint16 k) {
   switch (ea) {
   case fnAnimtilesInstr_Delete: return AnimtilesInstr_Delete(j, k);
   case fnAnimtilesInstr_Goto: return AnimtilesInstr_Goto(j, k);
@@ -82,7 +86,7 @@ uint16 CallAnimtilesInstr(uint32 ea, uint16 j, uint16 k) {
   }
 }
 
-void ProcessAnimtilesObject(void) {  // 0x878085
+static void ProcessAnimtilesObject(void) {  // 0x878085
   uint16 v0 = animtiles_object_index;
   int v1 = animtiles_object_index >> 1;
   if (animtiles_instr_timers[v1]-- == 1) {
@@ -193,11 +197,11 @@ uint16 AnimtilesInstr_SetEventHappened(uint16 k, uint16 j) {  // 0x878150
   return j + 2;
 }
 
-void UNUSED_sub_87815A(void) {  // 0x87815A
+static void UNUSED_sub_87815A(void) {  // 0x87815A
   CallSomeSamusCode(0);
 }
 
-void UNUSED_sub_878162(void) {  // 0x878162
+static void UNUSED_sub_878162(void) {  // 0x878162
   CallSomeSamusCode(1);
 }
 

@@ -7,6 +7,83 @@
 #include "enemy_types.h"
 #include "spc_player.h"
 
+// Used only in this file.
+static void ClearBossBitForCurArea(uint16 a);
+static void VerifySRAM(void);
+static void VerifySRAM(void);
+static void DisableNMI(void);
+static void InitializeCpuIoRegs(void);
+static void InitializePpuIoRegs(void);
+static void WriteLotsOf0x1c2f(void);
+static void sub_8088EB(uint16 a);
+static void sub_8088FE(uint16 a);
+static void sub_808911(uint16 a);
+static void NMI_ProcessMode7Queue(void);
+static void NMI_ProcessMode7QueueInner(const uint8 *p);
+static void NMI_ProcessVramWriteQueue(void);
+static void Nmi_ProcessHorizScrollingDma(void);
+static void Nmi_ProcessVertScrollingDma(void);
+static void NMI_ProcessVramReadQueue(void);
+static void QueueSfx1_Internal(uint16 a);
+static void QueueSfx2_Internal(uint16 a);
+static void QueueSfx3_Internal(uint16 a);
+static void NmiUpdateIoRegisters(void);
+static void NmiUpdatePalettesAndOam(void);
+static void NmiTransferSamusToVram(void);
+static void NmiProcessAnimtilesVramTransfers(void);
+static void IrqHandler_0_Nothing(void);
+static void IrqHandler_2_DisableIRQ(void);
+static void IrqHandler_4_Main_BeginHudDraw(void);
+static void IrqHandler_6_Main_EndHudDraw(void);
+static void IrqHandler_8_StartOfDoor_BeginHud(void);
+static void IrqHandler_10_StartOfDoor_EndHud(void);
+static void IrqHandler_12_Draygon_BeginHud(void);
+static void IrqHandler_14_Draygon_EndHud(void);
+static void IrqHandler_16_VerticalDoor_BeginHud(void);
+static void IrqHandler_18_VerticalDoor_EndHud(void);
+static void IrqHandler_20_VerticalDoor_EndDraw(void);
+static void IrqHandler_22_HorizDoor_BeginHud(void);
+static void IrqHandler_24_HorizDoor_EndHud(void);
+static void IrqHandler_26_HorizDoor_EndDraw(void);
+static void EnableIrqInterrupts(void);
+static void AddToTilemapInner(uint16 k, const uint16 *j);
+static void ToggleHudItemHighlight(uint16 a, uint16 k);
+static void DrawThreeHudDigits(uint32 addr, uint16 a, uint16 k);
+static void DrawTwoHudDigits(uint32 addr, uint16 a, uint16 k);
+static uint8 ProcessTimer_CeresStart(void);
+static uint8 ProcessTimer_Empty(void);
+static uint8 ProcessTimer_MotherBrainStart(void);
+static uint8 ProcessTimer_InitialDelay(void);
+static uint8 ProcessTimer_MovementDelayed(void);
+static uint8 ProcessTimer_MovingIntoPlace(void);
+static void SetTimerMinutes(uint16 a);
+static uint8 ProcessTimer_Decrement(void);
+static void DrawTwoTimerDigits(uint16 a, uint16 k);
+static void DrawTimerSpritemap(uint16 a, uint16 j);
+static CoroutineRet Play20FramesOfMusic_Async(void);
+static void DisplayViewablePartOfRoom(void);
+static uint8 CalculateLayer2Xpos(void);
+static uint8 CalculateLayer2Ypos(void);
+static void CalculateBgScrolls(void);
+static void UpdateScrollVarsUpdateMap(void);
+static void UpdateBgGraphicsWhenScrolling(void);
+static void CalculateBgScrollAndLayerPositionBlocks(void);
+static void UploadBackgroundDataColumn(void);
+static void UploadLevelDataColumn(void);
+static void UpdateLevelOrBackgroundDataColumn(uint16 k);
+static void UpdateBackgroundDataRow(void);
+static void UpdateLevelDataRow(void);
+static void UpdateLevelOrBackgroundDataRow(uint16 k);
+static void UpdatePreviousLayerBlocks(void);
+static void UpdateBgScrollOffsets(void);
+static void Irq_FollowDoorTransition(void);
+static uint8 DoorTransition_Right(void);
+static uint8 DoorTransition_Left(void);
+static uint8 DoorTransition_Down(void);
+static uint8 DoorTransition_Up(void);
+static void ConfigureMode7RotationMatrix(void);
+
+
 
 #define kMusicPointers (*(LongPtr*)RomFixedPtr(0x8fe7e1))
 #define kTimerDigitsSpritemapPtr ((uint16*)RomFixedPtr(0x809fd4))
@@ -59,7 +136,7 @@ void SetBossBitForCurArea(uint16 a) {  // 0x8081A6
   boss_bits_for_area[area_index] |= a;
 }
 
-void ClearBossBitForCurArea(uint16 a) {  // 0x8081C0
+static void ClearBossBitForCurArea(uint16 a) {  // 0x8081C0
   boss_bits_for_area[area_index] &= ~a;
 }
 
@@ -87,7 +164,7 @@ void CopySuperMetroidString(void) {  // 0x80824F
   RtlWriteSram();
 }
 
-void VerifySRAM(void) {  // 0x808261
+static void VerifySRAM(void) {  // 0x808261
   num_demo_sets = 3;
   if (LoadFromSram(0) && LoadFromSram(1) && LoadFromSram(2)) {
     memcpy(&g_sram[0x1fe0], "madadameyohn", 12);
@@ -130,7 +207,7 @@ void EnableNMI(void) {  // 0x80834B
   reg_NMITIMEN = v0;
 }
 
-void DisableNMI(void) {  // 0x80835D
+static void DisableNMI(void) {  // 0x80835D
   uint8 v0 = reg_NMITIMEN & 0x7F;
   WriteReg(NMITIMEN, reg_NMITIMEN & 0x7F);
   reg_NMITIMEN = v0;
@@ -247,7 +324,7 @@ void SaveExploredMapTilesToSaved(void) {  // 0x8085C6
     *(uint16 *)&map_station_byte_array[area_index] |= 0xFF;
 }
 
-void InitializeCpuIoRegs(void) {  // 0x80875D
+static void InitializeCpuIoRegs(void) {  // 0x80875D
   WriteReg(NMITIMEN, 1);
   reg_NMITIMEN = 1;
   WriteReg(WRIO, 0);
@@ -267,7 +344,7 @@ void InitializeCpuIoRegs(void) {  // 0x80875D
   reg_MEMSEL = 1;
 }
 
-void InitializePpuIoRegs(void) {  // 0x808792
+static void InitializePpuIoRegs(void) {  // 0x808792
   WriteReg(INIDISP, 0x8F);
   reg_INIDISP = 0x8f;
   WriteReg(OBSEL, 3);
@@ -361,21 +438,21 @@ void InitializePpuIoRegs(void) {  // 0x808792
   reg_SETINI = 0;
 }
 
-void WriteLotsOf0x1c2f(void) {  // 0x8088D1
+static void WriteLotsOf0x1c2f(void) {  // 0x8088D1
   sub_8088EB(0x1C2F);
   sub_8088FE(0x1C2F);
   sub_808911(0x1C2F);
 }
 
-void sub_8088EB(uint16 a) {  // 0x8088EB
+static void sub_8088EB(uint16 a) {  // 0x8088EB
   memset7E((uint16*)(g_ram + 0x3000), a, 0x800);
 }
 
-void sub_8088FE(uint16 a) {  // 0x8088FE
+static void sub_8088FE(uint16 a) {  // 0x8088FE
   memset7E((uint16 *)(g_ram + 0x4000), a, 0x800);
 }
 
-void sub_808911(uint16 a) {  // 0x808911
+static void sub_808911(uint16 a) {  // 0x808911
   memset7E((uint16 *)(g_ram + 0x6000), a, 0x800);
 }
 
@@ -433,7 +510,7 @@ void QueueMode7Transfers(uint8 db, uint16 k) {  // 0x808B4F
   mode7_vram_write_queue_tail = dst - (uint8 *)mode7_write_queue;
 }
 
-void NMI_ProcessMode7Queue(void) {  // 0x808BBA
+static void NMI_ProcessMode7Queue(void) {  // 0x808BBA
   if (mode7_vram_write_queue_tail) {
     NMI_ProcessMode7QueueInner(&g_ram[0x2D0]);
     *(uint16 *)&mode7_write_queue[0].field_0 = 0;
@@ -441,7 +518,7 @@ void NMI_ProcessMode7Queue(void) {  // 0x808BBA
   }
 }
 
-void NMI_ProcessMode7QueueInner(const uint8 *p) {  // 0x808BD3
+static void NMI_ProcessMode7QueueInner(const uint8 *p) {  // 0x808BD3
   while (1) {
     uint8 v2;
     while (1) {
@@ -475,7 +552,7 @@ void NMI_ProcessMode7QueueInner(const uint8 *p) {  // 0x808BD3
   }
 }
 
-void NMI_ProcessVramWriteQueue(void) {  // 0x808C83
+static void NMI_ProcessVramWriteQueue(void) {  // 0x808C83
   if (vram_write_queue_tail) {
     gVramWriteEntry(vram_write_queue_tail)->size = 0;
     WriteRegWord(DMAP1, 0x1801);
@@ -496,7 +573,7 @@ void NMI_ProcessVramWriteQueue(void) {  // 0x808C83
   Nmi_ProcessVertScrollingDma();
 }
 
-void Nmi_ProcessHorizScrollingDma(void) {  // 0x808CD8
+static void Nmi_ProcessHorizScrollingDma(void) {  // 0x808CD8
   WriteReg(VMAIN, 0x81);
   if ((uint8)bg1_update_col_enable) {
     LOBYTE(bg1_update_col_enable) = 0;
@@ -554,7 +631,7 @@ void Nmi_ProcessHorizScrollingDma(void) {  // 0x808CD8
   }
 }
 
-void Nmi_ProcessVertScrollingDma(void) {  // 0x808DAC
+static void Nmi_ProcessVertScrollingDma(void) {  // 0x808DAC
   WriteReg(VMAIN, 0x80);
   if ((uint8)bg1_update_row_enable) {
     LOBYTE(bg1_update_row_enable) = 0;
@@ -612,7 +689,7 @@ void Nmi_ProcessVertScrollingDma(void) {  // 0x808DAC
   }
 }
 
-void NMI_ProcessVramReadQueue(void) {  // 0x808EA2
+static void NMI_ProcessVramReadQueue(void) {  // 0x808EA2
   if ((uint8)vram_read_queue_tail) {
     *((uint8 *)&vram_read_queue[0].vram_target + (uint8)vram_read_queue_tail) = 0;
     int v0 = 0;
@@ -723,7 +800,7 @@ void QueueSfx1_Max6(uint16 a) {  // 0x809049
   QueueSfx1_Internal(a << 8 | 6);
 }
 
-void QueueSfx1_Internal(uint16 a) {  // 0x809051
+static void QueueSfx1_Internal(uint16 a) {  // 0x809051
   sfx_max_queued[0] = a;
   if (((sfx_writepos[0] - sfx_readpos[0]) & 0xF) < (uint8)a) {
     uint8 v2 = GET_HIBYTE(a);
@@ -764,7 +841,7 @@ void QueueSfx2_Max6(uint16 a) {  // 0x8090CB
   QueueSfx2_Internal(a << 8 | 6);
 }
 
-void QueueSfx2_Internal(uint16 a) {  // 0x8090D3
+static void QueueSfx2_Internal(uint16 a) {  // 0x8090D3
   sfx_max_queued[1] = a;
   if (((sfx_writepos[1] - sfx_readpos[1]) & 0xF) < (uint8)a) {
     uint8 v2 = GET_HIBYTE(a);
@@ -805,7 +882,7 @@ void QueueSfx3_Max6(uint16 a) {  // 0x80914D
   QueueSfx3_Internal(a << 8 | 6);
 }
 
-void QueueSfx3_Internal(uint16 a) {  // 0x809155
+static void QueueSfx3_Internal(uint16 a) {  // 0x809155
   sfx_max_queued[2] = a;
   if (((sfx_writepos[2] - sfx_readpos[2]) & 0xF) < (uint8)a) {
     uint8 v2 = GET_HIBYTE(a);
@@ -836,7 +913,7 @@ void SetupDmaTransfer(const void *p) {  // 0x8091A9
   WriteRegWord((SnesRegs)(v2 + DAS0L), s->das);
 }
 
-void NmiUpdateIoRegisters(void) {  // 0x8091EE
+static void NmiUpdateIoRegisters(void) {  // 0x8091EE
   WriteReg(NMITIMEN, reg_NMITIMEN);
   WriteReg(INIDISP, reg_INIDISP);
   WriteReg(OBSEL, reg_OBSEL);
@@ -904,7 +981,7 @@ void NmiUpdateIoRegisters(void) {  // 0x8091EE
   }
 }
 
-void NmiUpdatePalettesAndOam(void) {  // 0x80933A
+static void NmiUpdatePalettesAndOam(void) {  // 0x80933A
   WriteRegWord(DMAP0, 0x400);
   WriteRegWord(A1T0L, ADDR16_OF_RAM(*oam_ent));
   WriteReg(A1B0, 0);
@@ -918,7 +995,7 @@ void NmiUpdatePalettesAndOam(void) {  // 0x80933A
   WriteReg(MDMAEN, 3);
 }
 
-void NmiTransferSamusToVram(void) {  // 0x809376
+static void NmiTransferSamusToVram(void) {  // 0x809376
   WriteReg(VMAIN, 0x80);
   if ((uint8)nmi_copy_samus_halves) {
     SamusTileAnimationTileDefs *td = (SamusTileAnimationTileDefs *)RomPtr_92(nmi_copy_samus_top_half_src);
@@ -952,7 +1029,7 @@ void NmiTransferSamusToVram(void) {  // 0x809376
   }
 }
 
-void NmiProcessAnimtilesVramTransfers(void) {  // 0x809416
+static void NmiProcessAnimtilesVramTransfers(void) {  // 0x809416
   if ((animtiles_enable_flag & 0x8000) != 0) {
     for (int i = 10; (i & 0x80) == 0; i -= 2) {
       int v1 = i >> 1;
@@ -1087,25 +1164,25 @@ void CopyToVramNow(uint16 vram_dst, uint32 src, uint16 size) {
   WriteReg(INIDISP, 0xF);
 }
 
-void IrqHandler_SetResult(uint16 a, uint16 y, uint16 x) {
+static void IrqHandler_SetResult(uint16 a, uint16 y, uint16 x) {
   //  printf("Setting irq next: %d, %d, %d\n", a, x, y);
   cur_irq_handler = a;
   WriteRegWord(VTIMEL, y);
   WriteRegWord(HTIMEL, x);
 }
 
-void IrqHandler_0_Nothing(void) {  // 0x80966E
+static void IrqHandler_0_Nothing(void) {  // 0x80966E
   uint16 a = irqhandler_next_handler;
   irqhandler_next_handler = 0;
   IrqHandler_SetResult(a, 0, 0);
 }
 
-void IrqHandler_2_DisableIRQ(void) {  // 0x809680
+static void IrqHandler_2_DisableIRQ(void) {  // 0x809680
   *(uint16 *)&reg_NMITIMEN &= ~0x30;
   IrqHandler_SetResult(0, 0, 0);
 }
 
-void IrqHandler_4_Main_BeginHudDraw(void) {  // 0x80968B
+static void IrqHandler_4_Main_BeginHudDraw(void) {  // 0x80968B
   WriteReg(BG3SC, 0x5A);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
@@ -1113,7 +1190,7 @@ void IrqHandler_4_Main_BeginHudDraw(void) {  // 0x80968B
   IrqHandler_SetResult(6, 31, 152);
 }
 
-void IrqHandler_6_Main_EndHudDraw(void) {  // 0x8096A9
+static void IrqHandler_6_Main_EndHudDraw(void) {  // 0x8096A9
   WriteReg(CGWSEL, gameplay_CGWSEL);
   WriteReg(CGADSUB, gameplay_CGADSUB);
   WriteReg(BG3SC, gameplay_BG3SC);
@@ -1124,7 +1201,7 @@ void IrqHandler_6_Main_EndHudDraw(void) {  // 0x8096A9
   IrqHandler_SetResult(a ? a : 4, 0, 152);
 }
 
-void IrqHandler_8_StartOfDoor_BeginHud(void) {  // 0x8096D3
+static void IrqHandler_8_StartOfDoor_BeginHud(void) {  // 0x8096D3
   WriteReg(BG3SC, 0x5A);
   WriteReg(TM, 4);
   WriteReg(CGWSEL, 0);
@@ -1132,7 +1209,7 @@ void IrqHandler_8_StartOfDoor_BeginHud(void) {  // 0x8096D3
   IrqHandler_SetResult(10, 31, 152);
 }
 
-void IrqHandler_10_StartOfDoor_EndHud(void) {  // 0x8096F1
+static void IrqHandler_10_StartOfDoor_EndHud(void) {  // 0x8096F1
   uint8 v0;
   if (((previous_cre_bitset | cre_bitset) & 1) != 0)
     v0 = 16;
@@ -1144,14 +1221,14 @@ void IrqHandler_10_StartOfDoor_EndHud(void) {  // 0x8096F1
   IrqHandler_SetResult(a ? a : 8, 0, 152);
 }
 
-void IrqHandler_12_Draygon_BeginHud(void) {  // 0x80971A
+static void IrqHandler_12_Draygon_BeginHud(void) {  // 0x80971A
   WriteReg(TM, 4);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
   IrqHandler_SetResult(14, 31, 152);
 }
 
-void IrqHandler_14_Draygon_EndHud(void) {  // 0x809733
+static void IrqHandler_14_Draygon_EndHud(void) {  // 0x809733
   WriteReg(BG3SC, gameplay_BG3SC);
   WriteReg(CGWSEL, gameplay_CGWSEL);
   WriteReg(CGADSUB, gameplay_CGADSUB);
@@ -1160,14 +1237,14 @@ void IrqHandler_14_Draygon_EndHud(void) {  // 0x809733
   IrqHandler_SetResult(a ? a : 12, 0, 152);
 }
 
-void IrqHandler_16_VerticalDoor_BeginHud(void) {  // 0x809758
+static void IrqHandler_16_VerticalDoor_BeginHud(void) {  // 0x809758
   WriteReg(TM, 4);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
   IrqHandler_SetResult(18, 31, 152);
 }
 
-void IrqHandler_18_VerticalDoor_EndHud(void) {  // 0x809771
+static void IrqHandler_18_VerticalDoor_EndHud(void) {  // 0x809771
   uint8 v0;
   if (((previous_cre_bitset | cre_bitset) & 1) != 0)
     v0 = 16;
@@ -1181,20 +1258,20 @@ void IrqHandler_18_VerticalDoor_EndHud(void) {  // 0x809771
   IrqHandler_SetResult(20, 216, 152);
 }
 
-void IrqHandler_20_VerticalDoor_EndDraw(void) {  // 0x8097A9
+static void IrqHandler_20_VerticalDoor_EndDraw(void) {  // 0x8097A9
   uint16 a = irqhandler_next_handler;
   irqhandler_next_handler = 0;
   IrqHandler_SetResult(a ? a : 16, 0, 152);
 }
 
-void IrqHandler_22_HorizDoor_BeginHud(void) {  // 0x8097C1
+static void IrqHandler_22_HorizDoor_BeginHud(void) {  // 0x8097C1
   WriteReg(TM, 4);
   WriteReg(CGWSEL, 0);
   WriteReg(CGADSUB, 0);
   IrqHandler_SetResult(24, 31, 152);
 }
 
-void IrqHandler_24_HorizDoor_EndHud(void) {  // 0x8097DA
+static void IrqHandler_24_HorizDoor_EndHud(void) {  // 0x8097DA
   uint8 v0;
 
   if (((previous_cre_bitset | cre_bitset) & 1) != 0)
@@ -1209,13 +1286,13 @@ void IrqHandler_24_HorizDoor_EndHud(void) {  // 0x8097DA
   IrqHandler_SetResult(26, 160, 152);
 }
 
-void IrqHandler_26_HorizDoor_EndDraw(void) {  // 0x80980A
+static void IrqHandler_26_HorizDoor_EndDraw(void) {  // 0x80980A
   uint16 a = irqhandler_next_handler;
   irqhandler_next_handler = 0;
   IrqHandler_SetResult(a ? a : 22, 0, 152);
 }
 
-void EnableIrqInterrupts(void) {  // 0x80982A
+static void EnableIrqInterrupts(void) {  // 0x80982A
   WriteRegWord(VTIMEL, 0);
   WriteRegWord(HTIMEL, 152);
   *(uint16 *)&reg_NMITIMEN |= 0x30;
@@ -1298,7 +1375,7 @@ void AddXrayToHudTilemap(void) {  // 0x809A3E
   AddToTilemapInner(0x2E, (const uint16 *)RomPtr_80(addr_kHudTilemaps_Missiles + 36));
 }
 
-void AddToTilemapInner(uint16 k, const uint16 *j) {  // 0x809A4C
+static void AddToTilemapInner(uint16 k, const uint16 *j) {  // 0x809A4C
   int v2 = k >> 1;
   if ((hud_tilemap[v2] & 0x3FF) == 15) {
     hud_tilemap[v2] = j[0];
@@ -1419,7 +1496,7 @@ void HandleHudTilemap(void) {  // 0x809B44
 
 static const uint16 kHudItemTilemapOffsets[5] = { 0x14, 0x1c, 0x22, 0x28, 0x2e };
 
-void ToggleHudItemHighlight(uint16 a, uint16 k) {  // 0x809CEA
+static void ToggleHudItemHighlight(uint16 a, uint16 k) {  // 0x809CEA
   int16 v2;
 
   hud_item_tilemap_palette_bits = k;
@@ -1443,12 +1520,12 @@ void ToggleHudItemHighlight(uint16 a, uint16 k) {  // 0x809CEA
   }
 }
 
-void DrawThreeHudDigits(uint32 addr, uint16 a, uint16 k) {  // 0x809D78
+static void DrawThreeHudDigits(uint32 addr, uint16 a, uint16 k) {  // 0x809D78
   hud_tilemap[k >> 1] = GET_WORD(RomPtr(addr + 2 * (a / 100)));
   DrawTwoHudDigits(addr, a % 100, k + 2);
 }
 
-void DrawTwoHudDigits(uint32 addr, uint16 a, uint16 k) {  // 0x809D98
+static void DrawTwoHudDigits(uint32 addr, uint16 a, uint16 k) {  // 0x809D98
   int v3 = k >> 1;
   hud_tilemap[v3] = GET_WORD(RomPtr(addr + 2 * (a / 10)));
   hud_tilemap[v3 + 1] = GET_WORD(RomPtr(addr + 2 * (a % 10)));
@@ -1468,32 +1545,32 @@ uint8 ProcessTimer(void) {
   return kTimerProcessFuncs[(uint8)timer_status]();
 }
 
-uint8 ProcessTimer_CeresStart(void) {  // 0x809E09
+static uint8 ProcessTimer_CeresStart(void) {  // 0x809E09
   ClearTimerRam();
   SetTimerMinutes(0x100);
   timer_status = -32765;
   return 0;
 }
 
-uint8 ProcessTimer_Empty(void) {  // 0x809E1A
+static uint8 ProcessTimer_Empty(void) {  // 0x809E1A
   return 0;
 }
 
-uint8 ProcessTimer_MotherBrainStart(void) {  // 0x809E1C
+static uint8 ProcessTimer_MotherBrainStart(void) {  // 0x809E1C
   ClearTimerRam();
   SetTimerMinutes(0x300);
   timer_status = -32765;
   return 0;
 }
 
-uint8 ProcessTimer_InitialDelay(void) {  // 0x809E2F
+static uint8 ProcessTimer_InitialDelay(void) {  // 0x809E2F
   LOBYTE(timer_x_pos) = timer_x_pos + 1;
   if ((uint8)timer_x_pos >= 0x10)
     LOBYTE(timer_status) = timer_status + 1;
   return 0;
 }
 
-uint8 ProcessTimer_MovementDelayed(void) {  // 0x809E41
+static uint8 ProcessTimer_MovementDelayed(void) {  // 0x809E41
   LOBYTE(timer_x_pos) = timer_x_pos + 1;
   if ((uint8)timer_x_pos >= 0x60) {
     LOBYTE(timer_x_pos) = 0;
@@ -1502,7 +1579,7 @@ uint8 ProcessTimer_MovementDelayed(void) {  // 0x809E41
   return ProcessTimer_Decrement();
 }
 
-uint8 ProcessTimer_MovingIntoPlace(void) {  // 0x809E58
+static uint8 ProcessTimer_MovingIntoPlace(void) {  // 0x809E58
   int v0 = 0;
   uint16 v1 = timer_x_pos + 224;
   if ((uint16)(timer_x_pos + 224) >= 0xDC00) {
@@ -1521,7 +1598,7 @@ uint8 ProcessTimer_MovingIntoPlace(void) {  // 0x809E58
   return ProcessTimer_Decrement();
 }
 
-void SetTimerMinutes(uint16 a) {  // 0x809E8C
+static void SetTimerMinutes(uint16 a) {  // 0x809E8C
   *(uint16 *)&timer_centiseconds = 0;
   *(uint16 *)&timer_seconds = a;
 }
@@ -1534,7 +1611,7 @@ void ClearTimerRam(void) {  // 0x809E93
   timer_status = 0;
 }
 
-bool DecrementDecimal(uint8 *number, uint8 value) {
+static bool DecrementDecimal(uint8 *number, uint8 value) {
   int result = (*number & 0xf) + (~value & 0xf) + 1;
   if (result < 0x10) result = (result - 0x6) & ((result - 0x6 < 0) ? 0xf : 0x1f);
   result = (*number & 0xf0) + (~value & 0xf0) + result;
@@ -1543,7 +1620,7 @@ bool DecrementDecimal(uint8 *number, uint8 value) {
   return result < 0x100;
 }
 
-uint8 ProcessTimer_Decrement(void) {  // 0x809EA9
+static uint8 ProcessTimer_Decrement(void) {  // 0x809EA9
   static const uint8 kTimerCentisecondDecrements[128] = {
     1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 2, 1, 2, 2,
     1, 2, 2, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2, 2, 1, 2,
@@ -1577,13 +1654,27 @@ void DrawTimer(void) {  // 0x809F6C
 }
 
 
-void DrawTwoTimerDigits(uint16 a, uint16 k) {  // 0x809F95
+static void DrawTwoTimerDigits(uint16 a, uint16 k) {  // 0x809F95
   DrawTimerSpritemap(k, kTimerDigitsSpritemapPtr[(a & 0xF0) >> 4]);
   DrawTimerSpritemap(k + 8, kTimerDigitsSpritemapPtr[a & 0xF]);
 }
 
-void DrawTimerSpritemap(uint16 a, uint16 j) {  // 0x809FB3
-  DrawSpritemap(0x80, j, a + HIBYTE(timer_x_pos), HIBYTE(timer_y_pos), 2560);
+#if SM_GBA
+// The GBA shows gameplay lower down the SNES's screen as Samus goes, and
+// sprites with it: the timer stays where it is on the screen.
+int Render_GameplayYOffset(void);
+#endif
+
+static void DrawTimerSpritemap(uint16 a, uint16 j) {  // 0x809FB3
+  uint16 y = HIBYTE(timer_y_pos), x = HIBYTE(timer_x_pos);
+#if SM_GBA
+  y += Render_GameplayYOffset();
+  // The GBA shows the SNES's columns 8-247: the timer, to its right edge
+  // (32 pixels right of its place), in them, as it settles at the right.
+  if (x > 248 - 32)
+    x = 248 - 32;
+#endif
+  DrawSpritemap(0x80, j, a + x, y, 2560);
 }
 
 CoroutineRet StartGameplay_Async(void) {  // 0x80A07B
@@ -1631,7 +1722,7 @@ CoroutineRet StartGameplay_Async(void) {  // 0x80A07B
   COROUTINE_END(0);
 }
 
-CoroutineRet Play20FramesOfMusic_Async(void) {  // 0x80A12B
+static CoroutineRet Play20FramesOfMusic_Async(void) {  // 0x80A12B
   COROUTINE_BEGIN(coroutine_state_3, 0)
   EnableNMI();
   for(my_counter = 0; my_counter != 20; my_counter++) {
@@ -1654,7 +1745,7 @@ void ResumeGameplay(void) {  // 0x80A149
   EnableIrqInterrupts();
 }
 
-void DisplayViewablePartOfRoom(void) {  // 0x80A176
+static void DisplayViewablePartOfRoom(void) {  // 0x80A176
   int v1, v2, v3;
 
   v1 = (reg_BG1SC - reg_BG2SC) << 8;
@@ -1730,7 +1821,7 @@ void ClearFXTilemap(void) {  // 0x80A29C
   WriteReg(MDMAEN, 2);
 }
 
-uint8 CalculateLayer2Xpos(void) {  // 0x80A2F9
+static uint8 CalculateLayer2Xpos(void) {  // 0x80A2F9
   if (!layer2_scroll_x) {
     layer2_x_pos = layer1_x_pos;
     return 0;
@@ -1744,7 +1835,7 @@ uint8 CalculateLayer2Xpos(void) {  // 0x80A2F9
   return 1;
 }
 
-uint8 CalculateLayer2Ypos(void) {  // 0x80A33A
+static uint8 CalculateLayer2Ypos(void) {  // 0x80A33A
   if (!layer2_scroll_y) {
     layer2_y_pos = layer1_y_pos;
     return 0;
@@ -1758,14 +1849,14 @@ uint8 CalculateLayer2Ypos(void) {  // 0x80A33A
   return 1;
 }
 
-void CalculateBgScrolls(void) {  // 0x80A37B
+static void CalculateBgScrolls(void) {  // 0x80A37B
   reg_BG1HOFS = bg1_x_offset + layer1_x_pos;
   reg_BG1VOFS = bg1_y_offset + layer1_y_pos;
   reg_BG2HOFS = bg2_x_scroll + layer2_x_pos;
   reg_BG2VOFS = bg2_y_scroll + layer2_y_pos;
 }
 
-void UpdateScrollVarsUpdateMap(void) {  // 0x80A3A0
+static void UpdateScrollVarsUpdateMap(void) {  // 0x80A3A0
   CalculateBgScrolls();
   UpdateBgGraphicsWhenScrolling();
 }
@@ -1782,7 +1873,7 @@ void CalculateLayer2PosAndScrollsWhenScrolling(void) {  // 0x80A3AB
   }
 }
 
-void UpdateBgGraphicsWhenScrolling(void) {  // 0x80A3DF
+static void UpdateBgGraphicsWhenScrolling(void) {  // 0x80A3DF
   CalculateBgScrollAndLayerPositionBlocks();
   int v0 = 0;
   bool v1 = (int16)(layer1_x_block - previous_layer1_x_block) < 0;
@@ -1838,7 +1929,7 @@ void UpdateBgGraphicsWhenScrolling(void) {  // 0x80A3DF
   }
 }
 
-void CalculateBgScrollAndLayerPositionBlocks(void) {  // 0x80A4BB
+static void CalculateBgScrollAndLayerPositionBlocks(void) {  // 0x80A4BB
   bg1_x_block = reg_BG1HOFS >> 4;
   bg2_x_block = reg_BG2HOFS >> 4;
   uint16 v0 = layer1_x_pos >> 4;
@@ -2080,15 +2171,15 @@ void DebugScrollPosSaveLoad(void) {  // 0x80A9AC
   }
 }
 
-void UploadBackgroundDataColumn(void) {  // 0x80A9D6
+static void UploadBackgroundDataColumn(void) {  // 0x80A9D6
   UpdateLevelOrBackgroundDataColumn(0x1c);
 }
 
-void UploadLevelDataColumn(void) {  // 0x80A9DB
+static void UploadLevelDataColumn(void) {  // 0x80A9DB
   UpdateLevelOrBackgroundDataColumn(0);
 }
 
-void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
+static void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
   if (irq_enable_mode7)
     return;
 
@@ -2169,15 +2260,15 @@ void UpdateLevelOrBackgroundDataColumn(uint16 k) {  // 0x80A9DE
   ++ *(uint16 *)((uint8 *)&bg1_update_col_enable + t2);
 }
 
-void UpdateBackgroundDataRow(void) {  // 0x80AB70
+static void UpdateBackgroundDataRow(void) {  // 0x80AB70
   UpdateLevelOrBackgroundDataRow(0x1c);
 }
 
-void UpdateLevelDataRow(void) {  // 0x80AB75
+static void UpdateLevelDataRow(void) {  // 0x80AB75
   UpdateLevelOrBackgroundDataRow(0);
 }
 
-void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
+static void UpdateLevelOrBackgroundDataRow(uint16 v0) {  // 0x80AB78
   if (irq_enable_mode7)
     return;
   uint16 prod = Mult8x8(blocks_to_update_y_block, room_width_in_blocks);
@@ -2340,14 +2431,14 @@ void DoorTransitionScrollingSetup_Up(void) {  // 0x80ADC8
   DoorTransition_Up();
 }
 
-void UpdatePreviousLayerBlocks(void) {  // 0x80AE10
+static void UpdatePreviousLayerBlocks(void) {  // 0x80AE10
   previous_layer1_x_block = layer1_x_block;
   previous_layer2_x_block = layer2_x_block;
   previous_layer1_y_block = layer1_y_block;
   previous_layer2_y_block = layer2_y_block;
 }
 
-void UpdateBgScrollOffsets(void) {  // 0x80AE29
+static void UpdateBgScrollOffsets(void) {  // 0x80AE29
   bg1_x_offset = reg_BG1HOFS - layer1_x_pos;
   bg1_y_offset = reg_BG1VOFS - layer1_y_pos;
   bg2_x_scroll = reg_BG2HOFS - layer1_x_pos;
@@ -2361,7 +2452,7 @@ static Func_U8 *const kDoorTransitionFuncs[4] = {
   DoorTransition_Up,
 };
 
-void Irq_FollowDoorTransition(void) {
+static void Irq_FollowDoorTransition(void) {
   if (kDoorTransitionFuncs[door_direction & 3]()) {
     layer1_x_pos = door_destination_x_pos;
     layer1_y_pos = door_destination_y_pos;
@@ -2369,7 +2460,7 @@ void Irq_FollowDoorTransition(void) {
   }
 }
 
-uint8 DoorTransition_Right(void) {  // 0x80AE7E
+static uint8 DoorTransition_Right(void) {  // 0x80AE7E
   uint16 v2 = door_transition_frame_counter;
   AddToHiLo(&samus_x_pos, &samus_x_subpos, __PAIR32__(samus_door_transition_speed, samus_door_transition_subspeed));
   samus_prev_x_pos = samus_x_pos;
@@ -2383,7 +2474,7 @@ uint8 DoorTransition_Right(void) {  // 0x80AE7E
   return 1;
 }
 
-uint8 DoorTransition_Left(void) {  // 0x80AEC2
+static uint8 DoorTransition_Left(void) {  // 0x80AEC2
   uint16 v2 = door_transition_frame_counter;
   AddToHiLo(&samus_x_pos, &samus_x_subpos, -IPAIR32(samus_door_transition_speed, samus_door_transition_subspeed));
   samus_prev_x_pos = samus_x_pos;
@@ -2394,7 +2485,7 @@ uint8 DoorTransition_Left(void) {  // 0x80AEC2
   return v2 == 63;
 }
 
-uint8 DoorTransition_Down(void) {  // 0x80AF02
+static uint8 DoorTransition_Down(void) {  // 0x80AF02
   uint16 v6 = door_transition_frame_counter;
   if (door_transition_frame_counter) {
     if (door_transition_frame_counter < 0x39) {
@@ -2428,7 +2519,7 @@ uint8 DoorTransition_Down(void) {  // 0x80AF02
   return 1;
 }
 
-uint8 DoorTransition_Up(void) {  // 0x80AF89
+static uint8 DoorTransition_Up(void) {  // 0x80AF89
   uint16 v6 = door_transition_frame_counter;
   if (door_transition_frame_counter) {
     AddToHiLo(&samus_y_pos, &samus_y_subpos, -IPAIR32(samus_door_transition_speed, samus_door_transition_subspeed));
@@ -2464,7 +2555,7 @@ uint8 DoorTransition_Up(void) {  // 0x80AF89
   return v6 == 56;
 }
 
-void ConfigureMode7RotationMatrix(void) {  // 0x80B0C2
+static void ConfigureMode7RotationMatrix(void) {  // 0x80B0C2
   if (irq_enable_mode7) {
     if ((nmi_frame_counter_word & 7) == 0) {
       reg_M7B = kSinCosTable8bit_Sext[((uint8)mode7_rotation_angle) + 64];
@@ -2486,6 +2577,15 @@ static uint8 DecompNextByte() {
 }
 
 void DecompressToMem(uint32 src, uint8 *decompress_dst) {  // 0x80B119
+#if SM_GBA
+  // The same, 4 times faster (gba/decompress.S), on the ROM as it is in the
+  // cartridge: data at $8000 and up in a bank runs on into the next one's.
+  // (Below that, this function's addresses wrap in the bank; no data is there.)
+  if (src & 0x8000) {
+    Decompress(RomPtr(src), decompress_dst);
+    return;
+  }
+#endif
   decompress_src = src;
 
   int src_pos, dst_pos = 0;

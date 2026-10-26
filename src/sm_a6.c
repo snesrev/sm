@@ -5,6 +5,140 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+// Used only in this file.
+static void Boulder_Func_7(uint16 j);
+static void Boulder_Func_8(uint16 j);
+static void Boulder_Func_9(uint16 j);
+static uint16 SpikeyPlatform_Func_5(uint16 k);
+static void NuclearWaffle_Func_3(uint16 varE32);
+static void NuclearWaffle_Func_4(uint16 varE32);
+static uint16 NuclearWaffle_Func_5(uint16 a, uint16 *r28_out);
+static void NuclearWaffle_Func_7(uint16 r30);
+static void FakeKraid_Func_1(uint16 k, uint16 j);
+static void FakeKraid_InstrHelper_45(uint16 k, uint16 j, uint16 a);
+static void sub_A69C0B(void);
+static void FakeKraid_9C50(void);
+static void Ridley_A2DC(void);
+static uint8 CeresRidley_Func_8(uint16 a);
+static uint8 CeresRidley_Func_12(void);
+static void CeresRidley_A994(void);
+static void CeresRidley_Func_25(void);
+static void CeresRidley_Func_27(void);
+static void CeresRidley_Func_28(void);
+static void CeresRidley_Func_29(void);
+static int16 CeresRidley_AC30(uint16 a, int16 r20);
+static void CeresRidley_Func_33(void);
+static void CeresRidley_Func_34(void);
+static void CeresRidley_Func_35(uint16 a);
+static uint16 Ridley_Func_7(void);
+static uint8 Ridley_Func_17(uint16 r18);
+static void Ridley_Func_18(void);
+static uint8 Ridley_Func_23(void);
+static void Ridley_Func_24(void);
+static uint8 Ridley_Func_25(void);
+static uint8 Ridley_Func_26(uint16 k, uint16 j);
+static void Ridley_Func_27(void);
+static void Ridley_Func_28(void);
+static void Ridley_Func_29(void);
+static void Ridley_Func_30(void);
+static void Ridley_Func_31(void);
+static void Ridley_Func_32(void);
+static void Ridley_Func_37(void);
+static void Ridley_Func_38(void);
+static void Ridley_Func_39(void);
+static uint8 Ridley_Func_41(void);
+static void Ridley_Func_42(void);
+static uint8 Ridley_Func_48(Rect16U rect);
+static void Ridley_Func_49(void);
+static void DrawBabyMetroid_0(void);
+static uint16 BabyMetroid_Goto(uint16 k);
+static void Ridley_Func_55(void);
+static void Ridley_C08E(void);
+static void Ridley_C09F(void);
+static void Ridley_Func_56(void);
+static void Ridley_Func_57(void);
+static void Ridley_C104(void);
+static void Ridley_Func_58(void);
+static void Ridley_Func_59(void);
+static void Ridley_Func_60(void);
+static void Ridley_Func_61(void);
+static uint8 ProcessEscapeTimerTileTransfers(void);
+static void Ridley_Func_62(void);
+static uint8 Ridley_Func_68(void);
+static void Ridley_Func_69(void);
+static void RidleysExplosion_Func_1(uint16 k);
+static void RidleysExplosion_Func_2(void);
+static void Ridley_Func_70(void);
+static void Ridley_Func_71(void);
+static void Ridley_Func_72(void);
+static void Ridley_Func_73(void);
+static void Ridley_Func_74(void);
+static void Ridley_Func_75(void);
+static void Ridley_CBC0(void);
+static void Ridley_CBC7(void);
+static void Ridley_CBCE(void);
+static void Ridley_CBD5(void);
+static void Ridley_CBDC(void);
+static void Ridley_Func_77(void);
+static uint8 Ridley_Func_78(void);
+static uint8 Ridley_Func_80_DoubleRet(void);
+static void Ridley_Func_85(void);
+static void Ridley_Func_87(void);
+static void Ridley_Func_88(uint16 k);
+static void Ridley_Func_89(uint16 a);
+static uint8 Ridley_Func_90(Point16U *out);
+static void Ridley_Func_91(void);
+static void Ridley_Func_92(void);
+static void Ridley_Func_93(uint16 j, uint16 k);
+static void Ridley_Func_94(void);
+static void Ridley_Func_95(void);
+static void Ridley_Func_D3DC(uint16 a);
+static void Ridley_Func_96(void);
+static uint8 Ridley_Func_97(void);
+static void Ridley_Func_99(uint16 a);
+static void Ridley_Func_100(void);
+static void Ridley_D495(uint16 r18);
+static void Ridley_Func_101(void);
+static void Ridley_Func_102(void);
+static void Ridley_Func_104_0(uint16 k, uint16 j, uint16 r18, uint16 r20);
+static void Ridley_Func_111(uint16 r18, uint16 r20, uint16 r22);
+static void Ridley_Func_112(void);
+static void Ridley_Func_113(uint16 k);
+static void Ridley_Func_114(void);
+static void Ridley_Func_115(void);
+static void Ridley_Func_116(void);
+static void Ridley_Func_117(void);
+static void Ridley_Func_118(void);
+static void Ridley_Func_119(uint8 carry);
+static void Ridley_Func_120(void);
+static void sub_A6DB2A(void);
+static void sub_A6DBC2(uint16 j, uint16 x, uint16 y);
+static void sub_A6DC13(uint16 j, uint16 r18, uint16 r20, uint16 );
+static uint8 Ridley_Func_121(void);
+static uint16 Ridley_Func_122(Rect16U rect);
+static void Ridley_Func_123(uint16 j);
+static uint8 Ridley_Func_124(Rect16U rect);
+static void sub_A6DF60(void);
+static void Ridley_Func_125(void);
+static void Ridley_Func_126(void);
+static void Ridley_Func_127(void);
+static void Ridley_Func_128(void);
+static void Ridley_Func_129(void);
+static void Ridley_Func_131(uint16 k);
+static void Ridley_Func_132(uint16 k, uint16 a);
+static const uint16 *Ridley_E90C(uint16 k, const uint16 *j, uint16 a);
+static void CeresDoor_Func_6b(void);
+static void CeresDoor_Func_1(uint16 k);
+static void CeresDoor_F773(uint16 j);
+static void CeresDoor_Func_8(void);
+static void Zebetites_Func_6(void);
+static void Zebetites_Func_7(uint16 j, uint8 carry);
+static void Zebetites_Func_8(void);
+static uint16 Zebetites_Func_9(void);
+static void Zebetites_Func_5(void);
+static void Zebetites_Func_4(void);
+
+
 #define g_byte_A6E269 ((uint8*)RomFixedPtr(0xa6e269))
 #define g_word_A6E2AA ((uint16*)RomFixedPtr(0xa6e2aa))
 #define g_word_A6E30A ((uint16*)RomFixedPtr(0xa6e30a))
@@ -180,7 +314,7 @@ void Boulder_Init(void) {  // 0xA686F5
     E->boulder_var_01 = 5;
 }
 
-void CallBoulderFunc(uint32 ea) {
+static void CallBoulderFunc(uint32 ea) {
   switch (ea) {
   case fnBoulder_Func_1: Boulder_Func_1(); return;
   case fnBoulder_Func_2: Boulder_Func_2(); return;
@@ -326,19 +460,19 @@ void Boulder_Func_6(void) {  // 0xA689FC
   ;
 }
 
-void Boulder_Func_7(uint16 j) {  // 0xA68A00
+static void Boulder_Func_7(uint16 j) {  // 0xA68A00
   Enemy_Boulder *E = Get_Boulder(cur_enemy_index);
   int v3 = j >> 1;
   AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(kCommonEnemySpeeds_Quadratic[v3 + 1], kCommonEnemySpeeds_Quadratic[v3]));
 }
 
-void Boulder_Func_8(uint16 j) {  // 0xA68A1D
+static void Boulder_Func_8(uint16 j) {  // 0xA68A1D
   Enemy_Boulder *E = Get_Boulder(cur_enemy_index);
   int v3 = j >> 1;
   AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(kCommonEnemySpeeds_Linear[v3 + 1], kCommonEnemySpeeds_Linear[v3]));
 }
 
-void Boulder_Func_9(uint16 j) {  // 0xA68A3A
+static void Boulder_Func_9(uint16 j) {  // 0xA68A3A
   Enemy_Boulder *E = Get_Boulder(cur_enemy_index);
   int v3 = j >> 1;
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Quadratic[v3 + 1], kCommonEnemySpeeds_Quadratic[v3]));
@@ -375,7 +509,7 @@ void SpikeyPlatform2ndEnemy_Main(void) {  // 0xA68B99
   v1->y_pos = enemy_drawing_queue[v0 + 93] + 12;
 }
 
-void CallSpikeyPlatformFunc(uint32 ea, uint16 k) {
+static void CallSpikeyPlatformFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnSpikeyPlatform_Func_1: SpikeyPlatform_Func_1(); return;
   case fnSpikeyPlatform_Func_2: SpikeyPlatform_Func_2(); return;
@@ -438,7 +572,7 @@ void SpikeyPlatform_Func_4(void) {  // 0xA68C5D
     extra_samus_y_displacement += E->base.y_pos - E->spm_var_01;
 }
 
-uint16 SpikeyPlatform_Func_5(uint16 k) {  // 0xA68CA1
+static uint16 SpikeyPlatform_Func_5(uint16 k) {  // 0xA68CA1
   Enemy_SpikeyPlatform *E = Get_SpikeyPlatform(k);
   uint16 v2 = abs16(samus_x_pos - E->base.x_pos);
   bool v3 = v2 < samus_x_radius;
@@ -660,7 +794,7 @@ void FireGeyser_Init(void) {  // 0xA68FFC
   }
 }
 
-void CallFireGeyserFunc(uint32 ea) {
+static void CallFireGeyserFunc(uint32 ea) {
   switch (ea) {
   case fnFireGeyser_Func_1: FireGeyser_Func_1(); return;
   case fnFireGeyser_Func_2: FireGeyser_Func_2(); return;
@@ -749,7 +883,7 @@ void NuclearWaffle_Init(void) {  // 0xA694C4
   } while (v15);
 }
 
-void CallNuclearWaffleFunc(uint32 ea) {
+static void CallNuclearWaffleFunc(uint32 ea) {
   switch (ea) {
   case fnNuclearWaffle_Func_1: NuclearWaffle_Func_1(); return;
   case fnNuclearWaffle_Func_2: NuclearWaffle_Func_2(); return;
@@ -810,7 +944,7 @@ void NuclearWaffle_Func_2(void) {  // 0xA69682
   AddToHiLo(&E->nwe_var_21, &E->nwe_var_20, __PAIR32__(E->nwe_var_25, E->nwe_var_24));
 }
 
-void NuclearWaffle_Func_3(uint16 varE32) {  // 0xA69721
+static void NuclearWaffle_Func_3(uint16 varE32) {  // 0xA69721
   Enemy_NuclearWaffle *E = Get_NuclearWaffle(cur_enemy_index);
   uint16 v12;
   E->nwe_var_2A = 8;
@@ -843,7 +977,7 @@ void NuclearWaffle_Func_3(uint16 varE32) {  // 0xA69721
   }
 }
 
-void NuclearWaffle_Func_4(uint16 varE32) {  // 0xA697E9
+static void NuclearWaffle_Func_4(uint16 varE32) {  // 0xA697E9
   Enemy_NuclearWaffle *E = Get_NuclearWaffle(cur_enemy_index);
   E->nwe_var_2A = 6;
   uint16 R36 = E->nwe_var_21;
@@ -875,7 +1009,7 @@ void NuclearWaffle_Func_4(uint16 varE32) {  // 0xA697E9
   } while (v12);
 }
 
-uint16 NuclearWaffle_Func_5(uint16 a, uint16 *r28_out) {  // 0xA698AD
+static uint16 NuclearWaffle_Func_5(uint16 a, uint16 *r28_out) {  // 0xA698AD
   *r28_out = 0;
   Enemy_NuclearWaffle *E = Get_NuclearWaffle(cur_enemy_index);
   if (!E->nwe_var_E) {
@@ -914,7 +1048,7 @@ static PairU16 NuclearWaffle_Func_6(uint16 a) {  // 0xA698E7
   }
 }
 
-void NuclearWaffle_Func_7(uint16 r30) {  // 0xA6993F
+static void NuclearWaffle_Func_7(uint16 r30) {  // 0xA6993F
   if (r30 != 2)
     QueueSfx2_Max6(0x5E);
 }
@@ -954,7 +1088,7 @@ void FakeKraid_Main(void) {  // 0xA69AC2
   FakeKraid_Func_1(cur_enemy_index, fkd_var_07);
 }
 
-void FakeKraid_Func_1(uint16 k, uint16 j) {  // 0xA69ADC
+static void FakeKraid_Func_1(uint16 k, uint16 j) {  // 0xA69ADC
   Enemy_FakeKraid *ET = Get_FakeKraid(k + j);
   uint16 fkd_var_03 = ET->fkd_var_03;
   if (fkd_var_03) {
@@ -1022,7 +1156,7 @@ const uint16 *FakeKraid_Instr_4(uint16 k, const uint16 *jp) {  // 0xA69BC4
   return jp;
 }
 
-void FakeKraid_InstrHelper_45(uint16 k, uint16 j, uint16 a) {  // 0xA69BCB
+static void FakeKraid_InstrHelper_45(uint16 k, uint16 j, uint16 a) {  // 0xA69BCB
   uint16 ka = cur_enemy_index;
   Enemy_FakeKraid *E = Get_FakeKraid(cur_enemy_index);
   E->fkd_var_02 = a;
@@ -1042,7 +1176,7 @@ const uint16 *FakeKraid_Instr_5(uint16 k, const uint16 *jp) {  // 0xA69C02
   return jp;
 }
 
-void sub_A69C0B(void) {  // 0xA69C0B
+static void sub_A69C0B(void) {  // 0xA69C0B
   EnemyData *v0 = gEnemyData(cur_enemy_index);
   special_death_item_drop_x_origin_pos = v0->x_pos;
   special_death_item_drop_y_origin_pos = v0->y_pos;
@@ -1066,7 +1200,7 @@ void FakeKraid_Shot(void) {  // 0xA69C39
   FakeKraid_9C50();
 }
 
-void FakeKraid_9C50(void) {  // 0xA69C50
+static void FakeKraid_9C50(void) {  // 0xA69C50
   if (!Get_FakeKraid(cur_enemy_index)->base.health) {
     EnemyDeathAnimation(cur_enemy_index, 3);
     Enemy_ItemDrop_MiniKraid(cur_enemy_index);
@@ -1155,7 +1289,7 @@ void CeresRidley_Init(void) {  // 0xA6A0F5
   }
 }
 
-void CallRidleyFunc(uint32 ea) {
+static void CallRidleyFunc(uint32 ea) {
   switch (ea) {
   case fnCeresRidley_Func_2: CeresRidley_Func_2(); return;
   case fnCeresRidley_Func_3: CeresRidley_Func_3(); return;
@@ -1254,7 +1388,7 @@ void CeresRidley_Hurt(void) {  // 0xA6A2D3
   Ridley_A2DC();
 }
 
-void Ridley_A2DC(void) {  // 0xA6A2DC
+static void Ridley_A2DC(void) {  // 0xA6A2DC
   Ridley_Func_49();
   if (Get_CeresRidley(0)->cry_var_02) {
     mov24(&enemy_gfx_drawn_hook, 0xA6A2F2);
@@ -1403,7 +1537,7 @@ void CeresRidley_Func_7(void) {  // 0xA6A478
   E->cry_var_A = FUNC16(CeresRidley_Func_2);
 }
 
-uint8 CeresRidley_Func_8(uint16 a) {  // 0xA6A4D6
+static uint8 CeresRidley_Func_8(uint16 a) {  // 0xA6A4D6
   uint16 v1 = g_off_A6A4EB[a];
   if (!v1)
     return 1;
@@ -1448,7 +1582,7 @@ void CeresRidley_Func_11(void) {  // 0xA6A6E8
   }
 }
 
-uint8 CeresRidley_Func_12(void) {  // 0xA6A763
+static uint8 CeresRidley_Func_12(void) {  // 0xA6A763
   Rect16U rect = { 192, 100, 8, 8 };
   Ridley_Func_106(0, 0, rect.x, rect.y);
   return Shitroid_Func_2(0, rect);
@@ -1581,7 +1715,7 @@ void CeresRidley_Func_22(void) {  // 0xA6A971
     CeresRidley_A994();
 }
 
-void CeresRidley_A994(void) {  // 0xA6A994
+static void CeresRidley_A994(void) {  // 0xA6A994
   Enemy_CeresRidley *E = Get_CeresRidley(0);
   E->cry_var_A = FUNC16(CeresRidley_Func_23);
   E->cry_var_F = 64;
@@ -1608,7 +1742,7 @@ void CeresRidley_Func_24(void) {  // 0xA6AA11
   CeresRidley_Func_27();
 }
 
-void CeresRidley_Func_25(void) {  // 0xA6AA20
+static void CeresRidley_Func_25(void) {  // 0xA6AA20
   SpawnEnemy(0xA6, addr_stru_A6AA2F);
   SpawnEnemy(0xA6, addr_stru_A6AA3F);
 }
@@ -1617,7 +1751,7 @@ void CeresRidley_Func_26(void) {  // 0xA6AA50
   Ridley_Func_61();
 }
 
-void CeresRidley_Func_27(void) {  // 0xA6AA54
+static void CeresRidley_Func_27(void) {  // 0xA6AA54
   reg_BGMODE_fake = 7;
   irq_enable_mode7 = 1;
   reg_M7SEL = 0x80;
@@ -1644,7 +1778,7 @@ void HandleCeresRidleyGetawayCutscene(void) {  // 0xA6AAAF
     CeresRidley_Func_28();
 }
 
-void CeresRidley_Func_28(void) {  // 0xA6AABD
+static void CeresRidley_Func_28(void) {  // 0xA6AABD
   Enemy_CeresRidley *E = Get_CeresRidley(0);
   uint16 cry_var_33 = E->cry_var_33;
   E->cry_var_33 = cry_var_33 + 2;
@@ -1691,7 +1825,7 @@ static uint16 CeresMult(uint16 a, uint16 b) {
   return sign16(a) ? -r : r;
 }
 
-void CeresRidley_Func_29(void) {  // 0xA6AB5F
+static void CeresRidley_Func_29(void) {  // 0xA6AB5F
   Enemy_CeresRidley *E = Get_CeresRidley(0);
   uint16 r18 = HIBYTE(E->cry_var_0A);
   reg_M7A = CeresMult(CeresRidley_AC30(r18 + 64, 0x100), E->cry_var_30);
@@ -1700,11 +1834,11 @@ void CeresRidley_Func_29(void) {  // 0xA6AB5F
   reg_M7D = CeresMult(CeresRidley_AC30(r18 + 64, 0x100), E->cry_var_30);
 }
 
-int16 CeresRidley_AC30(uint16 a, int16 r20) {  // 0xA6AC30
+static int16 CeresRidley_AC30(uint16 a, int16 r20) {  // 0xA6AC30
   return (int16)kSinCosTable8bit_Sext[(a & 0xff) + 64] * r20 >> 8;
 }
 
-void CeresRidley_Func_33(void) {  // 0xA6ACBC
+static void CeresRidley_Func_33(void) {  // 0xA6ACBC
   if ((nmi_frame_counter_word & 3) == 0) {
     Enemy_CeresRidley *E = Get_CeresRidley(0);
     uint16 v1 = (E->cry_var_36 + 1) & 3;
@@ -1713,7 +1847,7 @@ void CeresRidley_Func_33(void) {  // 0xA6ACBC
   }
 }
 
-void CeresRidley_Func_34(void) {  // 0xA6AD27
+static void CeresRidley_Func_34(void) {  // 0xA6AD27
   if ((nmi_frame_counter_word & 7) == 0) {
     Enemy_CeresRidley *E = Get_CeresRidley(0);
     uint16 v1 = (E->cry_var_37 + 1) & 1;
@@ -1722,7 +1856,7 @@ void CeresRidley_Func_34(void) {  // 0xA6AD27
   }
 }
 
-void CeresRidley_Func_35(uint16 a) {  // 0xA6B0EF
+static void CeresRidley_Func_35(uint16 a) {  // 0xA6B0EF
   WriteColorsToPalette(0xA2, 0xa6, 32 * HIBYTE(a) - 0x4EF9, 0xF);
 }
 
@@ -1865,7 +1999,7 @@ LABEL_5:
   }
 }
 
-uint16 Ridley_Func_7(void) {  // 0xA6B42E
+static uint16 Ridley_Func_7(void) {  // 0xA6B42E
   static const uint16 g_word_A6B439[4] = { 4, 8, 0xa, 0xc };
   return g_word_A6B439[Get_Ridley(0)->ridley_var_12];
 }
@@ -1998,7 +2132,7 @@ void Ridley_Func_16(void) {  // 0xA6B613
   }
 }
 
-uint8 Ridley_Func_17(uint16 r18) {  // 0xA6B641
+static uint8 Ridley_Func_17(uint16 r18) {  // 0xA6B641
   uint16 v0 = samus_y_pos;
   if (!sign16(samus_y_pos - 352))
     v0 = 352;
@@ -2014,7 +2148,7 @@ uint8 Ridley_Func_17(uint16 r18) {  // 0xA6B641
   return 0;
 }
 
-void Ridley_Func_18(void) {  // 0xA6B68B
+static void Ridley_Func_18(void) {  // 0xA6B68B
   tilemap_stuff[9] = 240;
   tilemap_stuff[15] = 16;
   tilemap_stuff[0] = 1;
@@ -2103,7 +2237,7 @@ void Ridley_Func_22(void) {  // 0xA6B7B9
   }
 }
 
-uint8 Ridley_Func_23(void) {  // 0xA6B7E7
+static uint8 Ridley_Func_23(void) {  // 0xA6B7E7
   uint8 v0 = Ridley_Func_103(tilemap_stuff[82], tilemap_stuff[83] + 16) & 1;
   if (!v0) {
     v0 = Ridley_Func_103(tilemap_stuff[72], tilemap_stuff[73] + 18) & 1;
@@ -2119,19 +2253,19 @@ uint8 Ridley_Func_23(void) {  // 0xA6B7E7
   return v0;
 }
 
-void Ridley_Func_24(void) {  // 0xA6B84D
+static void Ridley_Func_24(void) {  // 0xA6B84D
   tilemap_stuff[0] = 1;
   tilemap_stuff[10] = 1;
 }
 
-uint8 Ridley_Func_25(void) {  // 0xA6B859
+static uint8 Ridley_Func_25(void) {  // 0xA6B859
   if ((Ridley_Func_40_Carry() & 1) != 0)
     return Ridley_Func_26(4, 4) & 1;
   else
     return 0;
 }
 
-uint8 Ridley_Func_26(uint16 k, uint16 j) {  // 0xA6B865
+static uint8 Ridley_Func_26(uint16 k, uint16 j) {  // 0xA6B865
   Enemy_Ridley *E = Get_Ridley(0);
   Rect16U rect = {
     E->base.x_pos + g_word_A6B9D5[E->ridley_var_10], E->base.y_pos + g_word_A6B9DB[E->ridley_var_1D >> 1],
@@ -2140,7 +2274,7 @@ uint8 Ridley_Func_26(uint16 k, uint16 j) {  // 0xA6B865
   return Ridley_Func_124(rect);
 }
 
-void Ridley_Func_27(void) {  // 0xA6B889
+static void Ridley_Func_27(void) {  // 0xA6B889
   int16 ridley_var_C;
 
   Enemy_Ridley *E = Get_Ridley(0);
@@ -2155,7 +2289,7 @@ void Ridley_Func_27(void) {  // 0xA6B889
   Ridley_Func_33b();
 }
 
-void Ridley_Func_28(void) {  // 0xA6B8A9
+static void Ridley_Func_28(void) {  // 0xA6B8A9
   Enemy_Ridley *E = Get_Ridley(0);
   if (!E->ridley_var_B)
     E->ridley_var_B = E->base.x_pos & 0x80 ? -0xc0 : 0xc0;
@@ -2191,7 +2325,7 @@ LABEL_15:
     goto LABEL_7;
 }
 
-void Ridley_Func_29(void) {  // 0xA6B90F
+static void Ridley_Func_29(void) {  // 0xA6B90F
   int v0 = random_number & 3;
   uint16 r18 = g_off_A6B965[v0], r20 = g_off_A6B96D[v0];
   Enemy_Ridley *E = Get_Ridley(0);
@@ -2205,7 +2339,7 @@ void Ridley_Func_29(void) {  // 0xA6B90F
   E->ridley_var_B = sign16(E->ridley_var_B) ? -t : t;
 }
 
-void Ridley_Func_30(void) {  // 0xA6B9E1
+static void Ridley_Func_30(void) {  // 0xA6B9E1
   Enemy_Ridley *E = Get_Ridley(0);
   uint16 ridley_var_14 = E->ridley_var_14, v3, v6;
   if (ridley_var_14) {
@@ -2229,13 +2363,13 @@ void Ridley_Func_30(void) {  // 0xA6B9E1
   samus_y_pos = E->ridley_var_15 + E->base.y_pos + g_word_A6B9DB[E->ridley_var_1D >> 1];
 }
 
-void Ridley_Func_31(void) {  // 0xA6BA54
+static void Ridley_Func_31(void) {  // 0xA6BA54
   Enemy_Ridley *E = Get_Ridley(0);
   E->ridley_var_14 = samus_x_pos - (E->base.x_pos + g_word_A6B9D5[E->ridley_var_10]);
   E->ridley_var_15 = samus_y_pos - (E->base.y_pos + g_word_A6B9DB[E->ridley_var_1D >> 1]);
 }
 
-void Ridley_Func_32(void) {  // 0xA6BA85
+static void Ridley_Func_32(void) {  // 0xA6BA85
   Enemy_Ridley *E = Get_Ridley(0);
   if (sign16(E->ridley_var_25 - 10)) {
     if (power_bomb_flag) {
@@ -2341,7 +2475,7 @@ void Ridley_Func_36(void) {  // 0xA6BC2E
   }
 }
 
-void Ridley_Func_37(void) {  // 0xA6BC68
+static void Ridley_Func_37(void) {  // 0xA6BC68
   Ridley_Func_31();
   Enemy_Ridley *E = Get_Ridley(0);
   E->base.properties |= kEnemyProps_Tangible;
@@ -2350,7 +2484,7 @@ void Ridley_Func_37(void) {  // 0xA6BC68
   Ridley_Func_119(1);
 }
 
-void Ridley_Func_38(void) {  // 0xA6BC84
+static void Ridley_Func_38(void) {  // 0xA6BC84
   tilemap_stuff[2] = 1;
   tilemap_stuff[0] = 1;
   Enemy_Ridley *E = Get_Ridley(0);
@@ -2362,7 +2496,7 @@ void Ridley_Func_38(void) {  // 0xA6BC84
   Ridley_Func_119(0);
 }
 
-void Ridley_Func_39(void) {  // 0xA6BCB4
+static void Ridley_Func_39(void) {  // 0xA6BCB4
   int16 ridley_var_01;
 
   Enemy_Ridley *E = Get_Ridley(0);
@@ -2399,11 +2533,11 @@ static uint8 Ridley_Func_40_Sign(void) {
 }
 
 
-uint8 Ridley_Func_41(void) {  // 0xA6BD20
+static uint8 Ridley_Func_41(void) {  // 0xA6BD20
   return sign16(samus_y_pos - 352) == 0;
 }
 
-void Ridley_Func_42(void) {  // 0xA6BD2C
+static void Ridley_Func_42(void) {  // 0xA6BD2C
   int16 ridley_var_01;
 
   Enemy_Ridley *E = Get_Ridley(0);
@@ -2467,7 +2601,7 @@ void Ridley_Func_47(void) {  // 0xA6BE03
   }
 }
 
-uint8 Ridley_Func_48(Rect16U rect) {  // 0xA6BE61
+static uint8 Ridley_Func_48(Rect16U rect) {  // 0xA6BE61
   Enemy_Ridley *E = Get_Ridley(0);
   uint16 v1 = abs16(E->ridley_var_42 - rect.x);
   bool v2 = v1 < 4;
@@ -2483,7 +2617,7 @@ uint8 Ridley_Func_48(Rect16U rect) {  // 0xA6BE61
   return result;
 }
 
-void CallRidleyFunc_var40(uint32 ea) {
+static void CallRidleyFunc_var40(uint32 ea) {
   switch (ea) {
   case fnRidley_Func_50: Ridley_Func_50(); return;
   case fnRidley_Func_51: Ridley_Func_51(); return;  // 0xa6beb3
@@ -2494,7 +2628,7 @@ void CallRidleyFunc_var40(uint32 ea) {
   }
 }
 
-void Ridley_Func_49(void) {  // 0xA6BE93
+static void Ridley_Func_49(void) {  // 0xA6BE93
   CallRidleyFunc_var40(Get_Ridley(0)->ridley_var_40 | 0xA60000);
 }
 
@@ -2531,7 +2665,7 @@ void Ridley_Func_53(void) {  // 0xA6BEDC
   }
 }
 
-void DrawBabyMetroid_0(void) {  // 0xA6BF1A
+static void DrawBabyMetroid_0(void) {  // 0xA6BF1A
   int v0 = BabyMetroid_DBCB_DoubleRetEx(ADDR16_OF_RAM(*enemy_ram7800) + 6);
   if (v0 < 0)
     return;
@@ -2560,7 +2694,7 @@ uint16 BabyMetroid_Instr_1(uint16 k) {  // 0xA6BFF2
     return k + 2;
 }
 
-uint16 BabyMetroid_Goto(uint16 k) {  // 0xA6BFF8
+static uint16 BabyMetroid_Goto(uint16 k) {  // 0xA6BFF8
   return *(uint16 *)RomPtr_A6(k);
 }
 
@@ -2596,7 +2730,7 @@ void Ridley_Func_54(void) {  // 0xA6C04E
   }
 }
 
-void Ridley_Func_55(void) {  // 0xA6C062
+static void Ridley_Func_55(void) {  // 0xA6C062
   palette_buffer[97] = palette_buffer[1];
   palette_buffer[99] = palette_buffer[3];
   palette_buffer[81] = palette_buffer[17];
@@ -2608,7 +2742,7 @@ void Ridley_Func_55(void) {  // 0xA6C062
   Ridley_C08E();
 }
 
-void Ridley_C08E(void) {  // 0xA6C08E
+static void Ridley_C08E(void) {  // 0xA6C08E
   if (ProcessEscapeTimerTileTransfers() & 1) {
     Enemy_Ridley *E = Get_Ridley(0);
     E->ridley_var_E = -15106;
@@ -2618,7 +2752,7 @@ void Ridley_C08E(void) {  // 0xA6C08E
   }
 }
 
-void Ridley_C09F(void) {  // 0xA6C09F
+static void Ridley_C09F(void) {  // 0xA6C09F
   if (ProcessEscapeTimerTileTransfers() & 1) {
     Enemy_Ridley *E = Get_Ridley(0);
     ++E->ridley_var_F;
@@ -2629,7 +2763,7 @@ void Ridley_C09F(void) {  // 0xA6C09F
   }
 }
 
-void Ridley_Func_56(void) {  // 0xA6C0BB
+static void Ridley_Func_56(void) {  // 0xA6C0BB
   Ridley_Func_61();
   Enemy_Ridley *E = Get_Ridley(0);
   if (E->ridley_var_E-- == 1) {
@@ -2648,7 +2782,7 @@ void Ridley_Func_56(void) {  // 0xA6C0BB
   }
 }
 
-void Ridley_Func_57(void) {  // 0xA6C0F5
+static void Ridley_Func_57(void) {  // 0xA6C0F5
   Enemy_Ridley *E = Get_Ridley(0);
   if (E->ridley_var_E-- == 1) {
     ++E->ridley_var_F;
@@ -2658,7 +2792,7 @@ void Ridley_Func_57(void) {  // 0xA6C0F5
   Ridley_C104();
 }
 
-void Ridley_C104(void) {  // 0xA6C104
+static void Ridley_C104(void) {  // 0xA6C104
   Ridley_Func_61();
   if (HandleTypewriterText_Ext(0x3582) & 1) {
     Enemy_Ridley *E = Get_Ridley(0);
@@ -2667,7 +2801,7 @@ void Ridley_C104(void) {  // 0xA6C104
   }
 }
 
-void Ridley_Func_58(void) {  // 0xA6C117
+static void Ridley_Func_58(void) {  // 0xA6C117
   Ridley_Func_61();
   CeresRidley_Func_2();
   Enemy_Ridley *E = Get_Ridley(0);
@@ -2678,7 +2812,7 @@ void Ridley_Func_58(void) {  // 0xA6C117
   SetBossBitForCurArea(1);
 }
 
-void Ridley_Func_59(void) {  // 0xA6C136
+static void Ridley_Func_59(void) {  // 0xA6C136
   VramWriteEntry *v2;
 
   uint16 v0 = vram_write_queue_tail;
@@ -2691,7 +2825,7 @@ void Ridley_Func_59(void) {  // 0xA6C136
   vram_write_queue_tail = v0 + 7;
 }
 
-void Ridley_Func_60(void) {  // 0xA6C176
+static void Ridley_Func_60(void) {  // 0xA6C176
   int16 v1;
 
   Enemy_Ridley *E = Get_Ridley(0);
@@ -2702,7 +2836,7 @@ void Ridley_Func_60(void) {  // 0xA6C176
   palette_buffer[11] = abs16(E->ridley_var_39) & 0x1F;
 }
 
-void Ridley_Func_61(void) {  // 0xA6C19C
+static void Ridley_Func_61(void) {  // 0xA6C19C
   if (!(door_transition_flag_enemies | palette_change_num) && (nmi_frame_counter_word & 3) == 0) {
     Enemy_Ridley *E = Get_Ridley(0);
     uint16 v1 = E->ridley_var_38 + 1;
@@ -2729,7 +2863,7 @@ void SetupZebesEscapeTypewriter(void) {  // 0xA6C23F
   reg_BG2VOFS = 0;
 }
 
-uint8 ProcessEscapeTimerTileTransfers(void) {  // 0xA6C26E
+static uint8 ProcessEscapeTimerTileTransfers(void) {  // 0xA6C26E
   VramWriteEntry *v4;
 
   EnemyData *v0 = gEnemyData(0);
@@ -2815,7 +2949,7 @@ uint8 HandleTypewriterText_Ext(uint16 a) {  // 0xA6C2A7
   }
 }
 
-void Ridley_Func_62(void) {  // 0xA6C383
+static void Ridley_Func_62(void) {  // 0xA6C383
   int i;
   VramWriteEntry *v3;
 
@@ -2906,13 +3040,13 @@ void Ridley_Func_67(void) {  // 0xA6C5DA
   }
 }
 
-uint8 Ridley_Func_68(void) {  // 0xA6C601
+static uint8 Ridley_Func_68(void) {  // 0xA6C601
   Rect16U rect = { 128, 328, 4, 4 };
   Ridley_Func_104(0, 0, 0x10, rect.x, rect.y);
   return Shitroid_Func_2(0, rect);
 }
 
-void Ridley_Func_69(void) {  // 0xA6C623
+static void Ridley_Func_69(void) {  // 0xA6C623
   int16 v1;
 
   Enemy_Ridley *E = Get_Ridley(0);
@@ -3062,7 +3196,7 @@ void RidleysExplosion_Main(void) {  // 0xA6C8D4
     EnemyDeathAnimation(cur_enemy_index, 0);
 }
 
-void RidleysExplosion_Func_1(uint16 k) {  // 0xA6C913
+static void RidleysExplosion_Func_1(uint16 k) {  // 0xA6C913
   Enemy_RidleysExplosion *E = Get_RidleysExplosion(k);
   uint16 v2 = E->base.frame_counter & 1, v3;
   E->base.frame_counter = v2;
@@ -3073,7 +3207,7 @@ void RidleysExplosion_Func_1(uint16 k) {  // 0xA6C913
   E->base.properties = v3;
 }
 
-void RidleysExplosion_Func_2(void) {  // 0xA6C932
+static void RidleysExplosion_Func_2(void) {  // 0xA6C932
   SpawnEnemy(0xA6, addr_stru_A6C9E7);
   SpawnEnemy(0xA6, addr_stru_A6C9D7);
   SpawnEnemy(0xA6, addr_stru_A6C9C7);
@@ -3088,10 +3222,10 @@ void RidleysExplosion_Func_2(void) {  // 0xA6C932
   SpawnEnemy(0xA6, addr_stru_A6CA37);
 }
 
-void locret_A6CB20(void) {}
+static void locret_A6CB20(void) {}
 static Func_V *const off_A6CB21[9] = { locret_A6CB20, Ridley_CBC0, Ridley_Func_71, Ridley_Func_72, Ridley_CBC7, Ridley_CBCE, Ridley_Func_73, Ridley_Func_74, Ridley_CBD5 };
 
-void Ridley_Func_70(void) {  // 0xA6CAF5
+static void Ridley_Func_70(void) {  // 0xA6CAF5
   Ridley_Func_91();
   off_A6CB21[tilemap_stuff[0]]();
   Ridley_Func_86();
@@ -3101,30 +3235,30 @@ void Ridley_Func_70(void) {  // 0xA6CAF5
     Ridley_Func_127();
 }
 
-void Ridley_Func_71(void) {  // 0xA6CB33
+static void Ridley_Func_71(void) {  // 0xA6CB33
   tilemap_stuff[10] = 8;
   Ridley_Func_75();
   tilemap_stuff[0] = 3;
 }
 
-void Ridley_Func_72(void) {  // 0xA6CB45
+static void Ridley_Func_72(void) {  // 0xA6CB45
   tilemap_stuff[10] = 8;
   Ridley_Func_75();
 }
 
-void Ridley_Func_73(void) {  // 0xA6CB4E
+static void Ridley_Func_73(void) {  // 0xA6CB4E
   tilemap_stuff[10] = 3;
   Ridley_Func_75();
   tilemap_stuff[0] = 6;
 }
 
-void Ridley_Func_74(void) {  // 0xA6CB60
+static void Ridley_Func_74(void) {  // 0xA6CB60
   tilemap_stuff[10] = 2;
   Ridley_Func_75();
   tilemap_stuff[0] = 7;
 }
 
-void Ridley_Func_75(void) {  // 0xA6CB72
+static void Ridley_Func_75(void) {  // 0xA6CB72
   if (Get_Ridley(0)->ridley_var_10) {
     tilemap_stuff[13] = 0x4000;
     tilemap_stuff[14] = -1;
@@ -3137,27 +3271,27 @@ void Ridley_Func_75(void) {  // 0xA6CB72
     tilemap_stuff[0] = 4;
 }
 
-void Ridley_CBC0(void) {  // 0xA6CBC0
+static void Ridley_CBC0(void) {  // 0xA6CBC0
   Ridley_Func_79();
   Ridley_CBDC();
 }
 
-void Ridley_CBC7(void) {  // 0xA6CBC7
+static void Ridley_CBC7(void) {  // 0xA6CBC7
   Ridley_Func_83();
   Ridley_CBDC();
 }
 
-void Ridley_CBCE(void) {  // 0xA6CBCE
+static void Ridley_CBCE(void) {  // 0xA6CBCE
   Ridley_Func_84();
   Ridley_CBDC();
 }
 
-void Ridley_CBD5(void) {  // 0xA6CBD5
+static void Ridley_CBD5(void) {  // 0xA6CBD5
   Ridley_Func_81();
   Ridley_CBDC();
 }
 
-void Ridley_CBDC(void) {  // 0xA6CBDC
+static void Ridley_CBDC(void) {  // 0xA6CBDC
   uint16 v0 = 7;
   uint16 v1 = 0;
   do {
@@ -3166,13 +3300,13 @@ void Ridley_CBDC(void) {  // 0xA6CBDC
   } while (v0-- != 1);
 }
 
-void Ridley_Func_77(void) {  // 0xA6CBFE
+static void Ridley_Func_77(void) {  // 0xA6CBFE
   int v0 = Get_Ridley(0)->ridley_var_10;
   tilemap_stuff[11] = g_word_A6CC12[v0];
   tilemap_stuff[12] = g_word_A6CC18[v0];
 }
 
-uint8 Ridley_Func_78(void) {  // 0xA6CC1E
+static uint8 Ridley_Func_78(void) {  // 0xA6CC1E
   return (tilemap_stuff[76] & (uint16)(tilemap_stuff[66] & tilemap_stuff[56] & tilemap_stuff[46] & tilemap_stuff[36] & tilemap_stuff[26] & tilemap_stuff[16])) != 0;
 }
 
@@ -3193,7 +3327,7 @@ void Ridley_Func_79(void) {  // 0xA6CC39
   }
 }
 
-uint8 Ridley_Func_80_DoubleRet(void) {  // 0xA6CC7D
+static uint8 Ridley_Func_80_DoubleRet(void) {  // 0xA6CC7D
   Enemy_Ridley *E = Get_Ridley(0);
   bool retval = false;
   uint16 v1;
@@ -3217,7 +3351,7 @@ LABEL_9:
   return retval;
 }
 
-bool Ridley_Func_82_DoubleRet();
+static bool Ridley_Func_82_DoubleRet();
 
 void Ridley_Func_81(void) {  // 0xA6CCBD
   Ridley_Func_77();
@@ -3236,7 +3370,7 @@ void Ridley_Func_81(void) {  // 0xA6CCBD
   }
 }
 
-bool Ridley_Func_82_DoubleRet(void) {
+static bool Ridley_Func_82_DoubleRet(void) {
   if (tilemap_stuff[2]) {
     if ((tilemap_stuff[13] & tilemap_stuff[14] & 0x8000) != 0) {
       Ridley_Func_89(1);
@@ -3316,7 +3450,7 @@ void Ridley_Func_84(void) {  // 0xA6CDAA
   }
 }
 
-void Ridley_Func_85(void) {  // 0xA6CE65
+static void Ridley_Func_85(void) {  // 0xA6CE65
   tilemap_stuff[21] = LOBYTE(tilemap_stuff[21]) | 0x4000;
   tilemap_stuff[31] = LOBYTE(tilemap_stuff[31]) | 0x4000;
   tilemap_stuff[41] = LOBYTE(tilemap_stuff[41]) | 0x4000;
@@ -3358,7 +3492,7 @@ void Ridley_Func_86(void) {  // 0xA6CEBA
   }
 }
 
-void Ridley_Func_87(void) {  // 0xA6CF5A
+static void Ridley_Func_87(void) {  // 0xA6CF5A
   if (tilemap_stuff[30]) {
     if ((int16)(tilemap_stuff[30] - tilemap_stuff[29]) < 0)
       tilemap_stuff[30] = 0;
@@ -3421,7 +3555,7 @@ void Ridley_Func_87(void) {  // 0xA6CF5A
   }
 }
 
-void Ridley_Func_88(uint16 k) {  // 0xA6D09F
+static void Ridley_Func_88(uint16 k) {  // 0xA6D09F
   int16 v6;
   uint16 v2;
   int v1 = k >> 1;
@@ -3497,7 +3631,7 @@ LABEL_25:;
   tilemap_stuff[v7 + 25] = ComputeCosMult(HIBYTE(tilemap_stuff[v7 + 19]), r18);
 }
 
-void Ridley_Func_89(uint16 a) {  // 0xA6D19D
+static void Ridley_Func_89(uint16 a) {  // 0xA6D19D
   uint16 v1, r18, r20;
   int8 v2; // t0
 
@@ -3538,7 +3672,7 @@ void Ridley_Func_89(uint16 a) {  // 0xA6D19D
   }
 }
 
-uint8 Ridley_Func_90(Point16U *out) {  // 0xA6D242
+static uint8 Ridley_Func_90(Point16U *out) {  // 0xA6D242
   Rect16U rect = { tilemap_stuff[82], tilemap_stuff[83], 64, 64 };
 
   if (!projectile_counter)
@@ -3568,7 +3702,7 @@ uint8 Ridley_Func_90(Point16U *out) {  // 0xA6D242
   return 1;
 }
 
-void Ridley_Func_91(void) {  // 0xA6D2AA
+static void Ridley_Func_91(void) {  // 0xA6D2AA
   Enemy_Ridley *E = Get_Ridley(0);
   if (!sign16(tilemap_stuff[10] - 8)) {
     uint16 v1 = E->ridley_var_0E + 1;
@@ -3581,7 +3715,7 @@ void Ridley_Func_91(void) {  // 0xA6D2AA
   E->ridley_var_0E = 0;
 }
 
-void Ridley_Func_92(void) {  // 0xA6D2D6
+static void Ridley_Func_92(void) {  // 0xA6D2D6
   tilemap_stuff[10] = 1;
   tilemap_stuff[11] = 16368;
   tilemap_stuff[12] = 16448;
@@ -3610,7 +3744,7 @@ void Ridley_Func_92(void) {  // 0xA6D2D6
   tilemap_stuff[76] = 0;
 }
 
-void Ridley_Func_93(uint16 j, uint16 k) {  // 0xA6D3B4
+static void Ridley_Func_93(uint16 j, uint16 k) {  // 0xA6D3B4
   uint16 *dst = (uint16*)(g_ram + j);
   const uint16 *src = (const uint16 *)RomPtr_A6(k);
   int v3 = 7;
@@ -3620,15 +3754,15 @@ void Ridley_Func_93(uint16 j, uint16 k) {  // 0xA6D3B4
   } while (--v3);
 }
 
-void Ridley_Func_94(void) {  // 0xA6D3D4
+static void Ridley_Func_94(void) {  // 0xA6D3D4
   Ridley_Func_D3DC(0);
 }
 
-void Ridley_Func_95(void) {  // 0xA6D3D9
+static void Ridley_Func_95(void) {  // 0xA6D3D9
   Ridley_Func_D3DC(0x8000);
 }
 
-void Ridley_Func_D3DC(uint16 a) {  // 0xA6D3DC
+static void Ridley_Func_D3DC(uint16 a) {  // 0xA6D3DC
   tilemap_stuff[16] = a;
   tilemap_stuff[26] = a;
   tilemap_stuff[36] = a;
@@ -3638,7 +3772,7 @@ void Ridley_Func_D3DC(uint16 a) {  // 0xA6D3DC
   tilemap_stuff[76] = a;
 }
 
-void Ridley_Func_96(void) {  // 0xA6D3F9
+static void Ridley_Func_96(void) {  // 0xA6D3F9
   int16 v0;
 
   Ridley_Func_93(0x2026, addr_word_A6D37C);
@@ -3653,7 +3787,7 @@ void Ridley_Func_96(void) {  // 0xA6D3F9
   } while (v0);
 }
 
-uint8 Ridley_Func_97(void) {  // 0xA6D431
+static uint8 Ridley_Func_97(void) {  // 0xA6D431
   return (tilemap_stuff[76] & (uint16)(tilemap_stuff[66] & tilemap_stuff[56] & tilemap_stuff[46] & tilemap_stuff[36] & tilemap_stuff[26] & tilemap_stuff[16])) != 0;
 }
 
@@ -3663,14 +3797,14 @@ void Ridley_Func_98(void) {  // 0xA6D453
   Samus_DealDamage(SuitDamageDivision(GET_WORD(v1 + 6)));
 }
 
-void Ridley_Func_99(uint16 a) {  // 0xA6D467
+static void Ridley_Func_99(uint16 a) {  // 0xA6D467
   Enemy_Ridley *E = Get_Ridley(0);
   E->base.current_instruction = a;
   E->base.instruction_timer = 1;
   E->base.timer = 0;
 }
 
-void Ridley_Func_100(void) {  // 0xA6D474
+static void Ridley_Func_100(void) {  // 0xA6D474
   int16 v0;
 
   v0 = 0;
@@ -3689,18 +3823,18 @@ void Ridley_Func_100(void) {  // 0xA6D474
     Ridley_D495(v0 - 1);
 }
 
-void Ridley_D495(uint16 r18) {  // 0xA6D495
+static void Ridley_D495(uint16 r18) {  // 0xA6D495
   if (!palette_change_num)
     WriteColorsToPalette(0x1E2, 0xa6, 28 * r18 - 7062, 0xE);
 }
 
-void Ridley_Func_101(void) {  // 0xA6D4B5
+static void Ridley_Func_101(void) {  // 0xA6D4B5
   Enemy_Ridley *E = Get_Ridley(0);
   if (E->ridley_var_01 && E->ridley_var_0D >= 0x32)
     Ridley_D495((E->ridley_var_0D >= 0x46) ? 2 : 0);
 }
 
-void Ridley_Func_102(void) {  // 0xA6D4DA
+static void Ridley_Func_102(void) {  // 0xA6D4DA
   int16 v0;
 
   v0 = 3584;
@@ -3715,7 +3849,7 @@ uint8 Ridley_Func_103(uint16 k, uint16 j) {  // 0xA6D4F9
   return (level_data[prod + (k >> 4)] & 0xF000) != 0;
 }
 
-void Ridley_Func_104_0(uint16 k, uint16 j, uint16 r18, uint16 r20) {  // 0xA6D523
+static void Ridley_Func_104_0(uint16 k, uint16 j, uint16 r18, uint16 r20) {  // 0xA6D523
   Ridley_Func_104(k, j, 0, r18, r20);
 }
 
@@ -3885,7 +4019,7 @@ void Ridley_Func_107(uint16 k, uint16 r18, uint16 r24) {  // 0xA6D6A6
   }
 }
 
-void Ridley_Func_111(uint16 r18, uint16 r20, uint16 r22) {  // 0xA6D800
+static void Ridley_Func_111(uint16 r18, uint16 r20, uint16 r22) {  // 0xA6D800
   Enemy_Ridley *E = Get_Ridley(0);
   if (r22 != E->ridley_var_0B) {
     if ((int16)(r22 - E->ridley_var_0B) >= 0) {
@@ -3917,7 +4051,7 @@ void Ridley_Func_111(uint16 r18, uint16 r20, uint16 r22) {  // 0xA6D800
   E->ridley_var_C = Math_MultByCos(E->ridley_var_0B, r18);
 }
 
-void Ridley_Func_112(void) {  // 0xA6D86B
+static void Ridley_Func_112(void) {  // 0xA6D86B
   Enemy_Ridley *Ridley;
   uint16 v1;
   Enemy_Ridley *v2;
@@ -3964,7 +4098,7 @@ void Ridley_Func_112(void) {  // 0xA6D86B
   }
 }
 
-void Ridley_Func_113(uint16 k) {  // 0xA6D914
+static void Ridley_Func_113(uint16 k) {  // 0xA6D914
   if (area_index != 2) {
     Enemy_Ridley *E = Get_Ridley(k);
     uint16 r18 = abs16(E->ridley_var_B);
@@ -3983,7 +4117,7 @@ void Ridley_Func_113(uint16 k) {  // 0xA6D914
   }
 }
 
-void Ridley_Func_114(void) {  // 0xA6D955
+static void Ridley_Func_114(void) {  // 0xA6D955
   Enemy_Ridley *E = Get_Ridley(0);
   uint16 ridley_var_10 = E->ridley_var_10, v2;
   if (!ridley_var_10) {
@@ -4001,7 +4135,7 @@ LABEL_7:
   }
 }
 
-void Ridley_Func_115(void) {  // 0xA6D97D
+static void Ridley_Func_115(void) {  // 0xA6D97D
   int16 v1;
 
   Ridley_Func_116();
@@ -4017,7 +4151,7 @@ void Ridley_Func_115(void) {  // 0xA6D97D
   }
 }
 
-void Ridley_Func_116(void) {  // 0xA6D9A8
+static void Ridley_Func_116(void) {  // 0xA6D9A8
   Enemy_Ridley *E = Get_Ridley(0);
   uint16 r18 = abs16(E->ridley_var_B);
   uint16 v1 = r18 + abs16(E->ridley_var_C);
@@ -4037,13 +4171,13 @@ void Ridley_Func_116(void) {  // 0xA6D9A8
   }
 }
 
-void Ridley_Func_117(void) {  // 0xA6D9FD
+static void Ridley_Func_117(void) {  // 0xA6D9FD
   Enemy_Ridley *E = Get_Ridley(0);
   E->ridley_var_05 = addr_word_A6DA71;
   E->ridley_var_06 = 1;
 }
 
-void Ridley_Func_118(void) {  // 0xA6DA0C
+static void Ridley_Func_118(void) {  // 0xA6DA0C
   VramWriteEntry *v7;
 
   Enemy_Ridley *E = Get_Ridley(0);
@@ -4076,7 +4210,7 @@ void Ridley_Func_118(void) {  // 0xA6DA0C
   }
 }
 
-void Ridley_Func_119(uint8 carry) {  // 0xA6DA8B
+static void Ridley_Func_119(uint8 carry) {  // 0xA6DA8B
   VramWriteEntry *v3;
 
   uint16 v1 = addr_off_A6DAD0;
@@ -4097,7 +4231,7 @@ void Ridley_Func_119(uint8 carry) {  // 0xA6DA8B
   gVramWriteEntry(v2 + 14)->size = 0;
 }
 
-void Ridley_Func_120(void) {  // 0xA6DAD8
+static void Ridley_Func_120(void) {  // 0xA6DAD8
   int16 ridley_var_10;
 
   Enemy_Ridley *E = Get_Ridley(0);
@@ -4111,7 +4245,7 @@ void Ridley_Func_120(void) {  // 0xA6DAD8
   sub_A6DC13(v2, E->base.x_pos, E->base.y_pos, E->ridley_var_0C);
 }
 
-void sub_A6DB2A(void) {  // 0xA6DB2A
+static void sub_A6DB2A(void) {  // 0xA6DB2A
   if ((gEnemyData(0)->properties & kEnemyProps_Invisible) == 0) {
     sub_A6DBC2(kRidley_Ilist_DCBA[(uint8)((LOBYTE(tilemap_stuff[71]) + LOBYTE(tilemap_stuff[81]) + 8) & 0xF0) >> 4],
         tilemap_stuff[82], tilemap_stuff[83]);
@@ -4124,10 +4258,10 @@ void sub_A6DB2A(void) {  // 0xA6DB2A
   }
 }
 
-void sub_A6DBC2(uint16 j, uint16 x, uint16 y) {  // 0xA6DBC2
+static void sub_A6DBC2(uint16 j, uint16 x, uint16 y) {  // 0xA6DBC2
   sub_A6DC13(j, x, y, Get_Ridley(0)->ridley_var_0C);
 }
-uint16 CallBabyMetroidInstr(uint32 ea, uint16 k) {
+static uint16 CallBabyMetroidInstr(uint32 ea, uint16 k) {
   switch (ea) {
   case fnBabyMetroid_Instr_2: return BabyMetroid_Instr_2(k);
   case fnBabyMetroid_Instr_3: return BabyMetroid_Instr_3(k);
@@ -4168,7 +4302,7 @@ LABEL_7:
   return v3[1];
 }
 
-void sub_A6DC13(uint16 j, uint16 r18, uint16 r20, uint16 r22) {  // 0xA6DC13
+static void sub_A6DC13(uint16 j, uint16 r18, uint16 r20, uint16 r22) {  // 0xA6DC13
   const uint8 *p = RomPtr_A6(j);
   int n = GET_WORD(p);
   p += 2;
@@ -4189,7 +4323,7 @@ void sub_A6DC13(uint16 j, uint16 r18, uint16 r20, uint16 r22) {  // 0xA6DC13
   oam_next_ptr = idx;
 }
 
-uint8 Ridley_Func_121(void) {  // 0xA6DE7A
+static uint8 Ridley_Func_121(void) {  // 0xA6DE7A
   int16 y_pos;
   int16 v2;
   int16 x_pos;
@@ -4216,7 +4350,7 @@ uint8 Ridley_Func_121(void) {  // 0xA6DE7A
   return result;
 }
 
-uint16 Ridley_Func_122(Rect16U rect) {  // 0xA6DEA6
+static uint16 Ridley_Func_122(Rect16U rect) {  // 0xA6DEA6
   int16 v2;
 
   if (!projectile_counter)
@@ -4250,7 +4384,7 @@ uint16 Ridley_Func_122(Rect16U rect) {  // 0xA6DEA6
   return result;
 }
 
-void Ridley_Func_123(uint16 j) {  // 0xA6DF08
+static void Ridley_Func_123(uint16 j) {  // 0xA6DF08
   int v1 = j >> 1;
   uint16 v2;
   if ((projectile_dir[v1] & 0xF) == 7) {
@@ -4263,7 +4397,7 @@ void Ridley_Func_123(uint16 j) {  // 0xA6DF08
   projectile_dir[v1] = v2;
 }
 
-uint8 Ridley_Func_124(Rect16U rect) {  // 0xA6DF29
+static uint8 Ridley_Func_124(Rect16U rect) {  // 0xA6DF29
   uint16 v0 = abs16(samus_x_pos - rect.x);
   bool v1 = v0 < samus_x_radius;
   uint16 v2 = v0 - samus_x_radius;
@@ -4281,11 +4415,11 @@ void sub_A6DF59(void) {  // 0xA6DF59
   NormalEnemyTouchAiSkipDeathAnim_CurEnemy();
 }
 
-void sub_A6DF60(void) {  // 0xA6DF60
+static void sub_A6DF60(void) {  // 0xA6DF60
   Ridley_Func_125();
 }
 
-void Ridley_Func_125(void) {  // 0xA6DF66
+static void Ridley_Func_125(void) {  // 0xA6DF66
   Ridley_Func_98();
   samus_invincibility_timer = 96;
   samus_knockback_timer = 5;
@@ -4314,7 +4448,7 @@ void Ridley_Powerbomb(void) {  // 0xA6DFB2
   NormalEnemyPowerBombAiSkipDeathAnim_CurEnemy();
 }
 
-void Ridley_Func_126(void) {  // 0xA6DFB7
+static void Ridley_Func_126(void) {  // 0xA6DFB7
   Enemy_Ridley *E = Get_Ridley(0);
   if (!E->base.health && (E->ridley_var_01 & 0x8000) == 0) {
     E->ridley_var_01 = -1;
@@ -4323,7 +4457,7 @@ void Ridley_Func_126(void) {  // 0xA6DFB7
   }
 }
 
-void Ridley_Func_127(void) {  // 0xA6DFD9
+static void Ridley_Func_127(void) {  // 0xA6DFD9
   Rect16U rect = { tilemap_stuff[82], tilemap_stuff[83], 14, 14 };
   if (Ridley_Func_124(rect)) {
     Enemy_Ridley *E = Get_Ridley(0);
@@ -4334,7 +4468,7 @@ void Ridley_Func_127(void) {  // 0xA6DFD9
   }
 }
 
-void Ridley_Func_128(void) {  // 0xA6E01B
+static void Ridley_Func_128(void) {  // 0xA6E01B
   Enemy_Ridley *E = Get_Ridley(cur_enemy_index);
   uint16 r18 = (uint8)-CalculateAngleFromXY(projectile_x_pos[0] - E->base.x_pos, projectile_y_pos[0] - E->base.y_pos);
   uint16 v1 = 4 * projectile_damage[collision_detection_index];
@@ -4349,7 +4483,7 @@ void Ridley_Func_128(void) {  // 0xA6E01B
     E->ridley_var_C += r18;
 }
 
-void Ridley_Func_129(void) {  // 0xA6E088
+static void Ridley_Func_129(void) {  // 0xA6E088
   if ((Get_Ridley(0)->base.properties & kEnemyProps_Tangible) == 0) {
     uint16 v0 = Ridley_Func_122((Rect16U) { tilemap_stuff[82], tilemap_stuff[83], 14, 14});
     if (sign16(v0)) {
@@ -4438,14 +4572,14 @@ const uint16 *Ridley_Instr_8(uint16 k, const uint16 *jp) {  // 0xA6E72F
   return jp;
 }
 
-void Ridley_Func_131(uint16 k) {  // 0xA6E828
+static void Ridley_Func_131(uint16 k) {  // 0xA6E828
   Ridley_Func_132(k, 0);
   Ridley_Func_132(k, 1);
   Ridley_Func_132(k, 2);
   Ridley_Func_132(k, 3);
 }
 
-void Ridley_Func_132(uint16 k, uint16 a) {  // 0xA6E840
+static void Ridley_Func_132(uint16 k, uint16 a) {  // 0xA6E840
   Get_Ridley(0)->ridley_parameter_1 = a;
   SpawnEprojWithGfx(a, k, addr_stru_869634);
 }
@@ -4495,7 +4629,7 @@ const uint16 *Ridley_Instr_13(uint16 k, const uint16 *jp) {  // 0xA6E909
   return Ridley_E90C(k, jp, 0xe);
 }
 
-const uint16 *Ridley_E90C(uint16 k, const uint16 *jp, uint16 a) {  // 0xA6E90C
+static const uint16 *Ridley_E90C(uint16 k, const uint16 *jp, uint16 a) {  // 0xA6E90C
   eproj_unk1995 = a;
   Enemy_Ridley *E = Get_Ridley(0);
   SpawnEprojWithRoomGfx(0x9642, E->ridley_var_10);
@@ -4531,7 +4665,7 @@ void CeresSteam_Init(void) {  // 0xA6EFB1
   E->csm_var_A = g_off_A6F001[v1];
 }
 
-void CallCeresSteamFunc(uint32 ea, uint16 k) {
+static void CallCeresSteamFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnnullsub_350: return;  // 0xa6eff4
   case fnCeresSteam_Func_1: CeresSteam_Func_1(k); return;  // 0xa6f019
@@ -4599,7 +4733,7 @@ const uint16 *CeresDoor_Instr_8(uint16 k, const uint16 *jp) {  // 0xA6F678
     return INSTR_RETURN_ADDR(*jp);
 }
 
-void CeresDoor_Func_6b(void) {  // 0xA6F67F
+static void CeresDoor_Func_6b(void) {  // 0xA6F67F
   if (ceres_status)
     ceres_status = 0x8000;
 }
@@ -4669,7 +4803,7 @@ void CeresDoor_Init(void) {  // 0xA6F6C5
   WriteColorsToTargetPalette(0xa6, 0x1E2, v3, 0xF);
 }
 
-void CeresDoor_Func_1(uint16 k) {  // 0xA6F739
+static void CeresDoor_Func_1(uint16 k) {  // 0xA6F739
   VramWriteEntry *v2;
 
   if (Get_CeresDoor(k)->cdr_parameter_1 == 2) {
@@ -4683,7 +4817,7 @@ void CeresDoor_Func_1(uint16 k) {  // 0xA6F739
   }
 }
 
-void CallCeresDoor(uint32 ea) {
+static void CallCeresDoor(uint32 ea) {
   uint16 k = cur_enemy_index;
   switch (ea) {
   case fnCeresDoor_Func_2: CeresDoor_Func_2(); return;  // 0xa6f76b
@@ -4709,7 +4843,7 @@ void CeresDoor_Func_3(void) {  // 0xA6F770
   CeresDoor_F773(0x1D);
 }
 
-void CeresDoor_F773(uint16 j) {  // 0xA6F773
+static void CeresDoor_F773(uint16 j) {  // 0xA6F773
   if (ceres_status >= 2 && !earthquake_timer) {
     if ((random_number & 0xFFF) < 0x80) {
       earthquake_timer = 4;
@@ -4776,7 +4910,7 @@ void CeresDoor_Func_7(void) {  // 0xA6F850
       6);
 }
 
-void CeresDoor_Func_8(void) {  // 0xA6F8F1
+static void CeresDoor_Func_8(void) {  // 0xA6F8F1
   QueueMode7Transfers(0xA6, g_off_A6F900[(nmi_frame_counter_word & 2) >> 1]);
 }
 
@@ -4815,7 +4949,7 @@ void Zebetites_Init(void) {  // 0xA6FB72
   }
 }
 
-void CallZebetitesFunc(uint32 ea, uint16 k) {
+static void CallZebetitesFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnZebetites_Func_1: Zebetites_Func_1(k); return;
   case fnZebetites_Func_2: Zebetites_Func_2(k); return;
@@ -4870,7 +5004,7 @@ void Zebetites_Func_3(void) {  // 0xA6FC67
   }
 }
 
-void Zebetites_Func_6(void) {  // 0xA6FCAA
+static void Zebetites_Func_6(void) {  // 0xA6FCAA
   int16 v1;
 
   Enemy_Zebetites *E = Get_Zebetites(cur_enemy_index);
@@ -4882,22 +5016,22 @@ void Zebetites_Func_6(void) {  // 0xA6FCAA
   Zebetites_Func_7(5, (r18 >> 2) & 1);
 }
 
-void Zebetites_Func_7(uint16 j, uint8 a) {  // 0xA6FCCB
+static void Zebetites_Func_7(uint16 j, uint8 a) {  // 0xA6FCCB
   if (a)
     SetEventHappened(j);
   else
     ClearEventHappened(j);
 }
 
-void Zebetites_Func_8(void) {  // 0xA6FCD9
+static void Zebetites_Func_8(void) {  // 0xA6FCD9
   SpawnEnemy(0xA6, addr_stru_A6FCE1);
 }
 
-uint16 Zebetites_Func_9(void) {  // 0xA6FCF1
+static uint16 Zebetites_Func_9(void) {  // 0xA6FCF1
   return SpawnEnemy(0xA6, addr_stru_A6FCF9);
 }
 
-void Zebetites_Func_5(void) {  // 0xA6FD09
+static void Zebetites_Func_5(void) {  // 0xA6FD09
   uint16 v0 = 0;
   Enemy_Zebetites *E = Get_Zebetites(cur_enemy_index);
   uint16 health = E->base.health;
@@ -4921,7 +5055,7 @@ void Zebetites_Func_5(void) {  // 0xA6FD09
   E->base.timer = 0;
 }
 
-void Zebetites_Func_4(void) {  // 0xA6FD5E
+static void Zebetites_Func_4(void) {  // 0xA6FD5E
   if (!palette_change_num && !Get_Zebetites(cur_enemy_index)->zebet_parameter_1) {
     Enemy_Zebetites *E = Get_Zebetites(0);
     uint16 v1 = (E->zebet_var_C + 1) & 7;

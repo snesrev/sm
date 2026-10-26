@@ -3,6 +3,10 @@
 #include "variables.h"
 #include "funcs.h"
 
+// Used only in this file.
+static void sub_9382FD(void);
+
+
 
 #define kProjectileData_UnchargedBeams ((uint16*)RomFixedPtr(0x9383c1))
 #define kProjectileData_ChargedBeams ((uint16*)RomFixedPtr(0x9383d9))
@@ -118,7 +122,7 @@ uint16 ProjectileInsts_GetValue(uint16 k) {  // 0x9381D1
   return get_ProjectileInstr(ip + delta)->field_6;
 }
 
-uint16 CallProj93Instr(uint32 ea, uint16 j, uint16 k) {
+static uint16 CallProj93Instr(uint32 ea, uint16 j, uint16 k) {
   switch (ea) {
   case fnProj93Instr_Delete: return Proj93Instr_Delete(j, k);
   case fnProj93Instr_Goto: return Proj93Instr_Goto(j, k);
@@ -205,7 +209,7 @@ LABEL_25:
   HandleProjectileTrails();
 }
 
-void sub_9382FD(void) {  // 0x9382FD
+static void sub_9382FD(void) {  // 0x9382FD
   uint16 v0 = 8;
   projectile_index = 8;
   do {

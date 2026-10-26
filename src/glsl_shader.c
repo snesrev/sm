@@ -181,7 +181,7 @@ static bool GlslShader_ReadPresetFile(GlslShader *gs, const char *filename) {
   return gs->n_pass != 0;
 }
 
-void GlslShader_ReadShaderFile(GlslShader *gs, const char *filename, ByteArray *result) {
+static void GlslShader_ReadShaderFile(GlslShader *gs, const char *filename, ByteArray *result) {
   char *data = (char *)ReadWholeFile(filename, NULL), *data_org = data, *line;
   if (data == NULL) {
     fprintf(stderr, "Unable to read file '%s'\n", filename);

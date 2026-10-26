@@ -181,7 +181,7 @@ static void getDisassemblyCpu(Snes* snes, char* line) {
   }
 }
 
-void getDisassemblySpc(Apu* apu, char* line) {
+static void getDisassemblySpc(Apu* apu, char* line) {
   uint16_t adr = apu->spc->pc;
   // read 3 bytes
   // TODO: this can have side effects, implement and use peaking

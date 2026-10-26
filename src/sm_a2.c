@@ -5,6 +5,100 @@
 #include "enemy_types.h"
 #include "variables.h"
 
+// Used only in this file.
+static void BouncingGoofball_Func1(uint16 k);
+static void BouncingGoofball_State0(void);
+static void BouncingGoofball_State1(void);
+static uint16 BouncingGoofball_SamusCloseX(void);
+static void BouncingGoofball_Func2(void);
+static void BouncingGoofball_Func3(void);
+static void MiniCrocomire_Func1(void);
+static void MiniCrocomire_Func2(void);
+static void MiniCrocomire_Func3(void);
+static void MiniCrocomire_Func4(void);
+static void MiniCrocomire_Func7(int32 amt);
+static void MiniCrocomire_Func8(void);
+static uint8 MiniCrocomire_Func9(void);
+static void MaridiaBeybladeTurtle_Func6(uint16 k);
+static void MiniMaridiaBeybladeTurtle_Func5(uint16 k);
+static void MaridiaBeybladeTurtle_Func21(void);
+static void MaridiaBeybladeTurtle_Func4(void);
+static void sub_A29A6C(uint16 a);
+static void TwinHoppingBlobs_Func2(void);
+static void ThinHoppingBlobs_Func3(void);
+static uint16 ThinHoppingBlobs_Func4(void);
+static void ThinHoppingBlobs_Func5(void);
+static void ThinHoppingBlobs_Func9(void);
+static void ThinHoppingBlobs_Func10(void);
+static void SpikeShootingPlant_4(void);
+static void SpikeShootingPlant_5(void);
+static void SpikeShootingPlant_6(void);
+static void SpikeShootingPlant_7(void);
+static void SpikeShootingPlant_8(void);
+static void MaridiaSpikeyShell_1(void);
+static void MaridiaSpikeyShell_2(void);
+static void MaridiaSpikeyShell_3(void);
+static void MaridiaSpikeyShell_4(void);
+static void MaridiaSpikeyShell_5(void);
+static void MaridiaSpikeyShell_6(void);
+static void MaridiaSpikeyShell_7(void);
+static void MaridiaSpikeyShell_8(uint16 k);
+static void Flies_1(uint16 k);
+static uint16 Flies_2(uint16 k);
+static void Flies_3(uint16 k);
+static void Rinka_Init2(uint16 k);
+static void Rinka_Init3(uint16 k);
+static void Rinka_1(uint16 k);
+static uint16 Rinka_2(uint16 k);
+static void Rinka_B865(uint16 k);
+static void Rinka_6(uint16 k);
+static void Rinka_7(uint16 k);
+static void Rinka_8(uint16 k);
+static uint8 Rinka_9(uint16 k);
+static bool Rinka_10(uint16 r18, uint16 r20);
+static void Rinka_B960(uint16 k);
+static uint16 Rinka_Instr_B9A2(uint16 k, uint16 j);
+static void Rio_6(uint16 a);
+static void NorfairLavajumpingEnemy_Func_6(uint16 a);
+static void NorfairRio_Func_7(uint16 a);
+static void LowerNorfairRio_Func_7(uint16 a);
+static void MaridiaLargeSnail_Func_2(uint16 k);
+static void MaridiaLargeSnail_Func_3(uint16 k);
+static void MaridiaLargeSnail_Func_9(void);
+static void MaridiaLargeSnail_Func_10(uint16 k);
+static void MaridiaLargeSnail_Func_11(void);
+static void HirisingSlowfalling_Func_2(uint16 k, uint16 r18);
+static void HirisingSlowfalling_Func_3(uint16 a);
+static uint8 Gripper_Func_1(uint16 k);
+static uint8 Gripper_Func_2(uint16 k);
+static void Gripper_Func_3(void);
+static void Gripper_Func_4(void);
+static void Ripper_Func_1(void);
+static void LavaSeahorse_Func_6(void);
+static void LavaSeahorse_Func_7(void);
+static void LavaSeahorse_E7DA(void);
+static void TimedShutter_Func_6(void);
+static void TimedShutter_Func_7(void);
+static void TimedShutter_Func_8(void);
+static void TimedShutter_Func_9(void);
+static void TimedShutter_Func_11(void);
+static void TimedShutter_Func_12(void);
+static void TimedShutter_Func_13(void);
+static void TimedShutter_Func_14(void);
+static void TimedShutter_Func_15(void);
+static void RisingFallingPlatform_Func_3(void);
+static void RisingFallingPlatform_Func_5(void);
+static void RisingFallingPlatform_Func_6(void);
+static void RisingFallingPlatform_Func_7(uint16 k);
+static void RisingFallingPlatform_Func_8(void);
+static void HorizontalShootableShutter_Func_3(void);
+static void HorizontalShootableShutter_Func_5(void);
+static void HorizontalShootableShutter_Func_6(void);
+static void HorizontalShootableShutter_Func_7(uint16 k);
+static void HorizontalShootableShutter_Func_10(uint16 k);
+static void HorizontalShootableShutter_Func_11(uint16 k);
+
+
 
 #define kEnemyInit_BouncingGoofball_Tab0 ((uint16*)RomFixedPtr(0xa286df))
 #define kEnemyInit_BouncingGoofball_Tab1 ((uint16*)RomFixedPtr(0xa286ef))
@@ -109,7 +203,7 @@ void BouncingGoofball_Init(void) {  // 0xA2871C
   E->bgl_var_F = 0;
 }
 
-void BouncingGoofball_Func1(uint16 k) {  // 0xA28755
+static void BouncingGoofball_Func1(uint16 k) {  // 0xA28755
   Enemy_BouncingGoofball *E = Get_BouncingGoofball(k);
   uint16 v5;
   do {
@@ -160,7 +254,7 @@ LABEL_9:
   }
 }
 
-void BouncingGoofball_State0(void) {  // 0xA28801
+static void BouncingGoofball_State0(void) {  // 0xA28801
   Enemy_BouncingGoofball *E = Get_BouncingGoofball(cur_enemy_index);
   uint16 v1 = ++E->bgl_var_E;
   uint8 v2 = kBouncingGoofball_Tab0[v1];
@@ -176,7 +270,7 @@ void BouncingGoofball_State0(void) {  // 0xA28801
   }
 }
 
-void BouncingGoofball_State1(void) {  // 0xA28850
+static void BouncingGoofball_State1(void) {  // 0xA28850
   Enemy_BouncingGoofball *E = Get_BouncingGoofball(cur_enemy_index);
   uint16 bgl_var_E = E->bgl_var_E;
   uint8 v2 = kBouncingGoofball_Tab0[bgl_var_E];
@@ -189,19 +283,19 @@ void BouncingGoofball_State1(void) {  // 0xA28850
     E->bgl_var_01 = 0;
 }
 
-uint16 BouncingGoofball_SamusCloseX(void) {  // 0xA28894
+static uint16 BouncingGoofball_SamusCloseX(void) {  // 0xA28894
   Enemy_BouncingGoofball *E = Get_BouncingGoofball(cur_enemy_index);
   return IsSamusWithinEnemy_X(cur_enemy_index, E->bgl_parameter_2);
 }
 
-void BouncingGoofball_Func2(void) {  // 0xA2889F
+static void BouncingGoofball_Func2(void) {  // 0xA2889F
   Enemy_BouncingGoofball *E = Get_BouncingGoofball(cur_enemy_index);
   E->base.current_instruction = addr_kBouncingGoofball_Ilist_86A7;
   E->base.instruction_timer = 1;
   E->base.timer = 0;
 }
 
-void BouncingGoofball_Func3(void) {  // 0xA288B2
+static void BouncingGoofball_Func3(void) {  // 0xA288B2
   Enemy_BouncingGoofball *E = Get_BouncingGoofball(cur_enemy_index);
   E->base.current_instruction = addr_kBouncingGoofball_Ilist_86BF;
   E->base.instruction_timer = 1;
@@ -260,28 +354,28 @@ void MiniCrocomire_Main(void) {  // 0xA289F0
   CallEnemyPreInstr(E->mce_var_F | 0xA20000);
 }
 
-void MiniCrocomire_Func1(void) {  // 0xA289F7
+static void MiniCrocomire_Func1(void) {  // 0xA289F7
   Enemy_MiniCrocomire *E = Get_MiniCrocomire(cur_enemy_index);
   E->base.instruction_timer = 1;
   E->base.timer = 0;
   E->base.current_instruction = addr_kMiniCrocomire_Ilist_8932;
 }
 
-void MiniCrocomire_Func2(void) {  // 0xA28A0A
+static void MiniCrocomire_Func2(void) {  // 0xA28A0A
   Enemy_MiniCrocomire *E = Get_MiniCrocomire(cur_enemy_index);
   E->base.instruction_timer = 1;
   E->base.timer = 0;
   E->base.current_instruction = addr_kMiniCrocomire_Ilist_8948;
 }
 
-void MiniCrocomire_Func3(void) {  // 0xA28A1D
+static void MiniCrocomire_Func3(void) {  // 0xA28A1D
   Enemy_MiniCrocomire *E = Get_MiniCrocomire(cur_enemy_index);
   E->base.instruction_timer = 1;
   E->base.timer = 0;
   E->base.current_instruction = addr_kMiniCrocomire_Ilist_8958;
 }
 
-void MiniCrocomire_Func4(void) {  // 0xA28A30
+static void MiniCrocomire_Func4(void) {  // 0xA28A30
   Enemy_MiniCrocomire *E = Get_MiniCrocomire(cur_enemy_index);
   E->base.instruction_timer = 1;
   E->base.timer = 0;
@@ -302,7 +396,7 @@ void MiniCrocomire_PreInstr6(uint16 k) {  // 0xA28A5C
     MiniCrocomire_Func4();
 }
 
-void MiniCrocomire_Func7(int32 amt) {  // 0xA28A76
+static void MiniCrocomire_Func7(int32 amt) {  // 0xA28A76
   if (!Enemy_MoveRight_IgnoreSlopes(cur_enemy_index, amt)) {
     if (EnemyFunc_BC76(cur_enemy_index, INT16_SHL16(2)))
       return;
@@ -310,13 +404,13 @@ void MiniCrocomire_Func7(int32 amt) {  // 0xA28A76
   MiniCrocomire_Func8();
 }
 
-void MiniCrocomire_Func8(void) {  // 0xA28A95
+static void MiniCrocomire_Func8(void) {  // 0xA28A95
   MiniCrocomire_Func1();
   if (Get_MiniCrocomire(cur_enemy_index)->mce_var_E != 1)
     MiniCrocomire_Func3();
 }
 
-uint8 MiniCrocomire_Func9(void) {  // 0xA28AA7
+static uint8 MiniCrocomire_Func9(void) {  // 0xA28AA7
   NextRandom();
   Enemy_MiniCrocomire *E = Get_MiniCrocomire(cur_enemy_index);
   if (sign16((uint8)(LOBYTE(E->base.frame_counter) + random_number) - 2)) {
@@ -356,7 +450,7 @@ void MiniMaridiaBeybladeTurtle_Init(void) {  // 0xA28D9D
   E->base.current_instruction = v1;
 }
 
-void CallMaridiaBeybladeTurtleFunc(uint32 ea, uint16 k) {
+static void CallMaridiaBeybladeTurtleFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnMaridiaBeybladeTurtle_Func1: MaridiaBeybladeTurtle_Func1(k); return;
   case fnMaridiaBeybladeTurtle_Func2: MaridiaBeybladeTurtle_Func2(k); return;
@@ -460,7 +554,7 @@ void MaridiaBeybladeTurtle_Func5(uint16 k) {  // 0xA28F3F
   E->mbte_var_A = addr_locret_A28E09;
 }
 
-void MaridiaBeybladeTurtle_Func6(uint16 k) {  // 0xA28F5F
+static void MaridiaBeybladeTurtle_Func6(uint16 k) {  // 0xA28F5F
   if (CheckIfEnemyTouchesSamus(k)) {
     Enemy_MaridiaTurtle *E = Get_MaridiaTurtle(k);
     E->mte_var_A = FUNC16(MaridiaBeybladeTurtle_Func9);
@@ -617,7 +711,7 @@ void MiniMaridiaBeybladeTurtle_Func4(uint16 k) {  // 0xA291F8
   }
 }
 
-void MiniMaridiaBeybladeTurtle_Func5(uint16 k) {  // 0xA2921D
+static void MiniMaridiaBeybladeTurtle_Func5(uint16 k) {  // 0xA2921D
   uint16 v1 = addr_kMaridiaBeybladeTurtle_Ilist_8B80;
   Enemy_MiniMaridiaBeybladeTurtle *E = Get_MiniMaridiaBeybladeTurtle(k);
   if ((E->mmbte_var_E & 0x8000) == 0)
@@ -684,7 +778,7 @@ void MiniMaridiaBeybladeTurtle_Touch(void) {  // 0xA2929F
   }
 }
 
-void MaridiaBeybladeTurtle_Func21(void) {  // 0xA292FF
+static void MaridiaBeybladeTurtle_Func21(void) {  // 0xA292FF
   uint16 mbte_var_B = Get_MaridiaBeybladeTurtle(cur_enemy_index)->mbte_var_B;
   Enemy_MaridiaBeybladeTurtle *E = Get_MaridiaBeybladeTurtle(mbte_var_B);
   if (E->mbte_var_F)
@@ -696,7 +790,7 @@ void MiniMaridiaBeybladeTurtle_Shot(void) {  // 0xA2930F
   MaridiaBeybladeTurtle_Func21();
 }
 
-void MaridiaBeybladeTurtle_Func4(void) {  // 0xA29315
+static void MaridiaBeybladeTurtle_Func4(void) {  // 0xA29315
   Enemy_MaridiaBeybladeTurtle *E = Get_MaridiaBeybladeTurtle(0);
   uint16 r18 = E->base.x_pos - E->base.x_width - 8;
   uint16 r20 = E->base.x_width + E->base.x_pos + 8;
@@ -821,14 +915,14 @@ void ThinHoppingBlobs_Init(void) {  // 0xA29A3F
   E->thbs_var_04 = 0;
 }
 
-void sub_A29A6C(uint16 a) {  // 0xA29A6C
+static void sub_A29A6C(uint16 a) {  // 0xA29A6C
   EnemyData *v1 = gEnemyData(cur_enemy_index);
   v1->current_instruction = a;
   v1->instruction_timer = 1;
   v1->timer = 0;
 }
 
-void CallThinHoppingBlobs(uint32 ea) {
+static void CallThinHoppingBlobs(uint32 ea) {
   switch (ea) {
   case fnThinHoppingBlobs_Func6: ThinHoppingBlobs_Func6(cur_enemy_index); return;
   case fnThinHoppingBlobs_Func7: ThinHoppingBlobs_Func7(); return;
@@ -849,12 +943,12 @@ void ThinHoppingBlobs_Func1(uint16 k) {  // 0xA29A84
   ThinHoppingBlobs_Func5();
 }
 
-void TwinHoppingBlobs_Func2(void) {  // 0xA29A9B
+static void TwinHoppingBlobs_Func2(void) {  // 0xA29A9B
   Enemy_ThinHoppingBlobs *E = Get_ThinHoppingBlobs(cur_enemy_index);
   E->thbs_var_00 = IsSamusWithinEnemy_X(cur_enemy_index, E->thbs_parameter_2);
 }
 
-void ThinHoppingBlobs_Func3(void) {  // 0xA29AAA
+static void ThinHoppingBlobs_Func3(void) {  // 0xA29AAA
   Enemy_ThinHoppingBlobs *E = Get_ThinHoppingBlobs(cur_enemy_index);
   E->thbs_var_02 = 1;
   if ((GetSamusEnemyDelta_X(cur_enemy_index) & 0x8000) == 0)
@@ -876,12 +970,12 @@ void ThinHoppingBlobs_Func3(void) {  // 0xA29AAA
   E->thbs_var_E = *(uint16 *)((uint8 *)&g_word_A29A0D + v3);
 }
 
-uint16 ThinHoppingBlobs_Func4(void) {  // 0xA29B06
+static uint16 ThinHoppingBlobs_Func4(void) {  // 0xA29B06
   NextRandom();
   return (Get_ThinHoppingBlobs(cur_enemy_index)->base.frame_counter + random_number) & 7;
 }
 
-void ThinHoppingBlobs_Func5(void) {  // 0xA29B1A
+static void ThinHoppingBlobs_Func5(void) {  // 0xA29B1A
   uint16 v2;
   Enemy_ThinHoppingBlobs *E = Get_ThinHoppingBlobs(cur_enemy_index);
   uint16 thbs_var_F = E->thbs_var_F;
@@ -910,7 +1004,7 @@ void ThinHoppingBlobs_Func6(uint16 k) {  // 0xA29B65
   }
 }
 
-void CallThinHoppingBlobsVarE(uint32 ea) {
+static void CallThinHoppingBlobsVarE(uint32 ea) {
   switch (ea) {
   case fnThinHoppingBlobs_Func11: ThinHoppingBlobs_Func11(); return;
   case fnThinHoppingBlobs_Func12: ThinHoppingBlobs_Func12(); return;
@@ -971,7 +1065,7 @@ void ThinHoppingBlobs_Func8(void) {  // 0xA29B88
   }
 }
 
-void ThinHoppingBlobs_Func9(void) {  // 0xA29C71
+static void ThinHoppingBlobs_Func9(void) {  // 0xA29C71
   Enemy_ThinHoppingBlobs *E = Get_ThinHoppingBlobs(cur_enemy_index);
   uint16 v2;
   if (E->thbs_var_02) {
@@ -996,7 +1090,7 @@ void ThinHoppingBlobs_Func9(void) {  // 0xA29C71
   sub_A29A6C(v2);
 }
 
-void ThinHoppingBlobs_Func10(void) {  // 0xA29CBE
+static void ThinHoppingBlobs_Func10(void) {  // 0xA29CBE
   Enemy_ThinHoppingBlobs *E = Get_ThinHoppingBlobs(cur_enemy_index);
   uint16 v2;
   if (E->thbs_var_02) {
@@ -1139,7 +1233,7 @@ void SpikeShootingPlant_3(uint16 k) {  // 0xA29FEC
   SpikeShootingPlant_4();
 }
 
-void SpikeShootingPlant_4(void) {  // 0xA2A01C
+static void SpikeShootingPlant_4(void) {  // 0xA2A01C
 
   NextRandom();
   Enemy_SpikeShootingPlant *E = Get_SpikeShootingPlant(cur_enemy_index);
@@ -1152,28 +1246,28 @@ void SpikeShootingPlant_4(void) {  // 0xA2A01C
   }
 }
 
-void SpikeShootingPlant_5(void) {  // 0xA2A049
+static void SpikeShootingPlant_5(void) {  // 0xA2A049
   Enemy_SpikeShootingPlant *E = Get_SpikeShootingPlant(cur_enemy_index);
   E->base.current_instruction = addr_kSpikeShootingPlant_Ilist_9E8A;
   E->base.instruction_timer = 1;
   E->base.timer = 0;
 }
 
-void SpikeShootingPlant_6(void) {  // 0xA2A05C
+static void SpikeShootingPlant_6(void) {  // 0xA2A05C
   Enemy_SpikeShootingPlant *E = Get_SpikeShootingPlant(cur_enemy_index);
   E->base.current_instruction = addr_kSpikeShootingPlant_Ilist_9EB0;
   E->base.instruction_timer = 1;
   E->base.timer = 0;
 }
 
-void SpikeShootingPlant_7(void) {  // 0xA2A06F
+static void SpikeShootingPlant_7(void) {  // 0xA2A06F
   Enemy_SpikeShootingPlant *E = Get_SpikeShootingPlant(cur_enemy_index);
   E->base.current_instruction = addr_kSpikeShootingPlant_Ilist_9EDA;
   E->base.instruction_timer = 1;
   E->base.timer = 0;
 }
 
-void SpikeShootingPlant_8(void) {  // 0xA2A082
+static void SpikeShootingPlant_8(void) {  // 0xA2A082
   Enemy_SpikeShootingPlant *E = Get_SpikeShootingPlant(cur_enemy_index);
   E->base.current_instruction = addr_kSpikeShootingPlant_Ilist_9F00;
   E->base.instruction_timer = 1;
@@ -1229,21 +1323,21 @@ void MaridiaSpikeyShell_Main(void) {  // 0xA2A47E
   off_A2A3D3[(int16)e->mssl_var_E + 2]();
 }
 
-void MaridiaSpikeyShell_1(void) {  // 0xA2A48A
+static void MaridiaSpikeyShell_1(void) {  // 0xA2A48A
   Enemy_MaridiaSpikeyShell *E = Get_MaridiaSpikeyShell(cur_enemy_index);
   E->base.current_instruction = addr_kMaridiaSpikeyShell_Ilist_A3AB;
   E->base.instruction_timer = 1;
   E->base.timer = 0;
 }
 
-void MaridiaSpikeyShell_2(void) {  // 0xA2A49D
+static void MaridiaSpikeyShell_2(void) {  // 0xA2A49D
   Enemy_MaridiaSpikeyShell *E = Get_MaridiaSpikeyShell(cur_enemy_index);
   E->base.current_instruction = addr_kMaridiaSpikeyShell_Ilist_A3BD;
   E->base.instruction_timer = 1;
   E->base.timer = 0;
 }
 
-void MaridiaSpikeyShell_3(void) {  // 0xA2A4B0
+static void MaridiaSpikeyShell_3(void) {  // 0xA2A4B0
   Enemy_MaridiaSpikeyShell *E = Get_MaridiaSpikeyShell(cur_enemy_index);
   AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->mssl_var_D, E->mssl_var_C));
   if ((int16)(E->base.x_pos - E->mssl_var_01) < 0)
@@ -1251,7 +1345,7 @@ void MaridiaSpikeyShell_3(void) {  // 0xA2A4B0
   MaridiaSpikeyShell_8(cur_enemy_index);
 }
 
-void MaridiaSpikeyShell_4(void) {  // 0xA2A4D9
+static void MaridiaSpikeyShell_4(void) {  // 0xA2A4D9
   Enemy_MaridiaSpikeyShell *E = Get_MaridiaSpikeyShell(cur_enemy_index);
   AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->mssl_var_B, E->mssl_var_A));
   if ((int16)(E->base.x_pos - E->mssl_var_02) >= 0)
@@ -1259,7 +1353,7 @@ void MaridiaSpikeyShell_4(void) {  // 0xA2A4D9
   MaridiaSpikeyShell_8(cur_enemy_index);
 }
 
-void MaridiaSpikeyShell_5(void) {  // 0xA2A502
+static void MaridiaSpikeyShell_5(void) {  // 0xA2A502
   Enemy_MaridiaSpikeyShell *E = Get_MaridiaSpikeyShell(cur_enemy_index);
   uint16 v1 = E->mssl_var_00 - 1;
   E->mssl_var_00 = v1;
@@ -1267,7 +1361,7 @@ void MaridiaSpikeyShell_5(void) {  // 0xA2A502
     E->mssl_var_E = 4;
 }
 
-void MaridiaSpikeyShell_6(void) {  // 0xA2A517
+static void MaridiaSpikeyShell_6(void) {  // 0xA2A517
   Enemy_MaridiaSpikeyShell *E = Get_MaridiaSpikeyShell(cur_enemy_index);
   ++E->base.y_pos;
   if (!sign16(++E->mssl_var_F - 16)) {
@@ -1276,14 +1370,14 @@ void MaridiaSpikeyShell_6(void) {  // 0xA2A517
   }
 }
 
-void MaridiaSpikeyShell_7(void) {  // 0xA2A53E
+static void MaridiaSpikeyShell_7(void) {  // 0xA2A53E
   Enemy_MaridiaSpikeyShell *E = Get_MaridiaSpikeyShell(cur_enemy_index);
   --E->base.y_pos;
   if (E->mssl_var_F-- == 1)
     E->mssl_var_E = HIBYTE(random_number) & 1;
 }
 
-void MaridiaSpikeyShell_8(uint16 k) {  // 0xA2A553
+static void MaridiaSpikeyShell_8(uint16 k) {  // 0xA2A553
   NextRandom();
   Enemy_MaridiaSpikeyShell *E = Get_MaridiaSpikeyShell(k);
   if (sign16((uint8)(LOBYTE(E->base.frame_counter) + random_number) - 6))
@@ -1751,13 +1845,13 @@ void Flies_Init(void) {  // 0xA2B06B
   E->base.spritemap_pointer = addr_kSpritemap_Nothing_A2;
 }
 
-bool CarryAdd16(uint16 *rv, uint16 v) {
+static bool CarryAdd16(uint16 *rv, uint16 v) {
   int i = *rv + v;
   *rv = i;
   return (i >> 16);
 }
 
-void Flies_1(uint16 k) {  // 0xA2B090
+static void Flies_1(uint16 k) {  // 0xA2B090
   Enemy_Flies *E = Get_Flies(k);
   int v2 = E->flies_var_E >> 1;
   bool carry = CarryAdd16(&E->base.x_subpos, LOBYTE(kSinCosTable8bit_Sext[v2 + 64]) << 8);
@@ -1766,7 +1860,7 @@ void Flies_1(uint16 k) {  // 0xA2B090
   E->base.y_pos += (int8)HIBYTE(kSinCosTable8bit_Sext[v2]) + carry;
 }
 
-uint16 Flies_2(uint16 k) {  // 0xA2B0DC
+static uint16 Flies_2(uint16 k) {  // 0xA2B0DC
   Enemy_Flies *E = Get_Flies(k);
   bool carry = CarryAdd16(&E->base.x_subpos, LOBYTE(E->flies_var_B) << 8);
   E->base.x_pos += (int8)HIBYTE(E->flies_var_B) + carry;
@@ -1782,7 +1876,7 @@ void Flies_Main(void) {  // 0xA2B11F
   CallEnemyPreInstr(E->flies_var_F | 0xA20000);
 }
 
-void Flies_3(uint16 k) {  // 0xA2B129
+static void Flies_3(uint16 k) {  // 0xA2B129
   int v1 = CalculateAngleOfSamusFromEnemy(k);
   Enemy_Flies *E = Get_Flies(k);
   E->flies_var_B = 2 * kSinCosTable8bit_Sext[v1 + 64];
@@ -1890,7 +1984,7 @@ void LavaquakeRocks_Init(void) {  // 0xA2B570
   random_number = 17;
 }
 
-void CallLavaQuakeRocksFunc(uint32 ea) {
+static void CallLavaQuakeRocksFunc(uint32 ea) {
   switch (ea) {
   case fnLavaquakeRocks_1: LavaquakeRocks_1(); return;
   case fnLavaquakeRocks_2: LavaquakeRocks_2(); return;
@@ -1938,7 +2032,7 @@ void Rinka_Init(void) {  // 0xA2B602
   Rinka_Init3(cur_enemy_index);
 }
 
-void Rinka_Init2(uint16 k) {  // 0xA2B63E
+static void Rinka_Init2(uint16 k) {  // 0xA2B63E
   EnemySpawnData *v2;
 
   Enemy_Rinka *E = Get_Rinka(k);
@@ -1950,7 +2044,7 @@ void Rinka_Init2(uint16 k) {  // 0xA2B63E
   Rinka_Init3(k);
 }
 
-void Rinka_Init3(uint16 k) {  // 0xA2B654
+static void Rinka_Init3(uint16 k) {  // 0xA2B654
   Enemy_Rinka *E = Get_Rinka(k);
   E->rinka_var_A = FUNC16(Rinka_5);
   E->rinka_var_F = 26;
@@ -1971,7 +2065,7 @@ void Rinka_Init3(uint16 k) {  // 0xA2B654
   }
 }
 
-void Rinka_1(uint16 k) {  // 0xA2B69B
+static void Rinka_1(uint16 k) {  // 0xA2B69B
   uint16 v2;
   EnemySpawnData *ES = gEnemySpawnData(k);
   if (Rinka_10(ES->x_pos, ES->y_pos) || (v2 = Rinka_2(k), gRam8000_Default(v2)[31].var_3F & 1)) {
@@ -2016,7 +2110,7 @@ void Rinka_1(uint16 k) {  // 0xA2B69B
   }
 }
 
-uint16 Rinka_2(uint16 k) {  // 0xA2B79D
+static uint16 Rinka_2(uint16 k) {  // 0xA2B79D
   EnemySpawnData *v3;
 
   uint16 v1 = 0;
@@ -2034,7 +2128,7 @@ uint16 Rinka_2(uint16 k) {  // 0xA2B79D
   return g_word_A2B75B[(v1 >> 1) + 2];
 }
 
-void CallRinkaFunc(uint32 ea, uint16 k) {
+static void CallRinkaFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnRinka_3: Rinka_3(k); return;
   case fnRinka_4: Rinka_4(k); return;
@@ -2094,7 +2188,7 @@ void Rinka_B85B(uint16 k) {  // 0xA2B85B
     Rinka_B865(k);
 }
 
-void Rinka_B865(uint16 k) {  // 0xA2B865
+static void Rinka_B865(uint16 k) {  // 0xA2B865
   if (Get_Rinka(k)->rinka_parameter_1 && (Rinka_8(k), Get_Rinka(0)->rinka_var_1D)) {
     Rinka_6(k);
     DeleteEnemyAndConnectedEnemies();
@@ -2104,7 +2198,7 @@ void Rinka_B865(uint16 k) {  // 0xA2B865
   }
 }
 
-void Rinka_6(uint16 k) {  // 0xA2B880
+static void Rinka_6(uint16 k) {  // 0xA2B880
   int16 v3;
 
   Enemy_Rinka *E = Get_Rinka(k);
@@ -2117,7 +2211,7 @@ void Rinka_6(uint16 k) {  // 0xA2B880
   }
 }
 
-void Rinka_7(uint16 k) {  // 0xA2B89C
+static void Rinka_7(uint16 k) {  // 0xA2B89C
   Enemy_Rinka *E = Get_Rinka(k);
   if ((random_enemy_counter & 3) == E->rinka_parameter_1)
     E->base.properties &= ~kEnemyProps_Tangible;
@@ -2125,7 +2219,7 @@ void Rinka_7(uint16 k) {  // 0xA2B89C
     E->base.properties |= kEnemyProps_Tangible;
 }
 
-void Rinka_8(uint16 k) {  // 0xA2B8BB
+static void Rinka_8(uint16 k) {  // 0xA2B8BB
   Enemy_Rinka *E = Get_Rinka(k);
   if (E->rinka_parameter_1) {
     uint16 rinka_var_D = E->rinka_var_D;
@@ -2136,7 +2230,7 @@ void Rinka_8(uint16 k) {  // 0xA2B8BB
   }
 }
 
-uint8 Rinka_9(uint16 k) {  // 0xA2B8D3
+static uint8 Rinka_9(uint16 k) {  // 0xA2B8D3
   int16 y_pos;
   int16 v3;
   int16 x_pos;
@@ -2163,7 +2257,7 @@ uint8 Rinka_9(uint16 k) {  // 0xA2B8D3
   return result;
 }
 
-bool Rinka_10(uint16 r18, uint16 r20) {  // 0xA2B8FF
+static bool Rinka_10(uint16 r18, uint16 r20) {  // 0xA2B8FF
   return (r20 & 0x8000) != 0 || (int16)(r20 - layer1_y_pos) < 0 || !sign16(r20 - layer1_y_pos - 224)
        || (r20 & 0x8000) != 0 || (int16)(r18 - layer1_x_pos) < 0 || !sign16(r18 - layer1_x_pos - 256);
 }
@@ -2198,7 +2292,7 @@ void Rinka_Powerbomb(uint16 k) {  // 0xA2B953
   }
 }
 
-void Rinka_B960(uint16 k) {  // 0xA2B960
+static void Rinka_B960(uint16 k) {  // 0xA2B960
   Enemy_Rinka *E = Get_Rinka(k);
   if (!E->base.health) {
     Rinka_6(k);
@@ -2215,7 +2309,7 @@ void Rinka_B960(uint16 k) {  // 0xA2B960
   }
 }
 
-uint16 Rinka_Instr_B9A2(uint16 k, uint16 j) {  // 0xA2B9A2
+static uint16 Rinka_Instr_B9A2(uint16 k, uint16 j) {  // 0xA2B9A2
   Enemy_Rinka *E = Get_Rinka(0);
   if (sign16(E->rinka_var_1E - 3))
     return j + 2;
@@ -2257,7 +2351,7 @@ void Rio_Init(void) {  // 0xA2BBCD
   E->rio_var_B = FUNC16(Rio_1);
 }
 
-void CallRioFunc(uint32 ea) {
+static void CallRioFunc(uint32 ea) {
   uint16 k = cur_enemy_index;
   switch (ea) {
   case fnRio_1: Rio_1(k); return;  // 0x7c30a
@@ -2352,7 +2446,7 @@ void Rio_5(uint16 k) {  // 0xA2BCFF
   }
 }
 
-void Rio_6(uint16 a) {  // 0xA2BD54
+static void Rio_6(uint16 a) {  // 0xA2BD54
   Enemy_Rio *E = Get_Rio(cur_enemy_index);
   if (a != E->rio_var_F) {
     E->rio_var_F = a;
@@ -2454,7 +2548,7 @@ void NorfairLavajumpingEnemy_Func_5(uint16 k) {  // 0xA2BFBC
   }
 }
 
-void NorfairLavajumpingEnemy_Func_6(uint16 a) {  // 0xA2C012
+static void NorfairLavajumpingEnemy_Func_6(uint16 a) {  // 0xA2C012
   Enemy_NorfairLavajumpingEnemy *E = Get_NorfairLavajumpingEnemy(cur_enemy_index);
   if (a != E->nley_var_01) {
     E->nley_var_01 = a;
@@ -2626,7 +2720,7 @@ void NorfairRio_Func_6(uint16 k) {  // 0xA2C406
   Get_NorfairRio(k)->nro_var_F = FUNC16(NorfairRio_Func_2);
 }
 
-void NorfairRio_Func_7(uint16 a) {  // 0xA2C40D
+static void NorfairRio_Func_7(uint16 a) {  // 0xA2C40D
   Enemy_NorfairRio *E = Get_NorfairRio(cur_enemy_index);
   if (a != E->nro_var_00) {
     E->nro_var_00 = a;
@@ -2753,7 +2847,7 @@ void LowerNorfairRio_Func_6(uint16 k) {  // 0xA2C888
   }
 }
 
-void LowerNorfairRio_Func_7(uint16 a) {  // 0xA2C8A3
+static void LowerNorfairRio_Func_7(uint16 a) {  // 0xA2C8A3
   Enemy_NorfairRio *E = Get_NorfairRio(cur_enemy_index);
   if (a != E->nro_var_00) {
     E->nro_var_00 = a;
@@ -2800,7 +2894,7 @@ void MaridiaLargeSnail_Init(void) {  // 0xA2CCD4
 }
 
 
-void CallMaridiaLargeSnailFunc(uint32 ea) {
+static void CallMaridiaLargeSnailFunc(uint32 ea) {
   switch (ea) {
   case fnMaridiaLargeSnail_Func_4: MaridiaLargeSnail_Func_4(); return;
   case fnMaridiaLargeSnail_Func_5: MaridiaLargeSnail_Func_5(); return;
@@ -2823,7 +2917,7 @@ void MaridiaLargeSnail_Func_1(uint16 k) {  // 0xA2CD23
   E->mlsl_var_08 = E->base.y_pos;
 }
 
-void MaridiaLargeSnail_Func_2(uint16 k) {  // 0xA2CD35
+static void MaridiaLargeSnail_Func_2(uint16 k) {  // 0xA2CD35
   Enemy_MaridiaLargeSnail *E = Get_MaridiaLargeSnail(k);
   E->mlsl_var_0B = 0;
   if (CheckIfEnemyTouchesSamus(k))
@@ -2840,7 +2934,7 @@ void MaridiaLargeSnail_Func_2(uint16 k) {  // 0xA2CD35
   }
 }
 
-void MaridiaLargeSnail_Func_3(uint16 k) {  // 0xA2CD77
+static void MaridiaLargeSnail_Func_3(uint16 k) {  // 0xA2CD77
   int16 v2;
 
   Enemy_MaridiaLargeSnail *E = Get_MaridiaLargeSnail(k);
@@ -2988,11 +3082,11 @@ void MaridiaLargeSnail_Func_8(uint16 k) {  // 0xA2CFA9
 }
 // 7DD25: mask 0xFF00 is shortened because ax.2 <= 0x7FFF
 
-void MaridiaLargeSnail_Func_9(void) {  // 0xA2CFD7
+static void MaridiaLargeSnail_Func_9(void) {  // 0xA2CFD7
   QueueSfx2_Max6(0x63);
 }
 
-void MaridiaLargeSnail_Func_10(uint16 k) {  // 0xA2CFDF
+static void MaridiaLargeSnail_Func_10(uint16 k) {  // 0xA2CFDF
   Enemy_MaridiaLargeSnail *E = Get_MaridiaLargeSnail(k);
   uint16 mlsl_var_00 = E->mlsl_var_00;
   if (mlsl_var_00 != E->mlsl_var_01) {
@@ -3003,7 +3097,7 @@ void MaridiaLargeSnail_Func_10(uint16 k) {  // 0xA2CFDF
   }
 }
 
-void MaridiaLargeSnail_Func_11(void) {  // 0xA2CFFF
+static void MaridiaLargeSnail_Func_11(void) {  // 0xA2CFFF
   Enemy_MaridiaLargeSnail *E = Get_MaridiaLargeSnail(cur_enemy_index);
   E->mlsl_var_04 = 0;
   E->mlsl_var_05 = 0;
@@ -3055,7 +3149,7 @@ void HirisingSlowfalling_Init(void) {  // 0xA2DF76
   E->hsg_var_B = E->hsg_var_06;
 }
 
-void HirisingSlowfalling_Func_2(uint16 k, uint16 r18) {  // 0xA2DFE9
+static void HirisingSlowfalling_Func_2(uint16 k, uint16 r18) {  // 0xA2DFE9
   uint32 v = 0;
   uint16 r24 = 0;
   do {
@@ -3066,14 +3160,14 @@ void HirisingSlowfalling_Func_2(uint16 k, uint16 r18) {  // 0xA2DFE9
   Get_HirisingSlowfalling(k)->hsg_var_06 = r24;
 }
 
-void HirisingSlowfalling_Func_3(uint16 a) {  // 0xA2E01E
+static void HirisingSlowfalling_Func_3(uint16 a) {  // 0xA2E01E
   Enemy_HirisingSlowfalling *E = Get_HirisingSlowfalling(cur_enemy_index);
   E->base.current_instruction = a;
   E->base.instruction_timer = 1;
   E->base.timer = 0;
 }
 
-void CallHirisingSlowfalling(uint32 ea) {
+static void CallHirisingSlowfalling(uint32 ea) {
   switch (ea) {
   case fnHirisingSlowfalling_Func_4: HirisingSlowfalling_Func_4(); return;
   case fnHirisingSlowfalling_Func_5: HirisingSlowfalling_Func_5(); return;
@@ -3187,21 +3281,21 @@ void Gripper_Main(void) {  // 0xA2E221
   }
 }
 
-uint8 Gripper_Func_1(uint16 k) {  // 0xA2E279
+static uint8 Gripper_Func_1(uint16 k) {  // 0xA2E279
   Enemy_Gripper *E = Get_Gripper(k);
   return (E->gripper_var_D & 0x8000) != 0 && (int16)(E->base.x_pos - E->gripper_var_A) < 0;
 }
 
-uint8 Gripper_Func_2(uint16 k) {  // 0xA2E28A
+static uint8 Gripper_Func_2(uint16 k) {  // 0xA2E28A
   Enemy_Gripper *E = Get_Gripper(k);
   return (E->gripper_var_D & 0x8000) == 0 && (int16)(E->base.x_pos - E->gripper_var_B) >= 0;
 }
 
-void Gripper_Func_3(void) {  // 0xA2E29B
+static void Gripper_Func_3(void) {  // 0xA2E29B
   Enemy_NormalFrozenAI_A2();
 }
 
-void Gripper_Func_4(void) {  // 0xA2E2A4
+static void Gripper_Func_4(void) {  // 0xA2E2A4
   NormalEnemyShotAi();
   Enemy_Gripper *E = Get_Gripper(cur_enemy_index);
   if (E->base.frozen_timer) {
@@ -3253,7 +3347,7 @@ void JetPowerRipper_Main(void) {  // 0xA2E353
   }
 }
 
-void Ripper_Func_1(void) {  // 0xA2E3A0
+static void Ripper_Func_1(void) {  // 0xA2E3A0
   Enemy_NormalFrozenAI_A2();
 }
 
@@ -3407,7 +3501,7 @@ void LavaSeahorse_Func_5(uint16 k) {  // 0xA2E749
   ++E1->base.y_pos;
 }
 
-void LavaSeahorse_Func_6(void) {  // 0xA2E782
+static void LavaSeahorse_Func_6(void) {  // 0xA2E782
   Enemy_LavaSeahorse *E = Get_LavaSeahorse(cur_enemy_index);
   uint16 lse_var_00 = E->lse_var_00;
   if (lse_var_00 != E->lse_var_01) {
@@ -3418,7 +3512,7 @@ void LavaSeahorse_Func_6(void) {  // 0xA2E782
   }
 }
 
-void LavaSeahorse_Func_7(void) {  // 0xA2E7A5
+static void LavaSeahorse_Func_7(void) {  // 0xA2E7A5
   Enemy_LavaSeahorse *E = Get_LavaSeahorse(cur_enemy_index + 64);
   uint16 lse_var_00 = E->lse_var_00;
   if (lse_var_00 != E->lse_var_01) {
@@ -3444,7 +3538,7 @@ void LavaSeahorse_Powerbomb(void) {  // 0xA2E7D4
   LavaSeahorse_E7DA();
 }
 
-void LavaSeahorse_E7DA(void) {  // 0xA2E7DA
+static void LavaSeahorse_E7DA(void) {  // 0xA2E7DA
   Enemy_LavaSeahorse *E = Get_LavaSeahorse(cur_enemy_index);
   if (E->base.health) {
     uint16 shake_timer = E->base.shake_timer;
@@ -3489,7 +3583,7 @@ void TimedShutter_Init(void) {  // 0xA2E9DA
   E->tsr_var_01 = g_word_A2EA56[v5 + 1];
 }
 
-void CallTimedShutterFunc(uint32 ea, uint16 k) {
+static void CallTimedShutterFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnTimedShutter_Func_1: TimedShutter_Func_1(k); return;
   case fnTimedShutter_Func_2: TimedShutter_Func_2(k); return;
@@ -3544,7 +3638,7 @@ void TimedShutter_Func_4(uint16 k) {  // 0xA2EAFD
   }
 }
 
-void TimedShutter_Func_Null(void) {
+static void TimedShutter_Func_Null(void) {
   ;
 }
 
@@ -3556,7 +3650,7 @@ void TimedShutter_Func_5(uint16 k) {  // 0xA2EB11
   off_A2EB1A[v1]();
 }
 
-void TimedShutter_Func_6(void) {  // 0xA2EB25
+static void TimedShutter_Func_6(void) {  // 0xA2EB25
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->tsr_var_00, E->tsr_var_01));
   if ((int16)(E->tsr_var_B + 16 - E->base.y_pos) < 0) {
@@ -3568,7 +3662,7 @@ void TimedShutter_Func_6(void) {  // 0xA2EB25
   }
 }
 
-void TimedShutter_Func_7(void) {  // 0xA2EB66
+static void TimedShutter_Func_7(void) {  // 0xA2EB66
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->tsr_var_00, E->tsr_var_01));
   if ((int16)(E->tsr_var_C + 16 - E->base.y_pos) < 0) {
@@ -3580,7 +3674,7 @@ void TimedShutter_Func_7(void) {  // 0xA2EB66
   }
 }
 
-void TimedShutter_Func_8(void) {  // 0xA2EBA7
+static void TimedShutter_Func_8(void) {  // 0xA2EBA7
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->tsr_var_00, E->tsr_var_01));
   if ((int16)(E->tsr_var_D + 16 - E->base.y_pos) < 0) {
@@ -3592,7 +3686,7 @@ void TimedShutter_Func_8(void) {  // 0xA2EBA7
   }
 }
 
-void TimedShutter_Func_9(void) {  // 0xA2EBE8
+static void TimedShutter_Func_9(void) {  // 0xA2EBE8
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(E->tsr_var_00, E->tsr_var_01));
   uint16 v3 = E->tsr_var_E + 16;
@@ -3602,7 +3696,7 @@ void TimedShutter_Func_9(void) {  // 0xA2EBE8
   }
 }
 
-void TimedShutter_Func_Null2(void) {
+static void TimedShutter_Func_Null2(void) {
 
 }
 
@@ -3626,7 +3720,7 @@ void TimedShutter_Func_10(uint16 k) {
   }
 }
 
-void TimedShutter_Func_11(void) {  // 0xA2EC45
+static void TimedShutter_Func_11(void) {  // 0xA2EC45
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -IPAIR32(E->tsr_var_00, E->tsr_var_01));
   int16 v3 = E->tsr_var_B - 16;
@@ -3639,7 +3733,7 @@ void TimedShutter_Func_11(void) {  // 0xA2EC45
   }
 }
 
-void TimedShutter_Func_12(void) {  // 0xA2EC86
+static void TimedShutter_Func_12(void) {  // 0xA2EC86
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -IPAIR32(E->tsr_var_00, E->tsr_var_01));
   int16 v3 = E->tsr_var_C - 16;
@@ -3652,7 +3746,7 @@ void TimedShutter_Func_12(void) {  // 0xA2EC86
   }
 }
 
-void TimedShutter_Func_13(void) {  // 0xA2ECC7
+static void TimedShutter_Func_13(void) {  // 0xA2ECC7
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -IPAIR32(E->tsr_var_00, E->tsr_var_01));
   int16 v3 = E->tsr_var_D - 16;
@@ -3665,7 +3759,7 @@ void TimedShutter_Func_13(void) {  // 0xA2ECC7
   }
 }
 
-void TimedShutter_Func_14(void) {  // 0xA2ED08
+static void TimedShutter_Func_14(void) {  // 0xA2ED08
   Enemy_TimedShutter *E = Get_TimedShutter(cur_enemy_index);
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, -IPAIR32(E->tsr_var_00, E->tsr_var_01));
   uint16 v3 = E->tsr_var_E - 16;
@@ -3675,7 +3769,7 @@ void TimedShutter_Func_14(void) {  // 0xA2ED08
   }
 }
 
-void TimedShutter_Func_15(void) {  // 0xA2ED33
+static void TimedShutter_Func_15(void) {  // 0xA2ED33
   ;
 }
 
@@ -3727,7 +3821,7 @@ void RisingFallingPlatform_Func_1(uint16 k) {  // 0xA2EE1F
   E->rfpm_var_0A = 0;
 }
 
-void CallRisingFallingPlatformFunc(uint32 ea) {
+static void CallRisingFallingPlatformFunc(uint32 ea) {
   switch (ea) {
   case fnRisingFallingPlatform_Func_2: RisingFallingPlatform_Func_2(); return;
   case fnRisingFallingPlatform_Func_4: RisingFallingPlatform_Func_4(); return;
@@ -3773,7 +3867,7 @@ void RisingFallingPlatform_Func_2(void) {
   off_A2EDFB[v0]();
 }
 
-void RisingFallingPlatform_Func_3(void) {  // 0xA2EF15
+static void RisingFallingPlatform_Func_3(void) {  // 0xA2EF15
   Enemy_RisingFallingPlatform *E = Get_RisingFallingPlatform(cur_enemy_index);
   if (E->rfpm_var_B-- == 1) {
     E->rfpm_var_B = E->rfpm_var_06;
@@ -3787,15 +3881,15 @@ void RisingFallingPlatform_Func_4(void) {  // 0xA2EF28
     RisingFallingPlatform_Func_7(cur_enemy_index);
 }
 
-void RisingFallingPlatform_Func_5(void) {  // 0xA2EF39
+static void RisingFallingPlatform_Func_5(void) {  // 0xA2EF39
   RisingFallingPlatform_Func_7(cur_enemy_index);
 }
 
-void RisingFallingPlatform_Func_6(void) {  // 0xA2EF40
+static void RisingFallingPlatform_Func_6(void) {  // 0xA2EF40
   ;
 }
 
-void RisingFallingPlatform_Func_7(uint16 k) {  // 0xA2EF44
+static void RisingFallingPlatform_Func_7(uint16 k) {  // 0xA2EF44
   Enemy_RisingFallingPlatform *E = Get_RisingFallingPlatform(k);
   E->rfpm_var_A = FUNC16(RisingFallingPlatform_Func_9);
   if (E->rfpm_var_01)
@@ -3803,7 +3897,7 @@ void RisingFallingPlatform_Func_7(uint16 k) {  // 0xA2EF44
   RisingFallingPlatform_Func_8();
 }
 
-void RisingFallingPlatform_Func_8(void) {  // 0xA2EF5A
+static void RisingFallingPlatform_Func_8(void) {  // 0xA2EF5A
   if (!CheckIfEnemyIsOnScreen())
     QueueSfx3_Max6(0xE);
 }
@@ -3978,7 +4072,7 @@ void HorizontalShootableShutter_Func_2(void) {
   off_A2F107[v0]();
 }
 
-void HorizontalShootableShutter_Func_3(void) {  // 0xA2F230
+static void HorizontalShootableShutter_Func_3(void) {  // 0xA2F230
   Enemy_RisingFallingPlatform *E = Get_RisingFallingPlatform(cur_enemy_index);
   if (E->rfpm_var_B-- == 1) {
     E->rfpm_var_B = E->rfpm_var_06;
@@ -3992,15 +4086,15 @@ void HorizontalShootableShutter_Func_4(void) {  // 0xA2F243
     HorizontalShootableShutter_Func_7(cur_enemy_index);
 }
 
-void HorizontalShootableShutter_Func_5(void) {  // 0xA2F254
+static void HorizontalShootableShutter_Func_5(void) {  // 0xA2F254
   HorizontalShootableShutter_Func_7(cur_enemy_index);
 }
 
-void HorizontalShootableShutter_Func_6(void) {  // 0xA2F25B
+static void HorizontalShootableShutter_Func_6(void) {  // 0xA2F25B
   ;
 }
 
-void HorizontalShootableShutter_Func_7(uint16 k) {  // 0xA2F25F
+static void HorizontalShootableShutter_Func_7(uint16 k) {  // 0xA2F25F
   Enemy_RisingFallingPlatform *E = Get_RisingFallingPlatform(k);
   E->rfpm_var_A = FUNC16(HorizontalShootableShutter_Func_8);
   if (E->rfpm_var_01)
@@ -4051,7 +4145,7 @@ void HorizontalShootableShutter_Func_9(void) {  // 0xA2F2E4
   }
 }
 
-void HorizontalShootableShutter_Func_10(uint16 k) {  // 0xA2F356
+static void HorizontalShootableShutter_Func_10(uint16 k) {  // 0xA2F356
   if (Get_RisingFallingPlatform(k)->rfpm_var_13) {
     if ((joypad1_lastkeys & 0x100) != 0) {
       extra_samus_x_displacement -= 4;
@@ -4060,7 +4154,7 @@ void HorizontalShootableShutter_Func_10(uint16 k) {  // 0xA2F356
   }
 }
 
-void HorizontalShootableShutter_Func_11(uint16 k) {  // 0xA2F371
+static void HorizontalShootableShutter_Func_11(uint16 k) {  // 0xA2F371
   if (Get_RisingFallingPlatform(k)->rfpm_var_13) {
     if ((joypad1_lastkeys & 0x200) != 0) {
       extra_samus_x_displacement += 4;

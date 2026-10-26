@@ -5,6 +5,39 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+// Used only in this file.
+static void Enemy_NormalTouchAI_SkipDeathAnim_A0(void);
+static void Enemy_NormalShotAI_SkipSomeParts_A0(void);
+static void Enemy_NormalPowerBombAI_SkipDeathAnim_A0(void);
+static void SetAllEnemiesToShakeFor2Frames(void);
+static void RecordEnemySpawnData(uint16 j);
+static void ClearEnemyDataAndProcessEnemySet(void);
+static void LoadEnemyGfxIndexes(uint16 k, uint16 j);
+static void LoadEnemyTileData(void);
+static void ProcessEnemyTilesets(void);
+static void DrawOneEnemy(void);
+static void WriteEnemyOams(void);
+static void ProcessExtendedTilemap(uint8 db, uint16 r22);
+static void EnemyCollisionHandler(void);
+static void HandleEprojCollWithSamus(uint16 k);
+static void HandleEprojCollWithProj(uint16 k, uint16 j);
+static void EnemySamusCollHandler_Multibox(void);
+static void EprojCollHandler_Multibox(void);
+static void EnemyBombCollHandler_Multibox(void);
+static void SamusLatchesOnWithGrappleParalyze(void);
+static void EnemySamusCollHandler(void);
+static void EprojCollHandler(void);
+static void EnemyBombCollHandler(void);
+static void NormalEnemyTouchAiSkipDeathAnim(void);
+static void NormalEnemyPowerBombAiSkipDeathAnim(void);
+static uint16 NormalEnemyShotAiSkipDeathAnim(void);
+static uint16 EnemyWithNormalSpritesIsOffScreen(void);
+static uint16 Mult32(uint16 a);
+static uint16 SubtractThenAbs16(uint16 k, uint16 j);
+static uint8 CompareDistToSamus_Y(uint16 k, uint16 a);
+static void ProcessEnemyInstructions(void);
+
+
 #define kEnemyLayerToQueuePtr ((uint16*)RomFixedPtr(0xa0b133))
 #define kStandardSpriteTiles ((uint16*)RomFixedPtr(0x9ad200))
 #define kSine8bit ((uint8*)RomFixedPtr(0xa0b143))
@@ -65,7 +98,7 @@ void Enemy_NormalTouchAI_A0(void) {  // 0xA08023
   NormalEnemyTouchAi();
 }
 
-void Enemy_NormalTouchAI_SkipDeathAnim_A0(void) {  // 0xA08028
+static void Enemy_NormalTouchAI_SkipDeathAnim_A0(void) {  // 0xA08028
   NormalEnemyTouchAiSkipDeathAnim_CurEnemy();
 }
 
@@ -73,7 +106,7 @@ void Enemy_NormalShotAI_A0(void) {  // 0xA0802D
   NormalEnemyShotAi();
 }
 
-void Enemy_NormalShotAI_SkipSomeParts_A0(void) {  // 0xA08032
+static void Enemy_NormalShotAI_SkipSomeParts_A0(void) {  // 0xA08032
   NormalEnemyShotAiSkipDeathAnim_CurEnemy();
 }
 
@@ -81,7 +114,7 @@ void Enemy_NormalPowerBombAI_A0(void) {  // 0xA08037
   NormalEnemyPowerBombAi();
 }
 
-void Enemy_NormalPowerBombAI_SkipDeathAnim_A0(void) {  // 0xA0803C
+static void Enemy_NormalPowerBombAI_SkipDeathAnim_A0(void) {  // 0xA0803C
   NormalEnemyPowerBombAiSkipDeathAnim_CurEnemy();
 }
 
@@ -93,25 +126,25 @@ void CreateADudShot(void) {  // 0xA08046
   CreateDudShot();
 }
 
-void func_nullsub_169(void) {
+static void func_nullsub_169(void) {
   ;
 }
 
-void func_nullsub_170(void) {
+static void func_nullsub_170(void) {
   ;
 }
 
-const uint16 *EnemyInstr_SetAiPreInstr(uint16 k, const uint16 *jp) {  // 0xA0806B
+static const uint16 *EnemyInstr_SetAiPreInstr(uint16 k, const uint16 *jp) {  // 0xA0806B
   gEnemyData(k)->ai_preinstr = jp[0];
   return jp + 1;
 }
 
-const uint16 *EnemyInstr_ClearAiPreInstr(uint16 k, const uint16 *jp) {  // 0xA08074
+static const uint16 *EnemyInstr_ClearAiPreInstr(uint16 k, const uint16 *jp) {  // 0xA08074
   gEnemyData(k)->ai_preinstr = FUNC16(nullsub_171);
   return jp;
 }
 
-void func_nullsub_171(void) {
+static void func_nullsub_171(void) {
   ;
 }
 
@@ -125,7 +158,7 @@ const uint16 *EnemyInstr_Goto(uint16 k, const uint16 *jp) {  // 0xA280ED
   return INSTR_RETURN_ADDR(*jp);
 }
 
-const uint16 *EnemyInstr_GotoRel(uint16 k, const uint16 *jp) {  // 0xA080F2
+static const uint16 *EnemyInstr_GotoRel(uint16 k, const uint16 *jp) {  // 0xA080F2
   return (const uint16 * )((uint8*)jp + *(int8*)jp);
 }
 
@@ -137,7 +170,7 @@ const uint16 *EnemyInstr_DecTimerAndGoto(uint16 k, const uint16 *jp) {  // 0xA08
     return EnemyInstr_Goto(k, jp);
 }
 
-const uint16 *EnemyInstr_DecTimerAndGotoRel(uint16 k, const uint16 *jp) {  // 0xA08118
+static const uint16 *EnemyInstr_DecTimerAndGotoRel(uint16 k, const uint16 *jp) {  // 0xA08118
   EnemyData *v2 = gEnemyData(k);
   if (LOBYTE(v2->timer)-- == 1)
     return (const uint16 *)((uint8 *)jp + 1);
@@ -150,7 +183,7 @@ const uint16 *EnemyInstr_SetTimer(uint16 k, const uint16 *jp) {  // 0xA08123
   return jp + 1;
 }
 
-const uint16 *EnemyInstr_Skip2bytes(uint16 k, const uint16 *jp) {  // 0xA0812C
+static const uint16 *EnemyInstr_Skip2bytes(uint16 k, const uint16 *jp) {  // 0xA0812C
   return jp + 1;
 }
 
@@ -256,7 +289,7 @@ void HandleRoomShaking(void) {
   ++frame_counter_every_frame;
 }
 
-void SetAllEnemiesToShakeFor2Frames(void) {  // 0xA08712
+static void SetAllEnemiesToShakeFor2Frames(void) {  // 0xA08712
   for (int i = 0; ; i += 2) {
     int v1 = i >> 1;
     if (active_enemy_indexes[v1] == 0xFFFF)
@@ -265,7 +298,7 @@ void SetAllEnemiesToShakeFor2Frames(void) {  // 0xA08712
   }
 }
 
-void CallEnemyGfxDrawHook(uint32 ea) {
+static void CallEnemyGfxDrawHook(uint32 ea) {
   switch (ea) {
   case fnnullsub_170: return;  // 0xa0804c
   case fnReflec_Func_1: Reflec_Func_1(); return;  // 0xa3db0c
@@ -312,7 +345,7 @@ void DrawSamusEnemiesAndProjectiles(void) {  // 0xA0884D
   CallEnemyGfxDrawHook(Load24(&enemy_gfx_drawn_hook));
 }
 
-void RecordEnemySpawnData(uint16 j) {  // 0xA088D0
+static void RecordEnemySpawnData(uint16 j) {  // 0xA088D0
   EnemySpawnData *v2;
   EnemySpawnData *v5;
 
@@ -361,7 +394,7 @@ void LoadEnemies(void) {  // 0xA08A1E
   ClearSpriteObjects();
 }
 
-void ClearEnemyDataAndProcessEnemySet(void) {  // 0xA08A6D
+static void ClearEnemyDataAndProcessEnemySet(void) {  // 0xA08A6D
   memset(g_ram + 0xF78, 0, 2048);
   if (*(uint16 *)RomPtr_A1(room_enemy_population_ptr) != 0xFFFF)
     ProcessEnemyTilesets();
@@ -423,7 +456,7 @@ void InitializeEnemies(void) {  // 0xA08A9E
   num_enemy_deaths_left_to_clear = RomPtr_A1(v4)[2];
 }
 
-void LoadEnemyGfxIndexes(uint16 k, uint16 j) {  // 0xA08BF3
+static void LoadEnemyGfxIndexes(uint16 k, uint16 j) {  // 0xA08BF3
   EnemyData *E = gEnemyData(j);
   EnemySpawnData *ES = gEnemySpawnData(j);
   uint16 e = room_enemy_tilesets_ptr;
@@ -445,7 +478,7 @@ void LoadEnemyGfxIndexes(uint16 k, uint16 j) {  // 0xA08BF3
   }
 }
 
-void LoadEnemyTileData(void) {  // 0xA08C6C
+static void LoadEnemyTileData(void) {  // 0xA08C6C
   for (int i = 510; i >= 0; i -= 2)
     gEnemySpawnData(i)->some_flag = kStandardSpriteTiles[(i >> 1) + 3072];
   if (enemy_tile_load_data_write_pos) {
@@ -497,7 +530,7 @@ void TransferEnemyTilesToVramAndInit(void) {  // 0xA08CD7
   }
 }
 
-void ProcessEnemyTilesets(void) {  // 0xA08D64
+static void ProcessEnemyTilesets(void) {  // 0xA08D64
   enemy_tile_load_data_write_pos = 0;
   uint16 r30 = 2048;
   enemy_def_ptr[0] = 0;
@@ -540,37 +573,30 @@ void ProcessEnemyTilesets(void) {  // 0xA08D64
 
 void DetermineWhichEnemiesToProcess(void) {  // 0xA08EB6
   ++UNUSED_word_7E0E46;
-  cur_enemy_index = 0;
-  active_enemy_indexes_write_ptr = 0;
-  interactive_enemy_indexes_write_ptr = 0;
+  // The indexes and write pointers stay in locals: nothing the loops call reads
+  // them, and the byte-wise RAM stores would make the compiler reload each
+  // global after every one.
+  uint16 active_wp = 0, interactive_wp = 0;
   if (flag_process_all_enemies) {
-    do {
-      uint16 v5 = cur_enemy_index;
-      EnemyData *v6 = gEnemyData(cur_enemy_index);
+    for (uint16 idx = 0; idx != 2048; idx += 64) {
+      EnemyData *v6 = gEnemyData(idx);
       if (v6->enemy_ptr && v6->enemy_ptr != addr_kEnemyDef_DAFF) {
         if ((v6->properties & 0x200) != 0) {
           v6->enemy_ptr = 0;
         } else {
-          uint16 v7 = active_enemy_indexes_write_ptr;
-          int v8 = active_enemy_indexes_write_ptr >> 1;
-          active_enemy_indexes[v8] = cur_enemy_index;
-          interactive_enemy_indexes[v8] = v5;
-          active_enemy_indexes_write_ptr = v7 + 2;
+          active_enemy_indexes[active_wp >> 1] = idx;
+          interactive_enemy_indexes[active_wp >> 1] = idx;
+          active_wp += 2;
           if ((v6->properties & 0x400) == 0) {
-            uint16 v9 = interactive_enemy_indexes_write_ptr;
-            interactive_enemy_indexes[interactive_enemy_indexes_write_ptr >> 1] = v5;
-            interactive_enemy_indexes_write_ptr = v9 + 2;
+            interactive_enemy_indexes[interactive_wp >> 1] = idx;
+            interactive_wp += 2;
           }
         }
       }
-      cur_enemy_index += 64;
-    } while (sign16(cur_enemy_index - 2048));
-    active_enemy_indexes[active_enemy_indexes_write_ptr >> 1] = -1;
-    interactive_enemy_indexes[interactive_enemy_indexes_write_ptr >> 1] = -1;
+    }
   } else {
-    do {
-      uint16 v0 = cur_enemy_index;
-      EnemyData *v1 = gEnemyData(cur_enemy_index);
+    for (uint16 idx = 0; idx != 2048; idx += 64) {
+      EnemyData *v1 = gEnemyData(idx);
       if (v1->enemy_ptr && v1->enemy_ptr != addr_kEnemyDef_DAFF) {
         uint16 properties = v1->properties;
         if ((properties & 0x200) != 0) {
@@ -581,21 +607,21 @@ void DetermineWhichEnemiesToProcess(void) {  // 0xA08EB6
                    && (int16)(v1->x_width + layer1_x_pos + 256 - v1->x_pos) >= 0
                    && (int16)(v1->y_pos + 8 - layer1_y_pos) >= 0
                    && (int16)(layer1_y_pos + 248 - v1->y_pos) >= 0) {
-          uint16 v3 = active_enemy_indexes_write_ptr;
-          active_enemy_indexes[active_enemy_indexes_write_ptr >> 1] = cur_enemy_index;
-          active_enemy_indexes_write_ptr = v3 + 2;
+          active_enemy_indexes[active_wp >> 1] = idx;
+          active_wp += 2;
           if ((v1->properties & 0x400) == 0) {
-            uint16 v4 = interactive_enemy_indexes_write_ptr;
-            interactive_enemy_indexes[interactive_enemy_indexes_write_ptr >> 1] = v0;
-            interactive_enemy_indexes_write_ptr = v4 + 2;
+            interactive_enemy_indexes[interactive_wp >> 1] = idx;
+            interactive_wp += 2;
           }
         }
       }
-      cur_enemy_index += 64;
-    } while (sign16(cur_enemy_index - 2048));
-    active_enemy_indexes[active_enemy_indexes_write_ptr >> 1] = -1;
-    interactive_enemy_indexes[interactive_enemy_indexes_write_ptr >> 1] = -1;
+    }
   }
+  cur_enemy_index = 2048;
+  active_enemy_indexes_write_ptr = active_wp;
+  interactive_enemy_indexes_write_ptr = interactive_wp;
+  active_enemy_indexes[active_wp >> 1] = -1;
+  interactive_enemy_indexes[interactive_wp >> 1] = -1;
 }
 
 void CallEnemyAi(uint32 ea) {
@@ -1908,13 +1934,13 @@ add_enemy:
   }
 }
 
-void DrawOneEnemy(void) {  // 0xA09423
+static void DrawOneEnemy(void) {  // 0xA09423
   uint16 varE34 = 2 * gEnemyData(cur_enemy_index)->layer;
   *(uint16 *)RomPtr_RAM(enemy_drawing_queue_sizes[varE34 >> 1] + kEnemyLayerToQueuePtr[varE34 >> 1]) = cur_enemy_index;
   enemy_drawing_queue_sizes[varE34 >> 1] += 2;
 }
 
-void WriteEnemyOams(void) {  // 0xA0944A
+static void WriteEnemyOams(void) {  // 0xA0944A
   VoidP palette_index;
   
   EnemyData *E = gEnemyData(cur_enemy_index);
@@ -1976,7 +2002,7 @@ void NormalEnemyFrozenAI(void) {  // 0xA0957E
   }
 }
 
-void ProcessExtendedTilemap(uint8 db, uint16 r22) {  // 0xA096CA
+static void ProcessExtendedTilemap(uint8 db, uint16 r22) {  // 0xA096CA
   const uint8 *p = RomPtrWithBank(db, r22 + 2);
   while (1) {
     uint16 v2 = *(uint16 *)p;
@@ -2004,7 +2030,7 @@ void QueueEnemyBG2TilemapTransfers(void) {  // 0xA09726
   nmi_flag_bg2_enemy_vram_transfer = 0;
 }
 
-void EnemyCollisionHandler(void) {  // 0xA09758
+static void EnemyCollisionHandler(void) {  // 0xA09758
   if ((gEnemyData(cur_enemy_index)->extra_properties & 4) != 0) {
     EprojCollHandler_Multibox();
     EnemyBombCollHandler_Multibox();
@@ -2016,7 +2042,7 @@ void EnemyCollisionHandler(void) {  // 0xA09758
   }
 }
 
-void func_nullsub_4(void) {
+static void func_nullsub_4(void) {
   ;
 }
 
@@ -2075,7 +2101,7 @@ void EprojSamusCollDetect(void) {  // 0xA09894
   }
 }
 
-void HandleEprojCollWithSamus(uint16 k) {  // 0xA09923
+static void HandleEprojCollWithSamus(uint16 k) {  // 0xA09923
   samus_invincibility_timer = 96;
   samus_knockback_timer = 5;
   uint16 v1 = *((uint16 *)RomPtr_86(*(uint16 *)((uint8 *)eproj_id + k)) + 5);
@@ -2112,7 +2138,7 @@ void EprojProjCollDet(void) {  // 0xA0996C
   }
 }
 
-void HandleEprojCollWithProj(uint16 k, uint16 j) {  // 0xA099F9
+static void HandleEprojCollWithProj(uint16 k, uint16 j) {  // 0xA099F9
   int i = j >> 1;
   if ((projectile_type[i] & 8) == 0)
     projectile_dir[i] |= 0x10;
@@ -2130,7 +2156,7 @@ void HandleEprojCollWithProj(uint16 k, uint16 j) {  // 0xA099F9
   }
 }
 
-void CallHitboxTouch(uint32 ea) {
+static void CallHitboxTouch(uint32 ea) {
   switch (ea) {
   case fnEnemy_NormalTouchAI_A0: Enemy_NormalTouchAI_A0(); return;  // 0xa08023
   case fnMaridiaLargeSnail_Func_12: MaridiaLargeSnail_Func_12(); return;  // 0xa2d388
@@ -2154,7 +2180,7 @@ void CallHitboxTouch(uint32 ea) {
   default: Unreachable();
   }
 }
-void CallHitboxShot(uint32 ea, uint16 j) {  // 0xA09D17
+static void CallHitboxShot(uint32 ea, uint16 j) {  // 0xA09D17
   switch (ea) {
   case fnEnemy_NormalShotAI_A0: Enemy_NormalShotAI_A0(); return;  // 0xa0802d
   case fnnullsub_170_A2: return;  // 0xa2804c
@@ -2187,7 +2213,7 @@ void CallHitboxShot(uint32 ea, uint16 j) {  // 0xA09D17
   }
 }
 
-void EnemySamusCollHandler_Multibox(void) {  // 0xA09A5A
+static void EnemySamusCollHandler_Multibox(void) {  // 0xA09A5A
   EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 6;
   if (!E->spritemap_pointer)
@@ -2230,7 +2256,7 @@ void EnemySamusCollHandler_Multibox(void) {  // 0xA09A5A
   } while (--n);
 }
 
-void EprojCollHandler_Multibox(void) {  // 0xA09B7F
+static void EprojCollHandler_Multibox(void) {  // 0xA09B7F
   EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 3;
   if (!projectile_counter || !E->spritemap_pointer || E->spritemap_pointer == addr_kExtendedSpritemap_Nothing_A0)
@@ -2272,7 +2298,7 @@ void EprojCollHandler_Multibox(void) {  // 0xA09B7F
   }
 }
 
-void EnemyBombCollHandler_Multibox(void) {  // 0xA09D23
+static void EnemyBombCollHandler_Multibox(void) {  // 0xA09D23
   EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 4;
   if (!E->spritemap_pointer || (E->properties & 0x400) != 0 || E->invincibility_timer)
@@ -2408,7 +2434,7 @@ void SamusLatchesOnWithGrappleNoInvinc(void) {  // 0xA09FE9
   grapple_beam_end_y_pos = E->y_pos;
 }
 
-void SamusLatchesOnWithGrappleParalyze(void) {  // 0xA0A03E
+static void SamusLatchesOnWithGrappleParalyze(void) {  // 0xA0A03E
   EnemyData *E = gEnemyData(cur_enemy_index);
   EnemyDef *ED = get_EnemyDef_A2(E->enemy_ptr);
   E->flash_timer = ED->hurt_ai_time ? ED->hurt_ai_time : 4;
@@ -2420,7 +2446,7 @@ void SamusHurtFromGrapple(void) {  // 0xA0A070
   gEnemyData(cur_enemy_index)->ai_handler_bits = 4;
 }
 
-void EnemySamusCollHandler(void) {  // 0xA0A07A
+static void EnemySamusCollHandler(void) {  // 0xA0A07A
   EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 9;
   if (!E->spritemap_pointer)
@@ -2445,7 +2471,7 @@ void EnemySamusCollHandler(void) {  // 0xA0A07A
   }
 }
 
-void EprojCollHandler(void) {  // 0xA0A143
+static void EprojCollHandler(void) {  // 0xA0A143
   EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 7;
   if (!projectile_counter)
@@ -2475,7 +2501,7 @@ void EprojCollHandler(void) {  // 0xA0A143
   }
 }
 
-void EnemyBombCollHandler(void) {  // 0xA0A236
+static void EnemyBombCollHandler(void) {  // 0xA0A236
   EnemyData *E = gEnemyData(cur_enemy_index);
   enemy_processing_stage = 8;
   if (!bomb_counter || !E->spritemap_pointer ||
@@ -2566,7 +2592,7 @@ void NormalEnemyTouchAiSkipDeathAnim_CurEnemy(void) {  // 0xA0A497
   NormalEnemyTouchAiSkipDeathAnim();
 }
 
-void NormalEnemyTouchAiSkipDeathAnim(void) {  // 0xA0A4A1
+static void NormalEnemyTouchAiSkipDeathAnim(void) {  // 0xA0A4A1
   EnemyData *E = gEnemyData(cur_enemy_index);
   EnemyDef *ED = get_EnemyDef_A2(E->enemy_ptr);
   if (samus_contact_damage_index == 0) {
@@ -2618,7 +2644,7 @@ void NormalEnemyPowerBombAiSkipDeathAnim_CurEnemy(void) {  // 0xA0A5B7
   NormalEnemyPowerBombAiSkipDeathAnim();
 }
 
-void NormalEnemyPowerBombAiSkipDeathAnim(void) {  // 0xA0A5C1
+static void NormalEnemyPowerBombAiSkipDeathAnim(void) {  // 0xA0A5C1
   EnemyDef *EnemyDef_A2;
   int16 hurt_ai_time;
 
@@ -2686,7 +2712,7 @@ void EnemyFunc_A6B4_UsedBySporeSpawn(void) {  // 0xA0A6B4
   }
 }
 
-uint16 NormalEnemyShotAiSkipDeathAnim(void) {  // 0xA0A6DE
+static uint16 NormalEnemyShotAiSkipDeathAnim(void) {  // 0xA0A6DE
   uint16 varE2E = 0;
   int16 v5;
   int16 v6;
@@ -3006,7 +3032,7 @@ uint16 EnemyFunc_ADA3(uint16 a) {  // 0xA0ADA3
       (int16)(a + E->y_pos - layer1_y_pos) < 0 || (int16)(a + layer1_y_pos + 256 - E->y_pos) < 0;
 }
 
-uint16 EnemyWithNormalSpritesIsOffScreen(void) {  // 0xA0ADE7
+static uint16 EnemyWithNormalSpritesIsOffScreen(void) {  // 0xA0ADE7
   EnemyData *E = gEnemyData(cur_enemy_index);
   return (int16)(E->x_width + E->x_pos - layer1_x_pos) < 0 || (int16)(E->x_width + layer1_x_pos + 256 - E->x_pos) < 0 ||
       (int16)(E->y_pos + 8 - layer1_y_pos) < 0 || (int16)(layer1_y_pos + 248 - E->y_pos) < 0;
@@ -3053,7 +3079,7 @@ uint16 SignExtend8(uint16 a) {  // 0xA0AFEA
   return (a & 0x80) ? a | 0xff00 : a;
 }
 
-uint16 Mult32(uint16 a) {  // 0xA0B002
+static uint16 Mult32(uint16 a) {  // 0xA0B002
   return 32 * a;
 }
 
@@ -3061,7 +3087,7 @@ uint16 Abs16(uint16 a) {  // 0xA0B067
   return ((a & 0x8000) != 0) ? -a : a;
 }
 
-uint16 SubtractThenAbs16(uint16 k, uint16 j) {  // 0xA0B07D
+static uint16 SubtractThenAbs16(uint16 k, uint16 j) {  // 0xA0B07D
   return Abs16(j - k);
 }
 
@@ -3238,7 +3264,7 @@ uint8 CompareDistToSamus_X(uint16 k, uint16 a) {  // 0xA0BB9B
   return abs16(samus_x_pos - i->x_pos) >= a;
 }
 
-uint8 CompareDistToSamus_Y(uint16 k, uint16 a) {  // 0xA0BBAD
+static uint8 CompareDistToSamus_Y(uint16 k, uint16 a) {  // 0xA0BBAD
   EnemyData *i = gEnemyData(k);
   return abs16(samus_y_pos - i->y_pos) >= a;
 }
@@ -3392,7 +3418,7 @@ uint8 IsEnemyLeavingScreen(uint16 k) {  // 0xA0C18E
   return 1;
 }
 
-void ProcessEnemyInstructions(void) {  // 0xA0C26A
+static void ProcessEnemyInstructions(void) {  // 0xA0C26A
   EnemyData *E = gEnemyData(cur_enemy_index);
   if ((E->ai_handler_bits & 4) == 0) {
     if (E->instruction_timer-- == 1) {
@@ -3425,7 +3451,7 @@ static uint8 SetCarry_4(EnemyBlockCollInfo *ebci) {  // 0xA0C2BE
 }
 
 static uint8 EnemyBlockCollReact_Spike(EnemyBlockCollInfo *ebci) {  // 0xA0C2C0
-  uint16 v0 = g_off_A0C2DA[BTS[cur_block_index] & 0x7F];
+  uint16 v0 = g_off_A0C2DA[BtsAt(cur_block_index) & 0x7F];
   if (!v0)
     return 1;
   SpawnPLM(v0);
@@ -3433,19 +3459,19 @@ static uint8 EnemyBlockCollReact_Spike(EnemyBlockCollInfo *ebci) {  // 0xA0C2C0
 }
 
 static uint8 EnemyBlockCollHorizReact_Slope(EnemyBlockCollInfo *ebci) {  // 0xA0C2FA
-  if ((BTS[cur_block_index] & 0x1F) >= 5) {
-    current_slope_bts = BTS[cur_block_index];
+  if ((BtsAt(cur_block_index) & 0x1F) >= 5) {
+    current_slope_bts = BtsAt(cur_block_index);
     return EnemyBlockCollHorizReact_Slope_NonSquare(ebci);
   } else {
-    return EnemyBlockCollHorizReact_Slope_Square(ebci, cur_block_index, BTS[cur_block_index] & 0x1F);
+    return EnemyBlockCollHorizReact_Slope_Square(ebci, cur_block_index, BtsAt(cur_block_index) & 0x1F);
   }
 }
 
 static uint8 EnemyBlockCollVertReact_Slope(EnemyBlockCollInfo *ebci) {  // 0xA0C319
-  if ((BTS[cur_block_index] & 0x1F) >= 5)
+  if ((BtsAt(cur_block_index) & 0x1F) >= 5)
     return EnemyBlockCollVertReact_Slope_NonSquare(ebci);
   else
-    return EnemyBlockCollVertReact_Slope_Square(ebci, BTS[cur_block_index] & 0x1F, cur_block_index);
+    return EnemyBlockCollVertReact_Slope_Square(ebci, BtsAt(cur_block_index) & 0x1F, cur_block_index);
 }
 
 static const uint8 byte_A0C435[20] = {  // 0xA0C32E
@@ -3559,7 +3585,7 @@ static uint8 EnemyBlockCollVertReact_Slope_NonSquare(EnemyBlockCollInfo *ebci) {
 }
 
 static uint8 EnemyBlockCollReact_HorizExt(EnemyBlockCollInfo *ebci) {  // 0xA0C619
-  uint8 t = BTS[cur_block_index];
+  uint8 t = BtsAt(cur_block_index);
   if (t) {
     cur_block_index += (int8)t;
     return 0xff;
@@ -3568,8 +3594,8 @@ static uint8 EnemyBlockCollReact_HorizExt(EnemyBlockCollInfo *ebci) {  // 0xA0C6
 }
 
 static uint8 EnemyBlockCollReact_VertExt(EnemyBlockCollInfo *ebci) {  // 0xA0C64F
-  if (BTS[cur_block_index]) {
-    cur_block_index += (int8)BTS[cur_block_index] * room_width_in_blocks;
+  if (BtsAt(cur_block_index)) {
+    cur_block_index += (int8)BtsAt(cur_block_index) * room_width_in_blocks;
     return 0xff;
   }
   return 0;
@@ -3687,7 +3713,7 @@ static uint8 EnemyBlockCollReact_Horiz(EnemyBlockCollInfo *ebci, uint16 k) {
   cur_block_index = k >> 1;
   uint8 rv = 0;
   do {
-    rv = off_A0C859[(level_data[cur_block_index] & 0xf000) >> 12](ebci);
+    rv = off_A0C859[(LevelDataAt(cur_block_index) & 0xf000) >> 12](ebci);
   } while (rv & 0x80);
   return rv;
 }
@@ -3715,7 +3741,7 @@ static uint8 EnemyBlockCollReact_Vert(EnemyBlockCollInfo *ebci, uint16 k) {
   cur_block_index = k >> 1;
   uint8 rv = 0;
   do {
-    rv = off_A0C88D[(level_data[cur_block_index] & 0xf000) >> 12](ebci);
+    rv = off_A0C88D[(LevelDataAt(cur_block_index) & 0xf000) >> 12](ebci);
   } while (rv & 0x80);
   return rv;
 }
@@ -3730,24 +3756,24 @@ uint8 EnemyFunc_C8AD(uint16 k) {  // 0xA0C8AD
 
   EnemyData *E = gEnemyData(k);
   CalculateBlockContainingPixelPos(E->x_pos, E->y_pos + E->y_height - 1);
-  if ((level_data[cur_block_index] & 0xF000) == 4096 && (BTS[cur_block_index] & 0x1F) >= 5) {
+  if ((LevelDataAt(cur_block_index) & 0xF000) == 4096 && (BtsAt(cur_block_index) & 0x1F) >= 5) {
     result = 1;
     uint16 temp_collision_DD4 = (E->y_height + E->y_pos - 1) & 0xF;
-    uint16 temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
-    if ((BTS[cur_block_index] & 0x80) == 0) {
-      uint16 j = (BTS[cur_block_index] & 0x40) != 0 ? E->x_pos ^ 0xF : E->x_pos;
+    uint16 temp_collision_DD6 = 16 * (BtsAt(cur_block_index) & 0x1F);
+    if ((BtsAt(cur_block_index) & 0x80) == 0) {
+      uint16 j = (BtsAt(cur_block_index) & 0x40) != 0 ? E->x_pos ^ 0xF : E->x_pos;
       int16 v4 = (kAlignYPos_Tab0[temp_collision_DD6 + (j & 0xF)] & 0x1F) - temp_collision_DD4 - 1;
       if (v4 < 0)
         E->y_pos += v4;
     }
   }
   CalculateBlockContainingPixelPos(E->x_pos, E->y_pos - E->y_height);
-  if ((level_data[cur_block_index] & 0xF000) == 4096 && (BTS[cur_block_index] & 0x1F) >= 5) {
+  if ((LevelDataAt(cur_block_index) & 0xF000) == 4096 && (BtsAt(cur_block_index) & 0x1F) >= 5) {
     result = 1;
     uint16 temp_collision_DD4 = (E->y_pos - E->y_height) & 0xF ^ 0xF;
-    uint16 temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
-    if (BTS[cur_block_index] & 0x80) {
-      uint16 j = (BTS[cur_block_index] & 0x40) != 0 ? E->x_pos ^ 0xF : E->x_pos;
+    uint16 temp_collision_DD6 = 16 * (BtsAt(cur_block_index) & 0x1F);
+    if (BtsAt(cur_block_index) & 0x80) {
+      uint16 j = (BtsAt(cur_block_index) & 0x40) != 0 ? E->x_pos ^ 0xF : E->x_pos;
       int16 v7 = (kAlignYPos_Tab0[temp_collision_DD6 + (j & 0xF)] & 0x1F) - temp_collision_DD4 - 1;
       if (v7 < 0)
         E->y_pos -= v7;

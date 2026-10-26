@@ -4,6 +4,30 @@
 #include "sm_rtl.h"
 #include "funcs.h"
 
+// Used only in this file.
+static void WriteLevelDataBlockTypeAndBts(uint16 k, uint16 a);
+static void ProcessPlmDrawInstruction(uint16 k);
+static void DrawPlm(uint16 k);
+static uint8 ActivateStationIfSamusCannonLinedUp(uint16 a, uint16 j);
+static void DeletePlm(uint16 j);
+static void SkipDebugDrawInstructionsForScrollPlms(uint16 j);
+static void PlmSetup_QuicksandSurface_0(uint16 j);
+static void PlmSetup_QuicksandSurface_1(uint16 j);
+static void PlmSetup_QuicksandSurface_2(uint16 j);
+static uint8 WakePlmIfSamusIsBelowAndRightOfTarget(uint16 k, uint16 x_r18, uint16 y_r20);
+static uint8 sub_84C63F(uint16 j);
+static uint8 sub_84C647(uint16 j);
+static uint8 sub_84C64C(uint16 j, uint16 a);
+static void SetBts0x10FiveStepsDown(uint16 j);
+static uint16 SetBtsTo0x10AdvanceRow(uint16 k);
+static void SetBts0x10FiveStepsUp(uint16 j);
+static uint16 SetBtsTo0x10AdvanceRowUp(uint16 k);
+static void SpawnMotherBrainGlassShatteringShard(uint16 a);
+static void sub_84D7EF(uint16 k);
+static uint8 sub_84EE5F(uint16 j, uint16 a);
+static uint8 sub_84EE89(uint16 j, uint16 a);
+
+
 
 #define kGoldenTorizoPalette1 ((uint16*)RomFixedPtr(0x848032))
 #define kGoldenTorizoPalette2 ((uint16*)RomFixedPtr(0x848132))
@@ -23,9 +47,9 @@
 #define kPlmTileDataOffs ((uint16*)RomFixedPtr(0x8487d5))
 #define kPlmStartingTileNumber ((uint16*)RomFixedPtr(0x8487dd))
 
-void CallPlmPreInstr(uint32 ea, uint16 k);
-const uint8 *CallPlmInstr(uint32 ea, const uint8 *j, uint16 k);
-uint8 CallPlmHeaderFunc(uint32 ea, uint16 j);
+static void CallPlmPreInstr(uint32 ea, uint16 k);
+static const uint8 *CallPlmInstr(uint32 ea, const uint8 *j, uint16 k);
+static uint8 CallPlmHeaderFunc(uint32 ea, uint16 j);
 const uint8 *PlmInstr_LoadItemPlmGfx(const uint8 *plmp, uint16 k);
 
 void SetGoldenTorizoPalette(uint16 a) {  // 0x848000
@@ -58,7 +82,7 @@ void ClearSoundsWhenGoingThroughDoor(void) {  // 0x848250
   CallSomeSamusCode(0x1D);
 }
 
-void UNUSED_sub_848258(void) {  // 0x848258
+static void UNUSED_sub_848258(void) {  // 0x848258
   if (samus_movement_type << 8 == 768 || samus_movement_type << 8 == 5120)
     QueueSfx1_Max15(0x32);
 }
@@ -67,7 +91,7 @@ void PlaySpinJumpSoundIfSpinJumping(void) {  // 0x848270
   CallSomeSamusCode(0x1C);
 }
 
-void UNUSED_sub_848278(void) {  // 0x848278
+static void UNUSED_sub_848278(void) {  // 0x848278
   if (samus_movement_type << 8 == 768 || samus_movement_type << 8 == 5120)
     QueueSfx1_Max15(0x30);
 }
@@ -78,13 +102,13 @@ void CalculatePlmBlockCoords(uint16 k) {  // 0x848290
   plm_x_block = SnesModulus(t, room_width_in_blocks);
 }
 
-void WriteLevelDataBlockTypeAndBts(uint16 k, uint16 a) {  // 0x8482B4
+static void WriteLevelDataBlockTypeAndBts(uint16 k, uint16 a) {  // 0x8482B4
   uint8 *v2 = &g_ram[0x10000 + k];
   v2[3] = HIBYTE(a) | v2[3] & 0xF;
   BTS[k >> 1] = a;
 }
 
-void WriteRowOfLevelDataBlockAndBTS(uint16 k, uint16 arg0, uint16 arg1, uint16 arg2) {  // 0x8482D6
+static void WriteRowOfLevelDataBlockAndBTS(uint16 k, uint16 arg0, uint16 arg1, uint16 arg2) {  // 0x8482D6
   uint16 v2 = plm_block_indices[k >> 1];
   uint16 v8 = v2 >> 1;
   for (int i = 0; i < arg2; i++) {
@@ -220,8 +244,15 @@ CoroutineRet PlmHandler_Async(void) {  // 0x8485B4
     return kCoroutineNone;
   plm_draw_tilemap_index = 0;
   for (plm_id = 78; (plm_id & 0x8000) == 0; plm_id -= 2) {
-    if (!plm_header_ptr[plm_id >> 1])
+    if (!plm_header_ptr[plm_id >> 1]) {
+      // Most slots are empty: step over a run of them without storing plm_id
+      // for each.
+      uint16 id = plm_id;
+      while (id != 0 && !plm_header_ptr[(id - 2) >> 1])
+        id -= 2;
+      plm_id = id;
       continue;
+    }
     CallPlmPreInstr(plm_pre_instrs[plm_id >> 1] | 0x840000, plm_id);
     if (--plm_instruction_timer[plm_id >> 1])
       continue;
@@ -267,7 +298,7 @@ static inline uint8 *RomPtr_84orRAM(uint16_t addr) {
   }
 }
 
-void ProcessPlmDrawInstruction(uint16 v0) {  // 0x84861E
+static void ProcessPlmDrawInstruction(uint16 v0) {  // 0x84861E
   int v1 = v0 >> 1;
   uint16 *p = (uint16 *)RomPtr_84orRAM(plm_instruction_draw_ptr[v1]);
   uint16 dst = plm_block_indices[v1], dst_base = dst;
@@ -307,7 +338,7 @@ const uint8 *PlmInstr_ClearPreInstr(const uint8 *plmp, uint16 k) {  // 0x8486CA
   return plmp;
 }
 
-void CallPlmInstrFunc(uint32 ea) {
+static void CallPlmInstrFunc(uint32 ea) {
   switch (ea) {
   case fnVariaSuitPickup: VariaSuitPickup(); return;
   case fnGravitySuitPickup: GravitySuitPickup(); return;
@@ -791,7 +822,7 @@ static void CalculatePlmDrawTilemapVramDst(uint16 k, uint16 r9, uint16 r12, uint
   PartiallyQueueVramForSingleScreenPlm(a, k, r20, r28);
 }
 
-void DrawPlm(uint16 k) {  // 0x848DAA
+static void DrawPlm(uint16 k) {  // 0x848DAA
   int16 v2;
   int16 v5;
   int16 v8;
@@ -1165,7 +1196,7 @@ uint8 PlmSetup_BTS_Brinstar_0x81_Ceilingplant(uint16 j) {  // 0x84B113
   return 0;
 }
 
-uint8 ActivateStationIfSamusCannonLinedUp(uint16 a, uint16 j) {  // 0x84B146
+static uint8 ActivateStationIfSamusCannonLinedUp(uint16 a, uint16 j) {  // 0x84B146
   uint16 v2 = 78;
   while (a != plm_block_indices[v2 >> 1]) {
     v2 -= 2;
@@ -1276,7 +1307,7 @@ uint8 PlmSetup_B6F3_MissileStationLeftAccess(uint16 j) {  // 0x84B300
   }
 }
 
-void DeletePlm(uint16 j) {  // 0x84B333
+static void DeletePlm(uint16 j) {  // 0x84B333
   plm_header_ptr[j >> 1] = 0;
 }
 
@@ -1304,7 +1335,7 @@ uint8 PlmSetup_B647_Upwards_Extension(uint16 j) {  // 0x84B35B
   return 0;
 }
 
-void SkipDebugDrawInstructionsForScrollPlms(uint16 j) {  // 0x84B366
+static void SkipDebugDrawInstructionsForScrollPlms(uint16 j) {  // 0x84B366
   plm_instr_list_ptrs[j >> 1] += 4;
 }
 
@@ -1406,7 +1437,7 @@ uint8 PlmSetup_QuicksandSurface(uint16 j) {
   return 0;
 }
 
-void PlmSetup_QuicksandSurface_0(uint16 j) {  // 0x84B447
+static void PlmSetup_QuicksandSurface_0(uint16 j) {  // 0x84B447
   samus_y_subspeed = 0;
   samus_y_speed = 0;
   extra_samus_y_subdisplacement = 0;
@@ -1414,7 +1445,7 @@ void PlmSetup_QuicksandSurface_0(uint16 j) {  // 0x84B447
   *(uint16 *)((uint8 *)&extra_samus_y_subdisplacement + 1) = g_word_84B48F[j >> 1];
 }
 
-void PlmSetup_QuicksandSurface_1(uint16 j) {  // 0x84B45A
+static void PlmSetup_QuicksandSurface_1(uint16 j) {  // 0x84B45A
   int v1 = j >> 1;
   if (g_word_84B493[v1] < *(uint16 *)((uint8 *)&samus_y_subspeed + 1)) {
     samus_y_subspeed = 0;
@@ -1426,7 +1457,7 @@ void PlmSetup_QuicksandSurface_1(uint16 j) {  // 0x84B45A
   *(uint16 *)((uint8 *)&extra_samus_y_subdisplacement + 1) = g_word_84B48B[v1];
 }
 
-void PlmSetup_QuicksandSurface_2(uint16 j) {  // 0x84B47B
+static void PlmSetup_QuicksandSurface_2(uint16 j) {  // 0x84B47B
   extra_samus_y_subdisplacement = 0;
   extra_samus_y_displacement = 0;
   *(uint16 *)((uint8 *)&extra_samus_y_subdisplacement + 1) = g_word_84B48B[j >> 1];
@@ -1669,7 +1700,7 @@ uint8 PlmSetup_ShaktoolsRoom(uint16 j) {  // 0x84B8DC
   return 0;
 }
 
-uint8 WakePlmIfSamusIsBelowAndRightOfTarget(uint16 k, uint16 x_r18, uint16 y_r20) {  // 0x84B8FD
+static uint8 WakePlmIfSamusIsBelowAndRightOfTarget(uint16 k, uint16 x_r18, uint16 y_r20) {  // 0x84B8FD
   if (x_r18 < samus_x_pos && y_r20 < samus_y_pos) {
     int v2 = k >> 1;
     plm_instr_list_ptrs[v2] += 2;
@@ -2005,15 +2036,15 @@ uint8 PlmSetup_C816_LeftBlueGateTrigger(uint16 j) {  // 0x84C610
   return PlmSetup_C81A_RightBlueGateTrigger(j);
 }
 
-uint8 sub_84C63F(uint16 j) {  // 0x84C63F
+static uint8 sub_84C63F(uint16 j) {  // 0x84C63F
   return sub_84C64C(j, plm_block_indices[j >> 1] + 2);
 }
 
-uint8 sub_84C647(uint16 j) {  // 0x84C647
+static uint8 sub_84C647(uint16 j) {  // 0x84C647
   return sub_84C64C(j, plm_block_indices[j >> 1] - 2);
 }
 
-uint8 sub_84C64C(uint16 j, uint16 a) {  // 0x84C64C
+static uint8 sub_84C64C(uint16 j, uint16 a) {  // 0x84C64C
   uint16 v2 = 78;
   while (a != plm_block_indices[v2 >> 1]) {
     v2 -= 2;
@@ -2029,7 +2060,7 @@ LABEL_7:
   return 1;
 }
 
-void SetBts0x10FiveStepsDown(uint16 j) {  // 0x84C66A
+static void SetBts0x10FiveStepsDown(uint16 j) {  // 0x84C66A
   uint16 v1 = SetBtsTo0x10AdvanceRow(plm_block_indices[j >> 1] >> 1);
   uint16 v2 = SetBtsTo0x10AdvanceRow(v1);
   uint16 v3 = SetBtsTo0x10AdvanceRow(v2);
@@ -2037,12 +2068,12 @@ void SetBts0x10FiveStepsDown(uint16 j) {  // 0x84C66A
   SetBtsTo0x10AdvanceRow(v4);
 }
 
-uint16 SetBtsTo0x10AdvanceRow(uint16 k) {  // 0x84C67F
+static uint16 SetBtsTo0x10AdvanceRow(uint16 k) {  // 0x84C67F
   *(uint16 *)&BTS[k] = (BTS[k + 1] << 8) | 0x10;
   return room_width_in_blocks + k;
 }
 
-void SetBts0x10FiveStepsUp(uint16 j) {  // 0x84C694
+static void SetBts0x10FiveStepsUp(uint16 j) {  // 0x84C694
   uint16 v1 = SetBtsTo0x10AdvanceRowUp(plm_block_indices[j >> 1] >> 1);
   uint16 v2 = SetBtsTo0x10AdvanceRowUp(v1);
   uint16 v3 = SetBtsTo0x10AdvanceRowUp(v2);
@@ -2050,7 +2081,7 @@ void SetBts0x10FiveStepsUp(uint16 j) {  // 0x84C694
   SetBtsTo0x10AdvanceRowUp(v4);
 }
 
-uint16 SetBtsTo0x10AdvanceRowUp(uint16 k) {  // 0x84C6A9
+static uint16 SetBtsTo0x10AdvanceRowUp(uint16 k) {  // 0x84C6A9
   *(uint16 *)&BTS[k] = (BTS[k + 1] << 8) | 0x10;
   return k - room_width_in_blocks;
 }
@@ -2381,7 +2412,7 @@ const uint8 *PlmInstr_SpawnFourMotherBrainGlass(const uint8 *plmp, uint16 k) {  
   return plmp + 8;
 }
 
-void SpawnMotherBrainGlassShatteringShard(uint16 a) {  // 0x84D331
+static void SpawnMotherBrainGlassShatteringShard(uint16 a) {  // 0x84D331
   SpawnEprojWithRoomGfx(0xCEFC, a);
 }
 
@@ -2589,7 +2620,7 @@ const uint8 *PlmInstr_MoveUpAndMakeBlueDoorFacingLeft(const uint8 *plmp, uint16 
   return plmp;
 }
 
-void sub_84D7EF(uint16 k) {  // 0x84D7EF
+static void sub_84D7EF(uint16 k) {  // 0x84D7EF
   uint16 v1 = room_width_in_blocks * 2 + k;
   WriteLevelDataBlockTypeAndBts(v1, 0xD0FF);
   uint16 v2 = room_width_in_blocks * 2 + v1;
@@ -2654,7 +2685,7 @@ void PlmPreInstr_GotoLinkIfShotWithSuperMissile(uint16 k) {  // 0x84DB64
   plm_instruction_timer[v2] = 1;
 }
 
-void SetPlmVarPtr(uint16 k, uint16 a) {
+static void SetPlmVarPtr(uint16 k, uint16 a) {
   *(uint16 *)&g_ram[plm_variable[k >> 1]] = a;
 }
 
@@ -2839,7 +2870,7 @@ uint8 sub_84EE5C(uint16 j) {  // 0x84EE5C
   return sub_84EE5F(j, 0xE);
 }
 
-uint8 sub_84EE5F(uint16 j, uint16 a) {  // 0x84EE5F
+static uint8 sub_84EE5F(uint16 j, uint16 a) {  // 0x84EE5F
   plm_variables[j >> 1] = a;
   return sub_84EE64(j);
 }
@@ -2866,7 +2897,7 @@ uint8 sub_84EE86(uint16 j) {  // 0x84EE86
   return sub_84EE89(j, 0xE);
 }
 
-uint8 sub_84EE89(uint16 j, uint16 a) {  // 0x84EE89
+static uint8 sub_84EE89(uint16 j, uint16 a) {  // 0x84EE89
   plm_variables[j >> 1] = a;
   return sub_84EE8E(j);
 }
@@ -2898,7 +2929,7 @@ uint8 sub_84EEAB(uint16 v0) {  // 0x84EEAB
 }
 
 
-uint8 CallPlmHeaderFunc(uint32 ea, uint16 j) {
+static uint8 CallPlmHeaderFunc(uint32 ea, uint16 j) {
   switch (ea) {
   case fnnullsub_67:
   case fnnullsub_290:
@@ -3019,7 +3050,7 @@ uint8 CallPlmHeaderFunc(uint32 ea, uint16 j) {
   }
 }
 
-void CallPlmPreInstr(uint32 ea, uint16 k) {
+static void CallPlmPreInstr(uint32 ea, uint16 k) {
   switch (ea) {
   case fnPlmPreInstr_nullsub_60: return;
   case fnPlmPreInstr_nullsub_301: return;
@@ -3082,7 +3113,7 @@ void CallPlmPreInstr(uint32 ea, uint16 k) {
   }
 }
 
-const uint8 *CallPlmInstr(uint32 ea, const uint8 *j, uint16 k) {
+static const uint8 *CallPlmInstr(uint32 ea, const uint8 *j, uint16 k) {
   switch (ea) {
   case fnPlmInstr_Sleep: return PlmInstr_Sleep(j, k);
   case fnPlmInstr_Delete: return PlmInstr_Delete(j, k);

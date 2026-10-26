@@ -17,12 +17,52 @@
 
 typedef uint8_t uint8;
 typedef int8_t int8;
+#if SM_GBA
+// The game casts byte pointers into RAM and ROM to wider types at any
+// address, as the SNES allows. The ARM7TDMI instead rotates the data of a
+// misaligned load. 1-byte aligned typedefs make clang access memory through
+// them a byte at a time, unless it can prove the address aligned.
+typedef uint16_t uint16 __attribute__((aligned(1)));
+typedef int16_t int16 __attribute__((aligned(1)));
+typedef uint32_t uint32 __attribute__((aligned(1)));
+typedef int32_t int32 __attribute__((aligned(1)));
+typedef uint64_t uint64 __attribute__((aligned(1)));
+typedef int64_t int64 __attribute__((aligned(1)));
+#else
 typedef uint16_t uint16;
 typedef int16_t int16;
 typedef uint32_t uint32;
 typedef int32_t int32;
 typedef uint64_t uint64;
 typedef int64_t int64;
+#endif
+
+// Hot code: on the GBA, ARM code in IWRAM (see gba/gba.ld), which runs about
+// twice as fast as Thumb code from the cartridge, for the few functions that
+// take the most time. IWRAM is small. Such functions mustn't divide (see
+// cmake/compiler-rt.cmake).
+#if SM_GBA
+#define GBA_IWRAM_CODE __attribute__((target("arm"), section(".iwram.text")))
+#else
+#define GBA_IWRAM_CODE
+#endif
+
+// For g_ram: lets clang access variables at constant even offsets into it
+// with halfword loads on the GBA.
+#if SM_GBA
+#define RAM_ALIGNED __attribute__((aligned(4)))
+// The linker script puts g_ram at the start of EWRAM. Thumb code in the
+// cartridge has it as a constant: clang knows the address is aligned, and
+// builds it from two instructions instead of loading it from the cartridge,
+// which takes 11 cycles. ARM code in IWRAM, where a literal costs nothing
+// but 4 bytes, has the symbol.
+#ifdef __thumb__
+#define g_ram ((uint8 *)0x02000000)
+#define G_RAM_IS_CONSTANT 1
+#endif
+#else
+#define RAM_ALIGNED
+#endif
 typedef unsigned int uint;
 
 typedef uint16 VoidP;

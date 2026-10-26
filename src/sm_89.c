@@ -32,7 +32,7 @@ void LoadFxEntry(uint16 v0) {  // 0x89AB02
   }
 }
 
-void nullsub_106(void) {}
+static void nullsub_106(void) {}
 
 static Func_V *const kFxTypeFuncPtrs[23] = {  // 0x89AB82
   nullsub_106,

@@ -4,6 +4,36 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+// Used only in this file.
+static void Enemy_NormalTouchAI_SkipDeathAnim_B3(void);
+static void Enemy_NormalShotAI_SkipSomeParts_B3(void);
+static void Enemy_NormalPowerBombAI_SkipDeathAnim_B3(void);
+static void BrinstarPipeBug_Func_1(void);
+static void NorfairPipeBug_8BA8(void);
+static void NorfairPipeBug_Func_3(uint16 k);
+static void sub_B38E56(void);
+static void BrinstarYellowPipeBug_Func_4(uint16 k);
+static void BrinstarYellowPipeBug_Func_6(uint16 k);
+static void BrinstarYellowPipeBug_Func_9(uint16 k);
+static void BrinstarYellowPipeBug_Func_10(uint16 k);
+static void Botwoon_QueueExplosionSfx(void);
+static void Botwoon_Func_4(void);
+static void Botwoon_Func_5(void);
+static void Botwoon_HealthBasedPalHandling(void);
+static void Botwoon_Func_8(void);
+static void Botwoon_Func_9(void);
+static void Botwoon_Func_10(uint16 k);
+static void Botwoon_Func_11(uint16 k);
+static void Botwoon_Func_17(uint16 k);
+static Point16U Botwoon_Func_20(uint16 k);
+static void Botwoon_Func_21(void);
+static void Botwoon_Func_22(void);
+static void Botwoon_Func_23(void);
+static void Botwoon_Func_24(void);
+static void Botwoon_Func_25(void);
+static void Botwoon_Func_31(uint16 k);
+
+
 
 #define g_off_B3882B ((uint16*)RomFixedPtr(0xb3882b))
 #define g_off_B38833 ((uint16*)RomFixedPtr(0xb38833))
@@ -41,7 +71,7 @@ void Enemy_NormalTouchAI_B3(void) {  // 0xB38023
   NormalEnemyTouchAi();
 }
 
-void Enemy_NormalTouchAI_SkipDeathAnim_B3(void) {  // 0xB38028
+static void Enemy_NormalTouchAI_SkipDeathAnim_B3(void) {  // 0xB38028
   NormalEnemyTouchAiSkipDeathAnim_CurEnemy();
 }
 
@@ -49,11 +79,11 @@ void Enemy_NormalShotAI_B3(void) {  // 0xB3802D
   NormalEnemyShotAi();
 }
 
-void Enemy_NormalShotAI_SkipSomeParts_B3(void) {  // 0xB38032
+static void Enemy_NormalShotAI_SkipSomeParts_B3(void) {  // 0xB38032
   NormalEnemyShotAiSkipDeathAnim_CurEnemy();
 }
 
-void Enemy_NormalPowerBombAI_SkipDeathAnim_B3(void) {  // 0xB3803C
+static void Enemy_NormalPowerBombAI_SkipDeathAnim_B3(void) {  // 0xB3803C
   NormalEnemyPowerBombAiSkipDeathAnim_CurEnemy();
 }
 
@@ -171,7 +201,7 @@ void BrinstarPipeBug_PreInstr_5(uint16 k) {  // 0xB3897E
     E->pbg_var_F = FUNC16(BrinstarPipeBug_PreInstr_2);
 }
 
-void BrinstarPipeBug_Func_1(void) {  // 0xB3898B
+static void BrinstarPipeBug_Func_1(void) {  // 0xB3898B
   Enemy_PipeBug *PipeBug = Get_PipeBug(cur_enemy_index);
   uint16 pbg_var_E = PipeBug->pbg_var_E;
   if (pbg_var_E != PipeBug->pbg_var_01) {
@@ -196,7 +226,7 @@ void NorfairPipeBug_Init(void) {  // 0xB38B61
   PipeBug->pbg_var_A = FUNC16(NorfairPipeBug_Func_1);
 }
 
-void CallBugInstr(uint32 ea, uint16 k) {
+static void CallBugInstr(uint32 ea, uint16 k) {
   switch (ea) {
   case fnNorfairPipeBug_Func_1: NorfairPipeBug_Func_1(); return;  // 0xb38bcd
   case fnNorfairPipeBug_Func_2: NorfairPipeBug_Func_2(); return;  // 0xb38bff
@@ -225,7 +255,7 @@ void NorfairPipeBug_Main(void) {  // 0xB38B9E
   NorfairPipeBug_8BA8();
 }
 
-void NorfairPipeBug_8BA8(void) {  // 0xB38BA8
+static void NorfairPipeBug_8BA8(void) {  // 0xB38BA8
   if (CheckIfEnemyIsOnScreen()) {
     Enemy_PipeBug *PipeBug = Get_PipeBug(cur_enemy_index);
     PipeBug->base.properties |= kEnemyProps_Invisible;
@@ -270,7 +300,7 @@ void NorfairPipeBug_Func_2(void) {  // 0xB38BFF
   }
 }
 
-void NorfairPipeBug_Func_3(uint16 k) {  // 0xB38C52
+static void NorfairPipeBug_Func_3(uint16 k) {  // 0xB38C52
   Get_PipeBug(k)->pbg_var_A = FUNC16(NorfairPipeBug_Func_4);
   Get_PipeBug(k + 64)->pbg_var_A = FUNC16(NorfairPipeBug_Func_4);
   Get_PipeBug(k + 128)->pbg_var_A = FUNC16(NorfairPipeBug_Func_4);
@@ -366,7 +396,7 @@ void NorfairPipeBug_Func_11(void) {  // 0xB38E35
   AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(kCommonEnemySpeeds_Linear[v2], kCommonEnemySpeeds_Linear[v2 + 1]));
 }
 
-void sub_B38E56(void) {  // 0xB38E56
+static void sub_B38E56(void) {  // 0xB38E56
   ;
 }
 
@@ -479,7 +509,7 @@ void BrinstarYellowPipeBug_Func_3(void) {  // 0xB39028
   }
 }
 
-void BrinstarYellowPipeBug_Func_4(uint16 k) {  // 0xB390A1
+static void BrinstarYellowPipeBug_Func_4(uint16 k) {  // 0xB390A1
   Enemy_PipeBug *E = Get_PipeBug(k);
   AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->pbg_var_03, E->pbg_var_02));
 }
@@ -513,7 +543,7 @@ void BrinstarYellowPipeBug_Func_5(void) {  // 0xB390BD
   }
 }
 
-void BrinstarYellowPipeBug_Func_6(uint16 k) {  // 0xB3913A
+static void BrinstarYellowPipeBug_Func_6(uint16 k) {  // 0xB3913A
   Enemy_PipeBug *E = Get_PipeBug(k);
   AddToHiLo(&E->base.x_pos, &E->base.x_subpos, __PAIR32__(E->pbg_var_01, E->pbg_var_00));
 }
@@ -580,14 +610,14 @@ void BrinstarYellowPipeBug_Func_8(void) {  // 0xB391D8
   }
 }
 
-void BrinstarYellowPipeBug_Func_9(uint16 k) {  // 0xB39256
+static void BrinstarYellowPipeBug_Func_9(uint16 k) {  // 0xB39256
   Enemy_PipeBug *E = Get_PipeBug(k);
   ++E->pbg_var_E;
   int v3 = (8 * E->pbg_var_E) >> 1;
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, __PAIR32__(kCommonEnemySpeeds_Quadratic[v3 + 3], kCommonEnemySpeeds_Quadratic[v3 + 2]));
 }
 
-void BrinstarYellowPipeBug_Func_10(uint16 k) {  // 0xB3927A
+static void BrinstarYellowPipeBug_Func_10(uint16 k) {  // 0xB3927A
   Enemy_PipeBug *E = Get_PipeBug(k);
   if ((--E->pbg_var_E & 0x8000) != 0) {
     E->pbg_var_E = 0;
@@ -679,7 +709,7 @@ const uint16 *Botwoon_Instr_QueueSpitSfx(uint16 k, const uint16 *jp) {  // 0xB39
   return jp;
 }
 
-void Botwoon_QueueExplosionSfx(void) {  // 0xB3957B
+static void Botwoon_QueueExplosionSfx(void) {  // 0xB3957B
   QueueSfx2_Max6(0x24);
 }
 
@@ -732,7 +762,7 @@ void Botwoon_Init(void) {  // 0xB39583
   }
 }
 
-void CallBotwoonFuncVarD(uint32 ea, uint16 k) {
+static void CallBotwoonFuncVarD(uint32 ea, uint16 k) {
   switch (ea) {
   case fnBotwoon_Func_6: Botwoon_Func_6(); return;
   case fnBotwoon_Func_7: Botwoon_Func_7(); return;
@@ -745,7 +775,7 @@ void CallBotwoonFuncVarD(uint32 ea, uint16 k) {
   default: Unreachable();
   }
 }
-void CallBotwoonFuncVarE(uint32 ea) {
+static void CallBotwoonFuncVarE(uint32 ea) {
   switch (ea) {
   case fnBotwoon_Func_19: Botwoon_Func_19(); return;
   case fnBotwoon_Func_32: Botwoon_Func_32(); return;
@@ -789,12 +819,12 @@ void Botwoon_Func_3(void) {  // 0xB396C6
   }
 }
 
-void Botwoon_Func_4(void) {  // 0xB396F5
+static void Botwoon_Func_4(void) {  // 0xB396F5
   Enemy_Botwoon *E = Get_Botwoon(0);
   E->base.properties |= kEnemyProps_Tangible;
 }
 
-void Botwoon_Func_5(void) {  // 0xB396FF
+static void Botwoon_Func_5(void) {  // 0xB396FF
   uint16 v0 = 34;
   do {
     eproj_properties[v0 >> 1] |= 0x2000;
@@ -803,7 +833,7 @@ void Botwoon_Func_5(void) {  // 0xB396FF
   } while ((int16)(v0 - 10) >= 0);
 }
 
-void Botwoon_HealthBasedPalHandling(void) {  // 0xB3982B
+static void Botwoon_HealthBasedPalHandling(void) {  // 0xB3982B
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   if (E->botwoon_var_4F != 16
       && (int16)(E->base.health - kBotwoonHealthThresForPalChange[E->botwoon_var_4F >> 1]) < 0) {
@@ -854,7 +884,7 @@ void Botwoon_Func_7(void) {  // 0xB3989D
   }
 }
 
-void Botwoon_Func_8(void) {  // 0xB398EC
+static void Botwoon_Func_8(void) {  // 0xB398EC
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->botwoon_var_D = FUNC16(Botwoon_Func_12);
   E->botwoon_var_E = FUNC16(Botwoon_Func_32);
@@ -864,7 +894,7 @@ void Botwoon_Func_8(void) {  // 0xB398EC
   Botwoon_Func_10(cur_enemy_index);
 }
 
-void Botwoon_Func_9(void) {  // 0xB39913
+static void Botwoon_Func_9(void) {  // 0xB39913
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->botwoon_var_D = FUNC16(Botwoon_Func_13);
   E->botwoon_var_F = FUNC16(Botwoon_Func_27);
@@ -872,14 +902,14 @@ void Botwoon_Func_9(void) {  // 0xB39913
   E->base.properties &= ~kEnemyProps_Tangible;
 }
 
-void Botwoon_Func_10(uint16 k) {  // 0xB39933
+static void Botwoon_Func_10(uint16 k) {  // 0xB39933
   Botwoon_Func_11(k);
   Enemy_Botwoon *E = Get_Botwoon(k);
   uint16 r18 = E->botwoon_var_33 ? 128 : 0;
   E->botwoon_var_40 = (NextRandom() & 0x18) + r18 + 4 * E->botwoon_var_37;
 }
 
-void Botwoon_Func_11(uint16 k) {  // 0xB3995D
+static void Botwoon_Func_11(uint16 k) {  // 0xB3995D
   int16 health;
 
   Enemy_Botwoon *E = Get_Botwoon(k);
@@ -970,7 +1000,7 @@ void Botwoon_Func_16(void) {  // 0xB39ACA
   }
 }
 
-void Botwoon_Func_17(uint16 k) {  // 0xB39ADD
+static void Botwoon_Func_17(uint16 k) {  // 0xB39ADD
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x0f, 0x04, 0xb79b });
   Enemy_ItemDrop_Botwoon(k);
   Enemy_Botwoon *E = Get_Botwoon(k);
@@ -1026,7 +1056,7 @@ void Botwoon_Func_19(void) {  // 0xB39BB7
   }
 }
 
-Point16U Botwoon_Func_20(uint16 k) {  // 0xB39BF8
+static Point16U Botwoon_Func_20(uint16 k) {  // 0xB39BF8
   Enemy_Botwoon *E = Get_Botwoon(k);
   int v2 = E->botwoon_var_37 >> 1;
   uint16 v3 = g_word_B3949B[v2] + 4 - E->base.x_pos;
@@ -1048,20 +1078,20 @@ Point16U Botwoon_Func_20(uint16 k) {  // 0xB39BF8
   return (Point16U) { r18, r20 };
 }
 
-void Botwoon_Func_21(void) {  // 0xB39C48
+static void Botwoon_Func_21(void) {  // 0xB39C48
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   Point32 pt = ConvertAngleToXy(E->botwoon_var_3A, E->botwoon_var_38);
   EnemyFunc_B691(E->botwoon_var_3A, pt);
 }
 
-void Botwoon_Func_22(void) {  // 0xB39C7B
+static void Botwoon_Func_22(void) {  // 0xB39C7B
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   uint16 botwoon_var_B = E->botwoon_var_B;
   *(uint16 *)((uint8 *)&kraid_unk9000 + botwoon_var_B) = E->base.x_pos;
   *(uint16 *)((uint8 *)&g_word_7E9002 + botwoon_var_B) = E->base.y_pos;
 }
 
-void Botwoon_Func_23(void) {  // 0xB39C90
+static void Botwoon_Func_23(void) {  // 0xB39C90
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   uint16 r18 = (E->botwoon_var_B - E->botwoon_var_C) & 0x3FF;
   int n = 24;
@@ -1095,12 +1125,12 @@ void Botwoon_Func_23(void) {  // 0xB39C90
   } while ((n & 0x8000) == 0);
 }
 
-void Botwoon_Func_24(void) {  // 0xB39D3C
+static void Botwoon_Func_24(void) {  // 0xB39D3C
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   E->botwoon_var_B = (E->botwoon_var_B + 4) & 0x3FF;
 }
 
-void Botwoon_Func_25(void) {  // 0xB39D4D
+static void Botwoon_Func_25(void) {  // 0xB39D4D
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
   int n = 24;
   do {
@@ -1216,7 +1246,7 @@ void Botwoon_Func_30(uint16 k) {  // 0xB39F7A
   }
 }
 
-void Botwoon_Func_31(uint16 k) {  // 0xB39F93
+static void Botwoon_Func_31(uint16 k) {  // 0xB39F93
   Enemy_Botwoon *E = Get_Botwoon(cur_enemy_index);
 
   if (!Get_Botwoon(k)->botwoon_var_35) {

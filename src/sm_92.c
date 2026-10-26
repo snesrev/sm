@@ -4,6 +4,10 @@
 #include "variables.h"
 #include "funcs.h"
 
+// Used only in this file.
+static void Unused_SamusTileViewer(void);
+
+
 #define kSamus_AnimationDefinitionPtrs ((uint16*)RomFixedPtr(0x92d94e))
 #define kSamus_TileDefs_TopHalf ((uint16*)RomFixedPtr(0x92d91e))
 #define kSamus_TileDefs_BottomHalf ((uint16*)RomFixedPtr(0x92d938))
@@ -39,7 +43,7 @@ uint8 PlaySamusFanfare(void) {  // 0x92ED24
   }
 }
 
-void Unused_SamusTileViewer(void) {  // 0x92ED7A
+static void Unused_SamusTileViewer(void) {  // 0x92ED7A
   DrawSamusSpritemap(0x182, 0x40, 0x40);
   DrawSamusSpritemap(0x183, 0xC0, 0x40);
   DrawSamusSpritemap(0x184, 0x80, 0x60);

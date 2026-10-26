@@ -4,6 +4,19 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+// Used only in this file.
+static void WalkingSpacePirates_8789(void);
+static void sub_B2F554(void);
+static void sub_B2F5B3(void);
+static void SpacePirates_Func_7(uint16 k);
+static uint16 SpacePirates_Func_8(void);
+static uint16 SpacePirates_Func_9(void);
+static uint16 SpacePirates_Func_10(void);
+static void SpacePirates_Func_16(void);
+static void SpacePirates_FB11(uint16 k);
+static void WalkingSpacePirates_FE4B(void);
+
+
 
 #define kWallSpacePirates_Palette_3 ((uint16*)RomFixedPtr(0xb28727))
 #define g_off_B2F959 ((uint16*)RomFixedPtr(0xb2f959))
@@ -35,7 +48,7 @@ void WalkingSpacePirates_Shot(void) {  // 0xB28779
     NormalEnemyShotAi();
 }
 
-void WalkingSpacePirates_8789(void) {  // 0xB28789
+static void WalkingSpacePirates_8789(void) {  // 0xB28789
   Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
   special_death_item_drop_x_origin_pos = E->base.x_pos;
   special_death_item_drop_y_origin_pos = E->base.y_pos;
@@ -225,7 +238,7 @@ void WallSpacePirates_Init(void) {  // 0xB2EF9F
   E->base.x_pos = v3;
 }
 
-void CallSpacePiratesEnemyFunc(uint32 ea, uint16 k) {
+static void CallSpacePiratesEnemyFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnnullsub_169_B2: return;  // 0xb2804b
   case fnSpacePirates_Func_1: SpacePirates_Func_1(k); return;  // 0xb2f034
@@ -321,7 +334,7 @@ const uint16 *SpacePirates_Instr_16(uint16 k, const uint16 *jp) {  // 0xB2F546
   return jp + 1;
 }
 
-void sub_B2F554(void) {  // 0xB2F554
+static void sub_B2F554(void) {  // 0xB2F554
   gEnemyData(cur_enemy_index)->instruction_timer = 1;
 }
 
@@ -339,7 +352,7 @@ const uint16 *SpacePirates_Instr_18(uint16 k, const uint16 *jp) {  // 0xB2F590
   return INSTR_RETURN_ADDR(E->sps_var_C);
 }
 
-void sub_B2F5B3(void) {  // 0xB2F5B3
+static void sub_B2F5B3(void) {  // 0xB2F5B3
   EnemyData *v0 = gEnemyData(cur_enemy_index);
   v0->instruction_timer = 1;
   v0->ai_var_C = (((v0->x_pos - samus_x_pos) & 0x8000) != 0) ? addr_kSpacePirates_Ilist_F51A : addr_kSpacePirates_Ilist_F32E;
@@ -412,7 +425,7 @@ void SpacePirates_Func_6(uint16 k) {  // 0xB2F6E4
     SpacePirates_Func_7(k);
 }
 
-void SpacePirates_Func_7(uint16 k) {  // 0xB2F6F7
+static void SpacePirates_Func_7(uint16 k) {  // 0xB2F6F7
   Enemy_SpacePirates *E = Get_SpacePirates(k);
   if ((E->base.frame_counter & 0x3F) == 0) {
     if (E->base.x_pos == E->sps_var_E) {
@@ -428,7 +441,7 @@ void SpacePirates_Func_7(uint16 k) {  // 0xB2F6F7
   }
 }
 
-uint16 SpacePirates_Func_8(void) {  // 0xB2F72E
+static uint16 SpacePirates_Func_8(void) {  // 0xB2F72E
   uint16 v0 = 8;
   while (!projectile_type[v0 >> 1]) {
     v0 -= 2;
@@ -446,7 +459,7 @@ uint16 SpacePirates_Func_8(void) {  // 0xB2F72E
   return 1;
 }
 
-uint16 SpacePirates_Func_9(void) {  // 0xB2F78D
+static uint16 SpacePirates_Func_9(void) {  // 0xB2F78D
   Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
   if ((int16)(abs16(E->sps_var_D - samus_x_pos) - 32) >= 0)
     return 0;
@@ -458,7 +471,7 @@ uint16 SpacePirates_Func_9(void) {  // 0xB2F78D
   return 1;
 }
 
-uint16 SpacePirates_Func_10(void) {  // 0xB2F7C6
+static uint16 SpacePirates_Func_10(void) {  // 0xB2F7C6
   Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
   if ((int16)(abs16(samus_x_pos - E->base.x_pos) - 40) >= 0
       || (int16)(abs16(samus_y_pos - E->base.y_pos) - 40) >= 0) {
@@ -526,7 +539,7 @@ void SpacePirates_Func_15(uint16 k) {  // 0xB2F909
     SpacePirates_Func_16();
 }
 
-void SpacePirates_Func_16(void) {  // 0xB2F917
+static void SpacePirates_Func_16(void) {  // 0xB2F917
   int16 v3;
 
   Enemy_SpacePirates *E = Get_SpacePirates(cur_enemy_index);
@@ -645,7 +658,7 @@ void SpacePirates_FAE9(uint16 k) {  // 0xB2FAE9
   }
 }
 
-void SpacePirates_FB11(uint16 k) {  // 0xB2FB11
+static void SpacePirates_FB11(uint16 k) {  // 0xB2FB11
   Enemy_SpacePirates *E = Get_SpacePirates(k);
   CreateSpriteAtPos(E->base.x_pos - 8, E->base.y_pos + 28, 10, 0);
   CreateSpriteAtPos(E->base.x_pos + 8, E->base.y_pos + 28, 10, 0);
@@ -758,7 +771,7 @@ void WalkingSpacePirates_FDCE(void) {  // 0xB2FDCE
   }
 }
 
-void WalkingSpacePirates_FE4B(void) {  // 0xB2FE4B
+static void WalkingSpacePirates_FE4B(void) {  // 0xB2FE4B
   uint16 v0 = 8;
   while (!projectile_type[v0 >> 1]) {
     v0 -= 2;

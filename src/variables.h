@@ -2,7 +2,9 @@
 #define SM_VARIABLES_H_
 #include "types.h"
 
-extern uint8 g_ram[0x20000];
+#ifndef G_RAM_IS_CONSTANT
+extern uint8 g_ram[0x20000] RAM_ALIGNED;
+#endif
 
 #define INT16_SHL8(x) ((int16)(x) << 8)
 #define INT16_SHL16(x) ((int16)(x) << 16)
@@ -1142,5 +1144,23 @@ extern int32 *cur_coll_amt32;
 #include "variables_extra.h"
 
 #define ADDR16_OF_RAM(x) ((uint8*)&(x) - g_ram)
+
+// A block's level data and BTS by its index, read as the SNES reads them
+// (LDA $7F0002,X and $7F6402,X): CalculateBlockAt gives an index of -1 for a
+// point outside the room (Samus's, in a door transition), and the SNES's X,
+// 16 bits, then has level_data's read wrap to bank $80's mirror of $7E:0000,
+// and BTS's read the open bus ($80:6401: what was on the bus last, the
+// instruction's bank byte, $7F), where indexing in C goes past g_ram's end.
+static inline uint16 LevelDataAt(uint16 i) {
+  uint16 x = (uint16)(i * 2);
+  return x == 0xfffe ? (uint16)(g_ram[0] | g_ram[1] << 8) : level_data[x >> 1];
+}
+static inline uint8 BtsAt(uint32 i) {
+  uint32 a = 0x6402 + i;
+  if (a < 0x10000)
+    return BTS[i];
+  a -= 0x10000;
+  return a < 0x2000 ? g_ram[a] : 0x7f;
+}
 
 #endif // SM_VARIABLES_H_

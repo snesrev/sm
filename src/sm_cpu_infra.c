@@ -11,7 +11,7 @@
 #include "enemy_types.h"
 #include <time.h>
 
-void RtlRunFrameCompare(uint16 input, int run_what);
+static void RtlRunFrameCompare(uint16 input, int run_what);
 
 enum RunMode { RM_BOTH, RM_MINE, RM_THEIRS };
 uint8 g_runmode = RM_BOTH;
@@ -55,7 +55,7 @@ void Call(uint32 addr) {
   RunAsmCode(addr, 0, 0, 0, 0);
 }
 
-uint8_t *SnesRomPtr(uint32 v) {
+static uint8_t *SnesRomPtr(uint32 v) {
   return (uint8*)RomPtr(v);
 }
 
@@ -79,7 +79,7 @@ bool ProcessHook(uint32 v) {
   return false;
 }
 
-bool FixBugHook(uint32 addr) {
+static bool FixBugHook(uint32 addr) {
   switch (hookmode) {
   case 1: { // install hooks
     uint8_t *rombyte = SnesRomPtr(addr);
@@ -294,7 +294,7 @@ static const  uint32 kPatchedCarrys[] = {
 
 static uint8 kPatchedCarrysOrg[arraysize(kPatchedCarrys)];
 
-uint32 PatchBugs(uint32 mode, uint32 addr) {
+static uint32 PatchBugs(uint32 mode, uint32 addr) {
   hookmode = mode, hookadr = addr, hookcnt = 0;
   if (FixBugHook(0x86EF35)) {
     g_cpu->x = g_cpu->y;
@@ -428,7 +428,7 @@ uint32 PatchBugs(uint32 mode, uint32 addr) {
   return 0;
 }
 
-int RunPatchBugHook(uint32 addr) {
+static int RunPatchBugHook(uint32 addr) {
   uint32 new_pc = PatchBugs(2, addr);
   if (hookmode == 3) {
     if (new_pc == 0) {
@@ -683,13 +683,13 @@ static bool loadRom(const char *name, Snes *snes) {
   return result;
 }
 
-void PatchBytes(uint32 addr, const uint8 *value, size_t n) {
+static void PatchBytes(uint32 addr, const uint8 *value, size_t n) {
   for(size_t i = 0; i != n; i++)
     SnesRomPtr(addr)[i] = value[i];
 }
 
 // Patches add/sub to ignore carry
-void FixupCarry(uint32 addr) {
+static void FixupCarry(uint32 addr) {
   *SnesRomPtr(addr) = 0;
 }
 
@@ -914,7 +914,7 @@ void DebugGameOverMenu(void) {
   assert(0);
 }
 
-uint32 RunCpuUntilPC(uint32 pc1, uint32 pc2) {
+static uint32 RunCpuUntilPC(uint32 pc1, uint32 pc2) {
   for(;;) {
     if (g_snes->debug_cycles) {
       char line[80];
@@ -929,7 +929,7 @@ uint32 RunCpuUntilPC(uint32 pc1, uint32 pc2) {
   }
 }
 
-void RunOneFrameOfGame_Emulated(void) {
+static void RunOneFrameOfGame_Emulated(void) {
   uint16 bug_fix_bak = bug_fix_counter;
   // Execute until either WaitForNMI or WaitForLagFrame
   RunCpuUntilPC(0x808343, 0x85813C);
@@ -941,7 +941,7 @@ void RunOneFrameOfGame_Emulated(void) {
   bug_fix_counter = bug_fix_bak;
 }
 
-void DrawFrameToPpu(void) {
+static void DrawFrameToPpu(void) {
   g_snes->hPos = g_snes->vPos = 0;
   while (!g_snes->cpu->nmiWanted) {
     do {
@@ -954,7 +954,7 @@ void DrawFrameToPpu(void) {
   g_snes->cpu->nmiWanted = false;
 }
 
-void SaveBugSnapshot() {
+static void SaveBugSnapshot() {
   if (!g_debug_flag && g_got_mismatch_count == 0) {
     char buffer[64];
     snprintf(buffer, sizeof(buffer), "saves/bug-%d.sav", (int)time(NULL));
@@ -1029,7 +1029,7 @@ getout:
     g_got_mismatch_count--;
 }
 
-void RtlRunFrameCompare(uint16 input, int run_what) {
+static void RtlRunFrameCompare(uint16 input, int run_what) {
   g_snes->input1->currentState = input;
 
   if (g_runmode == RM_THEIRS) {

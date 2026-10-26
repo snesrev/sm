@@ -5,6 +5,50 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+// Used only in this file.
+static void DrawEprojs(uint16 k, Point16U pt);
+static Point16U GetValuesForScreenShaking(void);
+static uint8 EprojColl_873D(void);
+static uint8 EprojBlockCollisition_Horiz(uint16 k);
+static uint8 EprojBlockCollisition_Vertical(uint16 k);
+static void SetAreaDependentEprojPropertiesEx(uint16 k, uint16 j);
+static void SetAreaDependentEprojProperties(uint16 j);
+static Point16U Eproj_PhantomFireballs_Func1(uint16 j, uint16 a);
+static uint16 Eproj_PhantomFireballs_Func2(uint16 k, uint16 r24);
+static void Eproj_DeleteIfYposOutside(uint16 k);
+static void Eproj_NorfairLavaquakeRocks_Func3(uint16 k);
+static void Eproj_MotherBrainRoomTurretBullets_Func2(uint16 k);
+static void Eproj_SetXvelRandom(uint16 k);
+static void Eproj_SetYvelRandom(uint16 k);
+static uint8 Eproj_MotherBrainRoomTurretBullets_CheckIfTurretOnScreen(uint16 k);
+static uint16 Math_MultBySinCos(uint16 r38, uint16 a);
+static uint8 CheckForCollisionWithShitroid_DoubleRet(uint16 k);
+static uint8 CheckForBlueRingCollisionWithRoom(uint16 k);
+static void Eproj_Earthqhake5(uint16 k);
+static void BlueRingContactExplosion(uint16 k);
+static uint8 MotherBrainBomb_Bomb_CollDetect_DoubleRet(uint16 k);
+static uint8 MoveMotherBrainBomb(uint16 k, uint16 a);
+static uint16 EprojPreInstrHelper_SpikeShootingPlantSpikes_Func2(uint16 k);
+static uint16 EprojPreInstrHelper_DBF2_Func2(uint16 k);
+static void Eproj_NamiFuneFireball_After(uint16 k);
+static uint16 sub_86DFA0(uint16 k);
+static uint16 sub_86E0B0(uint16 k);
+static uint16 Eproj_FuncE722(uint16 k);
+static void Eproj_FuncE73E_MoveXY(uint16 k);
+static void Eproj_AngleToSamus(uint16 j, uint16 r18, uint16 r20);
+static void Eproj_BotwoonsBodyHurtFlashHandling1(uint16 k);
+static void Eproj_BotwoonsBodyHurtFlashHandling2(uint16 j);
+static void QueueSmallExplosionSfx(void);
+static uint16 sub_86EC18(uint16 k);
+static void Eproj_Pickup_SmallHealth(void);
+static void Eproj_Pickup_BigHealth(void);
+static void Eproj_Pickup_PowerBombs(void);
+static void Eproj_Pickup_Missiles(void);
+static void Eproj_Pickup_SuperMissiles(void);
+static uint16 RandomDropRoutine(uint16 k);
+static void RespawnEnemy(uint16 a);
+
+
 Rect16U eproj_spawn_rect;
 uint16 eproj_spawn_r22;
 Point16U eproj_spawn_pt; // R18/R20
@@ -63,21 +107,21 @@ static const uint8 *CallEprojInstr(uint32 ea, uint16 k, const uint8 *j);
 static void CallEprojInit(uint32 ea, uint16 j);
 static uint16 CheckIfEprojIsOffScreen(uint16 k);
 
-uint16 MoveEprojWithVelocity(uint16 k);
-uint16 MoveEprojWithVelocityX(uint16 k);
-uint16 MoveEprojWithVelocityY(uint16 k);
+static uint16 MoveEprojWithVelocity(uint16 k);
+static uint16 MoveEprojWithVelocityX(uint16 k);
+static uint16 MoveEprojWithVelocityY(uint16 k);
 
 void sub_8690B3(uint16 k);
 void sub_869DA5(uint16 k);
-void sub_86A301(uint16 j);
+static void sub_86A301(uint16 j);
 void sub_86A887(uint16 k);
-void sub_86A91A(uint16 v0);
+static void sub_86A91A(uint16 v0);
 void sub_86B0B9(uint16 k);
 void sub_86B0DD(uint16 k);
 void sub_86B535(uint16 k);
 void sub_86BB30(uint16 j);
-void sub_86C320(uint16 k);
-void sub_86C42E(uint16 k);
+static void sub_86C320(uint16 k);
+static void sub_86C42E(uint16 k);
 void sub_86C605(uint16 j);
 void sub_86CFD5(uint16 k);
 void sub_86CFE6(uint16 k);
@@ -88,10 +132,10 @@ void sub_86D83D(uint16 k);
 void sub_86D89F(uint16 k);
 void sub_86D8DF(uint16 k);
 void sub_86D992(uint16 k);
-void sub_86DCC3(uint16 j);
+static void sub_86DCC3(uint16 j);
 void sub_86E049(uint16 k);
-void sub_86E0A4(uint16 k);
-void sub_86EC0C(uint16 k);
+static void sub_86E0A4(uint16 k);
+static void sub_86EC0C(uint16 k);
 
 
 void EnableEprojs(void) {  // 0x868000
@@ -200,7 +244,7 @@ const uint8 *EprojInstr_ClearPreInstr(uint16 k, const uint8 *epjp) {  // 0x86816
   return epjp;
 }
 
-void CallEprojFunc(uint32 ea, uint32 k) {
+static void CallEprojFunc(uint32 ea, uint32 k) {
   switch (ea) {
   case fnSpawnMotherBrainDeathBeam: SpawnMotherBrainDeathBeam(k); return;
   default: Unreachable();
@@ -444,7 +488,7 @@ void DrawHighPriorityEprojs(void) {  // 0x8683B2
   }
 }
 
-void DrawEprojs(uint16 k, Point16U pt) {  // 0x8683D6
+static void DrawEprojs(uint16 k, Point16U pt) {  // 0x8683D6
   int v1 = k >> 1;
   uint16 v2 = eproj_spritemap_ptr[v1];
   uint16 r26 = LOBYTE(eproj_gfx_idx[v1]);
@@ -462,7 +506,7 @@ void DrawEprojs(uint16 k, Point16U pt) {  // 0x8683D6
   }
 }
 
-Point16U GetValuesForScreenShaking(void) {  // 0x868427
+static Point16U GetValuesForScreenShaking(void) {  // 0x868427
   uint16 R34, R36;
   if (earthquake_timer && !time_is_frozen_flag && sign16(earthquake_type - 36)) {
     int v0 = (uint16)(4 * earthquake_type) >> 1;
@@ -481,16 +525,16 @@ Point16U GetValuesForScreenShaking(void) {  // 0x868427
 }
 
 static uint8 EprojColl_8506(EprojCollInfo *eci) {  // 0x868506
-  if (BTS[cur_block_index]) {
-    cur_block_index += (int8)BTS[cur_block_index];
+  if (BtsAt(cur_block_index)) {
+    cur_block_index += (int8)BtsAt(cur_block_index);
     return 0xff;
   }
   return 0;
 }
 
 static uint8 EprojColl_Unknown8536(EprojCollInfo *eci) {  // 0x86853C
-  if (BTS[cur_block_index]) {
-    cur_block_index += (int8)BTS[cur_block_index] * room_width_in_blocks;
+  if (BtsAt(cur_block_index)) {
+    cur_block_index += (int8)BtsAt(cur_block_index) * room_width_in_blocks;
     return 0xff;
   }
   return 0;
@@ -505,15 +549,15 @@ static uint8 EprojColl_SetCarry(EprojCollInfo *eci) {  // 0x86858C
 }
 
 static uint8 EprojColl_858E(EprojCollInfo *eci) {  // 0x86858E
-  uint16 v0 = BTS[cur_block_index] & 0x1F;
+  uint16 v0 = BtsAt(cur_block_index) & 0x1F;
   if (v0 < 5)
     return EprojColl_85C2(eci, v0, cur_block_index);
-  current_slope_bts = BTS[cur_block_index];
+  current_slope_bts = BtsAt(cur_block_index);
   return EprojColl_873D();
 }
 
 static uint8 EprojColl_85AD(EprojCollInfo *eci) {  // 0x8685AD
-  uint16 v0 = BTS[cur_block_index] & 0x1F;
+  uint16 v0 = BtsAt(cur_block_index) & 0x1F;
   if (v0 >= 5)
     return EprojColl_874E(eci);
   else
@@ -613,7 +657,7 @@ LABEL_17:;
   return 1;
 }
 
-uint8 EprojColl_873D(void) {  // 0x86873D
+static uint8 EprojColl_873D(void) {  // 0x86873D
   return 0;
 }
 
@@ -720,25 +764,25 @@ static Func_EprojCollInfo_U8 *const kEprojBlockCollisition_FuncB[16] = {
   EprojColl_SetCarry,
 };
 
-uint8 EprojBlockCollisition_CheckHorizontal(EprojCollInfo *eci, uint16 k) {
+static uint8 EprojBlockCollisition_CheckHorizontal(EprojCollInfo *eci, uint16 k) {
   uint8 rv;
   cur_block_index = k >> 1;
   do {
-    rv = kEprojBlockCollisition_FuncA[(level_data[cur_block_index] & 0xF000) >> 12](eci);
+    rv = kEprojBlockCollisition_FuncA[(LevelDataAt(cur_block_index) & 0xF000) >> 12](eci);
   } while (rv & 0x80);
   return rv;
 }
 
-uint8 EprojBlockCollisition_CheckVertical(EprojCollInfo *eci, uint16 k) {  // 0x86889E
+static uint8 EprojBlockCollisition_CheckVertical(EprojCollInfo *eci, uint16 k) {  // 0x86889E
   uint8 rv;
   cur_block_index = k >> 1;
   do {
-    rv = kEprojBlockCollisition_FuncB[(level_data[cur_block_index] & 0xF000) >> 12](eci);
+    rv = kEprojBlockCollisition_FuncB[(LevelDataAt(cur_block_index) & 0xF000) >> 12](eci);
   } while (rv & 0x80);
   return rv;
 }
 
-uint8 EprojBlockCollisition_Horiz(uint16 k) {  // 0x8688B6
+static uint8 EprojBlockCollisition_Horiz(uint16 k) {  // 0x8688B6
   int v1 = k >> 1;
   int32 amt = INT16_SHL8(eproj_x_vel[v1]);
   uint16 R30 = HIBYTE(eproj_radius[v1]);
@@ -780,7 +824,7 @@ uint8 EprojBlockCollisition_Horiz(uint16 k) {  // 0x8688B6
   return 1;
 }
 
-uint8 EprojBlockCollisition_Vertical(uint16 k) {  // 0x86897B
+static uint8 EprojBlockCollisition_Vertical(uint16 k) {  // 0x86897B
   int16 v5;
 
   int v1 = k >> 1;
@@ -927,7 +971,7 @@ static void EprojInit_DraygonsWallTurretProjs(uint16 j) {  // 0x868D40
   eproj_pre_instr[v1] = FUNC16(nullsub_84);
 }
 
-void EprojPowerBombCollision(uint16 k) {  // 0x868D5C
+static void EprojPowerBombCollision(uint16 k) {  // 0x868D5C
   uint16 r18 = HIBYTE(power_bomb_explosion_radius);
   if (HIBYTE(power_bomb_explosion_radius)) {
     uint16 r20 = (uint16)(r18 + (HIBYTE(power_bomb_explosion_radius) & 1) + (power_bomb_explosion_radius >> 9)) >> 1;
@@ -1128,7 +1172,7 @@ void EprojPreInstr_CrocomireBridgeCrumbling(uint16 k) {  // 0x8692BA
     eproj_y_vel[k >> 1] = (eproj_y_vel[k >> 1] + 24) & 0x3FFF;
 }
 
-uint16 MoveEprojWithVelocity(uint16 k) {  // 0x8692D6
+static uint16 MoveEprojWithVelocity(uint16 k) {  // 0x8692D6
   int v1 = k >> 1;
   uint16 v2 = eproj_x_vel[v1];
   int carry = *((uint8 *)eproj_x_subpos + k + 1) + (v2 & 0xff);
@@ -1137,7 +1181,7 @@ uint16 MoveEprojWithVelocity(uint16 k) {  // 0x8692D6
   return MoveEprojWithVelocityY(k);
 }
 
-uint16 MoveEprojWithVelocityY(uint16 k) {  // 0x8692F3
+static uint16 MoveEprojWithVelocityY(uint16 k) {  // 0x8692F3
   int v1 = k >> 1;
   uint16 v2 = eproj_y_vel[v1];
   int carry = *((uint8 *)eproj_y_subpos + k + 1) + (v2 & 0xff);
@@ -1147,7 +1191,7 @@ uint16 MoveEprojWithVelocityY(uint16 k) {  // 0x8692F3
   return result;
 }
 
-uint16 MoveEprojWithVelocityX(uint16 k) {  // 0x869311
+static uint16 MoveEprojWithVelocityX(uint16 k) {  // 0x869311
   int v1 = k >> 1;
   uint16 v2 = eproj_x_vel[v1];
   int carry = *((uint8 *)eproj_x_subpos + k + 1) + (v2 & 0xff);
@@ -1157,7 +1201,7 @@ uint16 MoveEprojWithVelocityX(uint16 k) {  // 0x869311
   return result;
 }
 
-void SetAreaDependentEprojPropertiesEx(uint16 k, uint16 j) {  // 0x86932F
+static void SetAreaDependentEprojPropertiesEx(uint16 k, uint16 j) {  // 0x86932F
   uint16 v2;
   uint16 *p = (uint16 *)RomPtr_86(k);
   if (area_index == 2) {
@@ -1217,7 +1261,7 @@ static void EprojInit_9642_RidleysFireball(uint16 j) {  // 0x8693CA
   SetAreaDependentEprojPropertiesEx(addr_kRidleysFireball_Tab0, j);
 }
 
-void SetAreaDependentEprojProperties(uint16 j) {  // 0x869402
+static void SetAreaDependentEprojProperties(uint16 j) {  // 0x869402
   SetAreaDependentEprojPropertiesEx(addr_kRidleysFireball_Tab0, j);
 }
 
@@ -1615,7 +1659,7 @@ LABEL_5:;
   eproj_instr_list_ptr[v1] = addr_off_8697F8;
 }
 
-Point16U Eproj_PhantomFireballs_Func1(uint16 j, uint16 a) {  // 0x869BA2
+static Point16U Eproj_PhantomFireballs_Func1(uint16 j, uint16 a) {  // 0x869BA2
   int16 v3;
   uint16 v2, v4;
 
@@ -1636,7 +1680,7 @@ Point16U Eproj_PhantomFireballs_Func1(uint16 j, uint16 a) {  // 0x869BA2
 }
 
 
-uint16 Eproj_PhantomFireballs_Func2(uint16 k, uint16 r24) {  // 0x869BF3
+static uint16 Eproj_PhantomFireballs_Func2(uint16 k, uint16 r24) {  // 0x869BF3
   uint16 r18 = Mult8x8(*((uint8 *)&kSinCosTable8bit_Sext[64] + k), r24) >> 8;
   return r18 + Mult8x8(*((uint8 *)&kSinCosTable8bit_Sext[64] + k + 1), r24);
 }
@@ -1902,7 +1946,7 @@ static void EprojInit_CeresElevatorPad(uint16 j) {  // 0x86A2EE
   sub_86A301(j);
 }
 
-void sub_86A301(uint16 j) {  // 0x86A301
+static void sub_86A301(uint16 j) {  // 0x86A301
   int v1 = j >> 1;
   eproj_x_subpos[v1] = 0;
   eproj_y_subpos[v1] = 0;
@@ -2147,7 +2191,7 @@ void EprojPreInstr_A977(uint16 k) {  // 0x86A8EF
   }
 }
 
-void sub_86A91A(uint16 v0) {  // 0x86A91A
+static void sub_86A91A(uint16 v0) {  // 0x86A91A
   int v1 = v0 >> 1;
   eproj_x_vel[v1] = 0;
   if ((joypad2_last & 0x100) != 0)
@@ -2547,7 +2591,7 @@ void sub_86B535(uint16 k) {  // 0x86B535
   }
 }
 
-void Eproj_DeleteIfYposOutside(uint16 k) {  // 0x86B5B9
+static void Eproj_DeleteIfYposOutside(uint16 k) {  // 0x86B5B9
   int v1 = k >> 1;
   if ((int16)(eproj_y_pos[v1] - layer1_y_pos) >= 288)
     eproj_id[v1] = 0;
@@ -2783,7 +2827,7 @@ static void EprojInit_NorfairLavaquakeRocks(uint16 j) {  // 0x86BBDB
   eproj_y_subpos[v1] = v2->y_subpos;
 }
 
-void CallNorfairLavaquakeRocksFunc(uint32 ea, uint16 k) {
+static void CallNorfairLavaquakeRocksFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnEproj_NorfairLavaquakeRocks_Func1: Eproj_NorfairLavaquakeRocks_Func1(k); return;
   case fnEproj_NorfairLavaquakeRocks_Func2: Eproj_NorfairLavaquakeRocks_Func2(k); return;
@@ -2848,7 +2892,7 @@ void Eproj_NorfairLavaquakeRocks_Func2(uint16 k) {  // 0x86BC8F
   Eproj_NorfairLavaquakeRocks_Func3(k);
 }
 
-void Eproj_NorfairLavaquakeRocks_Func3(uint16 k) {  // 0x86BCF4
+static void Eproj_NorfairLavaquakeRocks_Func3(uint16 k) {  // 0x86BCF4
   int v1 = k >> 1;
   AddToHiLo(&eproj_x_pos[v1], &eproj_x_subpos[v1], INT16_SHL8(eproj_x_vel[v1]));
 }
@@ -2958,7 +3002,7 @@ void EprojPreInstr_MotherBrainRoomTurrets(uint16 k) {  // 0x86BFDF
   }
 }
 
-void Eproj_MotherBrainRoomTurretBullets_Func2(uint16 v0) {  // 0x86C050
+static void Eproj_MotherBrainRoomTurretBullets_Func2(uint16 v0) {  // 0x86C050
   uint8 r20 = (*((uint8 *)eproj_y_subpos + v0 + 1) + *((uint8 *)eproj_y_subpos + v0)) & 7;
   uint16 r18 = eproj_x_subpos[v0 >> 1];
   if (RomPtr_86(r18)[r20 & 7]) {
@@ -2970,21 +3014,21 @@ void Eproj_MotherBrainRoomTurretBullets_Func2(uint16 v0) {  // 0x86C050
   }
 }
 
-void Eproj_SetXvelRandom(uint16 v0) {  // 0x86C08E
+static void Eproj_SetXvelRandom(uint16 v0) {  // 0x86C08E
   uint16 Random = (uint8)NextRandom();
   if (sign16((uint8)Random - 32))
     Random = 32;
   eproj_x_vel[v0 >> 1] = Random;
 }
 
-void Eproj_SetYvelRandom(uint16 v0) {  // 0x86C0A1
+static void Eproj_SetYvelRandom(uint16 v0) {  // 0x86C0A1
   uint16 Random = (uint8)NextRandom();
   if (sign16((uint8)Random - 128))
     Random = 128;
   eproj_y_vel[v0 >> 1] = Random;
 }
 
-uint8 Eproj_MotherBrainRoomTurretBullets_CheckIfTurretOnScreen(uint16 k) {  // 0x86C0B4
+static uint8 Eproj_MotherBrainRoomTurretBullets_CheckIfTurretOnScreen(uint16 k) {  // 0x86C0B4
   int16 v2;
   int16 v3;
   int16 v4;
@@ -3113,7 +3157,7 @@ uint16 Math_MultByCos(uint16 a, uint16 r18) {  // 0x86C272
   return Math_MultBySinCos(a, r18 + 64);
 }
 
-uint16 Math_MultBySinCos(uint16 r38, uint16 a) {  // 0x86C27A
+static uint16 Math_MultBySinCos(uint16 r38, uint16 a) {  // 0x86C27A
   uint16 r46 = kSinCosTable8bit_Sext[(a & 0xff) + 64];
   uint16 prod = (uint32)r38 * abs16(r46) >> 8;
   return sign16(r46) ? -prod : prod;
@@ -3132,7 +3176,7 @@ void Eproj_MotherBrainsBlueRingLasers(uint16 j) {  // 0x86C2F3
   sub_86C320(j);
 }
 
-void sub_86C320(uint16 k) {  // 0x86C320
+static void sub_86C320(uint16 k) {  // 0x86C320
   int v1 = k >> 1;
   eproj_x_pos[v1] = enemy_data[1].x_pos + 10;
   eproj_y_pos[v1] = enemy_data[1].y_pos + 16;
@@ -3172,7 +3216,7 @@ void Eproj_MoveToBlueRingSpawnPosition(uint16 k) {  // 0x86C335
   }
 }
 
-uint8 CheckForCollisionWithShitroid_DoubleRet(uint16 v0) {  // 0x86C3A9
+static uint8 CheckForCollisionWithShitroid_DoubleRet(uint16 v0) {  // 0x86C3A9
   if (!enemy_ram7800[1].kraid.kraid_healths_8ths[4])
     return 0;
   if (gEnemyData(enemy_ram7800[1].kraid.kraid_healths_8ths[4])->health) {
@@ -3183,7 +3227,7 @@ uint8 CheckForCollisionWithShitroid_DoubleRet(uint16 v0) {  // 0x86C3A9
   return 0xff;
 }
 
-uint8 CheckForBlueRingCollisionWithRoom(uint16 k) {  // 0x86C3C9
+static uint8 CheckForBlueRingCollisionWithRoom(uint16 k) {  // 0x86C3C9
   int16 v2;
   int16 v3;
 
@@ -3202,7 +3246,7 @@ uint8 CheckForBlueRingCollisionWithRoom(uint16 k) {  // 0x86C3C9
   return result;
 }
 
-Rect16U Eproj_GetCollDetectRect(uint16 k) {  // 0x86C3E9
+static Rect16U Eproj_GetCollDetectRect(uint16 k) {  // 0x86C3E9
   int v1 = k >> 1;
   Rect16U rect = {
     eproj_x_pos[v1], eproj_y_pos[v1],
@@ -3211,13 +3255,13 @@ Rect16U Eproj_GetCollDetectRect(uint16 k) {  // 0x86C3E9
   return rect;
 }
 
-void Eproj_Earthqhake5(uint16 k) {  // 0x86C404
+static void Eproj_Earthqhake5(uint16 k) {  // 0x86C404
   earthquake_timer = 10;
   earthquake_type = 5;
   BlueRingContactExplosion(k);
 }
 
-void BlueRingContactExplosion(uint16 k) {  // 0x86C410
+static void BlueRingContactExplosion(uint16 k) {  // 0x86C410
   int v1 = k >> 1;
   eproj_id[v1] = 0;
   eproj_spawn_pt = (Point16U){ eproj_x_pos[v1], eproj_y_pos[v1] };
@@ -3226,7 +3270,7 @@ void BlueRingContactExplosion(uint16 k) {  // 0x86C410
   sub_86C42E(k);
 }
 
-void sub_86C42E(uint16 k) {  // 0x86C42E
+static void sub_86C42E(uint16 k) {  // 0x86C42E
   eproj_gfx_idx[k >> 1] = 0;
 }
 
@@ -3243,7 +3287,7 @@ static void EprojInit_MotherBrainBomb(uint16 j) {  // 0x86C482
   ++enemy_ram7800[1].kraid.kraid_mouth_flags;
 }
 
-uint8 MotherBrainBomb_Bomb_CollDetect_DoubleRet(uint16 k) {  // 0x86C564
+static uint8 MotherBrainBomb_Bomb_CollDetect_DoubleRet(uint16 k) {  // 0x86C564
   int v1 = k >> 1;
   Rect16U rect = {
     eproj_x_pos[v1], eproj_y_pos[v1],
@@ -3263,7 +3307,7 @@ uint8 MotherBrainBomb_Bomb_CollDetect_DoubleRet(uint16 k) {  // 0x86C564
   return 1;  // double return
 }
 
-uint8 MoveMotherBrainBomb(uint16 k, uint16 a) {  // 0x86C5C2
+static uint8 MoveMotherBrainBomb(uint16 k, uint16 a) {  // 0x86C5C2
   int v2 = k >> 1;
   eproj_y_vel[v2] += a;
   MoveEprojWithVelocity(k);
@@ -3499,7 +3543,7 @@ static void EprojInit_MotherBrainTubeFalling(uint16 j) {  // 0x86CBC9
   eproj_E[v1] = FUNC16(MotherBrainTubeFallingFunc_GenerateExplosion);
 }
 
-void CallMotherBrainTubeFallingFunc(uint32 ea, uint16 k) {
+static void CallMotherBrainTubeFallingFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnMotherBrainTubeFallingFunc_GenerateExplosion: MotherBrainTubeFallingFunc_GenerateExplosion(k); return;
   case fnMotherBrainTubeFallingFunc_Falling: MotherBrainTubeFallingFunc_Falling(k); return;
@@ -4039,7 +4083,7 @@ static Func_Y_V *const kEprojPreInstr_SpikeShootingPlantSpikes[10] = {  // 0x86D
   EprojPreInstr_SpikeShootingPlantSpikes_9_MoveX2Y2,
 };
 
-void EprojPreInstrHelper_SpikeShootingPlantSpikes_Func1(uint16 k) {  // 0x86DAC2
+static void EprojPreInstrHelper_SpikeShootingPlantSpikes_Func1(uint16 k) {  // 0x86DAC2
   if (EprojPreInstrHelper_SpikeShootingPlantSpikes_Func2(k))
     eproj_id[k >> 1] = 0;
 }
@@ -4049,7 +4093,7 @@ void EprojPreInstr_SpikeShootingPlantSpikes(uint16 k) {
   EprojPreInstrHelper_SpikeShootingPlantSpikes_Func1(k);
 }
 
-uint16 EprojPreInstrHelper_SpikeShootingPlantSpikes_Func2(uint16 k) {  // 0x86DACE
+static uint16 EprojPreInstrHelper_SpikeShootingPlantSpikes_Func2(uint16 k) {  // 0x86DACE
   int v1 = k >> 1;
   return (int16)(eproj_x_pos[v1] - layer1_x_pos) < 0
     || (int16)(layer1_x_pos + 256 - eproj_x_pos[v1]) < 0
@@ -4092,7 +4136,7 @@ void EprojPreInstr_DBF2_MoveX2(uint16 k) {  // 0x86DB8C
   AddToHiLo(&eproj_x_pos[v1], &eproj_x_subpos[v1], INT16_SHL8(eproj_x_vel[v1]));
 }
 
-uint16 EprojPreInstrHelper_DBF2_Func2(uint16 k) {  // 0x86DBC2
+static uint16 EprojPreInstrHelper_DBF2_Func2(uint16 k) {  // 0x86DBC2
   int v1 = k >> 1;
   return (int16)(eproj_x_pos[v1] - layer1_x_pos) < 0
     || (int16)(layer1_x_pos + 256 - eproj_x_pos[v1]) < 0
@@ -4134,7 +4178,7 @@ static void EprojInit_SporeSpawnStalk(uint16 j) {  // 0x86DCA3
   eproj_x_pos[v1] = enemy_data[0].x_pos;
 }
 
-void sub_86DCC3(uint16 v0) {  // 0x86DCC3
+static void sub_86DCC3(uint16 v0) {  // 0x86DCC3
   int v1 = v0 >> 1;
   eproj_y_pos[v1] = enemy_data[0].y_pos - 96;
   eproj_x_pos[v1] = enemy_data[0].x_pos;
@@ -4205,7 +4249,7 @@ static void EprojInit_NamiFuneFireball_MoveX2(uint16 k) {  // 0x86DF6A
   AddToHiLo(&eproj_x_pos[v1], &eproj_x_subpos[v1], INT16_SHL8(eproj_x_vel[v1]));
 }
 
-void CallNamiFuneFireballFunc(uint32 ea, uint16 k) {
+static void CallNamiFuneFireballFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnEprojInit_NamiFuneFireball_MoveX1: EprojInit_NamiFuneFireball_MoveX1(k); return;
   case fnEprojInit_NamiFuneFireball_MoveX2: EprojInit_NamiFuneFireball_MoveX2(k); return;
@@ -4218,12 +4262,12 @@ void EprojPreInstr_NamiFuneFireball(uint16 v0) {  // 0x86DF39
   Eproj_NamiFuneFireball_After(v0);
 }
 
-void Eproj_NamiFuneFireball_After(uint16 v0) {  // 0x86DF94
+static void Eproj_NamiFuneFireball_After(uint16 v0) {  // 0x86DF94
   if (EprojPreInstrHelper_DBF2_Func2(v0))
     eproj_id[v0 >> 1] = 0;
 }
 
-uint16 sub_86DFA0(uint16 k) {  // 0x86DFA0
+static uint16 sub_86DFA0(uint16 k) {  // 0x86DFA0
   int v1 = k >> 1;
   return (int16)(eproj_x_pos[v1] - layer1_x_pos) < 0
       || (int16)(layer1_x_pos + 256 - eproj_x_pos[v1]) < 0;
@@ -4253,7 +4297,7 @@ static void EprojInit_LavaThrownByLavaman(uint16 j) {  // 0x86E000
   eproj_x_vel[v2] = 768;
 }
 
-void CallLavamanFunc(uint32 ea, uint16 k) {
+static void CallLavamanFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnEproj_LavaThrownByLavaman_MoveX1: Eproj_LavaThrownByLavaman_MoveX1(k); return;
   case fnEproj_LavaThrownByLavaman_MoveX2: Eproj_LavaThrownByLavaman_MoveX2(k); return;
@@ -4276,12 +4320,12 @@ void Eproj_LavaThrownByLavaman_MoveX2(uint16 k) {  // 0x86E07A
   AddToHiLo(&eproj_x_pos[v1], &eproj_x_subpos[v1], INT16_SHL8(eproj_x_vel[v1]));
 }
 
-void sub_86E0A4(uint16 v0) {  // 0x86E0A4
+static void sub_86E0A4(uint16 v0) {  // 0x86E0A4
   if (sub_86E0B0(v0))
     eproj_id[v0 >> 1] = 0;
 }
 
-uint16 sub_86E0B0(uint16 k) {  // 0x86E0B0
+static uint16 sub_86E0B0(uint16 k) {  // 0x86E0B0
   int v1 = k >> 1;
   return (int16)(eproj_x_pos[v1] - layer1_x_pos) < 0
     || (int16)(layer1_x_pos + 256 - eproj_x_pos[v1]) < 0
@@ -4373,7 +4417,7 @@ static uint16 CheckIfEprojIsOffScreen(uint16 k) {  // 0x86E6E0
   return 1;
 }
 
-uint16 Eproj_FuncE722(uint16 k) {  // 0x86E722
+static uint16 Eproj_FuncE722(uint16 k) {  // 0x86E722
   int16 v2;
   int16 v3;
 
@@ -4392,7 +4436,7 @@ uint16 Eproj_FuncE722(uint16 k) {  // 0x86E722
   return result;
 }
 
-void Eproj_FuncE73E_MoveXY(uint16 k) {  // 0x86E73E
+static void Eproj_FuncE73E_MoveXY(uint16 k) {  // 0x86E73E
   int v1 = k >> 1;
   if (((g_word_7E97DC[v1] + 64) & 0x80) != 0) {
     AddToHiLo(&eproj_x_pos[v1], &eproj_x_subpos[v1], -IPAIR32(eproj_x_vel[v1], eproj_E[v1]));
@@ -4406,7 +4450,7 @@ void Eproj_FuncE73E_MoveXY(uint16 k) {  // 0x86E73E
   }
 }
 
-void Eproj_AngleToSamus(uint16 j, uint16 r18, uint16 r20) {  // 0x86E7AB
+static void Eproj_AngleToSamus(uint16 j, uint16 r18, uint16 r20) {  // 0x86E7AB
   int v1 = j >> 1;
   eproj_x_pos[v1] = r18;
   eproj_y_pos[v1] = r20;
@@ -4437,7 +4481,7 @@ static void EprojInit_BotwoonsBody(uint16 j) {  // 0x86EA31
   Ex->kraid.kraid_healths_4ths[0] = 1;
 }
 
-void CallBotwoonEprojFunc(uint32 ea, uint16 k) {
+static void CallBotwoonEprojFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnEproj_BotwoonsBody_Main: Eproj_BotwoonsBody_Main(k); return;
   case fnEproj_BotwonsBodyFunction_Dying: Eproj_BotwonsBodyFunction_Dying(k); return;
@@ -4468,7 +4512,7 @@ void Eproj_BotwoonsBody_Main(uint16 k) {  // 0x86EA98
   Eproj_BotwoonsBodyHurtFlashHandling1(k);
 }
 
-void Eproj_BotwoonsBodyHurtFlashHandling1(uint16 k) {  // 0x86EAB4
+static void Eproj_BotwoonsBodyHurtFlashHandling1(uint16 k) {  // 0x86EAB4
   int v1 = k >> 1;
   eproj_gfx_idx[v1] |= 0xE00;
   if (enemy_data[0].flash_timer) {
@@ -4477,7 +4521,7 @@ void Eproj_BotwoonsBodyHurtFlashHandling1(uint16 k) {  // 0x86EAB4
   }
 }
 
-void Eproj_BotwoonsBodyHurtFlashHandling2(uint16 j) {  // 0x86EAD4
+static void Eproj_BotwoonsBodyHurtFlashHandling2(uint16 j) {  // 0x86EAD4
   int v1 = j >> 1;
   eproj_gfx_idx[v1] |= 0xE00;
   if (enemy_data[0].flash_timer) {
@@ -4523,7 +4567,7 @@ void Eproj_BotwonsBodyFunction_DyingFalling(uint16 v0) {  // 0x86EB1F
   }
 }
 
-void QueueSmallExplosionSfx(void) {  // 0x86EB94
+static void QueueSmallExplosionSfx(void) {  // 0x86EB94
   QueueSfx2_Max6(0x24);
 }
 
@@ -4546,12 +4590,12 @@ void EprojPreInstr_BotwoonsSpit(uint16 k) {  // 0x86EC05
   sub_86EC0C(k);
 }
 
-void sub_86EC0C(uint16 k) {  // 0x86EC0C
+static void sub_86EC0C(uint16 k) {  // 0x86EC0C
   if (sub_86EC18(k))
     eproj_id[k >> 1] = 0;
 }
 
-uint16 sub_86EC18(uint16 k) {  // 0x86EC18
+static uint16 sub_86EC18(uint16 k) {  // 0x86EC18
   int v1 = k >> 1;
   return (int16)(eproj_x_pos[v1] - layer1_x_pos) < 0
     || (int16)(layer1_x_pos + 256 - eproj_x_pos[v1]) < 0
@@ -4722,34 +4766,34 @@ LABEL_7:;
   }
 }
 
-void Eproj_Pickup_SmallHealth(void) {  // 0x86F0BB
+static void Eproj_Pickup_SmallHealth(void) {  // 0x86F0BB
   Samus_RestoreHealth(5);
   QueueSfx2_Max1(1);
 }
 
-void Eproj_Pickup_BigHealth(void) {  // 0x86F0CA
+static void Eproj_Pickup_BigHealth(void) {  // 0x86F0CA
   Samus_RestoreHealth(0x14);
   QueueSfx2_Max1(2);
 }
 
-void Eproj_Pickup_PowerBombs(void) {  // 0x86F0D9
+static void Eproj_Pickup_PowerBombs(void) {  // 0x86F0D9
   Samus_RestorePowerBombs(1);
   QueueSfx2_Max1(5);
 }
 
-void Eproj_Pickup_Missiles(void) {  // 0x86F0E8
+static void Eproj_Pickup_Missiles(void) {  // 0x86F0E8
   Samus_RestoreMissiles(2);
   QueueSfx2_Max1(3);
 }
 
-void Eproj_Pickup_SuperMissiles(void) {  // 0x86F0F7
+static void Eproj_Pickup_SuperMissiles(void) {  // 0x86F0F7
   Samus_RestoreSuperMissiles(1);
   QueueSfx2_Max1(4);
 }
 
 static const uint8 byte_86F25E[6] = { 1, 2, 4, 6, 5, 3 };
 
-uint16 RandomDropRoutine(uint16 k) {  // 0x86F106
+static uint16 RandomDropRoutine(uint16 k) {  // 0x86F106
   int8 v9; // cf
   uint8 r18, r22, r20;
   uint16 r24;
@@ -4842,7 +4886,7 @@ LABEL_30:
   return byte_86F25E[i];
 }
 
-void RespawnEnemy(uint16 v0) {  // 0x86F264
+static void RespawnEnemy(uint16 v0) {  // 0x86F264
   cur_enemy_index = v0;
   const uint8 *v1 = RomPtr_A1(room_enemy_population_ptr + (v0 >> 2));
   EnemyData *E = gEnemyData(v0);

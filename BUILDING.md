@@ -1,3 +1,6 @@
+This file is the PC build, which runs the decompilation with SDL2. To build
+the Game Boy Advance cartridge, see [docs/BUILDING-GBA.md](docs/BUILDING-GBA.md).
+
 # Requirements
   * A Super Metroid rom (Make sure to rename it to `sm.smc`)
   * libsdl2-dev

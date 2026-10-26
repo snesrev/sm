@@ -6,6 +6,69 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+// Used only in this file.
+static void MiniDraygon_Func_2(void);
+static void MiniDraygon_Func_3(void);
+static void MiniDraygon_Func_5(void);
+static void MiniDraygon_Func_6(void);
+static void MiniDraygon_Func_7(void);
+static void MiniDraygon_Func_11(void);
+static void MiniDraygon_Func_12(void);
+static void MiniDraygon_Func_13(void);
+static uint16 Fune_Func_3(void);
+static void Fune_Func_4(void);
+static void WreckedShipGhost_Func_3(uint16 k);
+static uint16 WreckedShipGhost_Func_8(void);
+static void YappingMaw_Func_3(void);
+static void YappingMaw_Func_4(void);
+static void YappingMaw_Func_5(void);
+static void YappingMaw_Func_6(void);
+static void YappingMaw_Func_7(void);
+static void YappingMaw_Func_9(uint16 k);
+static void YappingMaw_Func_10(void);
+static void YappingMaw_Func_12(void);
+static void YappingMaw_Func_13(void);
+static void YappingMaw_Func_14(void);
+static void YappingMaw_Func_15(void);
+static uint16 YappingMaw_Func_16(uint16 a, uint16 varE32);
+static uint16 YappingMaw_Func_17(uint16 a, uint16 varE32);
+static void YappingMaw_Func_18(uint16 j);
+static void YappingMaw_Func_19(void);
+static void sub_A8AF32(void);
+static void NorfairLavaMan_Func_2(void);
+static void NorfairLavaMan_Func_3(void);
+static void NorfairLavaMan_Func_4(void);
+static void NorfairLavaMan_Func_5(uint16 k);
+static void NorfairLavaMan_Func_14(uint16 k);
+static void NorfairLavaMan_Func_19(uint16 k);
+static void NorfairLavaMan_Func_20(void);
+static void NorfairLavaMan_Common(void);
+static void MaridiaFloater_Func_2(uint16 k);
+static void WreckedShipRobot_Func_2(uint16 k);
+static const uint16 *WreckedShipRobot_CommonInstr(uint16 k, const uint16 *jp, uint16 r50, uint16 r48);
+static const uint16 *WreckedShipRobot_D10C(uint16 k, const uint16 *jp, uint16 r50);
+static const uint16 *WreckedShipRobot_D147(uint16 k, const uint16 *jp, uint16 r48, uint16 r50);
+static void MaridiaPuffer_Func_5(void);
+static void MaridiaPuffer_Func_6(void);
+static void MaridiaPuffer_Func_7(void);
+static void MaridiaPuffer_Func_8(uint16 k);
+static void MaridiaPuffer_Func_9(uint16 k);
+static void WalkingLavaSeahorse_Func_1(uint16 k);
+static uint16 WalkingLavaSeahorse_Func_2(uint16 k);
+static void sub_A8DDDE(uint16 k);
+static void WalkingLavaSeahorse_Func_5(uint16 k);
+static void WalkingLavaSeahorse_DF20(uint16 a);
+static void WalkingLavaSeahorse_Func_10(void);
+static void WreckedShipOrbs_Func_1(void);
+static void WreckedShipOrbs_Func_2(void);
+static void sub_A8F6DC(uint16 k, uint16 j);
+static void KiHunter_Func_12(void);
+static void KiHunter_Func_13(void);
+static void KiHunter_Func_15(uint16 k);
+static void KiHunter_Func_16(uint16 k);
+static void KiHunter_Func_17(void);
+
+
 
 #define g_off_A890DA ((uint16*)RomFixedPtr(0xa890da))
 #define g_word_A8A0A7 (*(uint16*)RomFixedPtr(0xa8a0a7))
@@ -198,7 +261,7 @@ void MiniDraygon_Func_1(void) {  // 0xA88838
   MiniDraygon_Func_12();
 }
 
-void MiniDraygon_Func_2(void) {  // 0xA88866
+static void MiniDraygon_Func_2(void) {  // 0xA88866
   int v0 = cur_enemy_index >> 1;
   uint16 v1 = enemy_drawing_queue_sizes[v0 + 1];
   Enemy_MiniDraygon *E = Get_MiniDraygon(cur_enemy_index);
@@ -230,7 +293,7 @@ void EvirProjectile_Init(void) {  // 0xA888B0
   E->mdn_var_C = FUNC16(MiniDraygon_Func_8);
 }
 
-void MiniDraygon_Func_3(void) {  // 0xA888E5
+static void MiniDraygon_Func_3(void) {  // 0xA888E5
   int v0 = cur_enemy_index >> 1;
   uint16 v1 = enemy_drawing_queue[v0 + 83];
   Enemy_MiniDraygon *E = Get_MiniDraygon(cur_enemy_index);
@@ -243,7 +306,7 @@ void MiniDraygon_Func_3(void) {  // 0xA888E5
 }
 
 
-void CallMiniDraygonFunc(uint32 ea) {
+static void CallMiniDraygonFunc(uint32 ea) {
   switch (ea) {
   case fnMiniDraygon_Func_4: MiniDraygon_Func_4(); return;
   case fnMiniDraygon_Func_8: MiniDraygon_Func_8(); return;
@@ -264,7 +327,7 @@ void MiniDraygon_Func_4(void) {  // 0xA88922
     MiniDraygon_Func_5();
 }
 
-void MiniDraygon_Func_5(void) {  // 0xA88933
+static void MiniDraygon_Func_5(void) {  // 0xA88933
   if (!Get_MiniDraygon(cur_enemy_index + 128)->mdn_var_0C)
     MiniDraygon_Func_1();
   Enemy_MiniDraygon *E = Get_MiniDraygon(cur_enemy_index);
@@ -279,7 +342,7 @@ void MiniDraygon_Func_5(void) {  // 0xA88933
   }
 }
 
-void MiniDraygon_Func_6(void) {  // 0xA88997
+static void MiniDraygon_Func_6(void) {  // 0xA88997
   MiniDraygon_Func_2();
 }
 
@@ -300,7 +363,7 @@ void EvirProjectile_Main(void) {  // 0xA8899E
   CallMiniDraygonFunc(E->mdn_var_C | 0xA80000);
 }
 
-void MiniDraygon_Func_7(void) {  // 0xA889D4
+static void MiniDraygon_Func_7(void) {  // 0xA889D4
   if (IsSamusWithinEnemy_X(cur_enemy_index - 128, 0x80)) {
     uint16 r22 = -(uint8)(CalculateAngleOfSamusFromEnemy(cur_enemy_index) - 64);
     Enemy_MiniDraygon *E = Get_MiniDraygon(cur_enemy_index);
@@ -340,7 +403,7 @@ void MiniDraygon_Func_10(void) {  // 0xA88A78
   }
 }
 
-void MiniDraygon_Func_11(void) {  // 0xA88AB1
+static void MiniDraygon_Func_11(void) {  // 0xA88AB1
   if (EnemyFunc_ADA3(0x100)) {
     if (!enemy_drawing_queue[(cur_enemy_index >> 1) + 77]) {
       Enemy_MiniDraygon *E = Get_MiniDraygon(cur_enemy_index);
@@ -354,7 +417,7 @@ void MiniDraygon_Func_11(void) {  // 0xA88AB1
   }
 }
 
-void MiniDraygon_Func_12(void) {  // 0xA88AE8
+static void MiniDraygon_Func_12(void) {  // 0xA88AE8
   Enemy_MiniDraygon *E = Get_MiniDraygon(cur_enemy_index);
   uint16 mdn_var_02 = E->mdn_var_02;
   if (mdn_var_02 != E->mdn_var_01) {
@@ -380,7 +443,7 @@ void MiniDraygon_Shot(void) {  // 0xA88B12
   MiniDraygon_Func_13();
 }
 
-void MiniDraygon_Func_13(void) {  // 0xA88B16
+static void MiniDraygon_Func_13(void) {  // 0xA88B16
   Enemy_MiniDraygon *E = Get_MiniDraygon(cur_enemy_index);
   Enemy_MiniDraygon *E1 = Get_MiniDraygon(cur_enemy_index + 64);
   Enemy_MiniDraygon *E2 = Get_MiniDraygon(cur_enemy_index + 128);
@@ -546,7 +609,7 @@ void Fune_Init(void) {  // 0xA896E3
   E->fune_var_E = 0;
 }
 
-void CallFuneFunc(uint32 ea) {
+static void CallFuneFunc(uint32 ea) {
   switch (ea) {
   case fnFune_Func_1: Fune_Func_1(); return;  // 0xa89737
   case fnFune_Func_2: Fune_Func_2(); return;  // 0xa8975c
@@ -586,12 +649,12 @@ void Fune_Func_2(void) {  // 0xA8975C
   E->fune_var_A = E->fune_var_00;
 }
 
-uint16 Fune_Func_3(void) {  // 0xA89790
+static uint16 Fune_Func_3(void) {  // 0xA89790
   Enemy_Fune *E = Get_Fune(cur_enemy_index);
   return IsSamusWithinEnemy_Y(cur_enemy_index, E->fune_var_C);
 }
 
-void Fune_Func_4(void) {  // 0xA8979B
+static void Fune_Func_4(void) {  // 0xA8979B
   Enemy_Fune *E = Get_Fune(cur_enemy_index);
   E->base.instruction_timer = 1;
   E->base.timer = 0;
@@ -616,7 +679,7 @@ void WreckedShipGhost_Init(void) {  // 0xA89AEE
   } while (--n >= 0);
 }
 
-void CallWreckedShipGhost(uint32 ea, uint16 k) {
+static void CallWreckedShipGhost(uint32 ea, uint16 k) {
   switch (ea) {
   case fnWreckedShipGhost_Func_1: WreckedShipGhost_Func_1(k); return;
   case fnWreckedShipGhost_Func_2: WreckedShipGhost_Func_2(k); return;
@@ -688,7 +751,7 @@ void WreckedShipGhost_Func_2(uint16 k) {  // 0xA89BAD
   }
 }
 
-void WreckedShipGhost_Func_3(uint16 k) {  // 0xA89C31
+static void WreckedShipGhost_Func_3(uint16 k) {  // 0xA89C31
   int16 v5;
 
   Enemy_WreckedShipGhost *E = Get_WreckedShipGhost(k);
@@ -817,7 +880,7 @@ LABEL_13:
   E->wsgt_var_0C = g_word_A89D34 + samus_y_pos;
 }
 
-uint16 WreckedShipGhost_Func_8(void) {  // 0xA89E88
+static uint16 WreckedShipGhost_Func_8(void) {  // 0xA89E88
   uint16 v0 = 0;
   if (!door_transition_flag_enemies) {
     Enemy_WreckedShipGhost *E = Get_WreckedShipGhost(cur_enemy_index);
@@ -958,7 +1021,7 @@ void YappingMaw_Init(void) {  // 0xA8A148
   E->ymw_var_46 = CreateSpriteAtPos(E->base.x_pos, R34 + E->base.y_pos, R36, v3);
 }
 
-void CallYappingMawFunc(uint32 ea) {
+static void CallYappingMawFunc(uint32 ea) {
   switch (ea) {
   case fnYappingMaw_Func_1: YappingMaw_Func_1(); return;  // 0xa8a235
   case fnYappingMaw_Func_2: YappingMaw_Func_2(); return;  // 0xa8a28c
@@ -1017,13 +1080,13 @@ void YappingMaw_Func_2(void) {  // 0xA8A28C
   E->ymw_var_A = FUNC16(YappingMaw_Func_8);
 }
 
-void YappingMaw_Func_3(void) {  // 0xA8A310
+static void YappingMaw_Func_3(void) {  // 0xA8A310
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   E->ymw_var_0E = YappingMaw_Func_16(0x80, E->ymw_var_09);
   E->ymw_var_0F = YappingMaw_Func_17(0x80, E->ymw_var_09 >> 1);
 }
 
-void YappingMaw_Func_4(void) {  // 0xA8A339
+static void YappingMaw_Func_4(void) {  // 0xA8A339
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   uint16 varE32 = E->ymw_var_00;
   E->ymw_var_10 = YappingMaw_Func_16(0, varE32);
@@ -1032,7 +1095,7 @@ void YappingMaw_Func_4(void) {  // 0xA8A339
   E->ymw_var_28 = YappingMaw_Func_17(E->ymw_var_0B, varE32) - E->ymw_var_11;
 }
 
-void YappingMaw_Func_5(void) {  // 0xA8A37C
+static void YappingMaw_Func_5(void) {  // 0xA8A37C
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   uint16 varE32 = E->ymw_var_02;
   E->ymw_var_10 = YappingMaw_Func_16(0, varE32);
@@ -1041,7 +1104,7 @@ void YappingMaw_Func_5(void) {  // 0xA8A37C
   E->ymw_var_2A = YappingMaw_Func_17(E->ymw_var_0B, varE32) - E->ymw_var_11;
 }
 
-void YappingMaw_Func_6(void) {  // 0xA8A3BF
+static void YappingMaw_Func_6(void) {  // 0xA8A3BF
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   uint16 varE32 = E->ymw_var_04;
   E->ymw_var_10 = YappingMaw_Func_16(0, varE32);
@@ -1050,7 +1113,7 @@ void YappingMaw_Func_6(void) {  // 0xA8A3BF
   E->ymw_var_2C = YappingMaw_Func_17(E->ymw_var_0B, varE32) - E->ymw_var_11;
 }
 
-void YappingMaw_Func_7(void) {  // 0xA8A402
+static void YappingMaw_Func_7(void) {  // 0xA8A402
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   uint16 varE32 = E->ymw_var_06;
   E->ymw_var_10 = YappingMaw_Func_16(0, varE32);
@@ -1132,14 +1195,14 @@ LABEL_19:
   }
 }
 
-void YappingMaw_Func_9(uint16 k) {  // 0xA8A63E
+static void YappingMaw_Func_9(uint16 k) {  // 0xA8A63E
   Enemy_YappingMaw *E = Get_YappingMaw(k);
   int v2 = E->ymw_var_D >> 1;
   AddToHiLo(&E->ymw_var_B, &E->ymw_var_C, __PAIR32__(kCommonEnemySpeeds_Quadratic[v2 + 1], kCommonEnemySpeeds_Quadratic[v2]));
   E->ymw_var_D += 8;
 }
 
-void YappingMaw_Func_10(void) {  // 0xA8A665
+static void YappingMaw_Func_10(void) {  // 0xA8A665
   CallSomeSamusCode(3);
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   samus_x_pos = E->ymw_var_32 + E->base.x_pos;
@@ -1160,39 +1223,39 @@ void YappingMaw_Func_11(void) {  // 0xA8A68A
   }
 }
 
-void YappingMaw_Func_12(void) {  // 0xA8A6C4
+static void YappingMaw_Func_12(void) {  // 0xA8A6C4
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   int v1 = E->ymw_var_40 >> 1;
   eproj_x_pos[v1] = E->ymw_var_0C;
   eproj_y_pos[v1] = E->ymw_var_0D;
 }
 
-void YappingMaw_Func_13(void) {  // 0xA8A6DB
+static void YappingMaw_Func_13(void) {  // 0xA8A6DB
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   int v1 = E->ymw_var_41 >> 1;
   eproj_x_pos[v1] = E->ymw_var_00 + E->ymw_var_0C;
   eproj_y_pos[v1] = E->ymw_var_01 + E->ymw_var_0D;
 }
 
-void YappingMaw_Func_14(void) {  // 0xA8A6FC
+static void YappingMaw_Func_14(void) {  // 0xA8A6FC
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   int v1 = E->ymw_var_42 >> 1;
   eproj_x_pos[v1] = E->ymw_var_02 + E->ymw_var_0C;
   eproj_y_pos[v1] = E->ymw_var_03 + E->ymw_var_0D;
 }
 
-void YappingMaw_Func_15(void) {  // 0xA8A71D
+static void YappingMaw_Func_15(void) {  // 0xA8A71D
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   int v1 = E->ymw_var_43 >> 1;
   eproj_x_pos[v1] = E->ymw_var_04 + E->ymw_var_0C;
   eproj_y_pos[v1] = E->ymw_var_05 + E->ymw_var_0D;
 }
 
-uint16 YappingMaw_Func_16(uint16 a, uint16 varE32) {  // 0xA8A73E
+static uint16 YappingMaw_Func_16(uint16 a, uint16 varE32) {  // 0xA8A73E
   return YappingMaw_Func_17(a - 64, varE32);
 }
 
-uint16 YappingMaw_Func_17(uint16 a, uint16 varE32) {  // 0xA8A742
+static uint16 YappingMaw_Func_17(uint16 a, uint16 varE32) {  // 0xA8A742
   int16 v1;
   uint16 r20 = 0;
 
@@ -1252,7 +1315,7 @@ void YappingMaw_Frozen(void) {  // 0xA8A835
   YappingMaw_Func_19();
 }
 
-void YappingMaw_Func_18(uint16 j) {  // 0xA8A85D
+static void YappingMaw_Func_18(uint16 j) {  // 0xA8A85D
   int v1 = j >> 1;
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   eproj_gfx_idx[v1] = E->ymw_var_45 | eproj_gfx_idx[v1] & 0xF1FF;
@@ -1266,7 +1329,7 @@ void YappingMaw_Func_18(uint16 j) {  // 0xA8A85D
   }
 }
 
-void YappingMaw_Func_19(void) {  // 0xA8A899
+static void YappingMaw_Func_19(void) {  // 0xA8A899
   Enemy_YappingMaw *E = Get_YappingMaw(cur_enemy_index);
   uint16 r18 = E->ymw_var_45;
   uint16 r20 = E->ymw_var_46;
@@ -1293,7 +1356,7 @@ void Kago_Init(void) {  // 0xA8AB46
   E->kago_var_04 = E->kago_parameter_1;
 }
 
-void CallKagoFunc(uint32 ea, uint16 k) {
+static void CallKagoFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnKago_Func_1: Kago_Func_1(k); return;
   case fnnullsub_306: return;
@@ -1444,7 +1507,7 @@ const uint16 *NorfairLavaMan_Instr_6(uint16 k, const uint16 *jp) {  // 0xA8AF18
   return jp;
 }
 
-void sub_A8AF32(void) {  // 0xA8AF32
+static void sub_A8AF32(void) {  // 0xA8AF32
   Enemy_NorfairLavaMan *E = Get_NorfairLavaMan(cur_enemy_index);
   E->base.x_pos = E->nlmn_var_12;
   E->base.y_pos = E->nlmn_var_13;
@@ -1477,7 +1540,7 @@ void NorfairLavaMan_Func_1(void) {  // 0xA8AF9D
   E->nlmn_var_F = FUNC16(NorfairLavaMan_Func_7);
 }
 
-void NorfairLavaMan_Func_2(void) {  // 0xA8AFE2
+static void NorfairLavaMan_Func_2(void) {  // 0xA8AFE2
   Enemy_NorfairLavaMan *E = Get_NorfairLavaMan(cur_enemy_index);
   E->nlmn_var_03 = E->base.y_pos;
   E->nlmn_var_C = 0;
@@ -1490,7 +1553,7 @@ void NorfairLavaMan_Func_2(void) {  // 0xA8AFE2
   E->base.properties |= kEnemyProps_Invisible;
 }
 
-void NorfairLavaMan_Func_3(void) {  // 0xA8B020
+static void NorfairLavaMan_Func_3(void) {  // 0xA8B020
   Enemy_NorfairLavaMan *E = Get_NorfairLavaMan(cur_enemy_index);
   E->nlmn_var_03 = E->base.y_pos;
   E->nlmn_var_11 = E->base.x_pos;
@@ -1503,7 +1566,7 @@ void NorfairLavaMan_Func_3(void) {  // 0xA8B020
   E->base.properties |= kEnemyProps_Invisible;
 }
 
-void NorfairLavaMan_Func_4(void) {  // 0xA8B05E
+static void NorfairLavaMan_Func_4(void) {  // 0xA8B05E
   Enemy_NorfairLavaMan *E = Get_NorfairLavaMan(cur_enemy_index);
   int v1 = (8 * HIBYTE(E->nlmn_parameter_2)) >> 1;
   E->nlmn_var_08 = kCommonEnemySpeeds_Linear[v1];
@@ -1512,7 +1575,7 @@ void NorfairLavaMan_Func_4(void) {  // 0xA8B05E
   E->nlmn_var_09 = kCommonEnemySpeeds_Linear[v1 + 3];
 }
 
-void NorfairLavaMan_Func_5(uint16 k) {  // 0xA8B088
+static void NorfairLavaMan_Func_5(uint16 k) {  // 0xA8B088
   enemy_gfx_drawn_hook.addr = FUNC16(NorfairLavaMan_Func_6);
   *(uint16 *)&enemy_gfx_drawn_hook.bank = 168;
   variables_for_enemy_graphics_drawn_hook[0] = ((uint16)(Get_NorfairLavaMan(k)->base.palette_index & 0xE00) >> 4)
@@ -1662,7 +1725,7 @@ void NorfairLavaMan_Func_13(void) {  // 0xA8B295
   NorfairLavaMan_Func_14(cur_enemy_index);
 }
 
-void NorfairLavaMan_Func_14(uint16 k) {  // 0xA8B2C5
+static void NorfairLavaMan_Func_14(uint16 k) {  // 0xA8B2C5
   int16 nlmn_var_E;
 
   Enemy_NorfairLavaMan *E = Get_NorfairLavaMan(k);
@@ -1728,7 +1791,7 @@ void NorfairLavaMan_Func_18(uint16 k) {  // 0xA8B3A7
   NorfairLavaMan_Func_19(cur_enemy_index);
 }
 
-void NorfairLavaMan_Func_19(uint16 k) {  // 0xA8B3CB
+static void NorfairLavaMan_Func_19(uint16 k) {  // 0xA8B3CB
   int v1 = k >> 1;
   uint16 v2 = enemy_drawing_queue[v1 + 61] - Get_NorfairLavaMan(k)->base.y_pos + 2;
   enemy_drawing_queue[v1 + 64] = v2;
@@ -1736,7 +1799,7 @@ void NorfairLavaMan_Func_19(uint16 k) {  // 0xA8B3CB
     enemy_drawing_queue[v1 + 64] = 8;
 }
 
-void NorfairLavaMan_Func_20(void) {  // 0xA8B3E5
+static void NorfairLavaMan_Func_20(void) {  // 0xA8B3E5
   Enemy_NorfairLavaMan *E = Get_NorfairLavaMan(cur_enemy_index);
   uint16 nlmn_var_D = E->nlmn_var_D;
   if (nlmn_var_D != E->nlmn_var_C) {
@@ -1762,7 +1825,7 @@ void NorfairLavaMan_Shot(void) {  // 0xA8B40C
   NorfairLavaMan_Common();
 }
 
-void NorfairLavaMan_Common(void) {  // 0xA8B410
+static void NorfairLavaMan_Common(void) {  // 0xA8B410
   Enemy_NorfairLavaMan *E = Get_NorfairLavaMan(cur_enemy_index);
   Enemy_NorfairLavaMan *E1 = Get_NorfairLavaMan(cur_enemy_index + 64);
   Enemy_NorfairLavaMan *E2 = Get_NorfairLavaMan(cur_enemy_index + 128);
@@ -1978,7 +2041,7 @@ void Beetom_Func_19(void) {  // 0xA8BA24
   }
 }
 
-void Beetom_Func_22(uint16 k) {  // 0xA8BAE7
+static void Beetom_Func_22(uint16 k) {  // 0xA8BAE7
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
   if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[(v2 + 2) >> 1])) {
@@ -1992,7 +2055,7 @@ void Beetom_Func_22(uint16 k) {  // 0xA8BAE7
   }
 }
 
-void Beetom_Func_23(uint16 k) {  // 0xA8BB20
+static void Beetom_Func_23(uint16 k) {  // 0xA8BB20
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
   if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v2 >> 1])) {
@@ -2028,7 +2091,7 @@ void Beetom_Func_21(void) {  // 0xA8BAB7
   }
 }
 
-void Beetom_Func_26(uint16 k) {  // 0xA8BBB8
+static void Beetom_Func_26(uint16 k) {  // 0xA8BBB8
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
   if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[(v2 + 2) >> 1])) {
@@ -2042,7 +2105,7 @@ void Beetom_Func_26(uint16 k) {  // 0xA8BBB8
   }
 }
 
-void Beetom_Func_27(uint16 k) {  // 0xA8BBF1
+static void Beetom_Func_27(uint16 k) {  // 0xA8BBF1
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
   if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v2 >> 1])) {
@@ -2079,7 +2142,7 @@ void Beetom_Func_25(void) {  // 0xA8BB88
 }
 
 
-void Beetom_Func_30(uint16 k) {  // 0xA8BC8A
+static void Beetom_Func_30(uint16 k) {  // 0xA8BC8A
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
   if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[(v2 + 2) >> 1])) {
@@ -2094,7 +2157,7 @@ void Beetom_Func_30(uint16 k) {  // 0xA8BC8A
   }
 }
 
-void Beetom_Func_31(uint16 k) {  // 0xA8BCC3
+static void Beetom_Func_31(uint16 k) {  // 0xA8BCC3
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
   if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v2 >> 1])) {
@@ -2130,7 +2193,7 @@ void Beetom_Func_29(void) {  // 0xA8BC5A
   }
 }
 
-void Beetom_Func_34(void) {  // 0xA8BD8C
+static void Beetom_Func_34(void) {  // 0xA8BD8C
   Enemy_Beetom *E = Get_Beetom(cur_enemy_index);
   if (joypad1_lastkeys != E->beetom_var_F) {
     E->beetom_var_F = joypad1_lastkeys;
@@ -2180,7 +2243,7 @@ void Beetom_Func_35(void) {  // 0xA8BD9D
   }
 }
 
-void Beetom_Func_37(uint16 k) {  // 0xA8BDCC
+static void Beetom_Func_37(uint16 k) {  // 0xA8BDCC
   Enemy_Beetom *E = Get_Beetom(k);
   int v2 = (8 * E->beetom_var_B) >> 1;
   if (Enemy_MoveDown(k, kCommonEnemySpeeds_Quadratic32[v2 >> 1])) {
@@ -2202,7 +2265,7 @@ void Beetom_Func_36(void) {  // 0xA8BDC5
   Beetom_Func_37(cur_enemy_index);
 }
 
-void CallBeetomFunc(uint32 ea) {
+static void CallBeetomFunc(uint32 ea) {
   switch (ea) {
   case fnBeetom_Func_3: Beetom_Func_3(); return;  // 0xa8b814
   case fnBeetom_Func_4: Beetom_Func_4(); return;  // 0xa8b82f
@@ -2305,7 +2368,7 @@ void MaridiaFloater_Func_1(uint16 k) {  // 0xA8C223
     SpawnEprojWithGfx(i, k, addr_kEproj_MaridiaFloatersSpikes);
 }
 
-void MaridiaFloater_Func_2(uint16 k) {  // 0xA8C234
+static void MaridiaFloater_Func_2(uint16 k) {  // 0xA8C234
   int v1 = k >> 1;
   uint16 v2 = enemy_drawing_queue[v1 + 103];
   if (sign16(v2 + 0x3E6F)) {
@@ -2679,7 +2742,7 @@ void WreckedShipRobot_Func_1(void) {  // 0xA8CC67
   }
 }
 
-void WreckedShipRobot_Func_2(uint16 k) {  // 0xA8CCFF
+static void WreckedShipRobot_Func_2(uint16 k) {  // 0xA8CCFF
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(k);
   uint16 wsrt_var_B = E->wsrt_var_B;
   if (wsrt_var_B)
@@ -2891,7 +2954,7 @@ const uint16 *WreckedShipRobot_Instr_2(uint16 k, const uint16 *jp) {  // 0xA8D0D
       addr_kWreckedShipRobot_Ilist_C8D1, addr_kEproj_WreckedShipRobotLaserUpLeft);
 }
 
-const uint16 *WreckedShipRobot_CommonInstr(uint16 k, const uint16 *jp, uint16 r50, uint16 r48) {  // 0xA8D0DC
+static const uint16 *WreckedShipRobot_CommonInstr(uint16 k, const uint16 *jp, uint16 r50, uint16 r48) {  // 0xA8D0DC
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(k);
   if (E->wsrt_var_B) {
     WreckedShipRobot_Func_2(k);
@@ -2912,7 +2975,7 @@ const uint16 *WreckedShipRobot_Instr_1(uint16 k, const uint16 *jp) {  // 0xA8D10
   return WreckedShipRobot_D10C(k, jp, addr_kWreckedShipRobot_Ilist_C8BD);
 }
 
-const uint16 *WreckedShipRobot_D10C(uint16 k, const uint16 *jp, uint16 r50) {  // 0xA8D10C
+static const uint16 *WreckedShipRobot_D10C(uint16 k, const uint16 *jp, uint16 r50) {  // 0xA8D10C
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(k);
   if (E->wsrt_var_B) {
     WreckedShipRobot_Func_2(k);
@@ -2935,7 +2998,7 @@ const uint16 *WreckedShipRobot_Instr_5(uint16 k, const uint16 *jp) {  // 0xA8D13
       addr_kEproj_WreckedShipRobotLaserDownLeft, addr_kWreckedShipRobot_Ilist_C8B1);
 }
 
-const uint16 *WreckedShipRobot_D147(uint16 k, const uint16 *jp, uint16 r48, uint16 r50) {  // 0xA8D147
+static const uint16 *WreckedShipRobot_D147(uint16 k, const uint16 *jp, uint16 r48, uint16 r50) {  // 0xA8D147
   Enemy_WreckedShipRobot *E = Get_WreckedShipRobot(k);
   if (E->wsrt_var_B) {
     WreckedShipRobot_Func_2(k);
@@ -3002,7 +3065,7 @@ void MaridiaPuffer_Init(void) {  // 0xA8D8C9
   E->mpr_var_00 = g_word_A8D885[E->mpr_parameter_2];
 }
 
-void CallMaridiaPuffer(uint32 ea) {
+static void CallMaridiaPuffer(uint32 ea) {
   switch (ea) {
   case fnMaridiaPuffer_Func_1: MaridiaPuffer_Func_1(); return;
   case fnMaridiaPuffer_Func_2: MaridiaPuffer_Func_2(); return;
@@ -3063,7 +3126,7 @@ void MaridiaPuffer_Func_4(void) {  // 0xA8D97C
   }
 }
 
-void MaridiaPuffer_Func_5(void) {  // 0xA8D9AA
+static void MaridiaPuffer_Func_5(void) {  // 0xA8D9AA
   uint8 v1 = CalculateAngleOfSamusFromEnemy(cur_enemy_index) - 64;
   Enemy_MaridiaPuffer *E = Get_MaridiaPuffer(cur_enemy_index);
   E->mpr_var_01 = v1;
@@ -3075,7 +3138,7 @@ void MaridiaPuffer_Func_5(void) {  // 0xA8D9AA
   }
 }
 
-void MaridiaPuffer_Func_6(void) {  // 0xA8D9DB
+static void MaridiaPuffer_Func_6(void) {  // 0xA8D9DB
   Enemy_MaridiaPuffer *E = Get_MaridiaPuffer(cur_enemy_index);
   uint16 R26 = 0;
   uint16 r18 = kSine16bit[(uint8)(E->mpr_var_02 + 64)];
@@ -3087,7 +3150,7 @@ void MaridiaPuffer_Func_6(void) {  // 0xA8D9DB
   AddToHiLo(&E->base.x_pos, &E->base.x_subpos, t);
 }
 
-void MaridiaPuffer_Func_7(void) {  // 0xA8DA28
+static void MaridiaPuffer_Func_7(void) {  // 0xA8DA28
   Enemy_MaridiaPuffer *E = Get_MaridiaPuffer(cur_enemy_index);
   uint16 R26 = 0;
   uint16 r18 = kSine16bit[(uint8)E->mpr_var_02];
@@ -3099,7 +3162,7 @@ void MaridiaPuffer_Func_7(void) {  // 0xA8DA28
   AddToHiLo(&E->base.y_pos, &E->base.y_subpos, t);
 }
 
-void MaridiaPuffer_Func_8(uint16 k) {  // 0xA8DA71
+static void MaridiaPuffer_Func_8(uint16 k) {  // 0xA8DA71
   Enemy_MaridiaPuffer *E = Get_MaridiaPuffer(k);
   if (E->mpr_var_F-- == 1) {
     E->mpr_var_F = E->mpr_var_05;
@@ -3108,7 +3171,7 @@ void MaridiaPuffer_Func_8(uint16 k) {  // 0xA8DA71
   }
 }
 
-void MaridiaPuffer_Func_9(uint16 k) {  // 0xA8DA92
+static void MaridiaPuffer_Func_9(uint16 k) {  // 0xA8DA92
   Enemy_MaridiaPuffer *E = Get_MaridiaPuffer(k);
   if (E->mpr_var_F-- == 1) {
     E->mpr_var_F = E->mpr_var_06;
@@ -3155,7 +3218,7 @@ void WalkingLavaSeahorse_Init(void) {  // 0xA8DCCD
   E->base.y_pos = E->wlse_var_F;
 }
 
-void WalkingLavaSeahorse_Func_1(uint16 k) {  // 0xA8DD37
+static void WalkingLavaSeahorse_Func_1(uint16 k) {  // 0xA8DD37
   Enemy_WalkingLavaSeahorse *E = Get_WalkingLavaSeahorse(k);
   E->wlse_var_B = -12;
   E->wlse_var_C = 0;
@@ -3165,13 +3228,13 @@ void WalkingLavaSeahorse_Func_1(uint16 k) {  // 0xA8DD37
   E->wlse_var_01 = 0x8000;
 }
 
-uint16 WalkingLavaSeahorse_Func_2(uint16 k) {  // 0xA8DD55
+static uint16 WalkingLavaSeahorse_Func_2(uint16 k) {  // 0xA8DD55
   Enemy_WalkingLavaSeahorse *E = Get_WalkingLavaSeahorse(k);
   AddToHiLo(&E->wlse_var_B, &E->wlse_var_C, __PAIR32__(E->wlse_var_00, E->wlse_var_01));
   return E->wlse_var_B;
 }
 
-void CallWalkingLavaSeahorseFunc(uint32 ea, uint16 k) {
+static void CallWalkingLavaSeahorseFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnnullsub_257: return;
   case fnWalkingLavaSeahorse_Func_3: WalkingLavaSeahorse_Func_3(k); return;
@@ -3219,7 +3282,7 @@ void WalkingLavaSeahorse_Func_4(uint16 k) {  // 0xA8DDC6
     sub_A8DDDE(k);
 }
 
-void sub_A8DDDE(uint16 k) {  // 0xA8DDDE
+static void sub_A8DDDE(uint16 k) {  // 0xA8DDDE
   EnemyData *v1 = gEnemyData(k);
   v1->ai_var_A = FUNC16(WalkingLavaSeahorse_Func_6);
   uint16 v2 = addr_kWalkingLavaSeahorse_Ilist_DC51;
@@ -3229,7 +3292,7 @@ void sub_A8DDDE(uint16 k) {  // 0xA8DDDE
   v1->instruction_timer = 1;
 }
 
-void WalkingLavaSeahorse_Func_5(uint16 k) {  // 0xA8DDFA
+static void WalkingLavaSeahorse_Func_5(uint16 k) {  // 0xA8DDFA
   Enemy_WalkingLavaSeahorse *E = Get_WalkingLavaSeahorse(k);
   E->wlse_var_B = 0;
   E->wlse_var_C = 0;
@@ -3314,7 +3377,7 @@ const uint16 *WalkingLavaSeahorse_Instr_4(uint16 k, const uint16 *jp) {  // 0xA8
   return jp;
 }
 
-void WalkingLavaSeahorse_DF20(uint16 a) {  // 0xA8DF20
+static void WalkingLavaSeahorse_DF20(uint16 a) {  // 0xA8DF20
   SpawnEprojWithGfx(a, cur_enemy_index, addr_loc_A89E90);
   QueueSfx2_Max6(0x3F);
 }
@@ -3367,7 +3430,7 @@ const uint16 *WalkingLavaSeahorse_Instr_1(uint16 k, const uint16 *jp) {  // 0xA8
   return jp;
 }
 
-void WalkingLavaSeahorse_Func_10(void) {  // 0xA8DF9D
+static void WalkingLavaSeahorse_Func_10(void) {  // 0xA8DF9D
   NormalEnemyShotAi();
 }
 
@@ -3383,14 +3446,14 @@ void WreckedShipOrbs_Init(void) {  // 0xA8E388
   E->wsos_var_02 = kCommonEnemySpeeds_Linear[v1 + 3];
 }
 
-void CallWreckedShipOrbsA(uint32 ea) {
+static void CallWreckedShipOrbsA(uint32 ea) {
   switch (ea) {
   case fnWreckedShipOrbs_Func_3: WreckedShipOrbs_Func_3(); return;
   case fnWreckedShipOrbs_Func_4: WreckedShipOrbs_Func_4(); return;
   default: Unreachable();
   }
 }
-void CallWreckedShipOrbsB(uint32 ea) {
+static void CallWreckedShipOrbsB(uint32 ea) {
   switch (ea) {
   case fnWreckedShipOrbs_Func_5: WreckedShipOrbs_Func_5(); return;
   case fnWreckedShipOrbs_Func_6: WreckedShipOrbs_Func_6(); return;
@@ -3405,14 +3468,14 @@ void WreckedShipOrbs_Main(void) {  // 0xA8E3C3
   CallWreckedShipOrbsB(E->wsos_var_B | 0xA80000);
 }
 
-void WreckedShipOrbs_Func_1(void) {  // 0xA8E3D9
+static void WreckedShipOrbs_Func_1(void) {  // 0xA8E3D9
   Enemy_WreckedShipOrbs *E = Get_WreckedShipOrbs(cur_enemy_index);
   E->wsos_var_A = FUNC16(WreckedShipOrbs_Func_3);
   if ((GetSamusEnemyDelta_Y(cur_enemy_index) & 0x8000) == 0)
     E->wsos_var_A = FUNC16(WreckedShipOrbs_Func_4);
 }
 
-void WreckedShipOrbs_Func_2(void) {  // 0xA8E3EF
+static void WreckedShipOrbs_Func_2(void) {  // 0xA8E3EF
   Enemy_WreckedShipOrbs *E = Get_WreckedShipOrbs(cur_enemy_index);
   E->wsos_var_B = FUNC16(WreckedShipOrbs_Func_5);
   if ((GetSamusEnemyDelta_X(cur_enemy_index) & 0x8000) == 0)
@@ -3477,7 +3540,7 @@ void WreckedShipSpark_Init(void) {  // 0xA8E637
   }
 }
 
-void CallWreckedShipSpark(uint32 ea, uint16 k) {
+static void CallWreckedShipSpark(uint32 ea, uint16 k) {
   switch (ea) {
   case fnWreckedShipSpark_Func_1: WreckedShipSpark_Func_1(k); return;
   case fnWreckedShipSpark_Func_2: WreckedShipSpark_Func_2(k); return;
@@ -3630,7 +3693,7 @@ void KiHunterWings_Init(void) {  // 0xA8F214
     E->base.properties |= kEnemyProps_Deleted;
 }
 
-void CallKiHunterFunc(uint32 ea, uint16 k) {
+static void CallKiHunterFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnKiHunter_Func_1: KiHunter_Func_1(k); return;  // 0xa8f268
   case fnKiHunter_Func_2: KiHunter_Func_2(k); return;  // 0xa8f3b8
@@ -3909,7 +3972,7 @@ const uint16 *KiHunter_Instr_5(uint16 k, const uint16 *jp) {  // 0xA8F6D8
   return jp;
 }
 
-void sub_A8F6DC(uint16 k, uint16 j) {  // 0xA8F6DC
+static void sub_A8F6DC(uint16 k, uint16 j) {  // 0xA8F6DC
   QueueSfx2_Max6(0x4C);
   SpawnEprojWithGfx(0, cur_enemy_index, j);
   Get_KiHunter(cur_enemy_index)->khr_var_0F = 24;
@@ -3967,7 +4030,7 @@ void KiHunter_Shot(void) {  // 0xA8F701
   }
 }
 
-void CallKiHunterBFunc(uint32 ea) {
+static void CallKiHunterBFunc(uint32 ea) {
   switch (ea) {
   case fnKiHunter_Func_11: KiHunter_Func_11(); return;
   case fnKiHunter_Func_14: KiHunter_Func_14(); return;
@@ -3996,14 +4059,14 @@ void KiHunter_Func_11(void) {  // 0xA8F7DB
   }
 }
 
-void KiHunter_Func_12(void) {  // 0xA8F851
+static void KiHunter_Func_12(void) {  // 0xA8F851
   uint16 v1 = CosineMult8bit(0xE0, g_byte_A8F186);
   Enemy_KiHunter *E = Get_KiHunter(cur_enemy_index);
   E->khr_var_03 = v1;
   E->khr_var_04 = SineMult8bit(0xE0, g_byte_A8F186);
 }
 
-void KiHunter_Func_13(void) {  // 0xA8F87F
+static void KiHunter_Func_13(void) {  // 0xA8F87F
   uint16 v1 = CosineMult8bit(0xA0, g_byte_A8F186);
   Enemy_KiHunter *E = Get_KiHunter(cur_enemy_index);
   E->khr_var_01 = v1;
@@ -4034,7 +4097,7 @@ void KiHunter_Func_14(void) {  // 0xA8F8AD
   Get_KiHunter(cur_enemy_index)->khr_var_B = khr_var_07;
 }
 
-void KiHunter_Func_15(uint16 k) {  // 0xA8F947
+static void KiHunter_Func_15(uint16 k) {  // 0xA8F947
   Enemy_KiHunter *E = Get_KiHunter(k);
   E->khr_var_00 = FUNC16(KiHunter_Func_11);
   E->khr_var_B = E->khr_var_0A;
@@ -4043,7 +4106,7 @@ void KiHunter_Func_15(uint16 k) {  // 0xA8F947
   E->khr_var_06 = E->base.y_pos;
 }
 
-void KiHunter_Func_16(uint16 k) {  // 0xA8F96A
+static void KiHunter_Func_16(uint16 k) {  // 0xA8F96A
   Enemy_KiHunter *E = Get_KiHunter(k);
   E->khr_var_00 = FUNC16(KiHunter_Func_14);
   E->khr_var_B = E->khr_var_0A;
@@ -4052,7 +4115,7 @@ void KiHunter_Func_16(uint16 k) {  // 0xA8F96A
   E->khr_var_06 = E->base.y_pos;
 }
 
-void KiHunter_Func_17(void) {  // 0xA8F98D
+static void KiHunter_Func_17(void) {  // 0xA8F98D
   uint16 v5;
 
   Enemy_KiHunter *E = Get_KiHunter(cur_enemy_index);

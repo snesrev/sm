@@ -3,6 +3,24 @@
 #include "variables.h"
 #include "funcs.h"
 
+// Used only in this file.
+static void HandleSamusDeathSequence_Helper2(void);
+static void CopyPalettesForSamusDeath(uint16 k);
+static void QueueTransferOfSamusDeathSequence(uint16 j);
+static void GameState_24_SamusNoHealth_Explosion_1(void);
+static uint16 GameState_24_SamusNoHealth_Explosion_2(void);
+static void CancelGrappleBeamIfIncompatiblePose(void);
+static uint8 CheckIfGrappleIsConnectedToBlock(void);
+static void HandleConnectingGrapple(void);
+static void HandleConnectingGrapple_Swinging(void);
+static void HandleConnectingGrapple_StuckInPlace(void);
+static uint8 HandleSpecialGrappleBeamAngles(void);
+static void UpdateGrappleBeamTiles(void);
+static uint16 CheckBannedDraygonGrappleDirs(uint16 a);
+static uint8 ClearCarry_12(void);
+static void PropelSamusFromGrappleSwing(void);
+
+
 #define g_off_9BA4B3 ((uint16*)RomFixedPtr(0x9ba4b3))
 #define g_off_9BA4CB ((uint16*)RomFixedPtr(0x9ba4cb))
 #define g_off_9BA4E3 ((uint16*)RomFixedPtr(0x9ba4e3))
@@ -43,7 +61,7 @@
 #define kGrappleBeam_Ext_Yvel ((uint16*)RomFixedPtr(0x9bc0ef))
 #define kGrappleBeam_Init_EndAngle ((uint16*)RomFixedPtr(0x9bc104))
 
-void CallGrappleBeamFunc(uint32 ea);
+static void CallGrappleBeamFunc(uint32 ea);
 void GrappleBeamFunc_BE98(void);
 void GrappleBeamFunc_FireGoToCancel(void);
 
@@ -151,7 +169,7 @@ uint16 HandleSamusDeathSequence(void) {  // 0x9BB441
   }
 }
 
-void HandleSamusDeathSequence_Helper2(void) {  // 0x9BB4B6
+static void HandleSamusDeathSequence_Helper2(void) {  // 0x9BB4B6
   const uint16 *v0 = (const uint16 *)RomPtr_9B(g_off_9BB5C8[samus_suit_palette_index >> 1]);
   memcpy(&palette_buffer[192], RomPtr_9B(*v0), 32);
   memcpy(&palette_buffer[240], RomPtr_9B(addr_word_9BA120), 32);
@@ -162,14 +180,14 @@ void HandleSamusDeathSequence_Helper2(void) {  // 0x9BB4B6
   GameState_24_SamusNoHealth_Explosion_2();
 }
 
-void CopyPalettesForSamusDeath(uint16 v0) {  // 0x9BB5CE
+static void CopyPalettesForSamusDeath(uint16 v0) {  // 0x9BB5CE
   int r20 = g_off_9BB6D2[samus_suit_palette_index >> 1];
   const uint16 *v1 = (const uint16 *)RomPtr_9B(r20 + v0);
   memcpy(&palette_buffer[192], RomPtr_9B(*v1), 32);
   memcpy(&palette_buffer[240], RomPtr_9B(kDeathSequencePals_Suitless[v0 >> 1]), 32);
 }
 
-void QueueTransferOfSamusDeathSequence(uint16 v0) {  // 0x9BB6D8
+static void QueueTransferOfSamusDeathSequence(uint16 v0) {  // 0x9BB6D8
   uint16 v1 = vram_write_queue_tail;
   gVramWriteEntry(vram_write_queue_tail)->size = 1024;
   v1 += 2;
@@ -186,7 +204,7 @@ uint16 GameState_24_SamusNoHealth_Explosion_Helper(void) {  // 0x9BB701
   return GameState_24_SamusNoHealth_Explosion_2();
 }
 
-void GameState_24_SamusNoHealth_Explosion_1(void) {  // 0x9BB710
+static void GameState_24_SamusNoHealth_Explosion_1(void) {  // 0x9BB710
   if (!substate && g_word_7E0DE4) {
     int v0 = g_word_7E0DE6;
     uint16 *dst = (uint16*)(g_ram + 0xc000);
@@ -199,7 +217,7 @@ void GameState_24_SamusNoHealth_Explosion_1(void) {  // 0x9BB710
   }
 }
 
-uint16 GameState_24_SamusNoHealth_Explosion_2(void) {  // 0x9BB758
+static uint16 GameState_24_SamusNoHealth_Explosion_2(void) {  // 0x9BB758
   bool v0 = (--game_options_screen_index & 0x8000) != 0;
   if (!game_options_screen_index || v0) {
     if (!sign16(++g_word_7E0DE4 - 9)) {
@@ -219,7 +237,7 @@ uint16 GameState_24_SamusNoHealth_Explosion_2(void) {  // 0x9BB758
   return 0;
 }
 
-void CancelGrappleBeamIfIncompatiblePose(void) {  // 0x9BB861
+static void CancelGrappleBeamIfIncompatiblePose(void) {  // 0x9BB861
   int16 v0;
 
   if (kIsGrappleBannedForMovementType[samus_movement_type]) {
@@ -244,7 +262,7 @@ LABEL_2:
   }
 }
 
-uint8 CheckIfGrappleIsConnectedToBlock(void) {  // 0x9BB8F1
+static uint8 CheckIfGrappleIsConnectedToBlock(void) {  // 0x9BB8F1
   grapple_beam_extension_x_velocity = 0;
   grapple_beam_extension_y_velocity = 0;
   if ((BlockReactGrapple() & 1) == 0)
@@ -282,7 +300,7 @@ static int ProcessEnemyGrappleBeamColl(uint16 a, uint16 r18) {  // 0x9BB907
   }
 }
 
-void CallGrappleNextFunc(uint32 ea) {
+static void CallGrappleNextFunc(uint32 ea) {
   switch (ea) {
   case fnGrappleNext_SwingClockwise: GrappleNext_SwingClockwise(); return;
   case fnGrappleNext_SwingAntiClockwise: GrappleNext_SwingAntiClockwise(); return;
@@ -298,7 +316,7 @@ void CallGrappleNextFunc(uint32 ea) {
   }
 }
 
-void HandleConnectingGrapple(void) {  // 0x9BB97C
+static void HandleConnectingGrapple(void) {  // 0x9BB97C
   if (samus_movement_type == kMovementType_1A_GrabbedByDraygon) {
     grapple_beam_function = FUNC16(GrappleBeamFunc_ConnectedLockedInPlace);
     grapple_beam_length_delta = 0;
@@ -367,7 +385,7 @@ void GrappleNext_CrouchAimLeft(void) {  // 0x9BBA29
   HandleConnectingGrapple_StuckInPlace();
 }
 
-void HandleConnectingGrapple_Swinging(void) {  // 0x9BBA61
+static void HandleConnectingGrapple_Swinging(void) {  // 0x9BBA61
   samus_special_transgfx_index = 9;
   uint16 v0 = swap16(CalculateAngleFromXY(samus_x_pos - grapple_beam_end_x_pos, samus_y_pos - grapple_beam_end_y_pos));
   grapple_beam_end_angle16 = v0;
@@ -378,7 +396,7 @@ void HandleConnectingGrapple_Swinging(void) {  // 0x9BBA61
   BlockFunc_AC11();
 }
 
-void HandleConnectingGrapple_StuckInPlace(void) {  // 0x9BBA9B
+static void HandleConnectingGrapple_StuckInPlace(void) {  // 0x9BBA9B
   samus_special_transgfx_index = 10;
   uint16 v0 = swap16(CalculateAngleFromXY(samus_x_pos - grapple_beam_end_x_pos, samus_y_pos - grapple_beam_end_y_pos));
   grapple_beam_end_angle16 = v0;
@@ -389,7 +407,7 @@ void HandleConnectingGrapple_StuckInPlace(void) {  // 0x9BBA9B
   BlockFunc_AC11();
 }
 
-uint8 HandleSpecialGrappleBeamAngles(void) {  // 0x9BBAD5
+static uint8 HandleSpecialGrappleBeamAngles(void) {  // 0x9BBAD5
   uint16 v0 = 7;
   while (grapple_beam_end_angle16 != grapple_beam_special_angles[v0].field_0) {
     if ((--v0 & 0x8000) != 0)
@@ -613,7 +631,7 @@ void UpdateGrappleBeamTilesAndIncrFlameCtr(void) {  // 0x9BBFA5
     ++flare_counter;
 }
 
-void UpdateGrappleBeamTiles(void) {  // 0x9BBFBD
+static void UpdateGrappleBeamTiles(void) {  // 0x9BBFBD
   if ((--grapple_point_anim_timer & 0x8000) != 0) {
     grapple_point_anim_timer = 5;
     grapple_point_anim_ptr += 512;
@@ -780,7 +798,7 @@ void GrappleBeamFunc_FireGoToCancel(void) {  // 0x9BC51E
     samus_movement_handler = FUNC16(Samus_MovementHandler_Normal);
 }
 
-uint16 CheckBannedDraygonGrappleDirs(uint16 a) {  // 0x9BC6B2
+static uint16 CheckBannedDraygonGrappleDirs(uint16 a) {  // 0x9BC6B2
   if (a == kPose_BE_FaceL_Draygon_Move) {
     if ((joypad1_lastkeys & kButton_Left) != 0) {
       if ((joypad1_lastkeys & kButton_Down) != 0)
@@ -799,7 +817,7 @@ uint16 CheckBannedDraygonGrappleDirs(uint16 a) {  // 0x9BC6B2
   return 1;
 }
 
-uint8 ClearCarry_12(void) {  // 0x9BC701
+static uint8 ClearCarry_12(void) {  // 0x9BC701
   return 0;
 }
 
@@ -1028,7 +1046,7 @@ void GrappleBeamFunc_C9CE(void) {  // 0x9BC9CE
   }
 }
 
-void PropelSamusFromGrappleSwing(void) {  // 0x9BCA65
+static void PropelSamusFromGrappleSwing(void) {  // 0x9BCA65
   int16 v1;
   int16 v2;
   uint16 v0;
@@ -1093,7 +1111,7 @@ void GrappleBeamFunc_ReleaseFromSwing(void) {  // 0x9BCB8B
   }
 }
 
-void CallGrappleBeamFunc(uint32 ea) {
+static void CallGrappleBeamFunc(uint32 ea) {
   switch (ea) {
   case fnGrappleBeamFunc_BB64: GrappleBeamFunc_BB64(); return;
   case fnGrappleBeamFunc_BC1F: GrappleBeamFunc_BC1F(); return;

@@ -4,6 +4,82 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+// Used only in this file.
+static const uint16 *Crocomire_Func_2(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_3(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_4(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_5(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_7(uint16 k, const uint16 *j);
+static const uint16 *Crocomire_Func_8(uint16 k, const uint16 *j);
+static const uint16 *Crocomire_Func_10(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_11(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_12(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_13(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_14(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_15(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_16(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_17(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_18(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_19(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_20(uint16 k);
+static const uint16 *Crocomire_Func_21(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_22(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_23(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_24(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_25(uint16 k, const uint16 *jp);
+static const uint16 *Crocomire_Func_26(uint16 k, const uint16 *jp);
+static void Crocomire_Func_27(uint16 k);
+static void Crocomire_8BA4(void);
+static void Crocomire_Func_28(void);
+static void Crocomire_Func_29(void);
+static void Crocomire_Func_30(void);
+static void Crocomire_Func_31(void);
+static void Crocomire_Func_35(void);
+static void Crocomire_Func_36(void);
+static void Crocomire_8D47(void);
+static void Crocomire_Func_37(void);
+static void Crocomire_8EE5(void);
+static void Crocomire_Func_43(void);
+static void Crocomire_Func_49(void);
+static void Crocomire_Func_50(void);
+static void Crocomire_Func_51(void);
+static void Crocomire_Func_52(void);
+static void Crocomire_Func_53(void);
+static void Crocomire_Func_54(void);
+static void Crocomire_Func_55(void);
+static void Crocomire_Func_56(void);
+static void Crocomire_929E(void);
+static void Crocomire_92CE(void);
+static void Crocomire_92D8(void);
+static void Crocomire_Func_57(void);
+static void Crocomire_93BE(uint16 k);
+static void Crocomire_Func_58(void);
+static void Crocomire_Func_59(void);
+static void Crocomire_Func_60(void);
+static void Crocomire_Func_61(void);
+static void Crocomire_Func_62(void);
+static void Crocomire_Func_64(void);
+static void Crocomire_9506(void);
+static void Crocomire_950F(void);
+static void Crocomire_Func_63(void);
+static void Crocomire_Func_65(void);
+static void Crocomire_Func_66(void);
+static void Crocomire_Func_68(void);
+static void Crocomire_Func_69(void);
+static void Crocomire_Func_70(void);
+static void Crocomire_Func_71(void);
+static void Crocomire_Func_72(void);
+static void Crocomire_Func_73(void);
+static const uint16 *Crocomire_Func_87(const uint16 *jp, uint16 a);
+static void Crocomire_Func_88(void);
+static void Crocomire_9B65(void);
+static void Crocomire_Func_89(void);
+static void Crocomire_Func_90(void);
+static void Crocomire_9B86(void);
+static void Crocomire_9BB3(void);
+static void Crocomire_Func_91(void);
+
+
 
 #define g_word_A4B89D ((uint16*)RomFixedPtr(0xa4b89d))
 #define g_word_A4B8BD ((uint16*)RomFixedPtr(0xa4b8bd))
@@ -74,17 +150,17 @@ const uint16 *Crocomire_Instr_1(uint16 k, const uint16 *jp) {
   return off_A486B3[crocom_var_C >> 1](crocom_var_C, jp);
 }
 
-const uint16 *Crocomire_Func_2(uint16 k, const uint16 *jp) {  // 0xA486DE
+static const uint16 *Crocomire_Func_2(uint16 k, const uint16 *jp) {  // 0xA486DE
   Get_Crocomire(k)->base.instruction_timer = 1;
   return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BADE);
 }
 
-const uint16 *Crocomire_Func_3(uint16 k, const uint16 *jp) {  // 0xA486E8
+static const uint16 *Crocomire_Func_3(uint16 k, const uint16 *jp) {  // 0xA486E8
   Get_Crocomire(0)->crocom_var_C = 4;
   return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BBCE);
 }
 
-const uint16 *Crocomire_Func_4(uint16 k, const uint16 *jp) {  // 0xA486F2
+static const uint16 *Crocomire_Func_4(uint16 k, const uint16 *jp) {  // 0xA486F2
   Enemy_Crocomire *E = Get_Crocomire(0);
   uint16 v1 = abs16(E->base.x_pos - samus_x_pos);
   if (sign16(v1 - 224)) {
@@ -95,7 +171,7 @@ const uint16 *Crocomire_Func_4(uint16 k, const uint16 *jp) {  // 0xA486F2
   return jp;
 }
 
-const uint16 *Crocomire_Func_5(uint16 k, const uint16 *jp) {  // 0xA48717
+static const uint16 *Crocomire_Func_5(uint16 k, const uint16 *jp) {  // 0xA48717
   Enemy_Crocomire *E = Get_Crocomire(0);
   if ((E->crocom_var_B & 0x800) != 0 && (E->crocom_var_B &= ~0x800, E->crocom_var_D)) {
     jp = INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BC30);
@@ -119,7 +195,7 @@ const uint16 *Crocomire_Instr_14(uint16 k, const uint16 *jp) {  // 0xA48752
   return jp;
 }
 
-const uint16 *Crocomire_Func_7(uint16 k, const uint16 *jp) {  // 0xA4876C
+static const uint16 *Crocomire_Func_7(uint16 k, const uint16 *jp) {  // 0xA4876C
   Enemy_Crocomire *E = Get_Crocomire(0);
   uint16 crocom_var_B = E->crocom_var_B;
   if ((crocom_var_B & 0x800) != 0) {
@@ -140,7 +216,7 @@ const uint16 *Crocomire_Func_7(uint16 k, const uint16 *jp) {  // 0xA4876C
   return jp;
 }
 
-const uint16 *Crocomire_Func_8(uint16 k, const uint16 *jp) {  // 0xA487B2
+static const uint16 *Crocomire_Func_8(uint16 k, const uint16 *jp) {  // 0xA487B2
   Enemy_Crocomire *E = Get_Crocomire(0);
   uint16 crocom_var_B = E->crocom_var_B;
   if ((crocom_var_B & 0x800) != 0) {
@@ -165,7 +241,7 @@ const uint16 *Crocomire_Func_9(uint16 k, const uint16 *jp) {  // 0xA487CA
   }
 }
 
-const uint16 *Crocomire_Func_10(uint16 k, const uint16 *jp) {  // 0xA487E9
+static const uint16 *Crocomire_Func_10(uint16 k, const uint16 *jp) {  // 0xA487E9
   Enemy_Crocomire *E = Get_Crocomire(0);
   if ((int16)(E->base.x_pos - g_word_A486A2) >= 0) {
     E->crocom_var_C = 6;
@@ -174,18 +250,18 @@ const uint16 *Crocomire_Func_10(uint16 k, const uint16 *jp) {  // 0xA487E9
   return jp;
 }
 
-const uint16 *Crocomire_Func_11(uint16 k, const uint16 *jp) {  // 0xA487FB
+static const uint16 *Crocomire_Func_11(uint16 k, const uint16 *jp) {  // 0xA487FB
   Get_Crocomire(0)->crocom_var_C = 6;
   return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BD2A);
 }
 
-const uint16 *Crocomire_Func_12(uint16 k, const uint16 *jp) {  // 0xA48805
+static const uint16 *Crocomire_Func_12(uint16 k, const uint16 *jp) {  // 0xA48805
   Enemy_Crocomire *E = Get_Crocomire(0);
   E->crocom_var_B &= ~0x400;
   return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BCD8);
 }
 
-const uint16 *Crocomire_Func_13(uint16 k, const uint16 *jp) {  // 0xA48812
+static const uint16 *Crocomire_Func_13(uint16 k, const uint16 *jp) {  // 0xA48812
   Enemy_Crocomire *E = Get_Crocomire(0);
   if ((E->crocom_var_B & 0x800) != 0) {
     E->crocom_var_B &= ~0x800;
@@ -197,7 +273,7 @@ const uint16 *Crocomire_Func_13(uint16 k, const uint16 *jp) {  // 0xA48812
   return jp;
 }
 
-const uint16 *Crocomire_Func_14(uint16 k, const uint16 *jp) {  // 0xA48836
+static const uint16 *Crocomire_Func_14(uint16 k, const uint16 *jp) {  // 0xA48836
   Enemy_Crocomire *E = Get_Crocomire(0);
   if ((E->crocom_var_B & 0x800) != 0) {
     E->crocom_var_B &= ~0x800;
@@ -209,7 +285,7 @@ const uint16 *Crocomire_Func_14(uint16 k, const uint16 *jp) {  // 0xA48836
   return jp;
 }
 
-const uint16 *Crocomire_Func_15(uint16 k, const uint16 *jp) {  // 0xA4885A
+static const uint16 *Crocomire_Func_15(uint16 k, const uint16 *jp) {  // 0xA4885A
   Enemy_Crocomire *E = Get_Crocomire(0);
   if ((E->crocom_var_B & 0x800) != 0) {
     E->crocom_var_B &= ~0x800;
@@ -221,7 +297,7 @@ const uint16 *Crocomire_Func_15(uint16 k, const uint16 *jp) {  // 0xA4885A
   return jp;
 }
 
-const uint16 *Crocomire_Func_16(uint16 k, const uint16 *jp) {  // 0xA4887E
+static const uint16 *Crocomire_Func_16(uint16 k, const uint16 *jp) {  // 0xA4887E
   Enemy_Crocomire *E = Get_Crocomire(0);
   uint16 v1 = E->crocom_var_D - 1;
   E->crocom_var_D = v1;
@@ -233,7 +309,7 @@ const uint16 *Crocomire_Func_16(uint16 k, const uint16 *jp) {  // 0xA4887E
   return jp;
 }
 
-const uint16 *Crocomire_Func_17(uint16 k, const uint16 *jp) {  // 0xA4889A
+static const uint16 *Crocomire_Func_17(uint16 k, const uint16 *jp) {  // 0xA4889A
   Enemy_Crocomire *E = Get_Crocomire(0);
   uint16 crocom_var_B = E->crocom_var_B;
   if ((crocom_var_B & 0x800) != 0) {
@@ -249,7 +325,7 @@ const uint16 *Crocomire_Func_17(uint16 k, const uint16 *jp) {  // 0xA4889A
   return jp;
 }
 
-const uint16 *Crocomire_Func_18(uint16 k, const uint16 *jp) {  // 0xA488D2
+static const uint16 *Crocomire_Func_18(uint16 k, const uint16 *jp) {  // 0xA488D2
   const uint16 *result = Crocomire_Func_2(cur_enemy_index, jp);
   Enemy_Crocomire *E = Get_Crocomire(0);
   E->crocom_var_B |= 0x200;
@@ -258,7 +334,7 @@ const uint16 *Crocomire_Func_18(uint16 k, const uint16 *jp) {  // 0xA488D2
   return result;
 }
 
-const uint16 *Crocomire_Func_19(uint16 k, const uint16 *jp) {  // 0xA488EE
+static const uint16 *Crocomire_Func_19(uint16 k, const uint16 *jp) {  // 0xA488EE
   bool v2; // zf
 
   jp = Crocomire_Func_2(cur_enemy_index, jp);
@@ -270,14 +346,14 @@ const uint16 *Crocomire_Func_19(uint16 k, const uint16 *jp) {  // 0xA488EE
   return jp;
 }
 
-const uint16 *Crocomire_Func_20(uint16 k) {  // 0xA4890B
+static const uint16 *Crocomire_Func_20(uint16 k) {  // 0xA4890B
   Get_Crocomire(k)->crocom_var_C = 20;
   Enemy_Crocomire *E = Get_Crocomire(0);
   E->crocom_var_B = E->crocom_var_B;
   return INSTR_RETURN_ADDR(addr_kCrocomire_Ilist_BAEA);
 }
 
-const uint16 *Crocomire_Func_21(uint16 k, const uint16 *jp) {  // 0xA4891B
+static const uint16 *Crocomire_Func_21(uint16 k, const uint16 *jp) {  // 0xA4891B
   Enemy_Crocomire *E = Get_Crocomire(0);
   if ((E->crocom_var_B & 0x100) != 0) {
     jp = Crocomire_Func_2(cur_enemy_index, jp);
@@ -290,7 +366,7 @@ const uint16 *Crocomire_Func_21(uint16 k, const uint16 *jp) {  // 0xA4891B
   return jp;
 }
 
-const uint16 *Crocomire_Func_22(uint16 k, const uint16 *jp) {  // 0xA48940
+static const uint16 *Crocomire_Func_22(uint16 k, const uint16 *jp) {  // 0xA48940
   k = cur_enemy_index;
   jp = Crocomire_Func_2(k, jp);
   Enemy_Crocomire *E = Get_Crocomire(0);
@@ -302,7 +378,7 @@ const uint16 *Crocomire_Func_22(uint16 k, const uint16 *jp) {  // 0xA48940
   return jp;
 }
 
-const uint16 *Crocomire_Func_23(uint16 k, const uint16 *jp) {  // 0xA4895E
+static const uint16 *Crocomire_Func_23(uint16 k, const uint16 *jp) {  // 0xA4895E
   k = cur_enemy_index;
 
   Enemy_Crocomire *E = Get_Crocomire(0);
@@ -325,7 +401,7 @@ const uint16 *Crocomire_Func_23(uint16 k, const uint16 *jp) {  // 0xA4895E
   return jp;
 }
 
-const uint16 *Crocomire_Func_24(uint16 k, const uint16 *jp) {  // 0xA489A8
+static const uint16 *Crocomire_Func_24(uint16 k, const uint16 *jp) {  // 0xA489A8
   bool v2; // zf
 
   k = cur_enemy_index;
@@ -343,7 +419,7 @@ const uint16 *Crocomire_Func_24(uint16 k, const uint16 *jp) {  // 0xA489A8
   return jp;
 }
 
-const uint16 *Crocomire_Func_25(uint16 k, const uint16 *jp) {  // 0xA489DE
+static const uint16 *Crocomire_Func_25(uint16 k, const uint16 *jp) {  // 0xA489DE
   k = cur_enemy_index;
   Enemy_Crocomire *E = Get_Crocomire(0);
   uint16 crocom_var_B = E->crocom_var_B;
@@ -354,7 +430,7 @@ const uint16 *Crocomire_Func_25(uint16 k, const uint16 *jp) {  // 0xA489DE
   return jp;
 }
 
-const uint16 *Crocomire_Func_26(uint16 k, const uint16 *jp) {  // 0xA489F9
+static const uint16 *Crocomire_Func_26(uint16 k, const uint16 *jp) {  // 0xA489F9
   Enemy_Crocomire *E = Get_Crocomire(0);
   if (E->crocom_var_D) {
     uint16 crocom_var_B = E->crocom_var_B;
@@ -429,7 +505,7 @@ void Crocomire_Init(void) {  // 0xA48A5A
   }
 }
 
-void Crocomire_Func_27(uint16 k) {  // 0xA48B5B
+static void Crocomire_Func_27(uint16 k) {  // 0xA48B5B
   reg_BG2VOFS = 67 - Get_Crocomire(k)->base.y_pos;
   uint16 v1 = 32;
   uint16 spritemap_pointer;
@@ -447,7 +523,7 @@ void Crocomire_Func_27(uint16 k) {  // 0xA48B5B
   Crocomire_8BA4();
 }
 
-void Crocomire_8BA4(void) {  // 0xA48BA4
+static void Crocomire_8BA4(void) {  // 0xA48BA4
   Enemy_Crocomire *E0 = Get_Crocomire(cur_enemy_index);
   Enemy_Crocomire *E1 = Get_Crocomire(cur_enemy_index + 64);
   E1->base.x_pos = E1->crocom_var_A + E0->base.x_pos;
@@ -470,7 +546,7 @@ LABEL_3:;
   reg_BG2HOFS = v6;
 }
 
-void nullsub_305(void) {}
+static void nullsub_305(void) {}
 
 static Func_V *const off_A48C14[45] = {  // 0xA48C04
   Crocomire_Func_28, Crocomire_Func_52, Crocomire_Func_36,    Crocomire_92CE, Crocomire_Func_54, Crocomire_Func_36,    Crocomire_92CE, Crocomire_Func_54,
@@ -489,7 +565,7 @@ void Crocomire_Main(void) {
   Crocomire_Func_31();
 }
 
-void Crocomire_Func_28(void) {  // 0xA48C6E
+static void Crocomire_Func_28(void) {  // 0xA48C6E
   Crocomire_Func_37();
   *(uint16 *)&scrolls[4] = 257;
   if (!sign16(samus_x_pos - 1312))
@@ -497,12 +573,12 @@ void Crocomire_Func_28(void) {  // 0xA48C6E
   Crocomire_Func_27(cur_enemy_index);
 }
 
-void Crocomire_Func_29(void) {  // 0xA48C90
+static void Crocomire_Func_29(void) {  // 0xA48C90
   reg_BG2HOFS = 0;
   reg_BG2VOFS = 0;
 }
 
-void Crocomire_Func_30(void) {  // 0xA48C95
+static void Crocomire_Func_30(void) {  // 0xA48C95
   Enemy_Crocomire *E = Get_Crocomire(0);
   if (!E->crocom_var_A && (int16)(E->base.x_pos - E->base.x_width - samus_x_radius - samus_x_pos) < 0) {
     NormalEnemyTouchAi();
@@ -513,7 +589,7 @@ void Crocomire_Func_30(void) {  // 0xA48C95
   }
 }
 
-void Crocomire_Func_31(void) {  // 0xA48CCB
+static void Crocomire_Func_31(void) {  // 0xA48CCB
   uint16 j;
 
   if (!door_transition_flag_enemies) {
@@ -542,7 +618,7 @@ const uint16 *Crocomire_Instr_19(uint16 k, const uint16 *jp) {  // 0xA48D13
   return jp;
 }
 
-void Crocomire_Func_35(void) {  // 0xA48D1F
+static void Crocomire_Func_35(void) {  // 0xA48D1F
   Enemy_Crocomire *E = Get_Crocomire(0);
   uint16 crocom_var_20 = E->crocom_var_20;
   if (crocom_var_20) {
@@ -555,13 +631,13 @@ void Crocomire_Func_35(void) {  // 0xA48D1F
   }
 }
 
-void Crocomire_Func_36(void) {  // 0xA48D3F
+static void Crocomire_Func_36(void) {  // 0xA48D3F
   Crocomire_Func_35();
   Crocomire_8BA4();
   Crocomire_8D47();
 }
 
-void Crocomire_8D47(void) {  // 0xA48D47
+static void Crocomire_8D47(void) {  // 0xA48D47
   Enemy_Crocomire *E = Get_Crocomire(0);
   uint16 crocom_var_D = E->crocom_var_D;
   if (crocom_var_D) {
@@ -573,7 +649,7 @@ void Crocomire_8D47(void) {  // 0xA48D47
   }
 }
 
-void Crocomire_Func_37(void) {  // 0xA48D5E
+static void Crocomire_Func_37(void) {  // 0xA48D5E
 
   Enemy_Crocomire *E0 = Get_Crocomire(0);
   if (sign16(E0->base.x_pos - 1536)) {
@@ -648,7 +724,7 @@ void Crocomire_Func_37(void) {  // 0xA48D5E
   }
 }
 
-void Crocomire_8EE5(void) {  // 0xA48EE5
+static void Crocomire_8EE5(void) {  // 0xA48EE5
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x61, 0x0b, 0xb74f });
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x62, 0x0b, 0xb74f });
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x63, 0x0b, 0xb74f });
@@ -698,7 +774,7 @@ const uint16 *Crocomire_Instr_15(uint16 k, const uint16 *jp) {  // 0xA48FFF
   return Crocomire_Instr_4(k, jp);
 }
 
-void Crocomire_Func_43(void) {  // 0xA49004
+static void Crocomire_Func_43(void) {  // 0xA49004
   uint16 v1 = random_number & 0x1F;
   if ((int16)(random_number - 4096) >= 0)
     v1 = -v1;
@@ -739,7 +815,7 @@ const uint16 *Crocomire_Instr_17(uint16 k, const uint16 *jp) {  // 0xA49094
   return Crocomire_Instr_18(k, jp);
 }
 
-void Crocomire_Func_49(void) {  // 0xA49099
+static void Crocomire_Func_49(void) {  // 0xA49099
   Crocomire_Func_50();
   Crocomire_Func_53();
   Crocomire_Func_55();
@@ -757,7 +833,7 @@ void Crocomire_Func_49(void) {  // 0xA49099
   }
 }
 
-void Crocomire_Func_50(void) {  // 0xA490DF
+static void Crocomire_Func_50(void) {  // 0xA490DF
   Enemy_Crocomire *E = Get_Crocomire(0);
   uint16 y_pos = E->base.y_pos;
   uint16 v2 = addr_kCrocomire_Ilist_BF7E;
@@ -773,7 +849,7 @@ void Crocomire_Func_50(void) {  // 0xA490DF
   E->base.instruction_timer = 1;
 }
 
-void Crocomire_Func_51(void) {  // 0xA49108
+static void Crocomire_Func_51(void) {  // 0xA49108
   Crocomire_Func_53();
   Enemy_Crocomire *E = Get_Crocomire(0);
   uint16 y_pos = E->base.y_pos;
@@ -791,7 +867,7 @@ void Crocomire_Func_51(void) {  // 0xA49108
   Crocomire_Func_55();
 }
 
-void Crocomire_Func_52(void) {  // 0xA49136
+static void Crocomire_Func_52(void) {  // 0xA49136
   uint16 v0 = *(uint16 *)((uint8 *)&g_word_7E9015 + 1);
   if (sign16(*(uint16 *)((uint8 *)&g_word_7E9015 + 1) - 22)) {
     uint16 v1 = *(uint16 *)((uint8 *)&g_word_7E9015 + 1);
@@ -801,7 +877,7 @@ void Crocomire_Func_52(void) {  // 0xA49136
   Crocomire_Func_54();
 }
 
-void Crocomire_Func_53(void) {  // 0xA4916C
+static void Crocomire_Func_53(void) {  // 0xA4916C
   if (!--g_word_7E9018) {
     g_word_7E9018 = 6;
     uint16 v0 = random_number & 0x3F;
@@ -813,13 +889,13 @@ void Crocomire_Func_53(void) {  // 0xA4916C
   }
 }
 
-void Crocomire_Func_54(void) {  // 0xA491BA
+static void Crocomire_Func_54(void) {  // 0xA491BA
   Crocomire_Func_35();
   Crocomire_Func_53();
   Crocomire_Func_55();
 }
 
-void Crocomire_Func_55(void) {  // 0xA491C1
+static void Crocomire_Func_55(void) {  // 0xA491C1
   int8 crocom_var_D;
   int8 v7;
   int8 v9;
@@ -870,7 +946,7 @@ void Crocomire_Func_55(void) {  // 0xA491C1
   }
 }
 
-void Crocomire_Func_56(void) {  // 0xA4926E
+static void Crocomire_Func_56(void) {  // 0xA4926E
   Enemy_Crocomire *E = Get_Crocomire(cur_enemy_index);
   uint16 y_pos = E->base.y_pos;
   uint16 v2 = addr_kCrocomire_Ilist_BF7E;
@@ -888,7 +964,7 @@ void Crocomire_Func_56(void) {  // 0xA4926E
   Crocomire_92D8();
 }
 
-void Crocomire_929E(void) {  // 0xA4929E
+static void Crocomire_929E(void) {  // 0xA4929E
   Crocomire_Func_53();
   Enemy_Crocomire *E = Get_Crocomire(cur_enemy_index);
   uint16 y_pos = E->base.y_pos;
@@ -906,13 +982,13 @@ void Crocomire_929E(void) {  // 0xA4929E
   Crocomire_92D8();
 }
 
-void Crocomire_92CE(void) {  // 0xA492CE
+static void Crocomire_92CE(void) {  // 0xA492CE
   Crocomire_Func_35();
   Crocomire_Func_53();
   Crocomire_92D8();
 }
 
-void Crocomire_92D8(void) {  // 0xA492D8
+static void Crocomire_92D8(void) {  // 0xA492D8
   int16 v3;
   int8 v6;
 
@@ -947,7 +1023,7 @@ void Crocomire_92D8(void) {  // 0xA492D8
   }
 }
 
-void Crocomire_Func_57(void) {  // 0xA49341
+static void Crocomire_Func_57(void) {  // 0xA49341
   int i;
 
   croco_word_068C = 48;
@@ -980,7 +1056,7 @@ void Crocomire_Func_57(void) {  // 0xA49341
   Crocomire_93BE(i + 1024);
 }
 
-void Crocomire_93BE(uint16 k) {  // 0xA493BE
+static void Crocomire_93BE(uint16 k) {  // 0xA493BE
   VramWriteEntry *v3;
 
   uint16 v2 = vram_write_queue_tail;
@@ -992,13 +1068,13 @@ void Crocomire_93BE(uint16 k) {  // 0xA493BE
   vram_write_queue_tail = v2 + 7;
 }
 
-void Crocomire_Func_58(void) {  // 0xA493DF
+static void Crocomire_Func_58(void) {  // 0xA493DF
   uint16 v0 = reg_BG2VOFS;
   for (int i = 510; i >= 0; i -= 2)
     crocomire_bg2_scroll_hdma_data[i >> 1] = v0;
 }
 
-void Crocomire_Func_59(void) {  // 0xA493ED
+static void Crocomire_Func_59(void) {  // 0xA493ED
   int i;
 
   Crocomire_Func_58();
@@ -1023,7 +1099,7 @@ void Crocomire_Func_59(void) {  // 0xA493ED
   Crocomire_93BE(i + 1024);
 }
 
-void Crocomire_Func_60(void) {  // 0xA4943D
+static void Crocomire_Func_60(void) {  // 0xA4943D
   int i;
 
   Enemy_Crocomire *E = Get_Crocomire(cur_enemy_index);
@@ -1054,11 +1130,11 @@ void Crocomire_Func_60(void) {  // 0xA4943D
     *(uint16 *)&croco_vline_height[(uint16)j] = 0;
 }
 
-void Crocomire_Func_61(void) {  // 0xA494B2
+static void Crocomire_Func_61(void) {  // 0xA494B2
   Crocomire_Func_62();
 }
 
-void Crocomire_Func_62(void) {  // 0xA494B6
+static void Crocomire_Func_62(void) {  // 0xA494B6
   VramWriteEntry *v2;
 
   uint16 v0 = g_word_7E068A;
@@ -1079,17 +1155,17 @@ void Crocomire_Func_62(void) {  // 0xA494B6
   }
 }
 
-void Crocomire_Func_64(void) {  // 0xA494FB
+static void Crocomire_Func_64(void) {  // 0xA494FB
   QueueSfx2_Max6(0x77);
   Crocomire_950F();
 }
 
-void Crocomire_9506(void) {  // 0xA49506
+static void Crocomire_9506(void) {  // 0xA49506
   QueueSfx2_Max6(0x2D);
   Crocomire_950F();
 }
 
-void Crocomire_950F(void) {  // 0xA4950F
+static void Crocomire_950F(void) {  // 0xA4950F
   static const SpawnHdmaObject_Args unk_A49559 = { 0x42, 0x10, 0x9563 };
   Enemy_Crocomire *v4; // r10
 
@@ -1112,12 +1188,12 @@ void Crocomire_950F(void) {  // 0xA4950F
   v4->crocom_var_1F = SpawnHdmaObject(0xa4, &unk_A49559);
 }
 
-void Crocomire_Func_63(void) {  // 0xA49576
+static void Crocomire_Func_63(void) {  // 0xA49576
   Enemy_Crocomire *E = Get_Crocomire(cur_enemy_index);
   E->crocom_var_A += 2;
 }
 
-void Crocomire_Func_65(void) {  // 0xA49580
+static void Crocomire_Func_65(void) {  // 0xA49580
   int i;
 
   Crocomire_Func_53();
@@ -1174,7 +1250,7 @@ LABEL_4:;
   }
 }
 
-void Crocomire_Func_66(void) {  // 0xA49653
+static void Crocomire_Func_66(void) {  // 0xA49653
   VramWriteEntry *v3;
 
   Enemy_Crocomire *E = Get_Crocomire(cur_enemy_index);
@@ -1246,7 +1322,7 @@ uint16 Crocomire_Func_67(void) {  // 0xA496C8
   return 1;
 }
 
-void Crocomire_Func_68(void) {  // 0xA497D3
+static void Crocomire_Func_68(void) {  // 0xA497D3
   if (sign16(samus_x_pos - 640)) {
     QueueMusic_Delayed8(5);
     *(uint16 *)&scrolls[3] = 256;
@@ -1266,7 +1342,7 @@ void Crocomire_Func_68(void) {  // 0xA497D3
   }
 }
 
-void Crocomire_Func_69(void) {  // 0xA49830
+static void Crocomire_Func_69(void) {  // 0xA49830
   Enemy_Crocomire *E = Get_Crocomire(0);
   uint16 v1 = E->base.x_pos - 2;
   E->base.x_pos = v1;
@@ -1279,7 +1355,7 @@ void Crocomire_Func_69(void) {  // 0xA49830
   }
 }
 
-void Crocomire_Func_70(void) {  // 0xA49859
+static void Crocomire_Func_70(void) {  // 0xA49859
   Enemy_Crocomire *E0 = Get_Crocomire(0);
   Enemy_Crocomire *E1 = Get_Crocomire(0x40);
   Enemy_Crocomire *E2 = Get_Crocomire(0x80);
@@ -1320,7 +1396,7 @@ void Crocomire_Func_70(void) {  // 0xA49859
   }
 }
 
-void Crocomire_Func_71(void) {  // 0xA4990A
+static void Crocomire_Func_71(void) {  // 0xA4990A
   int16 v3;
   VramWriteEntry *v6;
 
@@ -1366,7 +1442,7 @@ void Crocomire_Func_71(void) {  // 0xA4990A
   }
 }
 
-void Crocomire_Func_72(void) {  // 0xA499E5
+static void Crocomire_Func_72(void) {  // 0xA499E5
   Enemy_Crocomire *E = Get_Crocomire(0);
   if (sign16(E->base.x_pos - 224)) {
     uint32 t = __PAIR32__(E->crocom_var_F, E->crocom_var_E) + 0x8000;
@@ -1384,7 +1460,7 @@ void Crocomire_Func_72(void) {  // 0xA499E5
   }
 }
 
-void Crocomire_Func_73(void) {  // 0xA49A38
+static void Crocomire_Func_73(void) {  // 0xA49A38
   Enemy_Crocomire *E = Get_Crocomire(0);
   uint32 t = __PAIR32__(E->crocom_var_F, E->crocom_var_E) + 2048;
   if (!sign16((t >> 16) - 5))
@@ -1453,14 +1529,14 @@ const uint16 *Crocomire_Instr_27(uint16 k, const uint16 *jp) {  // 0xA49AD7
   return Crocomire_Func_87(jp, 0x40);
 }
 
-const uint16 *Crocomire_Func_87(const uint16 *jp, uint16 a) {  // 0xA49ADA
+static const uint16 *Crocomire_Func_87(const uint16 *jp, uint16 a) {  // 0xA49ADA
   Enemy_Crocomire *E = Get_Crocomire(0);
   eproj_spawn_pt = (Point16U){ a + E->base.x_pos + (random_number & 7), E->base.y_height + E->base.y_pos - 16 };
   SpawnEprojWithRoomGfx(addr_kEproj_DustCloudExplosion, 0x15);
   return jp;
 }
 
-void Crocomire_Func_88(void) {  // 0xA49B06
+static void Crocomire_Func_88(void) {  // 0xA49B06
   Enemy_Crocomire *E = Get_Crocomire(0);
   if (sign16(E->base.current_instruction + 0x1E3A)) {
     uint32 t = __PAIR32__(E->crocom_var_F, E->crocom_var_E) + 4096;
@@ -1480,24 +1556,24 @@ void Crocomire_Func_88(void) {  // 0xA49B06
   }
 }
 
-void Crocomire_9B65(void) {  // 0xA49B65
+static void Crocomire_9B65(void) {  // 0xA49B65
   *(uint16 *)scrolls = 257;
   *(uint16 *)&scrolls[2] = 257;
   SpawnHardcodedPlm((SpawnHardcodedPlmArgs) { 0x1e, 0x03, 0xb753 });
   Crocomire_9BB3();
 }
 
-void Crocomire_Func_89(void) {  // 0xA49B7B
+static void Crocomire_Func_89(void) {  // 0xA49B7B
   Crocomire_9BB3();
 }
 
-void Crocomire_Func_90(void) {  // 0xA49B7D
+static void Crocomire_Func_90(void) {  // 0xA49B7D
   Enemy_Crocomire *E = Get_Crocomire(0);
   if (!sign16(E->base.current_instruction + 0x1E3A))
     Crocomire_9BB3();
 }
 
-void Crocomire_9B86(void) {  // 0xA49B86
+static void Crocomire_9B86(void) {  // 0xA49B86
   QueueMusic_Delayed8(6);
   camera_distance_index = 0;
   *(uint16 *)&boss_bits_for_area[area_index] |= 2;
@@ -1507,13 +1583,13 @@ void Crocomire_9B86(void) {  // 0xA49B86
   Crocomire_9BB3();
 }
 
-void Crocomire_9BB3(void) {  // 0xA49BB3
+static void Crocomire_9BB3(void) {  // 0xA49BB3
   Enemy_Crocomire *E = Get_Crocomire(0);
   ++E->crocom_var_A;
   ++E->crocom_var_A;
 }
 
-void Crocomire_Func_91(void) {  // 0xA49BBA
+static void Crocomire_Func_91(void) {  // 0xA49BBA
   Crocomire_9BB3();
 }
 

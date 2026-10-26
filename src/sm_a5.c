@@ -5,6 +5,29 @@
 #include "funcs.h"
 #include "enemy_types.h"
 
+// Used only in this file.
+static void Draygon_Func_5(void);
+static void Draygon_Func_7(void);
+static void Draygon_Func_34(void);
+static void Draygon_Func_37(void);
+static void Draygon_Func_38(void);
+static void Draygon_Func_39(void);
+static void Draygon_Func_40(uint16 k);
+static void sub_A5960D(void);
+static void Draygon_Func_41(void);
+static void Draygon_Func_43(void);
+static void Draygon_Func_44(void);
+static void Draygon_Func_45(void);
+static void Draygon_Func_46(void);
+static void Draygon_Func_50(uint16 j);
+static void Draygon_Func_51(uint16 j);
+static void Draygon_Func_52(uint16 j);
+static void sub_A5E9F5(void);
+static void SporeSpawn_Func_5(void);
+static void SporeSpawn_Func_6(void);
+static void SporeSpawn_Func_7(uint16 a);
+
+
 
 #define kDraygon_MorePalettes ((uint16*)RomFixedPtr(0xa5a217))
 #define kDraygon_MorePalettes2 ((uint16*)RomFixedPtr(0xa5a277))
@@ -70,7 +93,7 @@ void Draygon_Init(void) {  // 0xA58687
   DisableMinimapAndMarkBossRoomAsExplored();
 }
 
-void CallDraygonFunc(uint32 ea, uint16 k) {
+static void CallDraygonFunc(uint32 ea, uint16 k) {
   switch (ea) {
   case fnnullsub_169_A5: return;
   case fnDraygon_Func_1: Draygon_Func_1(); return;
@@ -197,7 +220,7 @@ void Draygon_Func_4(void) {  // 0xA587F4
   E->draygon_var_20 = 1;
 }
 
-void Draygon_Func_5(void) {  // 0xA58817
+static void Draygon_Func_5(void) {  // 0xA58817
   Enemy_Draygon *E = Get_Draygon(0);
   //varE28 = 384;
   uint16 varE24 = 384;
@@ -242,7 +265,7 @@ void Draygon_Func_6(void) {  // 0xA588B1
   }
 }
 
-void Draygon_Func_7(void) {  // 0xA58901
+static void Draygon_Func_7(void) {  // 0xA58901
   Enemy_Draygon *E = Get_Draygon(0);
   if ((nmi_frame_counter_word & 0xF) == 0) {
     E->base.current_instruction = addr_kDraygon_Ilist_98FE;
@@ -742,7 +765,7 @@ void Draygon_Func_33(void) {  // 0xA592AB
   }
 }
 
-void Draygon_Func_34(void) {  // 0xA592EA
+static void Draygon_Func_34(void) {  // 0xA592EA
   if ((nmi_frame_counter_word & 7) == 0) {
     uint16 x = (NextRandom() & 0x7F) + 192;
     uint16 y = ((uint16)(random_number & 0x3F00) >> 8) + 400;
@@ -764,7 +787,7 @@ void Draygon_Func_36(void) {  // 0xA59342
   reg_BG2VOFS = E->draygon_var_5F + layer1_y_pos - E->base.y_pos - 192;
 }
 
-void Draygon_Func_37(void) {  // 0xA59367
+static void Draygon_Func_37(void) {  // 0xA59367
   Enemy_Draygon *E = Get_Draygon(0);
   if ((joypad2_last & 0x40) != 0)
     Draygon_Func_39();
@@ -795,7 +818,7 @@ void Draygon_Func_37(void) {  // 0xA59367
   }
 }
 
-void Draygon_Func_38(void) {  // 0xA593DA
+static void Draygon_Func_38(void) {  // 0xA593DA
   Enemy_Draygon *E = Get_Draygon(0);
   uint16 v0 = joypad2_last, v2;
   if ((joypad2_last & 0x200) == 0 || (--E->base.x_pos, v0 == debug_enemy_population_pointer)) {
@@ -822,7 +845,7 @@ LABEL_8:
   }
 }
 
-void Draygon_Func_39(void) {  // 0xA59430
+static void Draygon_Func_39(void) {  // 0xA59430
   Enemy_Draygon *E = Get_Draygon(0);
   uint16 v0 = joypad2_last, v2;
   if ((joypad2_last & 0x200) == 0
@@ -851,7 +874,7 @@ LABEL_8:
   }
 }
 
-void Draygon_Func_40(uint16 k) {  // 0xA594A9
+static void Draygon_Func_40(uint16 k) {  // 0xA594A9
   int16 v1;
 
   v1 = 8;
@@ -927,7 +950,7 @@ void Draygon_Powerbomb(void) {  // 0xA59607
   sub_A5960D();
 }
 
-void sub_A5960D(void) {  // 0xA5960D
+static void sub_A5960D(void) {  // 0xA5960D
   if (Get_Draygon(cur_enemy_index)->base.health) {
     Draygon_Func_41();
   } else {
@@ -957,7 +980,7 @@ void sub_A5960D(void) {  // 0xA5960D
   }
 }
 
-void Draygon_Func_41(void) {  // 0xA59701
+static void Draygon_Func_41(void) {  // 0xA59701
   int i;
   uint16 j;
   Enemy_Draygon *E = Get_Draygon(0);
@@ -1106,7 +1129,7 @@ void Draygon_Func_42(uint16 varE24) {  // 0xA59FE0
   }
 }
 
-void Draygon_Func_43(void) {  // 0xA5A06C
+static void Draygon_Func_43(void) {  // 0xA5A06C
   int16 v1;
   int16 j;
 
@@ -1126,19 +1149,19 @@ void Draygon_Func_43(void) {  // 0xA5A06C
   }
 }
 
-void Draygon_Func_44(void) {  // 0xA5A0C6
+static void Draygon_Func_44(void) {  // 0xA5A0C6
   for (int i = 62; i >= 0; i -= 2)
     sprite_instr_list_ptrs[i >> 1] = 0;
 }
 
-void Draygon_Func_45(void) {  // 0xA5A0D9
+static void Draygon_Func_45(void) {  // 0xA5A0D9
   CreateSpriteAtPos(16, 384, 59, 0xe00);
   CreateSpriteAtPos(16, 384, 59, 0xe00);
   CreateSpriteAtPos(16, 384, 59, 0xe00);
   CreateSpriteAtPos(16, 384, 59, 0xe00);
 }
 
-void Draygon_Func_46(void) {  // 0xA5A13E
+static void Draygon_Func_46(void) {  // 0xA5A13E
   uint16 v0 = 62;
   do {
     uint16 v1 = Get_Draygon(0)->draygon_var_46 + g_word_A5A19F[(uint16)(v0 - 56) >> 1];
@@ -1258,7 +1281,7 @@ const uint16 *Draygon_Instr_24(uint16 k, const uint16 *jp) {  // 0xA5E771
   return jp;
 }
 
-void Draygon_Func_50(uint16 j) {  // 0xA5E811
+static void Draygon_Func_50(uint16 j) {  // 0xA5E811
   const uint8 *v1 = RomPtr_A5(j);
   Enemy_Draygon *E = Get_Draygon(0);
   E->draygon_var_0B = GET_WORD(v1);
@@ -1273,17 +1296,17 @@ const uint16 *Draygon_Instr_21(uint16 k, const uint16 *jp) {  // 0xA5E82D
   return jp + 2;
 }
 
-void Draygon_Func_51(uint16 j) {  // 0xA5E840
+static void Draygon_Func_51(uint16 j) {  // 0xA5E840
   uint16 v1 = *(uint16 *)RomPtr_A5(j);
   Get_Draygon(0)->draygon_var_0B = v1;
 }
 
-void Draygon_Func_52(uint16 j) {  // 0xA5E84A
+static void Draygon_Func_52(uint16 j) {  // 0xA5E84A
   uint16 v1 = *(uint16 *)RomPtr_A5(j);
   Get_Draygon(0)->draygon_var_0C = v1;
 }
 
-uint16 Draygon_Instr_53(uint16 k, uint16 j) {  // 0xA5E854
+static uint16 Draygon_Instr_53(uint16 k, uint16 j) {  // 0xA5E854
   Enemy_Draygon *E = Get_Draygon(0);
   E->draygon_var_0B += *(uint16 *)RomPtr_A5(j);
   return j + 2;
@@ -1362,7 +1385,7 @@ const uint16 *Draygon_Instr_26(uint16 k, const uint16 *jp) {  // 0xA5E9B1
   return jp;
 }
 
-void sub_A5E9F5(void) {  // 0xA5E9F5
+static void sub_A5E9F5(void) {  // 0xA5E9F5
   if ((nmi_frame_counter_word & 0xF) == 0) {
     NextRandom();
     uint16 x = (random_number & 0x3F) + 96;
@@ -1410,7 +1433,7 @@ void SporeSpawn_Init(void) {  // 0xA5EA2A
   }
 }
 
-void CallSporeSpawnFunc(uint32 ea) {
+static void CallSporeSpawnFunc(uint32 ea) {
   switch (ea) {
   case fnnullsub_223: return;
   case fnSporeSpawn_Func_1: SporeSpawn_Func_1(); return;
@@ -1476,7 +1499,7 @@ void SporeSpawn_Func_4(void) {  // 0xA5EBEE
   sub_A5E9F5();
 }
 
-void SporeSpawn_Func_5(void) {  // 0xA5EC49
+static void SporeSpawn_Func_5(void) {  // 0xA5EC49
   Enemy_SporeSpawn *E = Get_SporeSpawn(0);
   uint16 v1 = E->base.x_pos - E->ssn_var_04, v2;
   uint16 r18, r20, r22;
@@ -1575,7 +1598,7 @@ void SporeSpawn_Touch(void) {  // 0xA5EDEC
   SporeSpawn_Func_6();
 }
 
-void SporeSpawn_Func_6(void) {  // 0xA5EDF3
+static void SporeSpawn_Func_6(void) {  // 0xA5EDF3
   if (!Get_SporeSpawn(cur_enemy_index)->base.health) {
     Enemy_SporeSpawn *E = Get_SporeSpawn(cur_enemy_index);
     Enemy_SporeSpawn *E0 = Get_SporeSpawn(0);
@@ -1594,7 +1617,7 @@ void SporeSpawn_Func_6(void) {  // 0xA5EDF3
   }
 }
 
-void SporeSpawn_Func_7(uint16 a) {  // 0xA5EE4A
+static void SporeSpawn_Func_7(uint16 a) {  // 0xA5EE4A
   uint16 v1 = a;
   for (int i = 0; i != 32; i += 2) {
     palette_buffer[(i >> 1) + 144] = g_word_A5E379[v1 >> 1];

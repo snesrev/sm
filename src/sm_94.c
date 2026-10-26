@@ -276,7 +276,7 @@ static uint16 ClearCarry_0(PostGrappleCollInfo *pgci) {  // 0x9482A7
 }
 
 static uint16 PostGrappleColl_Horiz_Slope(PostGrappleCollInfo *pgci) {  // 0x9482A9
-  if ((BTS[cur_block_index] & 0x1F) < 5)
+  if ((BtsAt(cur_block_index) & 0x1F) < 5)
     return PostGrappleColl_Horiz_Slope_Square(pgci, cur_block_index);
   else
     return PostGrappleColl_Horiz_Slope_NonSquare(pgci, cur_block_index);
@@ -287,7 +287,7 @@ static uint16 PostGrappleColl_Horiz_Solid(PostGrappleCollInfo *pgci) {  // 0x948
 }
 
 static uint16 PostGrappleColl_Vert_Slope(PostGrappleCollInfo *pgci) {  // 0x9482C5
-  if ((BTS[cur_block_index] & 0x1F) < 5)
+  if ((BtsAt(cur_block_index) & 0x1F) < 5)
     return PostGrappleColl_Vertical_Slope_Square(pgci, cur_block_index);
   else
     return PostGrappleColl_Vert_Slope_NonSquare(pgci, cur_block_index);
@@ -520,10 +520,10 @@ void Samus_AlignYPosSlope(void) {  // 0x9487F4
   uint16 r26 = samus_x_pos;
   uint16 R28 = samus_y_radius + samus_y_pos - 1;
   CalculateBlockAt(r26, R28, 0, 0);
-  if ((level_data[cur_block_index] & 0xF000) == 4096 && (BTS[cur_block_index] & 0x1F) >= 5) {
+  if ((LevelDataAt(cur_block_index) & 0xF000) == 4096 && (BtsAt(cur_block_index) & 0x1F) >= 5) {
     uint16 temp_collision_DD4 = (samus_y_radius + samus_y_pos - 1) & 0xF;
-    uint16 temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
-    uint8 v0 = BTS[cur_block_index];
+    uint16 temp_collision_DD6 = 16 * (BtsAt(cur_block_index) & 0x1F);
+    uint8 v0 = BtsAt(cur_block_index);
     if (!(v0 & 0x80)) {
       uint16 v1 = (v0 & 0x40) != 0 ? samus_x_pos ^ 0xF : samus_x_pos;
       uint16 v2 = (kAlignYPos_Tab0[temp_collision_DD6 + (v1 & 0xF)] & 0x1F) - temp_collision_DD4 - 1;
@@ -536,10 +536,10 @@ void Samus_AlignYPosSlope(void) {  // 0x9487F4
   r26 = samus_x_pos;
   R28 = samus_y_pos - samus_y_radius;
   CalculateBlockAt(r26, R28, 0, 0);
-  if ((level_data[cur_block_index] & 0xF000) == 4096 && (BTS[cur_block_index] & 0x1F) >= 5) {
+  if ((LevelDataAt(cur_block_index) & 0xF000) == 4096 && (BtsAt(cur_block_index) & 0x1F) >= 5) {
     uint16 temp_collision_DD4 = (samus_y_pos - samus_y_radius) & 0xF ^ 0xF;
-    uint16 temp_collision_DD6 = 16 * (BTS[cur_block_index] & 0x1F);
-    uint8 v3 = BTS[cur_block_index];
+    uint16 temp_collision_DD6 = 16 * (BtsAt(cur_block_index) & 0x1F);
+    uint8 v3 = BtsAt(cur_block_index);
     if (v3 & 0x80) {
       uint16 v4 = (v3 & 0x40) != 0 ? samus_x_pos ^ 0xF : samus_x_pos;
       uint16 v6 = (kAlignYPos_Tab0[temp_collision_DD6 + (v4 & 0xF)] & 0x1F) - temp_collision_DD4 - 1;
@@ -709,18 +709,18 @@ static uint8 BlockColl_Vert_SolidShootGrappleBlock(CollInfo *ci) {  // 0x948F82
 }
 
 static uint8 BlockColl_Horiz_Slope(CollInfo *ci) {  // 0x948FBB
-  uint16 v0 = BTS[cur_block_index] & 0x1F;
+  uint16 v0 = BtsAt(cur_block_index) & 0x1F;
   if (v0 < 5)
     return BlockColl_Horiz_Slope_Square(ci, v0, cur_block_index);
-  current_slope_bts = BTS[cur_block_index];
+  current_slope_bts = BtsAt(cur_block_index);
   return BlockColl_Horiz_Slope_NonSquare(ci);
 }
 
 static uint8 BlockColl_Vert_Slope(CollInfo *ci) {  // 0x948FDA
-  uint16 v0 = BTS[cur_block_index] & 0x1F;
+  uint16 v0 = BtsAt(cur_block_index) & 0x1F;
   if (v0 < 5)
     return BlockColl_Vert_Slope_Square(ci, v0, cur_block_index);
-  current_slope_bts = BTS[cur_block_index];
+  current_slope_bts = BtsAt(cur_block_index);
   return BlockColl_Vert_Slope_NonSquare(ci, cur_block_index);
 }
 
@@ -754,18 +754,26 @@ static Func_V *const kBlockColl_SpikeBlock[16] = {  // 0x94904B
   SetCarry_Spikeblk,
 };
 
+// A spike block's reaction, by its BTS. (Past the ROM's table, the SNES
+// would take the next code's bytes for addresses: nothing, here.)
+static void BlockColl_SpikeBlock(void) {
+  uint8 bts = BtsAt(cur_block_index);
+  if (bts < 16)
+    kBlockColl_SpikeBlock[bts]();
+}
+
 static uint8 BlockColl_Horiz_SpikeBlock(CollInfo *ci) {
-  kBlockColl_SpikeBlock[BTS[cur_block_index]]();
+  BlockColl_SpikeBlock();
   return BlockColl_Horiz_SolidShootGrappleBlock(ci);
 }
 
 static uint8 BlockColl_Vert_SpikeBlock(CollInfo *ci) {  // 0x94905D
-  kBlockColl_SpikeBlock[BTS[cur_block_index]]();
+  BlockColl_SpikeBlock();
   return BlockColl_Vert_SolidShootGrappleBlock(ci);
 }
 
 static uint8 BlockColl_Horiz_SpecialAir(CollInfo *ci) {  // 0x94906F
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if ((v0 & 0x80) != 0) {
     const uint16 *v2 = (const uint16 *)RomPtr_94(off_9492D9[area_index]);
     return SpawnPLM(v2[v0 & 0x7f]) & 1;
@@ -776,7 +784,7 @@ static uint8 BlockColl_Horiz_SpecialAir(CollInfo *ci) {  // 0x94906F
 }
 
 static uint8 BlockColl_Vert_SpecialAir(CollInfo *ci) {  // 0x94909D
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if ((v0 & 0x80) != 0) {
     const uint16 *v2 = (const uint16 *)RomPtr_94(off_9492D9[area_index]);
     return SpawnPLM(v2[v0 & 0x7f]) & 1;
@@ -787,7 +795,7 @@ static uint8 BlockColl_Vert_SpecialAir(CollInfo *ci) {  // 0x94909D
 }
 
 static uint8 BlockColl_Horiz_SpecialBlock(CollInfo *ci) {  // 0x9490CB
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if ((v0 & 0x80) != 0) {
     const uint16 *v2 = (const uint16 *)RomPtr_94(off_9492E9[area_index]);
     uint8 v4 = SpawnPLM(v2[v0 & 0x7f]) & 1;
@@ -803,7 +811,7 @@ static uint8 BlockColl_Horiz_SpecialBlock(CollInfo *ci) {  // 0x9490CB
 }
 
 static uint8 BlockColl_Vert_SpecialBlock(CollInfo *ci) {  // 0x949102
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if ((v0 & 0x80) != 0) {
     const uint16 *v3 = (const uint16 *)RomPtr_94(off_9492E9[area_index]);
     uint8 v4 = SpawnPLM(v3[v0 & 0x7F]) & 1;
@@ -820,21 +828,21 @@ static uint8 BlockColl_Vert_SpecialBlock(CollInfo *ci) {  // 0x949102
 
 
 static uint8 BlockColl_Horiz_BombableAir(CollInfo *ci) {  // 0x9492F9
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if ((v0 & 0x80) == 0)
     SpawnPLM(off_94936B[v0]);
   return 0;
 }
 
 static uint8 BlockColl_Vert_BombableAir(CollInfo *ci) {  // 0x949313
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if ((v0 & 0x80) == 0)
     SpawnPLM(off_94936B[v0]);
   return 0;
 }
 
 static uint8 BlockColl_Horiz_BombBlock(CollInfo *ci) {  // 0x94932D
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if ((v0 & 0x80) != 0)
     return BlockColl_Horiz_SolidShootGrappleBlock(ci);
   uint8 v1 = SpawnPLM(off_94936B[v0]) & 1;
@@ -845,7 +853,7 @@ static uint8 BlockColl_Horiz_BombBlock(CollInfo *ci) {  // 0x94932D
 }
 
 static uint8 BlockColl_Vert_BombBlock(CollInfo *ci) {  // 0x94934C
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if ((v0 & 0x80) != 0)
     return BlockColl_Vert_SolidShootGrappleBlock(ci);
   uint8 v1 = SpawnPLM(off_94936B[v0]) & 1;
@@ -855,9 +863,9 @@ static uint8 BlockColl_Vert_BombBlock(CollInfo *ci) {  // 0x94934C
     return v1;
 }
 
-uint8 BlockColl_Horiz_Door(CollInfo *ci) {  // 0x94938B
+static uint8 BlockColl_Horiz_Door(CollInfo *ci) {  // 0x94938B
   door_transition_function = FUNC16(DoorTransitionFunction_HandleElevator);
-  uint8 door_bts = BTS[cur_block_index];
+  uint8 door_bts = BtsAt(cur_block_index);
   uint16 v0 = *(uint16 *)RomPtr_8F(door_list_pointer + 2 * (door_bts & 0x7F));
   if ((get_DoorDef(v0)->room_definition_ptr & 0x8000) == 0) {
     if (samus_pose < kGameState_9_HitDoorBlock)
@@ -870,9 +878,9 @@ uint8 BlockColl_Horiz_Door(CollInfo *ci) {  // 0x94938B
   }
 }
 
-uint8 BlockColl_Vert_Door(CollInfo *ci) {  // 0x9493CE
+static uint8 BlockColl_Vert_Door(CollInfo *ci) {  // 0x9493CE
   door_transition_function = FUNC16(DoorTransitionFunction_HandleElevator);
-  uint8 door_bts = BTS[cur_block_index];
+  uint8 door_bts = BtsAt(cur_block_index);
   uint16 v0 = *(uint16 *)RomPtr_8F(door_list_pointer + 2 * (door_bts & 0x7F));
   if ((get_DoorDef(v0)->room_definition_ptr & 0x8000) == 0) {
     if (samus_pose < kPose_09_MoveR_NoAim)
@@ -886,16 +894,16 @@ uint8 BlockColl_Vert_Door(CollInfo *ci) {  // 0x9493CE
 }
 
 static uint8 BlockReact_HorizExt(CollInfo *ci) {  // 0x949411
-  if (BTS[cur_block_index]) {
-    cur_block_index += (int8)BTS[cur_block_index];
+  if (BtsAt(cur_block_index)) {
+    cur_block_index += (int8)BtsAt(cur_block_index);
     return 0xff; // special
   }
   return 0;
 }
 
 static uint8 BlockReact_VertExt(CollInfo *ci) {  // 0x949447
-  if (BTS[cur_block_index]) {
-    cur_block_index += (int8)BTS[cur_block_index] * room_width_in_blocks;
+  if (BtsAt(cur_block_index)) {
+    cur_block_index += (int8)BtsAt(cur_block_index) * room_width_in_blocks;
     return 0xff; // special
   }
   return 0;
@@ -956,7 +964,7 @@ static uint8 BlockColl_Horiz_CheckColl(CollInfo *ci, uint16 k) {
   cur_block_index = k >> 1;
   cur_coll_amt32 = &ci->ci_r18_r20;  // kludge needed for SpawnPLM
   do {
-    rv = kBlockColl_Horiz_CheckColl[(level_data[cur_block_index] & 0xF000) >> 12](ci);
+    rv = kBlockColl_Horiz_CheckColl[(LevelDataAt(cur_block_index) & 0xF000) >> 12](ci);
   } while (rv & 0x80);
   cur_coll_amt32 = NULL;
   return rv;
@@ -967,7 +975,7 @@ static uint8 BlockColl_Vert_CheckColl(CollInfo *ci, uint16 k) {  // 0x94952C
   cur_block_index = k >> 1;
   cur_coll_amt32 = &ci->ci_r18_r20;
   do {
-    rv = kBlockColl_Vert_CheckColl[(level_data[cur_block_index] & 0xF000) >> 12](ci);
+    rv = kBlockColl_Vert_CheckColl[(LevelDataAt(cur_block_index) & 0xF000) >> 12](ci);
   } while (rv & 0x80);
   cur_coll_amt32 = NULL;
   return rv;
@@ -1137,7 +1145,10 @@ static Func_V *const kBlockInsideReact_SpikeAir[16] = {  // 0x9498CC
 };
 
 static uint8 BlockInsideReact_SpikeAir(CollInfo *ci) {
-  kBlockInsideReact_SpikeAir[BTS[cur_block_index]]();
+  // (Past the table: see BlockColl_SpikeBlock.)
+  uint8 bts = BtsAt(cur_block_index);
+  if (bts < 16)
+    kBlockInsideReact_SpikeAir[bts]();
   return 0;
 }
 
@@ -1278,11 +1289,12 @@ static Func_V *const off_949966[80] = {
 };
 
 static uint8 BlockInsideReact_SpecialAir(CollInfo *ci) {
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if (v0 & 0x80) {
     const uint8 *v3 = RomPtr_94(g_off_949B06[area_index]);
     SpawnPLM(*(uint16 *)&v3[2 * (v0 & 0x7F)]);
-  } else {
+  } else if (v0 < 80) {
+    // (Past the table: see BlockColl_SpikeBlock.)
     off_949966[v0]();
   }
   return 0;
@@ -1321,7 +1333,7 @@ void BlockInsideDetection(void) {  // 0x949B60
   CollInfo ci = { .ci_r24 = 0, .ci_r26 = r26, .ci_r28 = r28 };
   uint8 rv;
   do {
-    rv = kSamus_BlockInsideDetection[(HIBYTE(level_data[cur_block_index]) & 0xF0) >> 4](&ci);
+    rv = kSamus_BlockInsideDetection[((LevelDataAt(cur_block_index) >> 8) & 0xF0) >> 4](&ci);
   } while (rv & 0x80);
   inside_block_reaction_samus_point = 1;
   if (((samus_bottom_boundary_position ^ samus_y_pos) & 0xFFF0) != 0) {
@@ -1330,7 +1342,7 @@ void BlockInsideDetection(void) {  // 0x949B60
     CalculateBlockAt(r26, r28, 0, 0);
     CollInfo ci = { .ci_r24 = 0, .ci_r26 = r26, .ci_r28 = r28 };
     do {
-      rv = kSamus_BlockInsideDetection[(HIBYTE(level_data[cur_block_index]) & 0xF0) >> 4](&ci);
+      rv = kSamus_BlockInsideDetection[((LevelDataAt(cur_block_index) >> 8) & 0xF0) >> 4](&ci);
     } while (rv & 0x80);
   }
   inside_block_reaction_samus_point = 2;
@@ -1341,12 +1353,12 @@ void BlockInsideDetection(void) {  // 0x949B60
     CalculateBlockAt(r26, r28, 0, 0);
     CollInfo ci = { .ci_r24 = 0, .ci_r26 = r26, .ci_r28 = r28 };
     do {
-      rv = kSamus_BlockInsideDetection[(HIBYTE(level_data[cur_block_index]) & 0xF0) >> 4](&ci);
+      rv = kSamus_BlockInsideDetection[((LevelDataAt(cur_block_index) >> 8) & 0xF0) >> 4](&ci);
     } while (rv & 0x80);
   }
 }
 
-void CalculateBlockAt(uint16 r26, uint16 r28, uint16 r30, uint16 r32) {  // 0x949C1D
+static void CalculateBlockAt(uint16 r26, uint16 r28, uint16 r30, uint16 r32) {  // 0x949C1D
   int16 v0;
   int16 v1;
   uint16 temp_collision_DD4;
@@ -1392,7 +1404,7 @@ static const int8 kBlockFunc_9C73_Tab1[18] = {
    0, -1,
 };
 
-uint16 BlockFunc_9C73(uint16 v0) {
+static uint16 BlockFunc_9C73(uint16 v0) {
   int v1 = v0 >> 1;
   if ((projectile_type[v1] & 0xF00) != 0) {
     return kBlockFunc_9C73_Tab1[2 * (HIBYTE(projectile_type[v1]) & 0xF) + 1];
@@ -1479,14 +1491,14 @@ static uint8 SetCarry_0(CollInfo *ci) {  // 0x949D5B
 }
 
 static uint8 sub_949D5D(CollInfo *ci) {  // 0x949D5D
-  if ((BTS[cur_block_index] & 0x1F) < 5)
+  if ((BtsAt(cur_block_index) & 0x1F) < 5)
     return 1;
   else
     return BlockShotReactVert_Slope_NonSquare(ci);
 }
 
 static uint8 BlockBombedReact_Special(CollInfo *ci) {  // 0x949D71
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if ((v0 & 0x80) != 0) {
     uint16 *kBlockBombedReact_Region_Plm = (uint16 *)RomPtr_94(0x9e44);
     const uint16 *v2 = (uint16*)RomPtr_94(kBlockBombedReact_Region_Plm[area_index]);
@@ -1499,7 +1511,7 @@ static uint8 BlockBombedReact_Special(CollInfo *ci) {  // 0x949D71
 }
 
 static uint8 BlockReact_ShootableAir(CollInfo *ci) {  // 0x949E55
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if ((v0 & 0x80) == 0) {
     uint16 t = kBlockShotBombedReactionShootablePlm[v0];
     if (t == 0xb974)
@@ -1510,7 +1522,7 @@ static uint8 BlockReact_ShootableAir(CollInfo *ci) {  // 0x949E55
 }
 
 static uint8 BlockReact_Shootable(CollInfo *ci) {  // 0x949E73
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if ((v0 & 0x80) != 0) {
     uint16 *kBlockShotBombGrappleReaction_ShootableBlock_RegionPlm = (uint16 *)RomPtr_94(0x9FC6);
     uint16 *v2 = (uint16*)RomPtr_94(kBlockShotBombGrappleReaction_ShootableBlock_RegionPlm[area_index]);
@@ -1526,7 +1538,7 @@ static uint8 BlockReact_Shootable(CollInfo *ci) {  // 0x949E73
 
 static uint8 BlockReact_BombableAir(CollInfo *ci) {  // 0x949FD6
   uint16 *kBlockShotBombGrappleReact_BombableBlockPlm = (uint16 *)RomPtr_94(0xA012);
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if ((v0 & 0x80) == 0)
     SpawnPLM(kBlockShotBombGrappleReact_BombableBlockPlm[v0]);
   return 0;
@@ -1534,7 +1546,7 @@ static uint8 BlockReact_BombableAir(CollInfo *ci) {  // 0x949FD6
 
 static uint8 BlockReact_BombableBlock(CollInfo *ci) {  // 0x949FF4
   uint16 *kBlockShotBombGrappleReact_BombableBlockPlm = (uint16 *)RomPtr_94(0xA012);
-  uint8 v0 = BTS[cur_block_index];
+  uint8 v0 = BtsAt(cur_block_index);
   if ((v0 & 0x80) == 0)
     SpawnPLM(kBlockShotBombGrappleReact_BombableBlockPlm[v0]);
   return 1;
@@ -1561,10 +1573,10 @@ static Func_CollInfo_U8 *const kBlockBombedReact[16] = {  // 0x94A052
 
 static void BlockBombedReact(CollInfo *ci, uint16 v0) {
   cur_block_index = v0 >> 1;
-  while (kBlockBombedReact[(level_data[cur_block_index] & 0xF000) >> 12](ci) & 0x80) {}
+  while (kBlockBombedReact[(LevelDataAt(cur_block_index) & 0xF000) >> 12](ci) & 0x80) {}
 }
 
-void BlockFunc_A06A(uint16 k) {  // 0x94A06A
+static void BlockFunc_A06A(uint16 k) {  // 0x94A06A
   int16 v2;
   int16 v3;
 
@@ -1623,8 +1635,8 @@ static void BlockFunc_A11A(uint16 a, uint16 r24, uint16 r26, uint16 r28) {  // 0
 }
 
 static uint8 BlockShotReactHoriz_Slope(CollInfo *ci) {  // 0x94A147
-  if ((BTS[cur_block_index] & 0x1F) < 5)
-    return BlockShotReactVert_Slope_Square(ci, BTS[cur_block_index] & 0x1F, cur_block_index);
+  if ((BtsAt(cur_block_index) & 0x1F) < 5)
+    return BlockShotReactVert_Slope_Square(ci, BtsAt(cur_block_index) & 0x1F, cur_block_index);
   else
     return BlockShotReactVert_Slope_NonSquare(ci);
 }
@@ -1634,8 +1646,8 @@ static uint8 SetCarry_1(void) {  // 0x94A15C
 }
 
 static uint8 BlockShotReactVert_Slope(CollInfo *ci) {  // 0x94A15E
-  if ((BTS[cur_block_index] & 0x1F) < 5)
-    return BlockShotReactHoriz_Slope_Square(ci, BTS[cur_block_index] & 0x1F, cur_block_index);
+  if ((BtsAt(cur_block_index) & 0x1F) < 5)
+    return BlockShotReactHoriz_Slope_Square(ci, BtsAt(cur_block_index) & 0x1F, cur_block_index);
   else
     return BlockShotReactHoriz_Slope_NonSquare(ci);
 }
@@ -1668,7 +1680,7 @@ static uint8 BlockShotReactHoriz(CollInfo *ci, uint16 k) {  // 0x94A1B5
     return 1;
   cur_block_index = k >> 1;
   do {
-    v1 = kBlockShotReactHoriz[(level_data[cur_block_index] & 0xF000) >> 12](ci);
+    v1 = kBlockShotReactHoriz[(LevelDataAt(cur_block_index) & 0xF000) >> 12](ci);
   } while (v1 & 0x80);
   if (v1)
     ci->ci_r40--;
@@ -1699,7 +1711,7 @@ static uint8 BlockShotReactVert(CollInfo *ci, uint16 k) {  // 0x94A1D6
     return 1;
   cur_block_index = k >> 1;
   do {
-    v1 = kBlockShotReactVert[(level_data[cur_block_index] & 0xF000) >> 12](ci);
+    v1 = kBlockShotReactVert[(LevelDataAt(cur_block_index) & 0xF000) >> 12](ci);
   } while (v1 & 0x80);
   if (v1)
     --ci->ci_r40;
@@ -1937,7 +1949,7 @@ uint8 BlockCollSpreadBomb(uint16 k) {  // 0x94A621
     return 1;
   uint8 rv;
   do {
-    rv = kBlockCollSpreadBomb[(level_data[cur_block_index] & 0xF000) >> 12](&ci);
+    rv = kBlockCollSpreadBomb[(LevelDataAt(cur_block_index) & 0xF000) >> 12](&ci);
   } while (rv & 0x80);
   return rv;
 }
@@ -2020,10 +2032,11 @@ static uint8 BlockReactGrapple_GrappleBlock(CollInfo *ci) {  // 0x94A7D1
     0xd0d8,
   };
   grapple_beam_flags &= ~0x8000;
-  if (BTS[cur_block_index] & 0x80)
+  // (Past the table, too: see BlockColl_SpikeBlock.)
+  if (BtsAt(cur_block_index) >= 4)
     return 0;
   else
-    return SpawnPLM(kBlockReactGrapple_GrappleBlockPlm[BTS[cur_block_index]]);
+    return SpawnPLM(kBlockReactGrapple_GrappleBlockPlm[BtsAt(cur_block_index)]);
 }
 
 static uint8 BlockReactGrapple_SpikeBlock(CollInfo *ci) {  // 0x94A7FD
@@ -2045,10 +2058,11 @@ static uint8 BlockReactGrapple_SpikeBlock(CollInfo *ci) {  // 0x94A7FD
     0xd0e4,
     0xd0e4,
   };
-  if (BTS[cur_block_index] & 0x80)
+  // (Past the table, too: see BlockColl_SpikeBlock.)
+  if (BtsAt(cur_block_index) >= 16)
     return 0;
   else
-    return SpawnPLM(kBlockReactGrapple_SpikeBlockPlm[BTS[cur_block_index]]);
+    return SpawnPLM(kBlockReactGrapple_SpikeBlockPlm[BtsAt(cur_block_index)]);
 }
 
 uint8 BlockCollGrappleBeam(void) {  // 0x94A85B
@@ -2098,7 +2112,7 @@ uint8 BlockReactGrapple(void) {  // 0x94A91F
   CollInfo ci = { 0 };
   uint8 rv;
   do {
-    rv = kBlockReactGrapple[(level_data[cur_block_index] & 0xF000) >> 12](&ci);
+    rv = kBlockReactGrapple[(LevelDataAt(cur_block_index) & 0xF000) >> 12](&ci);
   } while (rv & 0x80);
   return rv;
 }
@@ -2214,7 +2228,7 @@ static uint8 BlockReact_AA64(void) {  // 0x94AA64
   CollInfo ci = { 0 };
   uint8 rv;
   do {
-    rv = kBlockReactLut_AB90[(level_data[cur_block_index] & 0xF000) >> 12](&ci);
+    rv = kBlockReactLut_AB90[(LevelDataAt(cur_block_index) & 0xF000) >> 12](&ci);
   } while (rv & 0x80);
   return rv;
 }
@@ -2226,7 +2240,7 @@ static const uint16 g_word_94AAF7[16] = {
 static uint8 BlockReact_AA64_SpikeAir(CollInfo *ci) {
   if (samus_invincibility_timer)
     return 0;
-  int16 v0 = *(uint16 *)&BTS[cur_block_index];
+  int16 v0 = (uint16)(BtsAt(cur_block_index) | BtsAt(cur_block_index + 1u) << 8);
   if (v0 >= 0) {
     uint32 v = INT16_SHL16(g_word_94AAF7[v0]);
     if (v) {
@@ -2245,7 +2259,7 @@ static const uint16 g_word_94AB70[16] = {
 static uint8 BlockReact_AA64_SpikeBlock(CollInfo *ci) {
   if (samus_invincibility_timer)
     return 1;
-  int16 v0 = *(uint16 *)&BTS[cur_block_index];
+  int16 v0 = (uint16)(BtsAt(cur_block_index) | BtsAt(cur_block_index + 1u) << 8);
   if (v0 >= 0) {
     uint32 v = INT16_SHL16(g_word_94AB70[v0]);
     if (v) {
@@ -2283,7 +2297,7 @@ static uint8 BlockFunc_ABB0(void) {
   cur_block_index = RegWord + v0;
   CollInfo ci = { 0 };
   do {
-    rv = kBlockReactLut_AB90[(level_data[cur_block_index] & 0xF000) >> 12](&ci);
+    rv = kBlockReactLut_AB90[(LevelDataAt(cur_block_index) & 0xF000) >> 12](&ci);
   } while (rv & 0x80);
   return rv;
 }
@@ -2467,7 +2481,7 @@ LABEL_39:
   return 1;
 }
 
-uint8 BlockFunc_AEE3(void) {  // 0x94AEE3
+static uint8 BlockFunc_AEE3(void) {  // 0x94AEE3
   if (((grapple_beam_unkD26 ^ grapple_beam_end_angle16) & 0x8000) != 0) {
     grapple_beam_unkD38 = 0;
     return 1;
@@ -2498,7 +2512,7 @@ uint16 GrappleInstr_Goto(uint16 j) {  // 0x94B0F4
   return *(uint16 *)RomPtr_94(j);
 }
 
-uint16 CallGrappleInstr(uint32 ea, uint16 j) {
+static uint16 CallGrappleInstr(uint32 ea, uint16 j) {
   switch (ea) {
   case fnGrappleInstr_Goto: return GrappleInstr_Goto(j);  // 0x94b0f4
   default: return Unreachable();

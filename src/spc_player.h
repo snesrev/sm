@@ -99,6 +99,19 @@ typedef struct SfxChan {
 } SfxChan;
 
 
+#if SM_GBA
+// Bytes of the APU's RAM that are in the ROM, found by gba/audio.c's
+// SpcRam_Read, which SPC_RAM (spc_player.c) looks in before it calls: the
+// bytes at [addr, addr + length), at |src|. (stdint's types: the game's are
+// byte-aligned.)
+enum { kAramCacheEntries = 4 };
+typedef struct AramCache {
+  uint16_t addr, length;
+  const uint8_t *src;
+} AramCache;
+extern AramCache g_aram_cache[kAramCacheEntries];
+#endif
+
 typedef struct SpcPlayer {
   DspRegWriteHistory *reg_write_history;
   uint8 timer_cycles;
@@ -163,11 +176,14 @@ typedef struct SpcPlayer {
   SfxChan sfx_chans_3[2];
   uint8 last_written_edl;
   uint8 input_ports[4];
+#if !SM_GBA
   uint8 ram[65536]; // rest of ram
+#endif
 } SpcPlayer;
 
 SpcPlayer *SpcPlayer_Create();
 void SpcPlayer_GenerateSamples(SpcPlayer *p);
+void SpcPlayer_Tick(SpcPlayer *p, uint8 ticks);
 void SpcPlayer_Initialize(SpcPlayer *p);
 void SpcPlayer_Upload(SpcPlayer *p, const uint8_t *data);
 void SpcPlayer_CopyVariablesFromRam(SpcPlayer *p);

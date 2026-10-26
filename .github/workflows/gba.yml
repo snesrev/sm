@@ -1,0 +1,85 @@
+# Builds the GBA engine (sm-engine.gba) on every push and pull request, and
+# for a tag named v*, publishes it as a GitHub release, with the script that
+# makes the cartridge from a player's own ROM (tools/make_cartridge.py, and
+# squash_font.py, which it imports). The ROM itself is never part of the
+# repository or of a release.
+name: GBA
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write  # to publish releases
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      # Ubuntu's own clang (18) makes ARM code too big for IWRAM: the link
+      # fails. LLVM 22 from apt.llvm.org makes the same engine, byte for
+      # byte, as the clang 22.1.8 the port was measured with.
+      - name: Install the LLVM toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build
+          wget -qO llvm.sh https://apt.llvm.org/llvm.sh
+          sudo bash llvm.sh 22
+          echo /usr/lib/llvm-22/bin >> "$GITHUB_PATH"
+
+      - name: Build
+        run: |
+          cmake -B build-gba -G Ninja \
+              -DCMAKE_TOOLCHAIN_FILE=cmake/gba-toolchain.cmake \
+              -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-gba
+
+      # What a player needs, flat, as the README says to use it: the engine
+      # and the script that adds their ROM's data (which imports squash_font.py).
+      - name: Collect the release files
+        run: |
+          mkdir dist
+          cp build-gba/sm-engine.gba tools/make_cartridge.py tools/squash_font.py dist/
+
+      # Without the ROM, only the failure can be tested: the script runs
+      # standalone, and says what is wrong rather than crashing.
+      - name: Test the script as released
+        run: |
+          head -c 1000 /dev/zero > not-a-rom.smc
+          if python3 dist/make_cartridge.py dist/sm-engine.gba not-a-rom.smc out.gba 2> err.txt; then
+              echo "a bad ROM was accepted"; exit 1
+          fi
+          cat err.txt
+          grep -q "not the Super Metroid ROM" err.txt
+          test ! -e out.gba
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sm-engine
+          path: dist/*
+
+      - name: Publish the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          body: |
+            The Game Boy Advance port's engine. It has none of the game's data:
+            make the cartridge from your own Super Metroid ROM (the Japan/USA
+            release, "Super Metroid (Japan, USA) (En,Ja)", sha1
+            da957f0d63d14cb441d215462904c4fa8519c613), with Python 3. Download
+            all three files into one folder, put your ROM there (any name; a zip
+            with it is fine too), then:
+
+                python3 make_cartridge.py sm-engine.gba . sm.gba
+
+            (The ROM can also be given by its path, or a directory it's in: the
+            script finds it by its checksum.)
+
+            and run sm.gba in a GBA emulator, such as mGBA, or on a flash
+            cartridge. Use the script from the same release as the engine.
